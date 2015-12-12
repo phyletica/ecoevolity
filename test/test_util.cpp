@@ -1,4 +1,4 @@
-#include "catch_setup.hpp"
+#include "catch.hpp"
 #include "coevolity/util.cpp"
 
 #include <map>
