@@ -23,15 +23,35 @@ enable_testing(true)  # Enables unit-testing.
 
 
 #######################################################################
+# Project paths
+get_filename_component(BASE_DIR "${PROJECT_SOURCE_DIR}" REALPATH)
+set(SOURCE_DIR "${BASE_DIR}/src")
+set(COEVOLITY_SOURCE_DIR "${SOURCE_DIR}/coevolity")
+set(EXTERNAL_PROJECT_DIR "${SOURCE_DIR}/external")
+set(NCL_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/ncl")
+set(TEST_DIR "${BASE_DIR}/test")
+set(TEST_DATA_DIR "${TEST_DIR}/data")
+
+
+#######################################################################
+# Find and set up NCL variables
+include(FindNCL)
+include_directories("${NCL_INCLUDE_DIRS}")
+
+
+#######################################################################
 # Compiler settings 
-set (STATIC_LINKING OFF CACHE BOOL "build with static links")
+option (STATIC_LINKING "Build with static links" OFF)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif()
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Werror -Wno-unused")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wswitch-default -Wundef -Werror -Wno-unused") # -Wold-style-cast -Wsign-conversion -Wstrict-overflow=5
+    if (${USING_BUNDLED_NCL})
+        set(CMAKE_CXX_FLAGS "-std=c++11") # -pedantic -Wall -Wextra -Wcast-align -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wstrict-null-sentinel -Wswitch-default -Werror -Wno-unused") # -Wold-style-cast -Wsign-conversion -Wstrict-overflow=5 -Wsign-promo -Wundef -Wcast-qual
+    endif()
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     endif()
@@ -39,21 +59,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g")
 endif()
-
-
-#######################################################################
-# Project paths
-set(BASE_DIR "${PROJECT_SOURCE_DIR}")
-set(SOURCE_DIR "${BASE_DIR}/src")
-set(COEVOLITY_SOURCE_DIR "${SOURCE_DIR}/coevolity")
-set(EXTERNAL_PROJECT_DIR "${SOURCE_DIR}/external")
-set(TEST_DIR "${BASE_DIR}/test")
-set(TEST_DATA_DIR "${TEST_DIR}/data")
-add_subdirectory("${SOURCE_DIR}")
-add_subdirectory("${COEVOLITY_SOURCE_DIR}")
-# add_subdirectory("${EXTERNAL_PROJECT_DIR}")
-add_subdirectory("${TEST_DIR}")
-add_subdirectory("${TEST_DATA_DIR}")
 
 
 #######################################################################
@@ -102,6 +107,15 @@ configure_file(
 
 # add binary tree to search path so version.hpp can be found
 include_directories("${PROJECT_BINARY_DIR}")
+
+
+#######################################################################
+# Add subdirectories 
+add_subdirectory("${SOURCE_DIR}")
+add_subdirectory("${COEVOLITY_SOURCE_DIR}")
+add_subdirectory("${EXTERNAL_PROJECT_DIR}")
+add_subdirectory("${TEST_DIR}")
+add_subdirectory("${TEST_DATA_DIR}")
 
 
 #######################################################################

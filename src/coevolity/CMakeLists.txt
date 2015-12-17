@@ -1,6 +1,3 @@
-set(COEVOLITY_SOURCES
-    util.cpp)
-
 file(GLOB COEVOLITY_MAIN_SOURCES "*_main.cpp")
 
 foreach(main_source ${COEVOLITY_MAIN_SOURCES})
@@ -11,7 +8,7 @@ foreach(main_source ${COEVOLITY_MAIN_SOURCES})
             ${main_source}
             ${COEVOLITY_SOURCES}
             )
-    # TARGET_LINK_LIBRARIES(${exe_name} ${})
+    TARGET_LINK_LIBRARIES(${exe_name} ${NCL_LIBRARIES})
     INSTALL(TARGETS ${exe_name}
             DESTINATION bin
             )
