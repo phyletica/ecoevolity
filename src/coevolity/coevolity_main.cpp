@@ -1,10 +1,4 @@
-#include <ncl/nxsmultiformat.h>
-#include <ncl/nxsreader.h>
-#include <ncl/nxsexception.h>
-#include <ncl/nxspublicblocks.h>
-#include <ncl/nxstaxablock.h>
-#include <ncl/nxsblock.h>
-#include <ncl/nxsstring.h>
+#include <ncl/ncl.h>
 
 #include "util.hpp"
 
