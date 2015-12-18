@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "coevolity/util.cpp"
+#include "ecoevolity/util.cpp"
 
 #include <map>
 #include <unordered_map>

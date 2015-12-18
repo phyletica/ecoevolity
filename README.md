@@ -1,12 +1,12 @@
 Table of Contents
 =================
 
- -  [Coevolity](#coevolity)
+ -  [Ecoevolity](#ecoevolity)
  -  [Acknowledgements](#acknowledgements)
  -  [License](#license)
 
-Coevolity
-=========
+Ecoevolity
+==========
 
 Inferring shared evolutionary events using full-likelihood Bayesian inference.
 

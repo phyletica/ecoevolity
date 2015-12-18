@@ -1,5 +1,5 @@
-#ifndef COEVOLITY_UTIL_HPP
-#define COEVOLITY_UTIL_HPP
+#ifndef ECOEVOLITY_UTIL_HPP
+#define ECOEVOLITY_UTIL_HPP
 
 #include <iostream>
 #include <map>

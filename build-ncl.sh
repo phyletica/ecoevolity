@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
  
 # get location of script
-COEVOLITY_BASE_DIR=""
+ECOEVOLITY_BASE_DIR=""
 this_dir=`dirname "$0"`
 if [ "$this_dir" = "." ]
 then
-    COEVOLITY_BASE_DIR="$(pwd)"
+    ECOEVOLITY_BASE_DIR="$(pwd)"
 else
     cd "$this_dir"
-    COEVOLITY_BASE_DIR="$(pwd)"
+    ECOEVOLITY_BASE_DIR="$(pwd)"
 fi
 
-NCL_BUILD_DIR="${COEVOLITY_BASE_DIR}/ncl-build"
+NCL_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/ncl-build"
 INSTALL_DIR="${NCL_BUILD_DIR}/installed"
 
 if [ -d "$NCL_BUILD_DIR" ]
@@ -40,7 +40,7 @@ make clean
 make -j $COMPILETHREADS
 make install
 
-cd "$COEVOLITY_BASE_DIR"
+cd "$ECOEVOLITY_BASE_DIR"
 
 echo
 echo

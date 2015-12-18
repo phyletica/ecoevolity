@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "coevolity/error.hpp"
+#include "ecoevolity/error.hpp"
 
 TEST_CASE("derived error classes can be thrown", "[error]") {
 
@@ -7,11 +7,11 @@ TEST_CASE("derived error classes can be thrown", "[error]") {
     std::string file_name = "dummy-file-name.txt";
     size_t line_number = 1;
 
-    SECTION("throwing CoevolityError") {
-        REQUIRE_THROWS_AS(throw CoevolityError(message), CoevolityError);
+    SECTION("throwing EcoevolityError") {
+        REQUIRE_THROWS_AS(throw EcoevolityError(message), EcoevolityError);
     }
-    SECTION("throwing CoevolityParsingError") {
-        REQUIRE_THROWS_AS(throw CoevolityParsingError(message, file_name, line_number),
-                CoevolityParsingError);
+    SECTION("throwing EcoevolityParsingError") {
+        REQUIRE_THROWS_AS(throw EcoevolityParsingError(message, file_name, line_number),
+                EcoevolityParsingError);
     }
 }

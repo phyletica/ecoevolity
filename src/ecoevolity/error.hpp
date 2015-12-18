@@ -1,5 +1,5 @@
-#ifndef COEVOLITY_ERROR_HPP
-#define COEVOLITY_ERROR_HPP
+#ifndef ECOEVOLITY_ERROR_HPP
+#define ECOEVOLITY_ERROR_HPP
 
 #include <iostream>
 #include <stdexcept>
@@ -9,9 +9,9 @@
 /**
  * Base class for errors.
  */
-class CoevolityError: public std::runtime_error {
+class EcoevolityError: public std::runtime_error {
     public:
-        CoevolityError(const std::string message) :
+        EcoevolityError(const std::string message) :
             std::runtime_error(""),
             message_(message)
             { }
@@ -22,7 +22,7 @@ class CoevolityError: public std::runtime_error {
 
         std::string get_error_message() const {
             std::ostringstream error_stream;
-            error_stream << "CoevolityError: " << this->message_;
+            error_stream << "EcoevolityError: " << this->message_;
             return error_stream.str();
         }
 
@@ -30,20 +30,20 @@ class CoevolityError: public std::runtime_error {
         std::string message_;
 };
 
-class CoevolityParsingError: public CoevolityError {
+class EcoevolityParsingError: public EcoevolityError {
     public:
-        CoevolityParsingError(
+        EcoevolityParsingError(
                 const std::string message,
                 const std::string file_name,
                 size_t line_number) :
-            CoevolityError(message),
+            EcoevolityError(message),
             line_number_(line_number),
             file_name_(file_name)
             { }
 
         std::string get_error_message() const {
             std::ostringstream error_stream;
-            error_stream << "CoevolityParsingError" << std::endl
+            error_stream << "EcoevolityParsingError" << std::endl
                          << "File: "  << this->file_name_   << std::endl
                          << "Line: "  << this->line_number_ << std::endl
                          << "Error: " << this->message_     << std::endl;

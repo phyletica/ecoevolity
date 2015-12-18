@@ -11,19 +11,19 @@ usage () {
     echo ""
 }
 
-build_coevolity () {
+build_ecoevolity () {
     cmake_args=$@
-    if [ -n "$COEVOLITY_BASE_DIR" ]
+    if [ -n "$ECOEVOLITY_BASE_DIR" ]
     then
-        base_dir="$COEVOLITY_BASE_DIR"
+        base_dir="$ECOEVOLITY_BASE_DIR"
     else
-        echo "ERROR: COEVOLITY_BASE_DIR was not defined prior to calling "
-        echo "build_coevolity."
+        echo "ERROR: ECOEVOLITY_BASE_DIR was not defined prior to calling "
+        echo "build_ecoevolity."
         exit 1
     fi
-    if [ -n "$COEVOLITY_BUILD_DIR" ]
+    if [ -n "$ECOEVOLITY_BUILD_DIR" ]
     then
-        build_dir="$COEVOLITY_BUILD_DIR"
+        build_dir="$ECOEVOLITY_BUILD_DIR"
     else
         build_dir="${base_dir}/build"
     fi
@@ -42,12 +42,12 @@ build_coevolity () {
     echo "${base_dir}/ $cmake_args" | xargs cmake || exit 1
     echo "Building..."
     make || exit 1
-    if [ -n "$COEVOLITY_RUN_TESTS" ]
+    if [ -n "$ECOEVOLITY_RUN_TESTS" ]
     then
         echo "Building and running test suite..."
         make check || exit 1
     fi
-    if [ -n "$COEVOLITY_RUN_INSTALL" ]
+    if [ -n "$ECOEVOLITY_RUN_INSTALL" ]
     then
         echo "Installing..."
         make install || exit 1
@@ -58,16 +58,16 @@ build_coevolity () {
 
 
 # get location of script
-COEVOLITY_BASE_DIR=""
+ECOEVOLITY_BASE_DIR=""
 this_dir=`dirname "$0"`
 if [ "$this_dir" = "." ]
 then
-    export COEVOLITY_BASE_DIR="$(pwd)"
+    export ECOEVOLITY_BASE_DIR="$(pwd)"
 else
     cd "$this_dir"
-    export COEVOLITY_BASE_DIR="$(pwd)"
+    export ECOEVOLITY_BASE_DIR="$(pwd)"
 fi
-export COEVOLITY_BUILD_DIR="${COEVOLITY_BASE_DIR}/build"
+export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
 
 # make sure submodules are here and up to date
 # git submodule init
@@ -77,8 +77,8 @@ export COEVOLITY_BUILD_DIR="${COEVOLITY_BASE_DIR}/build"
 extra_args=""
 static=""
 install_prefix=""
-COEVOLITY_RUN_TESTS=""
-COEVOLITY_RUN_INSTALL=""
+ECOEVOLITY_RUN_TESTS=""
+ECOEVOLITY_RUN_INSTALL=""
 universal_mac_build=""
 linux_dist_build=""
 mbit=""
@@ -97,12 +97,12 @@ do
             static=1
             ;;
         -t| --test)
-            COEVOLITY_RUN_TESTS=1
-            export COEVOLITY_RUN_TESTS
+            ECOEVOLITY_RUN_TESTS=1
+            export ECOEVOLITY_RUN_TESTS
             ;;
         -i| --install)
-            COEVOLITY_RUN_INSTALL=1
-            export COEVOLITY_RUN_INSTALL
+            ECOEVOLITY_RUN_INSTALL=1
+            export ECOEVOLITY_RUN_INSTALL
             ;;
         -m)
             shift
@@ -144,4 +144,4 @@ then
 fi
 
 # check for build directory
-build_coevolity $args
+build_ecoevolity $args
