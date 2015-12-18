@@ -1,4 +1,4 @@
-#include <ncl/ncl.h>
+#include <ncl/nxsmultiformat.h>
 
 #include "util.hpp"
 

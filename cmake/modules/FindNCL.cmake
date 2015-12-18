@@ -124,7 +124,7 @@ else()
 endif()
 
 set (USING_BUNDLED_NCL FALSE)
-if (DEFINED NCL_SOURCE_DIR AND EXISTS "${NCL_SOURCE_DIR}" AND NOT ${NCL_FOUND})
+if (((DEFINED NCL_SOURCE_DIR) AND (EXISTS "${NCL_SOURCE_DIR}") AND (NOT ${NCL_FOUND})) OR FORCE_BUNDLED_NCL)
     set(NCL_LIBRARY "ncl")
     add_library (${NCL_LIBRARY}
         "${NCL_SOURCE_DIR}/nxsassumptionsblock.cpp"
@@ -148,6 +148,13 @@ if (DEFINED NCL_SOURCE_DIR AND EXISTS "${NCL_SOURCE_DIR}" AND NOT ${NCL_FOUND})
     set (NCL_INCLUDE_DIR "${NCL_SOURCE_DIR}")
     set (NCL_LIBRARIES "${NCL_LIBRARY}")
     set (USING_BUNDLED_NCL TRUE)
+    set (NCL_FOUND FALSE)
+    set (NCL_STATIC_FOUND FALSE)
+    set (NCL_CBLAS_FOUND FALSE)
+    set (NCL_CBLAS_STATIC_FOUND FALSE)
+    set (NCL_STATIC_LIBRARIES "NOTFOUND")
+    set (NCL_CBLAS_LIBRARIES "NOTFOUND")
+    set (NCL_CBLAS_STATIC_LIBRARIES "NOTFOUND")
 endif()
 
 # Remove "ncl" from include path to support "#include "ncl/ncl.h" imports
