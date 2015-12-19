@@ -18,8 +18,16 @@ int main(int argc, char *argv[]) {
         std::cout  <<  nCharBlocks << " CHARACTERS/DATA block(s) refer to this TAXA block\n";
         for (unsigned j = 0; j < nCharBlocks; ++j) {
             const NxsCharactersBlock * charBlock = nexusReader.GetCharactersBlock(taxaBlock, j);
-            std::string charBlockTitle = taxaBlock->GetTitle();
-            std::cout << "Taxa block index " << j << " has the Title \"" << charBlockTitle << "\"\n";
+            std::string charBlockTitle = charBlock->GetTitle();
+            //unsigned int dtype = charBlock->GetDataType();
+            NxsCharactersBlock::DataTypesEnum dtype;
+            dtype = charBlock->GetDataType();
+            bool data_is_standard;
+            data_is_standard = (dtype == NxsCharactersBlock::DataTypesEnum::standard); 
+            std::cout << std::boolalpha; // write booleans as true/false
+            std::cout << "Char block index " << j << " has the Title \"" << charBlockTitle << "\"" << std::endl;
+            std::cout << "Char block index " << j << " has data type: \"" << (int)dtype << "\"" << std::endl;
+            std::cout << "Char block indix " << j << " data type \"" << (int)dtype << "\" == standard: " << data_is_standard << std::endl;
         }
     }
     return 0;
