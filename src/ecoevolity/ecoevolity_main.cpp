@@ -1,7 +1,5 @@
 #include <ncl/nxsmultiformat.h>
 
-#include "util.hpp"
-
 int main(int argc, char *argv[]) {
     std::cout << "Hello World!" << std::endl;
     MultiFormatReader nexusReader(-1, NxsReader::WARNINGS_TO_STDERR);
