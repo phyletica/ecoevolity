@@ -1,4 +1,9 @@
-file(GLOB ECOEVOLITY_MAIN_SOURCES "*_main.cpp")
+set(ECOEVOLITY_MAIN_SOURCES
+    ecoevolity_main.cpp)
+
+set(ECOEVOLITY_SOURCES
+    util.cpp
+    data.cpp)
 
 foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})
     get_filename_component(main_file_name ${main_source} NAME_WE)
