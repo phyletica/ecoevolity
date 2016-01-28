@@ -1,7 +1,5 @@
 #include "data.hpp"
 
-#define pass ((void)0)
-
 BiallelicData::BiallelicData(const char * path) {
     MultiFormatReader nexusReader(-1, NxsReader::WARNINGS_TO_STDERR);
     nexusReader.ReadFilepath(path, MultiFormatReader::NEXUS_FORMAT);
@@ -26,36 +24,38 @@ BiallelicData::BiallelicData(const char * path) {
             std::cout << std::boolalpha; // write booleans as true/false
             std::cout << "Char block index " << j << " has the Title \"" << charBlockTitle << "\"" << std::endl;
             std::cout << "Char block index " << j << " has data type: \"" << (int)dtype << "\"" << std::endl;
-            std::cout << "Char block indix " << j << " data type \"" << (int)dtype << "\" == standard: " << data_is_standard << std::endl;
+            std::cout << "Char block index " << j << " data type \"" << (int)dtype << "\" == standard: " << data_is_standard << std::endl;
         }
     }
 }
 
 
 std::vector<unsigned int> BiallelicData::get_num_red_alleles(unsigned int pattern_index) {
-    pass;
+    std::vector<unsigned int> v (2, 0);
+    return v;
 }
 
 std::vector<unsigned int> BiallelicData::get_num_alleles(unsigned int pattern_index) {
-    pass;
+    std::vector<unsigned int> v (2, 0);
+    return v;
 }
 
 unsigned int BiallelicData::get_pattern_weight(unsigned int pattern_index) {
-    pass;
+    return 0;
 }
 
 unsigned int BiallelicData::get_number_of_patterns() {
-    pass;
+    return 0;
 }
 
 unsigned int BiallelicData::get_number_of_taxa() {
-    pass;
+    return 0;
 }
 
 void BiallelicData::remove_constant_patterns() {
-    pass;
+    std::cout << "";
 }
 
 void BiallelicData::remove_patterns_with_missing_taxa() {
-    pass;
+    std::cout << "";
 }
