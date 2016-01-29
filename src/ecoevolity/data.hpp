@@ -11,7 +11,9 @@
 class BiallelicData {
     public:
         // Constructor
-        BiallelicData(const char * path);
+        BiallelicData(const std::string path,
+                const char population_name_delimiter = '_',
+                const bool population_name_is_prefix = true);
         // Destructor
         // ~BiallelicData();
         

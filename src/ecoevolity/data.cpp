@@ -1,8 +1,14 @@
 #include "data.hpp"
 
-BiallelicData::BiallelicData(const char * path) {
+BiallelicData::BiallelicData(
+        const std::string path, 
+        const char population_name_delimiter,
+        const bool population_name_is_prefix) {
+    std::cout << "pop name delimiter: " << population_name_delimiter << std::endl;
+    std::cout << "pop name is prefix: " << population_name_is_prefix << std::endl;
+
     MultiFormatReader nexusReader(-1, NxsReader::WARNINGS_TO_STDERR);
-    nexusReader.ReadFilepath(path, MultiFormatReader::NEXUS_FORMAT);
+    nexusReader.ReadFilepath(path.c_str(), MultiFormatReader::NEXUS_FORMAT);
     
     int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
     std::cout << numTaxaBlocks << " TAXA block(s) read.\n";
