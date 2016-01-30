@@ -2,7 +2,10 @@
 #define DATA_HPP
 
 #include <iostream>
+#include <assert.h>
 #include <ncl/nxsmultiformat.h>
+
+#include "util.hpp"
 
 /**
  * Class for storing biallelic site patterns.
