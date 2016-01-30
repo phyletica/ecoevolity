@@ -57,3 +57,28 @@ SCENARIO("map_at provides easy map element access", "[util]") {
     }
 }
             
+SCENARIO("split provides Python-like splitting of strings", "[util]") {
+    std::vector<std::string> elements;
+
+    REQUIRE(elements.size() == 0);
+
+    SECTION("splitting string into pre-allocated vector") {
+        split("Test_string__TO_Split", '_', elements);
+        REQUIRE(elements.size() == 5);
+        REQUIRE(elements[0] == "Test");
+        REQUIRE(elements[1] == "string");
+        REQUIRE(elements[2] == "");
+        REQUIRE(elements[3] == "TO");
+        REQUIRE(elements[4] == "Split");
+    }
+
+    SECTION("splitting string and returning elements in a new vector") {
+        std::vector<std::string> words = split("Test_string__TO_Split", '_');
+        REQUIRE(words.size() == 5);
+        REQUIRE(words[0] == "Test");
+        REQUIRE(words[1] == "string");
+        REQUIRE(words[2] == "");
+        REQUIRE(words[3] == "TO");
+        REQUIRE(words[4] == "Split");
+    }
+}

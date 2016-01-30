@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <map>
+#include <string>
+#include <sstream>
+#include <vector>
 
 /**
  * Function for accessing map elements.
@@ -17,4 +20,14 @@ const typename T::value_type::second_type& map_at(
         const T& container,
         const typename T::value_type::first_type key);
 
+std::vector<std::string> & split(
+        const std::string &s,
+        char delimiter,
+        std::vector<std::string> & elements);
+
+std::vector<std::string> split(
+        const std::string &s,
+        char delimiter);
+
 #endif
+
