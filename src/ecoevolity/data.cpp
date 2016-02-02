@@ -56,12 +56,12 @@ BiallelicData::BiallelicData(
 }
 
 
-std::vector<unsigned int> BiallelicData::get_num_red_alleles(unsigned int pattern_index) {
+std::vector<unsigned int> BiallelicData::get_number_of_red_alleles(unsigned int pattern_index) {
     std::vector<unsigned int> v (2, 0);
     return v;
 }
 
-std::vector<unsigned int> BiallelicData::get_num_alleles(unsigned int pattern_index) {
+std::vector<unsigned int> BiallelicData::get_number_of_alleles(unsigned int pattern_index) {
     std::vector<unsigned int> v (2, 0);
     return v;
 }
