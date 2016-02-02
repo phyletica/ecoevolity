@@ -8,51 +8,75 @@ BiallelicData::BiallelicData(
     if (population_name_delimiter == '_') {
         pop_name_delimiter = ' ';
     }
-    std::cout << "population name delimiter: " << population_name_delimiter << std::endl;
-    std::cout << "pop name delimiter: " << pop_name_delimiter << std::endl;
-    std::cout << "pop name is prefix: " << population_name_is_prefix << std::endl;
 
-    MultiFormatReader nexusReader(-1, NxsReader::WARNINGS_TO_STDERR);
-    nexusReader.ReadFilepath(path.c_str(), MultiFormatReader::NEXUS_FORMAT);
+    MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
+    nexus_reader.ReadFilepath(path.c_str(), MultiFormatReader::NEXUS_FORMAT);
     
-    unsigned int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-    std::cout << numTaxaBlocks << " TAXA block(s) read.\n";
-    for (unsigned int i = 0; i < numTaxaBlocks; ++i) {
-        NxsTaxaBlock * taxaBlock = nexusReader.GetTaxaBlock(i);
-        std::string taxaBlockTitle = taxaBlock->GetTitle();
-        unsigned int num_taxa = taxaBlock->GetNTax();
-        std::cout << "Taxa block index " << i << " has the Title \"" << taxaBlockTitle << "\"\n";
-        std::cout << "Taxa block index " << i << " has the " << num_taxa << " taxa\n";
+    unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
+    if (num_taxa_blocks < 1) {
+        throw EcoevolityParsingError("No taxa block found", path, 0);
+    }
+    if (num_taxa_blocks > 1) {
+        throw EcoevolityParsingError("More than one taxa block found", path, 0);
+    }
 
-        std::cout << "Taxa block index " << i << " has the labesl:\n";
-        for (unsigned int j = 0; j < num_taxa; ++j) {
-            NxsString taxon_label = taxaBlock->GetTaxonLabel(j);
-            std::cout << taxon_label << std::endl;
-            std::vector<std::string> taxon_label_elements = split(taxon_label, pop_name_delimiter);
-            assert (! taxon_label_elements.empty());
-            std::string taxon_name = taxon_label_elements.front();
-            if (! population_name_is_prefix) {
-                taxon_name = taxon_label_elements.back();
-            }
-            std::cout << taxon_name << std::endl;
+    NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
+    std::string taxa_block_title = taxa_block->GetTitle();
+    unsigned int num_taxa = taxa_block->GetNTax();
+    for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
+        NxsString seq_label = taxa_block->GetTaxonLabel(taxon_idx);
+        std::vector<std::string> seq_label_elements = split(seq_label, pop_name_delimiter);
+        ECOEVOLITY_ASSERT(! seq_label_elements.empty());
+        std::string pop_label = seq_label_elements.front();
+        if (! population_name_is_prefix) {
+            pop_label = seq_label_elements.back();
         }
-    
-        const unsigned int nCharBlocks = nexusReader.GetNumCharactersBlocks(taxaBlock);
-        std::cout  <<  nCharBlocks << " CHARACTERS/DATA block(s) refer to this TAXA block\n";
-        for (unsigned int j = 0; j < nCharBlocks; ++j) {
-            const NxsCharactersBlock * charBlock = nexusReader.GetCharactersBlock(taxaBlock, j);
-            std::string charBlockTitle = charBlock->GetTitle();
-            //unsigned int dtype = charBlock->GetDataType();
-            NxsCharactersBlock::DataTypesEnum dtype;
-            dtype = charBlock->GetDataType();
-            bool data_is_standard;
-            data_is_standard = (dtype == NxsCharactersBlock::DataTypesEnum::standard); 
-            std::cout << std::boolalpha; // write booleans as true/false
-            std::cout << "Char block index " << j << " has the Title \"" << charBlockTitle << "\"" << std::endl;
-            std::cout << "Char block index " << j << " has data type: \"" << (int)dtype << "\"" << std::endl;
-            std::cout << "Char block index " << j << " data type \"" << (int)dtype << "\" == standard: " << data_is_standard << std::endl;
+        bool pop_label_found = false;
+        for (unsigned int pop_label_idx = 0; pop_label_idx < this->population_labels_.size(); pop_label_idx++) {
+            if (this->population_labels_[pop_label_idx] == pop_label) {
+                assert(! this->sequence_labels_[pop_label_idx].empty());
+                this->sequence_labels_[pop_label_idx].push_back(seq_label);
+                pop_label_found = true;
+            }
+        }
+        if (! pop_label_found) {
+            this->population_labels_.push_back(pop_label);
+            std::vector<std::string> tmp_label_vector = {seq_label};
+            this->sequence_labels_.push_back(tmp_label_vector);
         }
     }
+        
+    ECOEVOLITY_DEBUG(
+    std::cerr << "this->populations_labels_:" << std::endl;
+    unsigned int pop_idx = 0;
+    for (auto p_label: this->population_labels_) {
+        std::cerr << p_label << std::endl;
+        for (auto s_label: this->sequence_labels_[pop_idx]) {
+            std::cerr << "\t" << s_label << std::endl;
+        }
+        pop_idx += 1;
+    }
+    )
+
+    const unsigned int num_char_blocks = nexus_reader.GetNumCharactersBlocks(taxa_block);
+    if (num_char_blocks < 1) {
+        throw EcoevolityParsingError("No character block found", path, 0);
+    }
+    if (num_char_blocks > 1) {
+        throw EcoevolityParsingError("More than one character block found", path, 0);
+    }
+    const NxsCharactersBlock * char_block = nexus_reader.GetCharactersBlock(taxa_block, 0);
+    std::string char_block_title = char_block->GetTitle();
+    NxsCharactersBlock::DataTypesEnum dtype;
+    dtype = char_block->GetDataType();
+    bool data_is_standard;
+    data_is_standard = (dtype == NxsCharactersBlock::DataTypesEnum::standard); 
+
+    ECOEVOLITY_DEBUG(
+    std::cerr << std::boolalpha; // write booleans as true/false
+    std::cerr << "Char block " << char_block_title << " has data type: " << (int)dtype << std::endl;
+    std::cerr << "Data type " << (int)dtype << " == standard: " << data_is_standard << std::endl;
+    )
 }
 
 

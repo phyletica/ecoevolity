@@ -1,11 +1,14 @@
-#ifndef DATA_HPP
-#define DATA_HPP
+#ifndef ECOEVOLITY_DATA_HPP
+#define ECOEVOLITY_DATA_HPP
 
 #include <iostream>
 #include <assert.h>
 #include <ncl/nxsmultiformat.h>
 
 #include "util.hpp"
+#include "debug.hpp"
+#include "assert.hpp"
+#include "error.hpp"
 
 /**
  * Class for storing biallelic site patterns.
@@ -34,7 +37,8 @@ class BiallelicData {
         std::vector< std::vector<unsigned int> > number_of_red_alleles_;
         std::vector< std::vector<unsigned int> > number_of_alleles_;
         std::vector<unsigned int> pattern_weights_;
-        std::vector<std::string> population_names_;
+        std::vector<std::string> population_labels_;
+        std::vector< std::vector<std::string> > sequence_labels_;
 };
 
 #endif
