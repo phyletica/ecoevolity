@@ -32,7 +32,7 @@ BiallelicData::BiallelicData(
         throw EcoevolityParsingError("More than one character block found", path, 0);
     }
 
-    const NxsCharactersBlock * char_block = nexus_reader.GetCharactersBlock(taxa_block, 0);
+    NxsCharactersBlock * char_block = nexus_reader.GetCharactersBlock(taxa_block, 0);
     std::string char_block_title = char_block->GetTitle();
 
     unsigned int num_chars = char_block->GetNCharTotal();
@@ -101,16 +101,25 @@ BiallelicData::BiallelicData(
             throw EcoevolityParsingError("More than 3 character state codes found", path, 0);
         }
 
-        for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
-            const NxsDiscreteStateRow & state_row = char_block->GetDiscreteMatrixRow(taxon_idx);
-            for (auto state_row_iter: state_row) {
-                const NxsDiscreteStateCell & state_code = state_row_iter;
-                std::cout << state_code << std::endl;
+        if (! this->markers_are_dominant_) {
+            for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
+                for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
+                    const NxsDiscreteStateCell state_code = char_block->GetInternalRepresentation(taxon_idx, site_idx);
+                    if (state_code >= 0) {
+                        const unsigned int num_states = char_block->GetNumStates(taxon_idx, site_idx);
+                        if (num_states > 1) {
+                            throw EcoevolityInvalidCharacterError(
+                                    "Invalid polymorphic character",
+                                    path,
+                                    char_block->GetTaxonLabel(taxon_idx),
+                                    site_idx);
+                        }
+                        std::cout << state_code << std::endl;
+                    }
+                }
             }
         }
     }
-        
-
 
     nexus_reader.DeleteBlocksFromFactories();
 }
