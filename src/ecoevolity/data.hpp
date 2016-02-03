@@ -19,7 +19,8 @@ class BiallelicData {
         // Constructor
         BiallelicData(const std::string path,
                 const char population_name_delimiter = '_',
-                const bool population_name_is_prefix = true);
+                const bool population_name_is_prefix = true,
+                const bool markers_are_dominant = false);
         // Destructor
         // ~BiallelicData();
         
@@ -28,12 +29,14 @@ class BiallelicData {
         std::vector<unsigned int> get_number_of_alleles(unsigned int pattern_index);
         unsigned int get_pattern_weight(unsigned int pattern_index);
         unsigned int get_number_of_patterns();
-        unsigned int get_number_of_taxa();
+        unsigned int get_number_of_populations();
 
         void remove_constant_patterns();
         void remove_patterns_with_missing_taxa();
 
     private:
+        bool markers_are_dominant_ = true;
+        bool genotypes_are_diploid_ = true;
         std::vector< std::vector<unsigned int> > number_of_red_alleles_;
         std::vector< std::vector<unsigned int> > number_of_alleles_;
         std::vector<unsigned int> pattern_weights_;

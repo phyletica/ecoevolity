@@ -3,11 +3,13 @@
 BiallelicData::BiallelicData(
         const std::string path, 
         const char population_name_delimiter,
-        const bool population_name_is_prefix) {
+        const bool population_name_is_prefix,
+        const bool markers_are_dominant) {
     char pop_name_delimiter = population_name_delimiter;
     if (population_name_delimiter == '_') {
         pop_name_delimiter = ' ';
     }
+    this->markers_are_dominant_ = markers_are_dominant;
 
     MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
     nexus_reader.ReadFilepath(path.c_str(), MultiFormatReader::NEXUS_FORMAT);
@@ -22,9 +24,29 @@ BiallelicData::BiallelicData(
 
     NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
     std::string taxa_block_title = taxa_block->GetTitle();
-    unsigned int num_taxa = taxa_block->GetNTax();
+    const unsigned int num_char_blocks = nexus_reader.GetNumCharactersBlocks(taxa_block);
+    if (num_char_blocks < 1) {
+        throw EcoevolityParsingError("No character block found", path, 0);
+    }
+    if (num_char_blocks > 1) {
+        throw EcoevolityParsingError("More than one character block found", path, 0);
+    }
+
+    const NxsCharactersBlock * char_block = nexus_reader.GetCharactersBlock(taxa_block, 0);
+    std::string char_block_title = char_block->GetTitle();
+
+    unsigned int num_chars = char_block->GetNCharTotal();
+    unsigned int num_taxa = char_block->GetNTaxTotal();
+    NxsCharactersBlock::DataTypesEnum data_type;
+    data_type = char_block->GetDataType();
+
+    ECOEVOLITY_DEBUG(
+    std::cerr << "Char block " << char_block_title << " has data type: " <<
+            (int)data_type << std::endl;
+    )
+
     for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
-        NxsString seq_label = taxa_block->GetTaxonLabel(taxon_idx);
+        NxsString seq_label = char_block->GetTaxonLabel(taxon_idx);
         std::vector<std::string> seq_label_elements = split(seq_label, pop_name_delimiter);
         ECOEVOLITY_ASSERT(! seq_label_elements.empty());
         std::string pop_label = seq_label_elements.front();
@@ -45,7 +67,7 @@ BiallelicData::BiallelicData(
             this->sequence_labels_.push_back(tmp_label_vector);
         }
     }
-        
+
     ECOEVOLITY_DEBUG(
     std::cerr << "this->populations_labels_:" << std::endl;
     unsigned int pop_idx = 0;
@@ -58,25 +80,39 @@ BiallelicData::BiallelicData(
     }
     )
 
-    const unsigned int num_char_blocks = nexus_reader.GetNumCharactersBlocks(taxa_block);
-    if (num_char_blocks < 1) {
-        throw EcoevolityParsingError("No character block found", path, 0);
+    std::vector<const NxsDiscreteDatatypeMapper *> data_type_mappers = char_block->GetAllDatatypeMappers();
+    if (data_type_mappers.size() < 1) {
+        throw EcoevolityParsingError("No character encoding found", path, 0);
     }
-    if (num_char_blocks > 1) {
-        throw EcoevolityParsingError("More than one character block found", path, 0);
+    if (data_type_mappers.size() > 1) {
+        throw EcoevolityParsingError("More than one character encoding (i.e., mixed data types) found", path, 0);
     }
-    const NxsCharactersBlock * char_block = nexus_reader.GetCharactersBlock(taxa_block, 0);
-    std::string char_block_title = char_block->GetTitle();
-    NxsCharactersBlock::DataTypesEnum dtype;
-    dtype = char_block->GetDataType();
-    bool data_is_standard;
-    data_is_standard = (dtype == NxsCharactersBlock::DataTypesEnum::standard); 
+    const NxsDiscreteDatatypeMapper * data_type_mapper = data_type_mappers[0];
 
-    ECOEVOLITY_DEBUG(
-    std::cerr << std::boolalpha; // write booleans as true/false
-    std::cerr << "Char block " << char_block_title << " has data type: " << (int)dtype << std::endl;
-    std::cerr << "Data type " << (int)dtype << " == standard: " << data_is_standard << std::endl;
-    )
+    if (data_type == NxsCharactersBlock::DataTypesEnum::standard) {
+        const NxsDiscreteStateCell highest_state_code = data_type_mapper->GetHighestStateCode();
+        if (highest_state_code == 1) {
+            this->genotypes_are_diploid_ = false;
+        }
+        else if (highest_state_code == 2) {
+            this->genotypes_are_diploid_ = true;
+        }
+        else {
+            throw EcoevolityParsingError("More than 3 character state codes found", path, 0);
+        }
+
+        for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
+            const NxsDiscreteStateRow & state_row = char_block->GetDiscreteMatrixRow(taxon_idx);
+            for (auto state_row_iter: state_row) {
+                const NxsDiscreteStateCell & state_code = state_row_iter;
+                std::cout << state_code << std::endl;
+            }
+        }
+    }
+        
+
+
+    nexus_reader.DeleteBlocksFromFactories();
 }
 
 
@@ -98,8 +134,8 @@ unsigned int BiallelicData::get_number_of_patterns() {
     return 0;
 }
 
-unsigned int BiallelicData::get_number_of_taxa() {
-    return 0;
+unsigned int BiallelicData::get_number_of_populations() {
+    return this->population_labels_.size();
 }
 
 void BiallelicData::remove_constant_patterns() {
