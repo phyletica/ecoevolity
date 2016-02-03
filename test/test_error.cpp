@@ -14,4 +14,12 @@ TEST_CASE("derived error classes can be thrown", "[error]") {
         REQUIRE_THROWS_AS(throw EcoevolityParsingError(message, file_name, line_number),
                 EcoevolityParsingError);
     }
+    SECTION("throwing EcoevolityInvalideCharacterError") {
+        REQUIRE_THROWS_AS(throw EcoevolityInvalidCharacterError(
+                    message,
+                    file_name,
+                    "test-taxon-name",
+                    1),
+                EcoevolityInvalidCharacterError);
+    }
 }
