@@ -63,9 +63,11 @@ BiallelicData::BiallelicData(
         }
         if (! pop_label_found) {
             this->population_labels_.push_back(pop_label);
+            this->pop_label_to_index_map_[pop_label] = this->population_labels_.size() - 1;
             std::vector<std::string> tmp_label_vector = {seq_label};
             this->sequence_labels_.push_back(tmp_label_vector);
         }
+        this->seq_label_to_pop_label_map_[seq_label] = pop_label;
     }
 
     ECOEVOLITY_DEBUG(
@@ -103,6 +105,8 @@ BiallelicData::BiallelicData(
 
         if (! this->markers_are_dominant_) {
             for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
+                std::vector<unsigned int> allele_cts (this->get_number_of_populations(), 0);
+                std::vector<unsigned int> red_allele_cts (this->get_number_of_populations(), 0);
                 for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
                     const NxsDiscreteStateCell state_code = char_block->GetInternalRepresentation(taxon_idx, site_idx);
                     if (state_code >= 0) {
@@ -114,38 +118,76 @@ BiallelicData::BiallelicData(
                                     char_block->GetTaxonLabel(taxon_idx),
                                     site_idx);
                         }
-                        std::cout << state_code << std::endl;
+                        unsigned int population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
+                        red_allele_cts[population_idx] += state_code;
+                        if (this->genotypes_are_diploid_) {
+                            allele_cts[population_idx] += 2;
+                        }
+                        else {
+                            allele_cts[population_idx] += 1;
+                        }
                     }
+                }
+                int pattern_index = this->get_pattern_index(red_allele_cts, allele_cts);
+                if (pattern_index < 0) {
+                    this->red_allele_counts_.push_back(red_allele_cts);
+                    this->allele_counts_.push_back(allele_cts);
+                    this->pattern_weights_.push_back(1);
+                }
+                else {
+                    this->pattern_weights_[pattern_index] += 1;
                 }
             }
         }
     }
-
     nexus_reader.DeleteBlocksFromFactories();
 }
 
 
-std::vector<unsigned int> BiallelicData::get_number_of_red_alleles(unsigned int pattern_index) {
+std::vector<unsigned int> BiallelicData::get_red_allele_counts(unsigned int pattern_index) const {
     std::vector<unsigned int> v (2, 0);
     return v;
 }
 
-std::vector<unsigned int> BiallelicData::get_number_of_alleles(unsigned int pattern_index) {
+std::vector<unsigned int> BiallelicData::get_allele_counts(unsigned int pattern_index) const {
     std::vector<unsigned int> v (2, 0);
     return v;
 }
 
-unsigned int BiallelicData::get_pattern_weight(unsigned int pattern_index) {
+unsigned int BiallelicData::get_population_index(std::string population_label) const {
+    return map_at(this->pop_label_to_index_map_, population_label);
+}
+
+unsigned int BiallelicData::get_population_index_from_seq_label(std::string seq_label) const {
+    const std::string pop_label = map_at(this->seq_label_to_pop_label_map_, seq_label);
+    return this->get_population_index(pop_label);
+}
+
+unsigned int BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
     return 0;
 }
 
-unsigned int BiallelicData::get_number_of_patterns() {
+unsigned int BiallelicData::get_number_of_patterns() const {
     return 0;
 }
 
-unsigned int BiallelicData::get_number_of_populations() {
+unsigned int BiallelicData::get_number_of_populations() const {
     return this->population_labels_.size();
 }
+
+int BiallelicData::get_pattern_index(
+        std::vector<unsigned int> red_allele_counts,
+        std::vector<unsigned int> allele_counts) const {
+    ECOEVOLITY_ASSERT(this->allele_counts_.size() == this->red_allele_counts_.size());
+    for (unsigned int pattern_idx = 0; pattern_idx < this->allele_counts_.size(); ++pattern_idx) {
+        if ((this->red_allele_counts_[pattern_idx] == red_allele_counts) &&
+            (this->allele_counts_[pattern_idx] == allele_counts)) {
+            return pattern_idx;
+        }
+    }
+    return -1;
+}
+
 
 void BiallelicData::remove_constant_patterns() {
     std::cout << "";
