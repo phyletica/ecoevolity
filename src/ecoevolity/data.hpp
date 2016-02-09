@@ -31,11 +31,13 @@ class BiallelicData {
         //Methods
         const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
         const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
-        unsigned int get_pattern_weight(unsigned int pattern_index) const;
+        const unsigned int& get_pattern_weight(unsigned int pattern_index) const;
+        const unsigned int& get_population_index(std::string population_label) const;
+        const unsigned int& get_population_index_from_seq_label(std::string seq_label) const;
+
         unsigned int get_number_of_patterns() const;
         unsigned int get_number_of_populations() const;
-        unsigned int get_population_index(std::string population_label) const;
-        unsigned int get_population_index_from_seq_label(std::string seq_label) const;
+
         int get_pattern_index(
                 const std::vector<unsigned int> red_allele_counts,
                 const std::vector<unsigned int> allele_counts) const;

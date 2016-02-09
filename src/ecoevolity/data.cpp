@@ -118,7 +118,7 @@ BiallelicData::BiallelicData(
                                     char_block->GetTaxonLabel(taxon_idx),
                                     site_idx);
                         }
-                        unsigned int population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
+                        const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
                         red_allele_cts[population_idx] += state_code;
                         if (this->genotypes_are_diploid_) {
                             allele_cts[population_idx] += 2;
@@ -152,26 +152,29 @@ const std::vector<unsigned int>& BiallelicData::get_allele_counts(unsigned int p
     return this->allele_counts_.at(pattern_index);
 }
 
-unsigned int BiallelicData::get_population_index(std::string population_label) const {
+const unsigned int& BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
+    return this->pattern_weights_.at(pattern_index);
+}
+
+const unsigned int& BiallelicData::get_population_index(std::string population_label) const {
     return this->pop_label_to_index_map_.at(population_label);
 }
 
-unsigned int BiallelicData::get_population_index_from_seq_label(std::string seq_label) const {
+const unsigned int& BiallelicData::get_population_index_from_seq_label(std::string seq_label) const {
     const std::string pop_label = this->seq_label_to_pop_label_map_.at(seq_label);
     return this->get_population_index(pop_label);
 }
 
-unsigned int BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
-    return 0;
-}
 
 unsigned int BiallelicData::get_number_of_patterns() const {
-    return 0;
+    return this->pattern_weights_.size();
 }
 
 unsigned int BiallelicData::get_number_of_populations() const {
     return this->population_labels_.size();
 }
+
+
 
 int BiallelicData::get_pattern_index(
         std::vector<unsigned int> red_allele_counts,
