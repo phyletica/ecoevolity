@@ -1,12 +1,14 @@
 Table of Contents
 =================
 
- -  [Ecoevolity](#ecoevolity:estimatingevolutionarycoevality)
+ -  [Ecoevolity](#ecoevolity)
  -  [Acknowledgements](#acknowledgements)
  -  [License](#license)
 
-Ecoevolity: Estimating evolutionary coevality
-=============================================
+Ecoevolity
+==========
+
+***Ecoevolity: Estimating evolutionary coevality***
 
 Inferring shared evolutionary events using full-likelihood Bayesian inference.
 
