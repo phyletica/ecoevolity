@@ -144,22 +144,20 @@ BiallelicData::BiallelicData(
 }
 
 
-std::vector<unsigned int> BiallelicData::get_red_allele_counts(unsigned int pattern_index) const {
-    std::vector<unsigned int> v (2, 0);
-    return v;
+const std::vector<unsigned int>& BiallelicData::get_red_allele_counts(unsigned int pattern_index) const {
+    return this->red_allele_counts_.at(pattern_index);
 }
 
-std::vector<unsigned int> BiallelicData::get_allele_counts(unsigned int pattern_index) const {
-    std::vector<unsigned int> v (2, 0);
-    return v;
+const std::vector<unsigned int>& BiallelicData::get_allele_counts(unsigned int pattern_index) const {
+    return this->allele_counts_.at(pattern_index);
 }
 
 unsigned int BiallelicData::get_population_index(std::string population_label) const {
-    return map_at(this->pop_label_to_index_map_, population_label);
+    return this->pop_label_to_index_map_.at(population_label);
 }
 
 unsigned int BiallelicData::get_population_index_from_seq_label(std::string seq_label) const {
-    const std::string pop_label = map_at(this->seq_label_to_pop_label_map_, seq_label);
+    const std::string pop_label = this->seq_label_to_pop_label_map_.at(seq_label);
     return this->get_population_index(pop_label);
 }
 

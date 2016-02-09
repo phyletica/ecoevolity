@@ -29,8 +29,8 @@ class BiallelicData {
         // ~BiallelicData();
         
         //Methods
-        std::vector<unsigned int> get_red_allele_counts(unsigned int pattern_index) const;
-        std::vector<unsigned int> get_allele_counts(unsigned int pattern_index) const;
+        const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
+        const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
         unsigned int get_pattern_weight(unsigned int pattern_index) const;
         unsigned int get_number_of_patterns() const;
         unsigned int get_number_of_populations() const;
