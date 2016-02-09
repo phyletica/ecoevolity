@@ -1,7 +1,7 @@
 Table of Contents
 =================
 
- -  [Ecoevolity](#ecoevolityestimatingevolutionarycoevality)
+ -  [Ecoevolity](#ecoevolity:estimatingevolutionarycoevality)
  -  [Acknowledgements](#acknowledgements)
  -  [License](#license)
 
