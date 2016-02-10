@@ -103,22 +103,40 @@ BiallelicData::BiallelicData(
             throw EcoevolityParsingError("More than 3 character state codes found", path, 0);
         }
 
-        if (! this->markers_are_dominant_) {
-            for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
-                std::vector<unsigned int> allele_cts (this->get_number_of_populations(), 0);
-                std::vector<unsigned int> red_allele_cts (this->get_number_of_populations(), 0);
-                for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
-                    const NxsDiscreteStateCell state_code = char_block->GetInternalRepresentation(taxon_idx, site_idx);
-                    if (state_code >= 0) {
-                        const unsigned int num_states = char_block->GetNumStates(taxon_idx, site_idx);
-                        if (num_states > 1) {
-                            throw EcoevolityInvalidCharacterError(
-                                    "Invalid polymorphic character",
-                                    path,
-                                    char_block->GetTaxonLabel(taxon_idx),
-                                    site_idx);
+        for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
+            std::vector<unsigned int> allele_cts (this->get_number_of_populations(), 0);
+            std::vector<unsigned int> red_allele_cts (this->get_number_of_populations(), 0);
+            for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
+                const NxsDiscreteStateCell state_code = char_block->GetInternalRepresentation(taxon_idx, site_idx);
+                if (state_code >= 0) {
+                    const unsigned int num_states = char_block->GetNumStates(taxon_idx, site_idx);
+                    if (num_states > 1) {
+                        throw EcoevolityInvalidCharacterError(
+                                "Invalid polymorphic character",
+                                path,
+                                char_block->GetTaxonLabel(taxon_idx),
+                                site_idx);
+                    }
+                    const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
+                    if (this->markers_are_dominant_) {
+                        if (this->genotypes_are_diploid_) {
+                            if (state_code == 1) {
+                                throw EcoevolityInvalidCharacterError(
+                                        "Invalid het character for dominant data",
+                                        path,
+                                        char_block->GetTaxonLabel(taxon_idx),
+                                        site_idx);
+                            }
+                            red_allele_cts[population_idx] += state_code;
+                            allele_cts[population_idx] += 2;
                         }
-                        const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
+                        else {
+                            red_allele_cts[population_idx] += 2*state_code;
+                            allele_cts[population_idx] += 2;
+                        }
+
+                    }
+                    else { // markers are not dominant
                         red_allele_cts[population_idx] += state_code;
                         if (this->genotypes_are_diploid_) {
                             allele_cts[population_idx] += 2;
@@ -128,15 +146,15 @@ BiallelicData::BiallelicData(
                         }
                     }
                 }
-                int pattern_index = this->get_pattern_index(red_allele_cts, allele_cts);
-                if (pattern_index < 0) {
-                    this->red_allele_counts_.push_back(red_allele_cts);
-                    this->allele_counts_.push_back(allele_cts);
-                    this->pattern_weights_.push_back(1);
-                }
-                else {
-                    this->pattern_weights_[pattern_index] += 1;
-                }
+            }
+            int pattern_index = this->get_pattern_index(red_allele_cts, allele_cts);
+            if (pattern_index < 0) {
+                this->red_allele_counts_.push_back(red_allele_cts);
+                this->allele_counts_.push_back(allele_cts);
+                this->pattern_weights_.push_back(1);
+            }
+            else {
+                this->pattern_weights_[pattern_index] += 1;
             }
         }
     }
@@ -165,6 +183,13 @@ const unsigned int& BiallelicData::get_population_index_from_seq_label(std::stri
     return this->get_population_index(pop_label);
 }
 
+const std::string& BiallelicData::get_population_label(unsigned int population_index) const {
+    return this->population_labels_.at(population_index);
+}
+
+const std::vector<std::string>& BiallelicData::get_sequence_labels(unsigned int population_index) const {
+    return this->sequence_labels_.at(population_index);
+}
 
 unsigned int BiallelicData::get_number_of_patterns() const {
     return this->pattern_weights_.size();
@@ -174,7 +199,13 @@ unsigned int BiallelicData::get_number_of_populations() const {
     return this->population_labels_.size();
 }
 
+bool BiallelicData::markers_are_dominant() const {
+    return this->markers_are_dominant_;
+}
 
+bool BiallelicData::genotypes_are_diploid() const {
+    return this->genotypes_are_diploid_;
+}
 
 int BiallelicData::get_pattern_index(
         std::vector<unsigned int> red_allele_counts,
@@ -188,7 +219,6 @@ int BiallelicData::get_pattern_index(
     }
     return -1;
 }
-
 
 void BiallelicData::remove_constant_patterns() {
     std::cout << "";

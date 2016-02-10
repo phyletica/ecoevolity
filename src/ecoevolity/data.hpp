@@ -34,9 +34,14 @@ class BiallelicData {
         const unsigned int& get_pattern_weight(unsigned int pattern_index) const;
         const unsigned int& get_population_index(std::string population_label) const;
         const unsigned int& get_population_index_from_seq_label(std::string seq_label) const;
+        const std::string& get_population_label(unsigned int population_index) const;
+        const std::vector<std::string>& get_sequence_labels(unsigned int population_index) const;
 
         unsigned int get_number_of_patterns() const;
         unsigned int get_number_of_populations() const;
+
+        bool markers_are_dominant() const;
+        bool genotypes_are_diploid() const;
 
         int get_pattern_index(
                 const std::vector<unsigned int> red_allele_counts,
