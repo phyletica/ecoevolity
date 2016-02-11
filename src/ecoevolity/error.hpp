@@ -22,12 +22,23 @@ class EcoevolityError: public std::runtime_error {
 
         std::string get_error_message() const {
             std::ostringstream error_stream;
-            error_stream << "EcoevolityError: " << this->message_;
+            error_stream << this->name_ << ": " << this->message_;
             return error_stream.str();
         }
 
     protected:
         std::string message_;
+        std::string name_ = "EcoevolityError";
+};
+
+class EcoevolityBiallelicDataError: public EcoevolityError {
+    public:
+        EcoevolityBiallelicDataError(const std::string message) :
+            EcoevolityError(message)
+            { }
+
+    protected:
+        std::string name_ = "EcoevolityBiallelicDataError";
 };
 
 class EcoevolityParsingError: public EcoevolityError {
@@ -53,6 +64,7 @@ class EcoevolityParsingError: public EcoevolityError {
     private:
         size_t line_number_;
         std::string file_name_;
+        std::string name_ = "EcoevolityParsingError";
 };
 
 class EcoevolityInvalidCharacterError: public EcoevolityError {
@@ -82,6 +94,7 @@ class EcoevolityInvalidCharacterError: public EcoevolityError {
         std::string taxon_label_;
         size_t character_index_;
         std::string file_name_;
+        std::string name_ = "EcoevolityInvalidCharacterError";
 };
 
 #endif
