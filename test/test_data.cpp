@@ -16,7 +16,7 @@
  *     ;
  * End;
  */
-TEST_CASE("Testing small, diploid, standard data set", "[]") {
+TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
 
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
@@ -25,6 +25,8 @@ TEST_CASE("Testing small, diploid, standard data set", "[]") {
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_site_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1};
 
@@ -63,5 +65,13 @@ TEST_CASE("Testing small, diploid, standard data set", "[]") {
         expected_labels = {"pop2 c", "pop2 d"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+    }
+}
+
+TEST_CASE("Testing dominant data het error", "[BialleleicData]") {
+
+    SECTION("Testing for error if dominant data has het genotype codes") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true), EcoevolityInvalidCharacterError);
     }
 }
