@@ -43,6 +43,9 @@ class BiallelicData {
         bool markers_are_dominant() const;
         bool genotypes_are_diploid() const;
 
+        bool has_constant_site_patterns() const;
+        bool has_missing_population_patterns() const;
+
         int get_pattern_index(
                 const std::vector<unsigned int> red_allele_counts,
                 const std::vector<unsigned int> allele_counts) const;

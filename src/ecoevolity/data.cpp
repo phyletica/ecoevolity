@@ -161,7 +161,6 @@ BiallelicData::BiallelicData(
     nexus_reader.DeleteBlocksFromFactories();
 }
 
-
 const std::vector<unsigned int>& BiallelicData::get_red_allele_counts(unsigned int pattern_index) const {
     return this->red_allele_counts_.at(pattern_index);
 }
@@ -205,6 +204,28 @@ bool BiallelicData::markers_are_dominant() const {
 
 bool BiallelicData::genotypes_are_diploid() const {
     return this->genotypes_are_diploid_;
+}
+
+bool BiallelicData::has_constant_site_patterns() const {
+    std::vector<unsigned int> no_red_pattern (this->get_number_of_populations(), 0);
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        if ((this->get_red_allele_counts(pattern_idx) == no_red_pattern) ||
+            (this->get_red_allele_counts(pattern_idx) == this->get_allele_counts(pattern_idx))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool BiallelicData::has_missing_population_patterns() const {
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        for (auto count_iter: this->get_allele_counts(pattern_idx)) {
+            if (count_iter == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 int BiallelicData::get_pattern_index(
