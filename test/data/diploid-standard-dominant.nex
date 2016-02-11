@@ -1,0 +1,12 @@
+#NEXUS
+Begin data;
+	Dimensions ntax=5 nchar=7;
+	Format datatype=standard symbols="012" gap=-;
+	Matrix
+pop1_a  2220000
+pop1_b  0000200
+pop2_c  2220202
+pop2_d  2002200
+pop2_e  2-?0220
+	;
+End;
