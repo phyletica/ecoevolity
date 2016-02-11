@@ -24,7 +24,8 @@ class BiallelicData {
         BiallelicData(const std::string path,
                 const char population_name_delimiter = '_',
                 const bool population_name_is_prefix = true,
-                const bool markers_are_dominant = false);
+                const bool markers_are_dominant = false,
+                const bool validate = true);
         // Destructor
         // ~BiallelicData();
         
@@ -40,23 +41,27 @@ class BiallelicData {
         unsigned int get_number_of_patterns() const;
         unsigned int get_number_of_populations() const;
 
-        bool markers_are_dominant() const;
-        bool genotypes_are_diploid() const;
+        const bool& markers_are_dominant() const;
+        const bool& genotypes_are_diploid() const;
 
-        bool has_constant_site_patterns() const;
-        bool has_missing_population_patterns() const;
+        const bool& has_constant_patterns() const;
+        const bool& has_missing_population_patterns() const;
 
         int get_pattern_index(
                 const std::vector<unsigned int> red_allele_counts,
                 const std::vector<unsigned int> allele_counts) const;
 
 
-        void remove_constant_patterns();
-        void remove_patterns_with_missing_taxa();
+        unsigned int remove_constant_patterns(const bool validate = true);
+        unsigned int remove_patterns_with_missing_taxa(const bool validate = true);
+
+        void validate() const;
 
     private:
         bool markers_are_dominant_ = true;
         bool genotypes_are_diploid_ = true;
+        bool has_missing_population_patterns_ = false;
+        bool has_constant_patterns_ = false;
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
         std::vector<unsigned int> pattern_weights_;
@@ -64,6 +69,12 @@ class BiallelicData {
         std::vector< std::vector<std::string> > sequence_labels_;
         std::unordered_map<std::string, std::string> seq_label_to_pop_label_map_;
         std::unordered_map<std::string, unsigned int> pop_label_to_index_map_;
+
+        //Methods
+        void remove_pattern(unsigned int pattern_index);
+        void update_has_missing_population_patterns();
+        void update_has_constant_patterns();
+        void update_pattern_booleans();
 };
 
 #endif
