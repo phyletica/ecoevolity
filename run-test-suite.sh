@@ -22,6 +22,11 @@ else
     mkdir -p "${TEST_BUILD_DIR}"
 fi
 
+if [ -e "${ECOEVOLITY_BASE_DIR}/ncl-build/ncl-env.sh" ]
+then
+    source "${ECOEVOLITY_BASE_DIR}/ncl-build/ncl-env.sh"
+fi
+
 # number of cpus to use during compile
 COMPILETHREADS=4
  
