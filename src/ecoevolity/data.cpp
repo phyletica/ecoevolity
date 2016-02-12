@@ -264,21 +264,50 @@ int BiallelicData::get_pattern_index(
 }
 
 void BiallelicData::remove_pattern(unsigned int pattern_index) {
+    ECOEVOLITY_ASSERT(pattern_index < this->pattern_weights_.size());
     this->pattern_weights_.erase(this->pattern_weights_.begin() + pattern_index);
     this->allele_counts_.erase(this->allele_counts_.begin() + pattern_index);
     this->red_allele_counts_.erase(this->red_allele_counts_.begin() + pattern_index);
+    if (this->pattern_weights_.size() < 1) {
+        throw EcoevolityBiallelicDataError(
+                "Ran out of data while removing patterns");
+    }
     return;
 }
 
-unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
-    unsigned int number_removed = 0;
+int BiallelicData::remove_first_constant_pattern() {
     std::vector<unsigned int> no_red_pattern (this->get_number_of_populations(), 0);
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         if ((this->get_red_allele_counts(pattern_idx) == no_red_pattern) ||
             (this->get_red_allele_counts(pattern_idx) == this->get_allele_counts(pattern_idx))) {
             this->remove_pattern(pattern_idx);
-            number_removed += 1;
+            return pattern_idx;
         }
+    }
+    return -1;
+}
+
+int BiallelicData::remove_first_missing_population_pattern() {
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        for (auto count_iter: this->get_allele_counts(pattern_idx)) {
+            if (count_iter == 0) {
+                this->remove_pattern(pattern_idx);
+                return pattern_idx;
+            }
+        }
+    }
+    return -1;
+}
+
+unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
+    unsigned int number_removed = 0;
+    int return_idx = 0;
+    while (true) {
+        return_idx = this->remove_first_constant_pattern();
+        if (return_idx < 0) {
+            break;
+        }
+        number_removed += 1;
     }
     this->update_pattern_booleans();
     if (validate) {
@@ -287,15 +316,15 @@ unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
     return number_removed;
 }
 
-unsigned int BiallelicData::remove_patterns_with_missing_taxa(const bool validate) {
+unsigned int BiallelicData::remove_missing_population_patterns(const bool validate) {
     unsigned int number_removed = 0;
-    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
-        for (auto count_iter: this->get_allele_counts(pattern_idx)) {
-            if (count_iter == 0) {
-                this->remove_pattern(pattern_idx);
-                number_removed += 1;
-            }
+    int return_idx = 0;
+    while (true) {
+        return_idx = this->remove_first_missing_population_pattern();
+        if (return_idx < 0) {
+            break;
         }
+        number_removed += 1;
     }
     this->update_pattern_booleans();
     if (validate) {

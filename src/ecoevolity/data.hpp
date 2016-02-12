@@ -53,7 +53,7 @@ class BiallelicData {
 
 
         unsigned int remove_constant_patterns(const bool validate = true);
-        unsigned int remove_patterns_with_missing_taxa(const bool validate = true);
+        unsigned int remove_missing_population_patterns(const bool validate = true);
 
         void validate() const;
 
@@ -75,6 +75,8 @@ class BiallelicData {
         void update_has_missing_population_patterns();
         void update_has_constant_patterns();
         void update_pattern_booleans();
+        int remove_first_constant_pattern();
+        int remove_first_missing_population_pattern();
 };
 
 #endif
