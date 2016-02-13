@@ -6,6 +6,7 @@ include_directories("${SOURCE_DIR}")
 file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
 
 set(ECOEVOLITY_SOURCES
+    "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/util.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 

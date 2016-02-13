@@ -11,7 +11,8 @@ TEST_CASE("derived error classes can be thrown", "[error]") {
         REQUIRE_THROWS_AS(throw EcoevolityError(message), EcoevolityError);
     }
     SECTION("throwing EcoevolityBiallelicDataError") {
-        REQUIRE_THROWS_AS(throw EcoevolityBiallelicDataError(message), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(throw EcoevolityBiallelicDataError(message, file_name),
+                EcoevolityBiallelicDataError);
     }
     SECTION("throwing EcoevolityParsingError") {
         REQUIRE_THROWS_AS(throw EcoevolityParsingError(message, file_name, line_number),

@@ -2,99 +2,77 @@
 #define ECOEVOLITY_ERROR_HPP
 
 #include <iostream>
-#include <stdexcept>
 #include <sstream>
 
 
 /**
  * Base class for errors.
  */
-class EcoevolityError: public std::runtime_error {
+class EcoevolityBaseError: public std::exception {
     public:
-        EcoevolityError(const std::string message) :
-            std::runtime_error(""),
-            message_(message)
-            { }
+        mutable std::string error_report_;
 
-        virtual const char * what() const throw() {
-            return this->get_error_message().c_str();
+        virtual ~EcoevolityBaseError() throw() { }
+
+        EcoevolityBaseError(
+                const std::string & name,
+                const std::string & message);
+        EcoevolityBaseError(
+                const std::string & name,
+                const std::string & message,
+                const std::string & file_name);
+        EcoevolityBaseError(
+                const std::string & name,
+                const std::string & message,
+                const std::string & file_name,
+                unsigned int line_number);
+        EcoevolityBaseError(
+                const std::string & name,
+                const std::string & message,
+                const std::string & file_name,
+                const std::string & taxon_label,
+                unsigned int character_index);
+
+        const char * what() const throw() {
+            return this->error_report_.empty() ? "EcoevolityError: no message" : this->error_report_.c_str();
         }
-
-        std::string get_error_message() const {
-            std::ostringstream error_stream;
-            error_stream << this->name_ << ": " << this->message_;
-            return error_stream.str();
-        }
-
-    protected:
-        std::string message_;
-        std::string name_ = "EcoevolityError";
 };
 
-class EcoevolityBiallelicDataError: public EcoevolityError {
+class EcoevolityError: public EcoevolityBaseError {
     public:
-        EcoevolityBiallelicDataError(const std::string message) :
-            EcoevolityError(message)
-            { }
-
-    protected:
-        std::string name_ = "EcoevolityBiallelicDataError";
+        EcoevolityError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityError", message) { }
 };
 
-class EcoevolityParsingError: public EcoevolityError {
+class EcoevolityBiallelicDataError: public EcoevolityBaseError {
+    public:
+        EcoevolityBiallelicDataError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityBiallelicDataError", message,
+                    file_name) { }
+};
+
+class EcoevolityParsingError: public EcoevolityBaseError {
     public:
         EcoevolityParsingError(
-                const std::string message,
-                const std::string file_name,
-                size_t line_number) :
-            EcoevolityError(message),
-            line_number_(line_number),
-            file_name_(file_name)
-            { }
-
-        std::string get_error_message() const {
-            std::ostringstream error_stream;
-            error_stream << "EcoevolityParsingError" << std::endl
-                         << "File: "  << this->file_name_   << std::endl
-                         << "Line: "  << this->line_number_ << std::endl
-                         << "Error: " << this->message_     << std::endl;
-            return error_stream.str();
-        }
-
-    private:
-        size_t line_number_;
-        std::string file_name_;
-        std::string name_ = "EcoevolityParsingError";
+                const std::string & message,
+                const std::string & file_name,
+                unsigned int line_number) :
+            EcoevolityBaseError("EcoevolityParsingError", message, file_name,
+                    line_number) { }
 };
 
-class EcoevolityInvalidCharacterError: public EcoevolityError {
+class EcoevolityInvalidCharacterError: public EcoevolityBaseError {
     public:
         EcoevolityInvalidCharacterError(
-                const std::string message,
-                const std::string file_name,
-                const std::string taxon_label,
-                size_t character_index) :
-            EcoevolityError(message),
-            taxon_label_(taxon_label),
-            character_index_(character_index),
-            file_name_(file_name)
-            { }
-
-        std::string get_error_message() const {
-            std::ostringstream error_stream;
-            error_stream << "EcoevolityInvalidCharacterError" << std::endl
-                         << "File: "      << this->file_name_   << std::endl
-                         << "Taxon: "     << this->taxon_label_ << std::endl
-                         << "Character: " << this->character_index_+1 << std::endl
-                         << "Error: "     << this->message_     << std::endl;
-            return error_stream.str();
-        }
-
-    private:
-        std::string taxon_label_;
-        size_t character_index_;
-        std::string file_name_;
-        std::string name_ = "EcoevolityInvalidCharacterError";
+                const std::string & message,
+                const std::string & file_name,
+                const std::string & taxon_label,
+                unsigned int character_index) :
+            EcoevolityBaseError("EcoevolityInvalidCharacterError", message,
+                    file_name, taxon_label, character_index) { }
 };
 
 #endif

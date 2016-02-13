@@ -2,6 +2,7 @@ set(ECOEVOLITY_MAIN_SOURCES
     ecoevolity_main.cpp)
 
 set(ECOEVOLITY_SOURCES
+    error.cpp
     util.cpp
     data.cpp)
 

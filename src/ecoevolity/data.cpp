@@ -17,7 +17,8 @@ BiallelicData::BiallelicData(
 
     if ((this->markers_are_dominant_) and (! this->genotypes_are_diploid_)) {
         throw EcoevolityBiallelicDataError(
-                "Haploid genotypes cannot be dominant");
+                "Haploid genotypes cannot be dominant",
+                this->path_);
     }
 
     MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
@@ -105,13 +106,15 @@ BiallelicData::BiallelicData(
         if (highest_state_code == 1) {
             if (this->genotypes_are_diploid_) {
                 throw EcoevolityBiallelicDataError(
-                        "Cannot limit diploid data to 0/1 characters");
+                        "Cannot limit diploid data to 0/1 characters",
+                        this->path_);
             }
         }
         else if (highest_state_code == 2) {
             if (! this->genotypes_are_diploid_) {
                 throw EcoevolityBiallelicDataError(
-                        "Haploid data cannot have state codes greater than 1");
+                        "Haploid data cannot have state codes greater than 1",
+                        this->path_);
             }
         }
         else {
@@ -275,7 +278,8 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
     this->red_allele_counts_.erase(this->red_allele_counts_.begin() + pattern_index);
     if (this->pattern_weights_.size() < 1) {
         throw EcoevolityBiallelicDataError(
-                "Ran out of data while removing patterns");
+                "Ran out of data while removing patterns",
+                this->path_);
     }
     return;
 }
@@ -341,15 +345,17 @@ unsigned int BiallelicData::remove_missing_population_patterns(const bool valida
 void BiallelicData::validate() const {
     if (this->allele_counts_.size() != this->pattern_weights_.size()) {
         throw EcoevolityBiallelicDataError(
-                "Different number of allele counts and weights");
+                "Different number of allele counts and weights",
+                this->path_);
     }
     if (this->allele_counts_.size() != this->red_allele_counts_.size()) {
         throw EcoevolityBiallelicDataError(
-                "Different number of allele and red allele counts");
+                "Different number of allele and red allele counts",
+                this->path_);
     }
     if (this->allele_counts_.size() < 1) {
         throw EcoevolityBiallelicDataError(
-                "No data found");
+                "No data found", this->path_);
     }
     std::vector<unsigned int> no_red_pattern (this->get_number_of_populations(), 0);
     unsigned int number_of_pops = this->population_labels_.size();
@@ -358,11 +364,13 @@ void BiallelicData::validate() const {
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         if (this->allele_counts_.at(pattern_idx).size() != number_of_pops) {
             throw EcoevolityBiallelicDataError(
-                    "Different number of populations and allele counts per pattern");
+                    "Different number of populations and allele counts per pattern",
+                    this->path_);
         }
         if (this->red_allele_counts_.at(pattern_idx).size() != number_of_pops) {
             throw EcoevolityBiallelicDataError(
-                    "Different number of populations and red allele counts per pattern");
+                    "Different number of populations and red allele counts per pattern",
+                    this->path_);
         }
         if ((this->red_allele_counts_.at(pattern_idx) == no_red_pattern) ||
             (this->red_allele_counts_.at(pattern_idx) == this->allele_counts_.at(pattern_idx))) {
@@ -371,7 +379,8 @@ void BiallelicData::validate() const {
         for (unsigned int pop_idx = 0; pop_idx < number_of_pops; ++pop_idx) {
             if (this->red_allele_counts_.at(pattern_idx).at(pop_idx) > this->allele_counts_.at(pattern_idx).at(pop_idx)) {
                 throw EcoevolityBiallelicDataError(
-                    "Some patterns have more red alleles than total allele counts");
+                    "Some patterns have more red alleles than total allele counts",
+                    this->path_);
             }
             if (this->allele_counts_.at(pattern_idx).at(pop_idx) == 0) {
                 has_missing = true;
@@ -380,11 +389,13 @@ void BiallelicData::validate() const {
     }
     if (has_constant != this->has_constant_patterns()) {
         throw EcoevolityBiallelicDataError(
-                "constant pattern boolean is incorrect");
+                "constant pattern boolean is incorrect",
+                this->path_);
     }
     if (has_missing != this->has_missing_population_patterns()) {
         throw EcoevolityBiallelicDataError(
-                "missing data pattern boolean is incorrect");
+                "missing data pattern boolean is incorrect",
+                this->path_);
     }
     return;
 }
