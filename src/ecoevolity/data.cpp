@@ -4,14 +4,21 @@ BiallelicData::BiallelicData(
         const std::string path, 
         const char population_name_delimiter,
         const bool population_name_is_prefix,
+        const bool genotypes_are_diploid,
         const bool markers_are_dominant,
         const bool validate) {
     char pop_name_delimiter = population_name_delimiter;
     if (population_name_delimiter == '_') {
         pop_name_delimiter = ' ';
     }
+    this->genotypes_are_diploid_ = genotypes_are_diploid;
     this->markers_are_dominant_ = markers_are_dominant;
     this->path_ = path;
+
+    if ((this->markers_are_dominant_) and (! this->genotypes_are_diploid_)) {
+        throw EcoevolityBiallelicDataError(
+                "Haploid genotypes cannot be dominant");
+    }
 
     MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
     nexus_reader.ReadFilepath(this->path_.c_str(), MultiFormatReader::NEXUS_FORMAT);
@@ -96,10 +103,16 @@ BiallelicData::BiallelicData(
     if (data_type == NxsCharactersBlock::DataTypesEnum::standard) {
         const NxsDiscreteStateCell highest_state_code = data_type_mapper->GetHighestStateCode();
         if (highest_state_code == 1) {
-            this->genotypes_are_diploid_ = false;
+            if (this->genotypes_are_diploid_) {
+                throw EcoevolityBiallelicDataError(
+                        "Cannot limit diploid data to 0/1 characters");
+            }
         }
         else if (highest_state_code == 2) {
-            this->genotypes_are_diploid_ = true;
+            if (! this->genotypes_are_diploid_) {
+                throw EcoevolityBiallelicDataError(
+                        "Haploid data cannot have state codes greater than 1");
+            }
         }
         else {
             throw EcoevolityParsingError("More than 3 character state codes found", this->path_, 0);
@@ -119,33 +132,20 @@ BiallelicData::BiallelicData(
                                 char_block->GetTaxonLabel(taxon_idx),
                                 site_idx);
                     }
-                    const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
-                    if (this->markers_are_dominant_) {
-                        if (this->genotypes_are_diploid_) {
-                            if (state_code == 1) {
-                                throw EcoevolityInvalidCharacterError(
-                                        "Invalid het character for dominant data",
-                                        this->path_,
-                                        char_block->GetTaxonLabel(taxon_idx),
-                                        site_idx);
-                            }
-                            red_allele_cts[population_idx] += state_code;
-                            allele_cts[population_idx] += 2;
-                        }
-                        else {
-                            red_allele_cts[population_idx] += 2*state_code;
-                            allele_cts[population_idx] += 2;
-                        }
-
+                    if ((state_code == 1) && (this->markers_are_dominant_)) {
+                        throw EcoevolityInvalidCharacterError(
+                                "Invalid het character for dominant data",
+                                this->path_,
+                                char_block->GetTaxonLabel(taxon_idx),
+                                site_idx);
                     }
-                    else { // markers are not dominant
-                        red_allele_cts[population_idx] += state_code;
-                        if (this->genotypes_are_diploid_) {
-                            allele_cts[population_idx] += 2;
-                        }
-                        else {
-                            allele_cts[population_idx] += 1;
-                        }
+                    const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
+                    red_allele_cts[population_idx] += state_code;
+                    if (this->genotypes_are_diploid_) {
+                        allele_cts[population_idx] += 2;
+                    }
+                    else {
+                        allele_cts[population_idx] += 1;
                     }
                 }
             }
