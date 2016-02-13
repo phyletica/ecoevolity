@@ -38,6 +38,7 @@ class BiallelicData {
         const unsigned int& get_population_index_from_seq_label(std::string seq_label) const;
         const std::string& get_population_label(unsigned int population_index) const;
         const std::vector<std::string>& get_sequence_labels(unsigned int population_index) const;
+        const std::string& get_path() const;
 
         unsigned int get_number_of_patterns() const;
         unsigned int get_number_of_populations() const;

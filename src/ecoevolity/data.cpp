@@ -196,6 +196,10 @@ const std::vector<std::string>& BiallelicData::get_sequence_labels(unsigned int 
     return this->sequence_labels_.at(population_index);
 }
 
+const std::string& BiallelicData::get_path() const {
+    return this->path_;
+}
+
 unsigned int BiallelicData::get_number_of_patterns() const {
     return this->pattern_weights_.size();
 }

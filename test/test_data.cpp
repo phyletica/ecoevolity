@@ -27,6 +27,7 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1};
 
