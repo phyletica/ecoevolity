@@ -62,6 +62,7 @@ class BiallelicData {
         bool genotypes_are_diploid_ = true;
         bool has_missing_population_patterns_ = false;
         bool has_constant_patterns_ = false;
+        std::string path_;
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
         std::vector<unsigned int> pattern_weights_;

@@ -11,26 +11,27 @@ BiallelicData::BiallelicData(
         pop_name_delimiter = ' ';
     }
     this->markers_are_dominant_ = markers_are_dominant;
+    this->path_ = path;
 
     MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
-    nexus_reader.ReadFilepath(path.c_str(), MultiFormatReader::NEXUS_FORMAT);
+    nexus_reader.ReadFilepath(this->path_.c_str(), MultiFormatReader::NEXUS_FORMAT);
     
     unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
     if (num_taxa_blocks < 1) {
-        throw EcoevolityParsingError("No taxa block found", path, 0);
+        throw EcoevolityParsingError("No taxa block found", this->path_, 0);
     }
     if (num_taxa_blocks > 1) {
-        throw EcoevolityParsingError("More than one taxa block found", path, 0);
+        throw EcoevolityParsingError("More than one taxa block found", this->path_, 0);
     }
 
     NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
     std::string taxa_block_title = taxa_block->GetTitle();
     const unsigned int num_char_blocks = nexus_reader.GetNumCharactersBlocks(taxa_block);
     if (num_char_blocks < 1) {
-        throw EcoevolityParsingError("No character block found", path, 0);
+        throw EcoevolityParsingError("No character block found", this->path_, 0);
     }
     if (num_char_blocks > 1) {
-        throw EcoevolityParsingError("More than one character block found", path, 0);
+        throw EcoevolityParsingError("More than one character block found", this->path_, 0);
     }
 
     NxsCharactersBlock * char_block = nexus_reader.GetCharactersBlock(taxa_block, 0);
@@ -85,10 +86,10 @@ BiallelicData::BiallelicData(
 
     std::vector<const NxsDiscreteDatatypeMapper *> data_type_mappers = char_block->GetAllDatatypeMappers();
     if (data_type_mappers.size() < 1) {
-        throw EcoevolityParsingError("No character encoding found", path, 0);
+        throw EcoevolityParsingError("No character encoding found", this->path_, 0);
     }
     if (data_type_mappers.size() > 1) {
-        throw EcoevolityParsingError("More than one character encoding (i.e., mixed data types) found", path, 0);
+        throw EcoevolityParsingError("More than one character encoding (i.e., mixed data types) found", this->path_, 0);
     }
     const NxsDiscreteDatatypeMapper * data_type_mapper = data_type_mappers[0];
 
@@ -101,7 +102,7 @@ BiallelicData::BiallelicData(
             this->genotypes_are_diploid_ = true;
         }
         else {
-            throw EcoevolityParsingError("More than 3 character state codes found", path, 0);
+            throw EcoevolityParsingError("More than 3 character state codes found", this->path_, 0);
         }
 
         for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
@@ -114,7 +115,7 @@ BiallelicData::BiallelicData(
                     if (num_states > 1) {
                         throw EcoevolityInvalidCharacterError(
                                 "Invalid polymorphic character",
-                                path,
+                                this->path_,
                                 char_block->GetTaxonLabel(taxon_idx),
                                 site_idx);
                     }
@@ -124,7 +125,7 @@ BiallelicData::BiallelicData(
                             if (state_code == 1) {
                                 throw EcoevolityInvalidCharacterError(
                                         "Invalid het character for dominant data",
-                                        path,
+                                        this->path_,
                                         char_block->GetTaxonLabel(taxon_idx),
                                         site_idx);
                             }
