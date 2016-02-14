@@ -1241,3 +1241,73 @@ TEST_CASE("Testing for removing all site patterns", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.remove_missing_population_patterns(), EcoevolityBiallelicDataError);
     }
 }
+
+/**
+ *
+ * #NEXUS
+ * Begin data;
+ *     Dimensions ntax=5 nchar=6;
+ *     Format datatype=standard symbols="012" gap=-;
+ *     Matrix
+ * pop1_a  ATC-CR
+ * pop1_b  GCCCYA
+ * pop1_c  ACTGTA
+ * pop2_c  ATTGCA
+ * pop2_d  GCC?YA
+ *     ;
+ * End;
+ */
+TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-dna.nex") {
+        std::string nex_path = "data/diploid-dna.nex";
+        BiallelicData bd(nex_path);
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+
+        std::vector<unsigned int> expected_wts = {2,1,1,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(5);
+        expected_allele_counts[0] = {6, 4};
+        expected_allele_counts[1] = {6, 4};
+        expected_allele_counts[2] = {4, 2};
+        expected_allele_counts[3] = {6, 4};
+        expected_allele_counts[4] = {6, 4};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(5);
+        expected_red_counts[0] = {4, 2};
+        expected_red_counts[1] = {2, 2};
+        expected_red_counts[2] = {2, 0};
+        expected_red_counts[3] = {3, 3};
+        expected_red_counts[4] = {5, 4};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+    }
+}

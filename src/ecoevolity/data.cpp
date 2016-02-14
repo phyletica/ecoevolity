@@ -206,7 +206,7 @@ BiallelicData::BiallelicData(
                     }
                     for (auto state_iter: states) {
                         if (red_code < 0) {
-                            red_code = states.at(0);
+                            red_code = state_iter;
                             red_allele_cts[population_idx] += 1 * pm;
                             allele_cts[population_idx] += 1 * pm;
                             continue;
@@ -247,7 +247,7 @@ BiallelicData::BiallelicData(
         }
     }
     else {
-        throw EcoevolityBiallelicDataError("Could not recognize data type", this->path_);
+        throw EcoevolityBiallelicDataError("Data type not supported", this->path_);
     }
     nexus_reader.DeleteBlocksFromFactories();
     this->update_pattern_booleans();
