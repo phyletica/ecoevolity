@@ -101,6 +101,10 @@ BiallelicData::BiallelicData(
     }
     const NxsDiscreteDatatypeMapper * data_type_mapper = data_type_mappers[0];
 
+    unsigned int ploidy_multiplier = 1;
+    if (this->genotypes_are_diploid_) {
+        ploidy_multiplier = 2;
+    }
     if (data_type == NxsCharactersBlock::DataTypesEnum::standard) {
         const NxsDiscreteStateCell highest_state_code = data_type_mapper->GetHighestStateCode();
         if (highest_state_code == 1) {
@@ -144,11 +148,90 @@ BiallelicData::BiallelicData(
                     }
                     const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
                     red_allele_cts[population_idx] += state_code;
-                    if (this->genotypes_are_diploid_) {
-                        allele_cts[population_idx] += 2;
+                    allele_cts[population_idx] += 1 * ploidy_multiplier;
+                }
+            }
+            int pattern_index = this->get_pattern_index(red_allele_cts, allele_cts);
+            if (pattern_index < 0) {
+                this->red_allele_counts_.push_back(red_allele_cts);
+                this->allele_counts_.push_back(allele_cts);
+                this->pattern_weights_.push_back(1);
+            }
+            else {
+                this->pattern_weights_[pattern_index] += 1;
+            }
+        }
+    }
+    else if ((data_type == NxsCharactersBlock::DataTypesEnum::nucleotide) ||
+             (data_type == NxsCharactersBlock::DataTypesEnum::dna) ||
+             (data_type == NxsCharactersBlock::DataTypesEnum::rna)) {
+        for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
+            std::vector<unsigned int> allele_cts (this->get_number_of_populations(), 0);
+            std::vector<unsigned int> red_allele_cts (this->get_number_of_populations(), 0);
+            NxsDiscreteStateCell red_code = -1;
+            NxsDiscreteStateCell green_code = -1;
+            for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
+                const NxsDiscreteStateCell state_code = char_block->GetInternalRepresentation(taxon_idx, site_idx);
+                if (state_code >= 0) {
+                    const unsigned int num_states = char_block->GetNumStates(taxon_idx, site_idx);
+                    if (num_states > 3) {
+                        throw EcoevolityInvalidCharacterError(
+                                "Invalid polymorphic character with 3 or more states",
+                                this->path_,
+                                char_block->GetTaxonLabel(taxon_idx),
+                                site_idx);
                     }
-                    else {
-                        allele_cts[population_idx] += 1;
+                    if (num_states > 1) {
+                        if (! this->genotypes_are_diploid_) {
+                            throw EcoevolityInvalidCharacterError(
+                                    "Polymorphic characters are not allowed for haploid data",
+                                    this->path_,
+                                    char_block->GetTaxonLabel(taxon_idx),
+                                    site_idx);
+                        }
+                        if (this->markers_are_dominant_) {
+                            throw EcoevolityInvalidCharacterError(
+                                    "Polymorphic characters are not allowed for dominant data",
+                                    this->path_,
+                                    char_block->GetTaxonLabel(taxon_idx),
+                                    site_idx);
+                        }
+                    }
+                    std::vector<NxsDiscreteStateCell> states = data_type_mapper->GetStateVectorForCode(state_code);
+                    ECOEVOLITY_ASSERT((states.size() > 0) && (states.size() < 3));
+                    const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
+                    unsigned int pm = ploidy_multiplier;
+                    if (states.size() > 1) {
+                        pm = 1;
+                    }
+                    for (auto state_iter: states) {
+                        if (red_code < 0) {
+                            red_code = states.at(0);
+                            red_allele_cts[population_idx] += 1 * pm;
+                            allele_cts[population_idx] += 1 * pm;
+                            continue;
+                        }
+                        else if (red_code == state_iter) {
+                            red_allele_cts[population_idx] += 1 * pm;
+                            allele_cts[population_idx] += 1 * pm;
+                            continue;
+                        }
+                        else if (green_code < 0) {
+                            green_code = state_iter;
+                            allele_cts[population_idx] += 1 * pm;
+                            continue;
+                        }
+                        else if (green_code == state_iter) {
+                            allele_cts[population_idx] += 1 * pm;
+                            continue;
+                        }
+                        else {
+                            throw EcoevolityInvalidCharacterError(
+                                    "A third character state was found",
+                                    this->path_,
+                                    char_block->GetTaxonLabel(taxon_idx),
+                                    site_idx);
+                        }
                     }
                 }
             }
@@ -162,6 +245,9 @@ BiallelicData::BiallelicData(
                 this->pattern_weights_[pattern_index] += 1;
             }
         }
+    }
+    else {
+        throw EcoevolityBiallelicDataError("Could not recognize data type", this->path_);
     }
     nexus_reader.DeleteBlocksFromFactories();
     this->update_pattern_booleans();
