@@ -197,11 +197,15 @@ BiallelicData::BiallelicData(
                                     site_idx);
                         }
                     }
-                    std::vector<NxsDiscreteStateCell> states = data_type_mapper->GetStateVectorForCode(state_code);
-                    ECOEVOLITY_ASSERT((states.size() > 0) && (states.size() < 3));
+                    ECOEVOLITY_ASSERT((num_states > 0) && (num_states < 3));
+                    std::vector<NxsDiscreteStateCell> states;
+                    states.push_back(char_block->GetInternalRepresentation(taxon_idx, site_idx, 0));
+                    if (num_states > 1) {
+                        states.push_back(char_block->GetInternalRepresentation(taxon_idx, site_idx, 1));
+                    }
                     const unsigned int& population_idx = this->get_population_index_from_seq_label(char_block->GetTaxonLabel(taxon_idx));
                     unsigned int pm = ploidy_multiplier;
-                    if (states.size() > 1) {
+                    if (num_states > 1) {
                         pm = 1;
                     }
                     for (auto state_iter: states) {
