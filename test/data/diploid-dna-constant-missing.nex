@@ -1,0 +1,15 @@
+#NEXUS
+Begin data;
+	Dimensions ntax=8 nchar=9;
+	Format datatype=dna gap=-;
+	Matrix
+pop1_a  ATC-CRGAY
+pop1_b  GCCCYAGAY
+pop1_c  ACTGTA?AC
+pop2_d  ATCGCAGAY
+pop2_e  GCT?YA-AY
+pop2_f  GCC?YA-AT
+pop3_g  GCT?Y?GAY
+pop3_h  ATCCY??AY
+	;
+End;
