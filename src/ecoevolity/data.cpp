@@ -321,8 +321,8 @@ const bool& BiallelicData::has_mirrored_patterns() const {
     return this->has_mirrored_patterns_;
 }
 
-bool BiallelicData::patterns_are_folded() const {
-    return (! this->has_mirrored_patterns());
+const bool& BiallelicData::patterns_are_folded() const {
+    return this->patterns_are_folded_;
 }
 
 void BiallelicData::update_has_constant_patterns() {
@@ -365,10 +365,37 @@ void BiallelicData::update_has_mirrored_patterns() {
     return;
 }
 
+void BiallelicData::update_patterns_are_folded() {
+    this->patterns_are_folded_ = true;
+    this->update_has_mirrored_patterns();
+    if (this->has_mirrored_patterns()) {
+        this->patterns_are_folded_ = false;
+        return;
+    }
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        const std::vector< std::vector<unsigned int> > mirrored_pattern = this->get_mirrored_pattern(pattern_idx);
+        const std::vector<unsigned int>& green_cts = mirrored_pattern.at(0);
+        const std::vector<unsigned int>& red_cts = this->get_red_allele_counts(pattern_idx);
+        unsigned int red_total = 0;
+        unsigned int green_total = 0;
+        ECOEVOLITY_ASSERT(green_cts.size() == red_cts.size());
+        for (unsigned int pop_idx = 0; pop_idx < red_cts.size(); ++pop_idx) {
+            red_total += red_cts.at(pop_idx);
+            green_total += green_cts.at(pop_idx);
+        }
+        if (green_total < red_total) {
+            this->patterns_are_folded_ = false;
+            return;
+        }
+    }
+    return;
+}
+
 void BiallelicData::update_pattern_booleans() {
     this->update_has_constant_patterns();
     this->update_has_missing_population_patterns();
     this->update_has_mirrored_patterns();
+    this->update_patterns_are_folded();
 }
 
 int BiallelicData::get_pattern_index(
@@ -445,24 +472,9 @@ int BiallelicData::fold_first_mirrored_pattern() {
             continue;
         }
         ECOEVOLITY_ASSERT((unsigned int)mirrored_idx > pattern_idx);
-        unsigned int keep_idx = pattern_idx;
-        unsigned int remove_idx = mirrored_idx;
-        unsigned int red_total;
-        unsigned int green_total;
-        const std::vector<unsigned int>& green_cts = mirrored_pattern.at(0);
-        const std::vector<unsigned int>& red_cts = this->get_red_allele_counts(pattern_idx);
-        ECOEVOLITY_ASSERT(green_cts.size() == red_cts.size());
-        for (unsigned int pop_idx = 0; pop_idx < red_cts.size(); ++pop_idx) {
-            red_total += red_cts.at(pop_idx);
-            green_total += green_cts.at(pop_idx);
-        }
-        if (green_total < red_total) {
-            keep_idx = mirrored_idx;
-            remove_idx = pattern_idx;
-        }
-        this->pattern_weights_.at(keep_idx) += this->pattern_weights_.at(remove_idx);
-        this->remove_pattern(remove_idx);
-        return remove_idx;
+        this->pattern_weights_.at(pattern_idx) += this->pattern_weights_.at(mirrored_idx);
+        this->remove_pattern(mirrored_idx);
+        return mirrored_idx;
     }
     return -1;
 }
@@ -510,6 +522,21 @@ unsigned int BiallelicData::fold_patterns(const bool validate) {
             break;
         }
         number_removed += 1;
+    }
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        const std::vector< std::vector<unsigned int> > mirrored_pattern = this->get_mirrored_pattern(pattern_idx);
+        const std::vector<unsigned int>& green_cts = mirrored_pattern.at(0);
+        const std::vector<unsigned int>& red_cts = this->get_red_allele_counts(pattern_idx);
+        unsigned int red_total = 0;
+        unsigned int green_total = 0;
+        ECOEVOLITY_ASSERT(green_cts.size() == red_cts.size());
+        for (unsigned int pop_idx = 0; pop_idx < red_cts.size(); ++pop_idx) {
+            red_total += red_cts.at(pop_idx);
+            green_total += green_cts.at(pop_idx);
+        }
+        if (green_total < red_total) {
+            this->red_allele_counts_.at(pattern_idx) = green_cts;
+        }
     }
     this->update_pattern_booleans();
     if (validate) {

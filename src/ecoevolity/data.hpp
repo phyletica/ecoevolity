@@ -49,7 +49,7 @@ class BiallelicData {
         const bool& has_constant_patterns() const;
         const bool& has_missing_population_patterns() const;
         const bool& has_mirrored_patterns() const;
-        bool patterns_are_folded() const;
+        const bool& patterns_are_folded() const;
 
         int get_pattern_index(
                 const std::vector<unsigned int> red_allele_counts,
@@ -69,6 +69,7 @@ class BiallelicData {
         bool has_missing_population_patterns_ = false;
         bool has_constant_patterns_ = false;
         bool has_mirrored_patterns_ = true;
+        bool patterns_are_folded_ = false;
         std::string path_;
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
@@ -83,6 +84,7 @@ class BiallelicData {
         void update_has_missing_population_patterns();
         void update_has_constant_patterns();
         void update_has_mirrored_patterns();
+        void update_patterns_are_folded();
         void update_pattern_booleans();
         int remove_first_constant_pattern();
         int remove_first_missing_population_pattern();
