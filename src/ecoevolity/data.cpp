@@ -209,7 +209,16 @@ BiallelicData::BiallelicData(
                         pm = 1;
                     }
                     for (auto state_iter: states) {
-                        if (red_code < 0) {
+                        if (green_code < 0) {
+                            green_code = state_iter;
+                            allele_cts[population_idx] += 1 * pm;
+                            continue;
+                        }
+                        else if (green_code == state_iter) {
+                            allele_cts[population_idx] += 1 * pm;
+                            continue;
+                        }
+                        else if (red_code < 0) {
                             red_code = state_iter;
                             red_allele_cts[population_idx] += 1 * pm;
                             allele_cts[population_idx] += 1 * pm;
@@ -217,15 +226,6 @@ BiallelicData::BiallelicData(
                         }
                         else if (red_code == state_iter) {
                             red_allele_cts[population_idx] += 1 * pm;
-                            allele_cts[population_idx] += 1 * pm;
-                            continue;
-                        }
-                        else if (green_code < 0) {
-                            green_code = state_iter;
-                            allele_cts[population_idx] += 1 * pm;
-                            continue;
-                        }
-                        else if (green_code == state_iter) {
                             allele_cts[population_idx] += 1 * pm;
                             continue;
                         }
