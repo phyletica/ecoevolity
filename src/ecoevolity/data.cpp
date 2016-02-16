@@ -317,6 +317,14 @@ const bool& BiallelicData::has_missing_population_patterns() const {
     return this->has_missing_population_patterns_;
 }
 
+const bool& BiallelicData::has_mirrored_patterns() const {
+    return this->has_mirrored_patterns_;
+}
+
+bool BiallelicData::patterns_are_folded() const {
+    return (! this->has_mirrored_patterns());
+}
+
 void BiallelicData::update_has_constant_patterns() {
     this->has_constant_patterns_ = false;
     std::vector<unsigned int> no_red_pattern (this->get_number_of_populations(), 0);
@@ -343,9 +351,24 @@ void BiallelicData::update_has_missing_population_patterns() {
     return;
 }
 
+void BiallelicData::update_has_mirrored_patterns() {
+    this->has_mirrored_patterns_ = false;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        const std::vector< std::vector<unsigned int> > mirrored_pattern = this->get_mirrored_pattern(pattern_idx);
+        int mirrored_idx = this->get_pattern_index(mirrored_pattern.at(0), mirrored_pattern.at(1));
+        if ((mirrored_idx > -1) && ((unsigned int)mirrored_idx != pattern_idx)) {
+            ECOEVOLITY_ASSERT((unsigned int)mirrored_idx > pattern_idx);
+            this->has_mirrored_patterns_ = true;
+            return;
+        }
+    }
+    return;
+}
+
 void BiallelicData::update_pattern_booleans() {
     this->update_has_constant_patterns();
     this->update_has_missing_population_patterns();
+    this->update_has_mirrored_patterns();
 }
 
 int BiallelicData::get_pattern_index(
@@ -398,6 +421,52 @@ int BiallelicData::remove_first_missing_population_pattern() {
     return -1;
 }
 
+const std::vector< std::vector<unsigned int> > BiallelicData::get_mirrored_pattern(unsigned int pattern_index) const {
+    std::vector< std::vector<unsigned int> > mirrored_counts;
+    const std::vector<unsigned int>& allele_cts = this->get_allele_counts(pattern_index);
+    const std::vector<unsigned int>& red_cts = this->get_red_allele_counts(pattern_index);
+    std::vector<unsigned int> green_cts(red_cts.size());
+    for (unsigned int pop_idx = 0; pop_idx < red_cts.size(); ++pop_idx) {
+        green_cts.at(pop_idx) = allele_cts.at(pop_idx) - red_cts.at(pop_idx);
+    }
+    mirrored_counts.push_back(green_cts);
+    mirrored_counts.push_back(allele_cts);
+    return mirrored_counts;
+}
+
+int BiallelicData::fold_first_mirrored_pattern() {
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        const std::vector< std::vector<unsigned int> > mirrored_pattern = this->get_mirrored_pattern(pattern_idx);
+        int mirrored_idx = this->get_pattern_index(mirrored_pattern.at(0), mirrored_pattern.at(1));
+        if (mirrored_idx < 0) {
+            continue;
+        }
+        if ((unsigned int)mirrored_idx == pattern_idx) {
+            continue;
+        }
+        ECOEVOLITY_ASSERT((unsigned int)mirrored_idx > pattern_idx);
+        unsigned int keep_idx = pattern_idx;
+        unsigned int remove_idx = mirrored_idx;
+        unsigned int red_total;
+        unsigned int green_total;
+        const std::vector<unsigned int>& green_cts = mirrored_pattern.at(0);
+        const std::vector<unsigned int>& red_cts = this->get_red_allele_counts(pattern_idx);
+        ECOEVOLITY_ASSERT(green_cts.size() == red_cts.size());
+        for (unsigned int pop_idx = 0; pop_idx < red_cts.size(); ++pop_idx) {
+            red_total += red_cts.at(pop_idx);
+            green_total += green_cts.at(pop_idx);
+        }
+        if (green_total < red_total) {
+            keep_idx = mirrored_idx;
+            remove_idx = pattern_idx;
+        }
+        this->pattern_weights_.at(keep_idx) += this->pattern_weights_.at(remove_idx);
+        this->remove_pattern(remove_idx);
+        return remove_idx;
+    }
+    return -1;
+}
+
 unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
     unsigned int number_removed = 0;
     int return_idx = 0;
@@ -420,6 +489,23 @@ unsigned int BiallelicData::remove_missing_population_patterns(const bool valida
     int return_idx = 0;
     while (true) {
         return_idx = this->remove_first_missing_population_pattern();
+        if (return_idx < 0) {
+            break;
+        }
+        number_removed += 1;
+    }
+    this->update_pattern_booleans();
+    if (validate) {
+        this->validate();
+    }
+    return number_removed;
+}
+
+unsigned int BiallelicData::fold_patterns(const bool validate) {
+    unsigned int number_removed = 0;
+    int return_idx = 0;
+    while (true) {
+        return_idx = this->fold_first_mirrored_pattern();
         if (return_idx < 0) {
             break;
         }

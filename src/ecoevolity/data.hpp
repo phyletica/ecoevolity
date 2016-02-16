@@ -48,14 +48,18 @@ class BiallelicData {
 
         const bool& has_constant_patterns() const;
         const bool& has_missing_population_patterns() const;
+        const bool& has_mirrored_patterns() const;
+        bool patterns_are_folded() const;
 
         int get_pattern_index(
                 const std::vector<unsigned int> red_allele_counts,
                 const std::vector<unsigned int> allele_counts) const;
 
+        const std::vector< std::vector<unsigned int> > get_mirrored_pattern(unsigned int pattern_index) const;
 
         unsigned int remove_constant_patterns(const bool validate = true);
         unsigned int remove_missing_population_patterns(const bool validate = true);
+        unsigned int fold_patterns(const bool validate = true);
 
         void validate() const;
 
@@ -64,6 +68,7 @@ class BiallelicData {
         bool genotypes_are_diploid_ = true;
         bool has_missing_population_patterns_ = false;
         bool has_constant_patterns_ = false;
+        bool has_mirrored_patterns_ = true;
         std::string path_;
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
@@ -77,9 +82,11 @@ class BiallelicData {
         void remove_pattern(unsigned int pattern_index);
         void update_has_missing_population_patterns();
         void update_has_constant_patterns();
+        void update_has_mirrored_patterns();
         void update_pattern_booleans();
         int remove_first_constant_pattern();
         int remove_first_missing_population_pattern();
+        int fold_first_mirrored_pattern();
 };
 
 #endif

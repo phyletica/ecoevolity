@@ -27,6 +27,8 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
         REQUIRE(bd.get_path() == nex_path);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1};
@@ -118,6 +120,8 @@ TEST_CASE("Testing standard diploid with only 0/1 genotypes", "[BiallelicData]")
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {2,2,1};
 
@@ -205,6 +209,8 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {1,2,1,1};
 
@@ -303,6 +309,8 @@ TEST_CASE("Testing standard diploid dominant", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {2,2,3};
 
@@ -367,6 +375,8 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {2,2,3};
 
@@ -417,6 +427,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1};
 
@@ -469,6 +481,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_expected_wts = {1,1,1,1};
 
@@ -519,6 +533,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1};
 
@@ -571,6 +587,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_expected_wts = {1,1,1,1};
 
@@ -624,6 +642,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {1,1,2,1,1};
 
@@ -674,6 +694,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_expected_wts = {1,2,1};
 
@@ -741,6 +763,8 @@ TEST_CASE("Testing for constant dominant diploid site patterns", "[BiallelicData
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {1,1,2,1,1};
 
@@ -791,6 +815,8 @@ TEST_CASE("Testing for constant dominant diploid site patterns", "[BiallelicData
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_expected_wts = {1,2,1};
 
@@ -841,6 +867,8 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {2,2,1,1,1};
 
@@ -891,6 +919,8 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_expected_wts = {2,1};
 
@@ -939,6 +969,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> expected_wts = {2,2,1,1,1};
 
@@ -989,6 +1021,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_expected_wts = {2,1,1};
 
@@ -1035,6 +1069,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_rm_expected_wts = {2,1};
 
@@ -1101,6 +1137,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
 
         std::vector<unsigned int> expected_wts = {3,1,2,1,1};
 
@@ -1151,6 +1189,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
 
         std::vector<unsigned int> rm_expected_wts = {2,1,1};
 
@@ -1197,6 +1237,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
 
         std::vector<unsigned int> rm_rm_expected_wts = {2};
 
@@ -1269,6 +1311,8 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
         REQUIRE(bd.has_constant_patterns() == false);
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1,1};
 
