@@ -1,6 +1,15 @@
 #ifndef ECOEVOLITY_NODE_HPP
 #define ECOEVOLITY_NODE_HPP
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "matrix.hpp"
+#include "debug.hpp"
+#include "assert.hpp"
+
 class Node {
     public:
         // Constructor
@@ -63,8 +72,8 @@ class Node {
         double height_;
         std::vector<Node> children_;
         Node parent_ = NULL;
-        AlleleDistributionMatrix allele_matrix_bottom_;
-        AlleleDistributionMatrix allele_matrix_top_;
+        BiallelicPatternProbabilityMatrix pattern_probs_bottom_;
+        BiallelicPatternProbabilityMatrix pattern_probs_top_;
 
         bool is_dirty_ = false;
 
