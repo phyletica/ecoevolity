@@ -8,6 +8,7 @@ file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
 set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/util.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/matrix.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 #set(ECOEVOLITY_TEST_SOURCES "${ECOEVOLITY_TEST_SOURCES} ${TEST_DIR}/ecoevolity_testing.cpp")

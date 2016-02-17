@@ -8,6 +8,7 @@
 
 #include "debug.hpp"
 #include "assert.hpp"
+#include "error.hpp"
 
 class BiallelicPatternProbabilityMatrix {
     public:
@@ -15,7 +16,7 @@ class BiallelicPatternProbabilityMatrix {
         BiallelicPatternProbabilityMatrix() { }
         BiallelicPatternProbabilityMatrix(unsigned int allele_count);
         BiallelicPatternProbabilityMatrix(
-                const BiallelicPatternProbabilityMatrix matrix);
+                const BiallelicPatternProbabilityMatrix& matrix);
         // Construct a leaf likelihood
         BiallelicPatternProbabilityMatrix(
                 unsigned int allele_count,
@@ -46,7 +47,7 @@ class BiallelicPatternProbabilityMatrix {
 
     private:
         unsigned int allele_count_ = 0;
-        std::vector<double> pattern_prob_matrix_(0);
+        std::vector<double> pattern_prob_matrix_;
 };
 
 #endif

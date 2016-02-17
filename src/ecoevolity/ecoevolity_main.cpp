@@ -1,5 +1,3 @@
-#include <ncl/nxsmultiformat.h>
-
 #include "data.hpp"
 
 int main(int argc, char *argv[]) {
