@@ -9,50 +9,65 @@
 #include "matrix.hpp"
 #include "debug.hpp"
 #include "assert.hpp"
+#include "error.hpp"
 
 class Node {
+    private:
+        std::vector< Node * > children_;
+        Node * parent_ = 0;
+        std::string label_;
+        double height_ = 0.0;
+        bool is_dirty_ = false;
+
     public:
         // Constructor
-        Node();
-        Node(std::string label);
-        Node(unsigned int allele_count);
-        Node(std::string label, unsigned int allele_count);
+        Node() { };
+        Node(const Node& node);
+        // Node(std::string label);
+
         // Destructor
-        // ~Node();
+        virtual ~Node();
+
+        Node& operator=(const Node& node);
+
+        Node* clone() const {
+            return new Node(* this);
+        }
         
         //Methods
+        unsigned int degree() const { return children_.size() - 1 + parent_ ? 1 : 0; }
+
+        bool has_parent() const { return parent_ ? true : false; }
+        bool is_root() const { return parent_ ? false : true; }
+
+        unsigned int get_number_of_parents() const { return parent_ ? 1 : 0; }
+
+        const Node* get_parent() const;
+        Node* get_parent();
+
+        virtual bool is_parent(const Node* node) const;
+
+        virtual void add_parent(Node* node);
+
+        virtual Node* remove_parent();
+
+        bool has_children() const { return !this->children_.empty(); }
+        bool is_leaf() const { return this->children_.empty(); }
+
+        unsigned int get_number_of_children() const { return this->children_.size(); }
+        const Node* get_child(unsigned int index) const;
+        Node* get_child(unsigned int index);
+
+        virtual bool is_child(const Node* node) const;
+
+        virtual void add_child(Node* node);
+
+        virtual void remove_child(Node* node);
+
+        virtual Node* remove_child(unsigned int index);
+
         const double& get_height() const;
         void set_height(double height);
-
-        const Node& get_parent() const;
-        void set_parent(Node & parent);
-
-        const std::vector<Node>& get_children() const;
-        const Node& get_child(unsigned int child_index) const;
-        void set_child(unsigned int child_index, Node & child);
-        void add_child(Node & child);
-        void remove_child(unsigned int child_index);
-        const Node& get_child(unsigned int index) {
-            if (index >= this->children_.size()) {
-                return NULL;
-            }
-            return this->children_.at(index);
-        }
-        const Node& get_left_child() const {
-            return this->get_child(0);
-        }
-        const Node& get_right_child() const {
-            return this->get_child(1);
-        }
-        unsigned int get_number_of_children();
-
-        bool is_root() const {
-            return (this->parent_ == NULL);
-        }
-
-        bool is_leaf() const {
-            return (this->children_.empty());
-        }
 
         const bool& is_dirty() const;
 
@@ -65,24 +80,22 @@ class Node {
         unsigned int get_node_count() const;
         unsigned int get_leaf_node_count() const;
         unsigned int get_internal_node_count() const;
-        // from NodeData
-        unsigned int get_allele_count() const;
-
-        void resize(unsigned int allele_count);
-        void reset(unsigned int allele_count);
+}
 
 
+class PopulationNode: public Node {
     private:
-        std::string label_;
-        double height_;
-        std::vector<Node&> children_;
-        Node& parent_ = NULL;
         BiallelicPatternProbabilityMatrix pattern_probs_bottom_;
         BiallelicPatternProbabilityMatrix pattern_probs_top_;
 
-        bool is_dirty_ = false;
+    public:
+        // Node(unsigned int allele_count);
+        // Node(std::string label, unsigned int allele_count);
 
-        //Methods
-};
+        // from NodeData
+        unsigned int get_allele_count() const;
+        void resize(unsigned int allele_count);
+        void reset(unsigned int allele_count);
+}
 
 #endif
