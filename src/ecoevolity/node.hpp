@@ -15,6 +15,8 @@ class Node {
         // Constructor
         Node();
         Node(std::string label);
+        Node(unsigned int allele_count);
+        Node(std::string label, unsigned int allele_count);
         // Destructor
         // ~Node();
         
@@ -30,17 +32,17 @@ class Node {
         void set_child(unsigned int child_index, Node & child);
         void add_child(Node & child);
         void remove_child(unsigned int child_index);
-        const Node& get_left_child() const {
-            if (this->children_.empty()) {
+        const Node& get_child(unsigned int index) {
+            if (index >= this->children_.size()) {
                 return NULL;
             }
-            return this->children_.at(0);
+            return this->children_.at(index);
+        }
+        const Node& get_left_child() const {
+            return this->get_child(0);
         }
         const Node& get_right_child() const {
-            if (this->children_.size() < 2) {
-                return NULL;
-            }
-            return this->children_.at(1);
+            return this->get_child(1);
         }
         unsigned int get_number_of_children();
 
@@ -64,14 +66,17 @@ class Node {
         unsigned int get_leaf_node_count() const;
         unsigned int get_internal_node_count() const;
         // from NodeData
-        unsigned int get_number_of_alleles() const;
+        unsigned int get_allele_count() const;
+
+        void resize(unsigned int allele_count);
+        void reset(unsigned int allele_count);
 
 
     private:
         std::string label_;
         double height_;
-        std::vector<Node> children_;
-        Node parent_ = NULL;
+        std::vector<Node&> children_;
+        Node& parent_ = NULL;
         BiallelicPatternProbabilityMatrix pattern_probs_bottom_;
         BiallelicPatternProbabilityMatrix pattern_probs_top_;
 
