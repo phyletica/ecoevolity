@@ -20,7 +20,7 @@ class Node {
         bool is_dirty_ = false;
 
     public:
-        // Constructor
+        // Constructors
         Node() { };
         Node(const Node& node);
         // Node(std::string label);
