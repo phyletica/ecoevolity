@@ -45,6 +45,13 @@ class EcoevolityError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityError", message) { }
 };
 
+class EcoevolityNullPointerError: public EcoevolityBaseError {
+    public:
+        EcoevolityNullPointerError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityNullPointerError", message) { }
+};
+
 class EcoevolityBiallelicDataError: public EcoevolityBaseError {
     public:
         EcoevolityBiallelicDataError(

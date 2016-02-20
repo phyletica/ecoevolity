@@ -15,15 +15,17 @@ class Node {
     private:
         std::vector< Node * > children_;
         Node * parent_ = 0;
-        std::string label_;
+        std::string label_ = "";
         double height_ = 0.0;
-        bool is_dirty_ = false;
+        bool is_dirty_ = true;
 
     public:
         // Constructors
         Node() { };
         Node(const Node& node);
-        // Node(std::string label);
+        Node(std::string label);
+        Node(double height);
+        Node(std::string label, double height);
 
         // Destructor
         virtual ~Node();
@@ -35,7 +37,7 @@ class Node {
         }
         
         //Methods
-        unsigned int degree() const { return children_.size() - 1 + parent_ ? 1 : 0; }
+        unsigned int degree() const { return children_.size() + parent_ ? 1 : 0; }
 
         bool has_parent() const { return parent_ ? true : false; }
         bool is_root() const { return parent_ ? false : true; }
@@ -68,34 +70,37 @@ class Node {
 
         const double& get_height() const;
         void set_height(double height);
+        double get_length() const;
+
+        const std::string& get_label() const;
+        void set_label(std::string label);
 
         const bool& is_dirty() const;
 
         void make_dirty();
         void make_all_dirty();
         void make_clean();
-
-        double get_length() const;
+        void make_all_clean();
 
         unsigned int get_node_count() const;
         unsigned int get_leaf_node_count() const;
         unsigned int get_internal_node_count() const;
-}
+};
 
 
-class PopulationNode: public Node {
-    private:
-        BiallelicPatternProbabilityMatrix pattern_probs_bottom_;
-        BiallelicPatternProbabilityMatrix pattern_probs_top_;
-
-    public:
-        // Node(unsigned int allele_count);
-        // Node(std::string label, unsigned int allele_count);
-
-        // from NodeData
-        unsigned int get_allele_count() const;
-        void resize(unsigned int allele_count);
-        void reset(unsigned int allele_count);
-}
+// class PopulationNode: public Node {
+//     private:
+//         BiallelicPatternProbabilityMatrix pattern_probs_bottom_;
+//         BiallelicPatternProbabilityMatrix pattern_probs_top_;
+// 
+//     public:
+//         // Node(unsigned int allele_count);
+//         // Node(std::string label, unsigned int allele_count);
+// 
+//         // from NodeData
+//         unsigned int get_allele_count() const;
+//         void resize(unsigned int allele_count);
+//         void reset(unsigned int allele_count);
+// }
 
 #endif

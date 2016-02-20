@@ -10,6 +10,10 @@ TEST_CASE("derived error classes can be thrown", "[error]") {
     SECTION("throwing EcoevolityError") {
         REQUIRE_THROWS_AS(throw EcoevolityError(message), EcoevolityError);
     }
+    SECTION("throwing EcoevolityNullPointerError") {
+        REQUIRE_THROWS_AS(throw EcoevolityNullPointerError(message),
+                EcoevolityNullPointerError);
+    }
     SECTION("throwing EcoevolityBiallelicDataError") {
         REQUIRE_THROWS_AS(throw EcoevolityBiallelicDataError(message, file_name),
                 EcoevolityBiallelicDataError);

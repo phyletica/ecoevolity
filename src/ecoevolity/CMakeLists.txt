@@ -5,6 +5,7 @@ set(ECOEVOLITY_SOURCES
     error.cpp
     util.cpp
     matrix.cpp
+    node.cpp
     data.cpp)
 
 foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})

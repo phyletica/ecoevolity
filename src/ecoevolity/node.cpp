@@ -1,5 +1,17 @@
 #include "node.hpp"
 
+Node::Node(const Node& node) {
+    this->children_ = node.children_;
+    this->parent_ = node.parent_;
+    this->height_ = node.height_;
+    this->label_ = node.label_;
+    this->is_dirty_ = node.is_dirty_;
+}
+
+Node::Node(std::string label) {
+    this->label_ = label;
+}
+
 Node::~Node() {
     if (this->parent_) {
         this->parent_->remove_child(this);
@@ -9,14 +21,21 @@ Node::~Node() {
     }
 }
 
-Node::Node(const Node& node) {
-    this->children_ = node.children_;
-    this->parent_ = node.parent_;
+Node::Node(double height) {
+    this->height_ = height;
+}
+
+Node::Node(std::string label, double height) {
+    this->label_ = label;
+    this->height_ = height;
 }
 
 Node& Node::operator=(const Node& node) {
     this->children_ = node.children_;
     this->parent_ = node.parent_;
+    this->height_ = node.height_;
+    this->label_ = node.label_;
+    this->is_dirty_ = node.is_dirty_;
     return * this;
 }
 
@@ -36,7 +55,7 @@ bool Node::is_parent(const Node* node) const {
 
 void Node::add_parent(Node* node) {
     if (!node) {
-        throw EvoevolityNullPointerError("Node::add_parent(), empty node given");
+        throw EcoevolityNullPointerError("Node::add_parent(), empty node given");
     }
     if (this->parent_) {
         throw EcoevolityError("Node::add_parent(), this node already has a parent");
@@ -58,14 +77,14 @@ Node* Node::remove_parent() {
 }
 
 const Node* Node::get_child(unsigned int index) const {
-    if (index < 0 || index >= this->children_.size()) {
+    if (index >= this->children_.size()) {
         throw std::out_of_range("Node::get_child() index out of range");
     }
     return this->children_.at(index);
 }
 
 Node* Node::get_child(unsigned int index) {
-    if (index < 0 || index >= this->children_.size()) {
+    if (index >= this->children_.size()) {
         throw std::out_of_range("Node::get_child() index out of range");
     }
     return this->children_.at(index);
@@ -82,7 +101,7 @@ bool Node::is_child(const Node* node) const {
 
 void Node::add_child(Node* node) {
     if (!node) {
-        throw EvoevolityNullPointerError("Node::add_child(), empty node given");
+        throw EcoevolityNullPointerError("Node::add_child(), empty node given");
     }
     if (! this->is_child(node)) {
         this->children_.push_back(node);
@@ -94,7 +113,7 @@ void Node::add_child(Node* node) {
 
 void Node::remove_child(Node* node) {
     if (!node) {
-        throw EvoevolityNullPointerError("Node::remove_child(), empty node given");
+        throw EcoevolityNullPointerError("Node::remove_child(), empty node given");
     }
     for (unsigned int i = 0; i < this->children_.size(); ++i) {
         if (this->children_.at(i) == node) {
@@ -105,11 +124,94 @@ void Node::remove_child(Node* node) {
 }
 
 Node* Node::remove_child(unsigned int index) {
-    if (index < 0 || index >= this->children_.size()) {
+    if (index >= this->children_.size()) {
         throw std::out_of_range("Node::remove_child() index out of range");
     }
     Node* c = this->children_.at(index);
     this->children_.erase(this->children_.begin() + index);
     c->remove_parent();
     return c;
+}
+
+const bool& Node::is_dirty() const {
+    return this->is_dirty_;
+}
+
+void Node::make_dirty() {
+    this->is_dirty_ = true;
+}
+
+void Node::make_all_dirty() {
+    this->is_dirty_ = true;
+    for (auto child_iter: this->children_) {
+        child_iter->make_all_dirty();
+    }
+}
+
+void Node::make_clean() {
+    this->is_dirty_ = false;
+}
+
+void Node::make_all_clean() {
+    this->is_dirty_ = false;
+    for (auto child_iter: this->children_) {
+        child_iter->make_all_clean();
+    }
+}
+
+const double& Node::get_height() const {
+    return this->height_;
+}
+
+void Node::set_height(double height) {
+    this->height_ = height;
+    this->make_dirty();
+    for (auto child_iter: this->children_) {
+        child_iter->make_dirty();
+    }
+}
+
+double Node::get_length() const {
+    if (this->has_parent()) {
+        return this->get_parent()->get_height() - this->get_height();
+    }
+    return 0.0;
+}
+
+const std::string& Node::get_label() const {
+    return this->label_;
+}
+
+void Node::set_label(std::string label) {
+    this->label_ = label;
+}
+
+unsigned int Node::get_node_count() const {
+    unsigned int n = 1;
+    for (auto child_iter: this->children_) {
+        n += child_iter->get_node_count();
+    }
+    return n;
+}
+
+unsigned int Node::get_leaf_node_count() const {
+    if (this->is_leaf()) {
+        return 1;
+    }
+    unsigned int n = 0;
+    for (auto child_iter: this->children_) {
+        n += child_iter->get_leaf_node_count();
+    }
+    return n;
+}
+
+unsigned int Node::get_internal_node_count() const {
+    if (this->is_leaf()) {
+        return 0;
+    }
+    unsigned int n = 1;
+    for (auto child_iter: this->children_) {
+        n += child_iter->get_internal_node_count();
+    }
+    return n;
 }
