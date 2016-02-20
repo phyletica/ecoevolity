@@ -39,6 +39,14 @@ Node& Node::operator=(const Node& node) {
     return * this;
 }
 
+unsigned int Node::degree() const {
+    unsigned int d = children_.size();
+    if (this->has_parent()) {
+        d += 1;
+    }
+    return d;
+}
+
 const Node* Node::get_parent() const {
     return this->parent_;
 }

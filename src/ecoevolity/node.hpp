@@ -37,7 +37,7 @@ class Node {
         }
         
         //Methods
-        unsigned int degree() const { return children_.size() + parent_ ? 1 : 0; }
+        unsigned int degree() const;
 
         bool has_parent() const { return parent_ ? true : false; }
         bool is_root() const { return parent_ ? false : true; }
