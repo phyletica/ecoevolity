@@ -1,10 +1,29 @@
+/******************************************************************************
+ * Copyright (C) 2016 Jamie R. Oaks.
+ *
+ * This file is part of Ecoevolity.
+ *
+ * Ecoevolity is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * Ecoevolity is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
 /**
  * Functions and macros for verbose assertions.
  *
- * Modified from:
- *      colugo-utilities library
- *      <https://github.com/jeetsukumaran/colugo-utilities/blob/master/include/colugo/assert.hpp>
- *      2013 Jeet Sukumaran <http://jeetworks.org>
+ * @note Modified from:
+ *       colugo-utilities library licensed under Gnu GPL 3
+ *       <https://github.com/jeetsukumaran/colugo-utilities/blob/master/include/colugo/assert.hpp>
+ *       2013 Jeet Sukumaran <http://jeetworks.org>
  */
 
 #ifndef ECOEVOLITY_ASSERT_HPP
