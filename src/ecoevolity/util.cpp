@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) 2016 Jamie R. Oaks.
+ * Copyright (C) 2015-2016 Jamie R. Oaks.
  *
  * This file is part of Ecoevolity.
  *
