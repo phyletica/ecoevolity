@@ -2,7 +2,7 @@ Table of Contents
 =================
 
  -  [Ecoevolity](#ecoevolity)
- -  [Acknowledgements](#acknowledgements)
+ -  [Acknowledgments](#acknowledgments)
  -  [License](#license)
 
 Ecoevolity
@@ -14,7 +14,7 @@ Inferring shared evolutionary events using full-likelihood Bayesian inference.
 
 This is a work in progess...
 
-Acknowledgements
+Acknowledgments
 ================
 
 This software benefited from funding provided to Jamie Oaks from the National
@@ -23,7 +23,7 @@ Science Foundation (DBI 1308885).
 License
 =======
 
-Copyright (C) 2013 Jamie Oaks
+Copyright (C) 2015-2016 Jamie R. Oaks
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
