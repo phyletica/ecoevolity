@@ -597,3 +597,157 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(leaf5.is_dirty());
     }
 }
+
+TEST_CASE("Testing bare constructor of PopulationNode", "[PopulationNode]") {
+
+    SECTION("Testing bare constructor") {
+        PopulationNode n = PopulationNode();
+        REQUIRE(n.get_height() == 0.0);
+        REQUIRE(n.get_length() == 0.0);
+        REQUIRE(n.get_label() == "");
+        REQUIRE(n.is_dirty());
+
+        REQUIRE(n.degree() == 0);
+        REQUIRE(n.has_parent() == false);
+        REQUIRE(n.get_number_of_parents() == 0);
+        REQUIRE(n.has_children() == false);
+        REQUIRE(n.get_number_of_children() == 0);
+
+        REQUIRE(n.is_leaf() == true);
+        REQUIRE(n.is_root() == true);
+        REQUIRE(n.get_node_count() == 1);
+        REQUIRE(n.get_leaf_node_count() == 1);
+        REQUIRE(n.get_internal_node_count() == 0);
+
+        PopulationNode * p = n.get_parent();
+        REQUIRE(p == NULL);
+
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+
+        delete p;
+    }
+}
+
+TEST_CASE("Testing label constructor of PopulationNode", "[PopulationNode]") {
+
+    SECTION("Testing label constructor") {
+        PopulationNode n = PopulationNode("leaf1");
+        REQUIRE(n.get_height() == 0.0);
+        REQUIRE(n.get_length() == 0.0);
+        REQUIRE(n.get_label() == "leaf1");
+        REQUIRE(n.is_dirty());
+
+        REQUIRE(n.degree() == 0);
+        REQUIRE(n.has_parent() == false);
+        REQUIRE(n.get_number_of_parents() == 0);
+        REQUIRE(n.has_children() == false);
+        REQUIRE(n.get_number_of_children() == 0);
+
+        REQUIRE(n.is_leaf() == true);
+        REQUIRE(n.is_root() == true);
+        REQUIRE(n.get_node_count() == 1);
+        REQUIRE(n.get_leaf_node_count() == 1);
+        REQUIRE(n.get_internal_node_count() == 0);
+
+        PopulationNode * p = n.get_parent();
+        REQUIRE(p == NULL);
+
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+
+        delete p;
+    }
+}
+
+TEST_CASE("Testing height constructor of PopulationNode", "[PopulationNode]") {
+    SECTION("Testing height constructor") {
+        PopulationNode n = PopulationNode(0.03);
+        REQUIRE(n.get_height() == Approx(0.03));
+        REQUIRE(n.get_length() == 0.0);
+        REQUIRE(n.get_label() == "");
+        REQUIRE(n.is_dirty());
+
+        REQUIRE(n.degree() == 0);
+        REQUIRE(n.has_parent() == false);
+        REQUIRE(n.get_number_of_parents() == 0);
+        REQUIRE(n.has_children() == false);
+        REQUIRE(n.get_number_of_children() == 0);
+
+        REQUIRE(n.is_leaf() == true);
+        REQUIRE(n.is_root() == true);
+        REQUIRE(n.get_node_count() == 1);
+        REQUIRE(n.get_leaf_node_count() == 1);
+        REQUIRE(n.get_internal_node_count() == 0);
+
+        PopulationNode * p = n.get_parent();
+        REQUIRE(p == NULL);
+
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+
+        delete p;
+    }
+}
+
+TEST_CASE("Testing label and height constructor of PopulationNode", "[PopulationNode]") {
+    SECTION("Testing label and height constructor") {
+        PopulationNode n = PopulationNode("leaf1", 0.02);
+        REQUIRE(n.get_height() == Approx(0.02));
+        REQUIRE(n.get_length() == 0.0);
+        REQUIRE(n.get_label() == "leaf1");
+        REQUIRE(n.is_dirty());
+
+        REQUIRE(n.degree() == 0);
+        REQUIRE(n.has_parent() == false);
+        REQUIRE(n.get_number_of_parents() == 0);
+        REQUIRE(n.has_children() == false);
+        REQUIRE(n.get_number_of_children() == 0);
+
+        REQUIRE(n.is_leaf() == true);
+        REQUIRE(n.is_root() == true);
+        REQUIRE(n.get_node_count() == 1);
+        REQUIRE(n.get_leaf_node_count() == 1);
+        REQUIRE(n.get_internal_node_count() == 0);
+
+        PopulationNode * p = n.get_parent();
+        REQUIRE(p == NULL);
+
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+
+        delete p;
+    }
+}
+
+TEST_CASE("Testing node ref constructor of PopulationNode", "[PopulationNode]") {
+    SECTION("Testing node ref constructor") {
+        PopulationNode n2 = PopulationNode("leaf1", 0.02);
+        PopulationNode n = PopulationNode(n2);
+        REQUIRE(n.get_height() == Approx(0.02));
+        REQUIRE(n.get_length() == 0.0);
+        REQUIRE(n.get_label() == "leaf1");
+        REQUIRE(n.is_dirty());
+
+        REQUIRE(n.degree() == 0);
+        REQUIRE(n.has_parent() == false);
+        REQUIRE(n.get_number_of_parents() == 0);
+        REQUIRE(n.has_children() == false);
+        REQUIRE(n.get_number_of_children() == 0);
+
+        REQUIRE(n.is_leaf() == true);
+        REQUIRE(n.is_root() == true);
+        REQUIRE(n.get_node_count() == 1);
+        REQUIRE(n.get_leaf_node_count() == 1);
+        REQUIRE(n.get_internal_node_count() == 0);
+
+        PopulationNode * p = n.get_parent();
+        REQUIRE(p == NULL);
+
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        
+        n.set_label("leaf2");
+        REQUIRE(n.get_label() == "leaf2");
+        REQUIRE(n2.get_label() == "leaf1");
+
+        n2.set_height(0.06);
+        REQUIRE(n.get_height() == Approx(0.02));
+        REQUIRE(n2.get_height() == Approx(0.06));
+    }
+}
