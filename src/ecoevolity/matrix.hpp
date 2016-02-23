@@ -46,6 +46,16 @@ class BiallelicPatternProbabilityMatrix {
                 const std::vector<double>& pattern_probs);
         // Destructor
         // ~AlleleProbabilityMatrix();
+        //
+        BiallelicPatternProbabilityMatrix& operator=(const BiallelicPatternProbabilityMatrix& m) {
+            this->allele_count_ = m.allele_count_;
+            this->pattern_prob_matrix_ = m.pattern_prob_matrix_;
+            return * this;
+        }
+
+        BiallelicPatternProbabilityMatrix* clone() const {
+            return new BiallelicPatternProbabilityMatrix(* this);
+        }
         
         //Methods
         const double& get_pattern_probability(

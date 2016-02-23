@@ -136,3 +136,137 @@ TEST_CASE("Testing constructors of BiallelicPatternProbabilityMatrix",
                 EcoevolityError);
     }
 }
+
+TEST_CASE("Testing copy operator of BiallelicPatternProbabilityMatrix",
+        "[BiallelicPatternProbabilityMatrix]") {
+
+    SECTION("Testing copy operator") {
+        BiallelicPatternProbabilityMatrix m;
+        m.resize(3);
+        m.set_pattern_probability(1, 1, 0.5);
+        m.set_pattern_probability(3, 2, 0.5);
+
+        std::vector<double> expected_prob_matrix;
+        expected_prob_matrix = {0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
+
+        REQUIRE(m.get_allele_count() == 3);
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(4, 0, 1.0), std::out_of_range);
+
+        BiallelicPatternProbabilityMatrix m2;
+        m2 = m;
+        m2.reset(2);
+        m2.set_pattern_probability(2, 0, 1.0);
+        std::vector<double> expected_prob_matrix2;
+        expected_prob_matrix2 = {0.0, 0.0, 1.0, 0.0, 0.0};
+
+        REQUIRE(&m != &m2);
+
+        REQUIRE(m.get_allele_count() == 3);
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(4, 0, 1.0), std::out_of_range);
+
+        REQUIRE(m2.get_allele_count() == 2);
+        REQUIRE(m2.get_pattern_prob_matrix() == expected_prob_matrix2);
+        REQUIRE_THROWS_AS(m2.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.get_pattern_probability(3, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.set_pattern_probability(3, 0, 1.0), std::out_of_range);
+    }
+}
+
+TEST_CASE("Testing clone method of BiallelicPatternProbabilityMatrix",
+        "[BiallelicPatternProbabilityMatrix]") {
+
+    SECTION("Testing clone method") {
+        BiallelicPatternProbabilityMatrix m;
+        m.resize(3);
+        m.set_pattern_probability(1, 1, 0.5);
+        m.set_pattern_probability(3, 2, 0.5);
+
+        std::vector<double> expected_prob_matrix;
+        expected_prob_matrix = {0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
+
+        REQUIRE(m.get_allele_count() == 3);
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(4, 0, 1.0), std::out_of_range);
+
+        BiallelicPatternProbabilityMatrix * m2;
+        m2 = m.clone();
+        m2->reset(2);
+        m2->set_pattern_probability(2, 0, 1.0);
+        std::vector<double> expected_prob_matrix2;
+        expected_prob_matrix2 = {0.0, 0.0, 1.0, 0.0, 0.0};
+
+        REQUIRE(&m != m2);
+
+        REQUIRE(m.get_allele_count() == 3);
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(4, 0, 1.0), std::out_of_range);
+
+        REQUIRE(m2->get_allele_count() == 2);
+        REQUIRE(m2->get_pattern_prob_matrix() == expected_prob_matrix2);
+        REQUIRE_THROWS_AS(m2->get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2->set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2->get_pattern_probability(3, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2->set_pattern_probability(3, 0, 1.0), std::out_of_range);
+
+        delete m2;
+    }
+}
+
+TEST_CASE("Testing copy method of BiallelicPatternProbabilityMatrix",
+        "[BiallelicPatternProbabilityMatrix]") {
+
+    SECTION("Testing copy method") {
+        BiallelicPatternProbabilityMatrix m;
+        m.resize(3);
+        m.set_pattern_probability(1, 1, 0.5);
+        m.set_pattern_probability(3, 2, 0.5);
+
+        std::vector<double> expected_prob_matrix;
+        expected_prob_matrix = {0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
+
+        REQUIRE(m.get_allele_count() == 3);
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(4, 0, 1.0), std::out_of_range);
+
+        BiallelicPatternProbabilityMatrix m2;
+        m2.copy(m);
+        m2.reset(2);
+        m2.set_pattern_probability(2, 0, 1.0);
+        std::vector<double> expected_prob_matrix2;
+        expected_prob_matrix2 = {0.0, 0.0, 1.0, 0.0, 0.0};
+
+        REQUIRE(&m != &m2);
+
+        REQUIRE(m.get_allele_count() == 3);
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m.set_pattern_probability(4, 0, 1.0), std::out_of_range);
+
+        REQUIRE(m2.get_allele_count() == 2);
+        REQUIRE(m2.get_pattern_prob_matrix() == expected_prob_matrix2);
+        REQUIRE_THROWS_AS(m2.get_pattern_probability(0, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.set_pattern_probability(0, 0, 1.0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.get_pattern_probability(3, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.set_pattern_probability(3, 0, 1.0), std::out_of_range);
+    }
+}
