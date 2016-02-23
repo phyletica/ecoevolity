@@ -51,6 +51,9 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
+        std::vector<unsigned int> expected_max_cts = {6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
         REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
         REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
         REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
@@ -2010,6 +2013,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
         REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        std::vector<unsigned int> expected_max_cts = {6,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
     }
 }
 
@@ -2057,6 +2063,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
+
+        std::vector<unsigned int> expected_max_cts = {6,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
         REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
         REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
@@ -2628,6 +2637,253 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        expected_labels.clear();
+        expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        std::vector<unsigned int> expected_max_cts = {3,3,2};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+    }
+}
+
+/*
+ * #NEXUS
+ * Begin data;
+ *     Dimensions ntax=8 nchar=9;
+ *     Format datatype=dna gap=-;
+ *     Matrix
+ * pop1_a  ATC-CGGAT
+ * pop1_b  ---C-AGA-
+ * pop1_c  ACTGTA?AC
+ * pop2_d  ATCGCAGAC
+ * pop2_e  GCT?CA-AT
+ * pop2_f  GCC?CA-AT
+ * pop3_g  GCT?C?GAC
+ * pop3_h  ATCCC??AC
+ *     ;
+ * End;
+ */
+TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
+    SECTION("Testing data/diploid-dna-sample-size-changes-nohets.nex") {
+        std::string nex_path = "data/diploid-dna-sample-size-changes-nohets.nex";
+        BiallelicData bd(nex_path);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 9);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(9);
+        expected_allele_counts[0] = {4, 6, 4};
+        expected_allele_counts[1] = {4, 6, 4};
+        expected_allele_counts[2] = {4, 6, 4};
+        expected_allele_counts[3] = {4, 2, 2};
+        expected_allele_counts[4] = {4, 6, 4};
+        expected_allele_counts[5] = {6, 6, 0};
+        expected_allele_counts[6] = {4, 2, 2};
+        expected_allele_counts[7] = {6, 6, 4};
+        expected_allele_counts[8] = {4, 6, 4};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(9);
+        expected_red_counts[0] = {0, 4, 2};
+        expected_red_counts[1] = {2, 4, 2};
+        expected_red_counts[2] = {2, 2, 2};
+        expected_red_counts[3] = {2, 2, 0};
+        expected_red_counts[4] = {2, 0, 0};
+        expected_red_counts[5] = {4, 6, 0};
+        expected_red_counts[6] = {0, 0, 0};
+        expected_red_counts[7] = {0, 0, 0};
+        expected_red_counts[8] = {2, 2, 4};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        std::vector<unsigned int> expected_max_cts = {6,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        // Remove constant
+        unsigned int number_removed = bd.remove_constant_patterns();
+        REQUIRE(number_removed == 2);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 7);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        expected_wts.clear();
+        expected_wts = {1,1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({6, 6, 0});
+        expected_allele_counts.push_back({4, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({0, 4, 2});
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({2, 0, 0});
+        expected_red_counts.push_back({4, 6, 0});
+        expected_red_counts.push_back({2, 2, 4});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        expected_max_cts = {6,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+    
+        // Remove missing
+        number_removed = bd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        expected_wts.clear();
+        expected_wts = {1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({0, 4, 2});
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({2, 0, 0});
+        expected_red_counts.push_back({2, 2, 4});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        expected_max_cts = {4,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+
+        // Folding
+        number_removed = bd.fold_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+
+        expected_wts.clear();
+        expected_wts = {1,2,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({4, 6, 4});
+        expected_allele_counts.push_back({4, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({0, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({2, 0, 0});
+        expected_red_counts.push_back({2, 4, 0});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        expected_max_cts = {4,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
         REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
         REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);

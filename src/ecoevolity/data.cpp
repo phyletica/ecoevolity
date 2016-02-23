@@ -273,9 +273,22 @@ BiallelicData::BiallelicData(
         throw EcoevolityBiallelicDataError("Data type not supported", this->path_);
     }
     nexus_reader.DeleteBlocksFromFactories();
+    this->update_max_allele_counts();
     this->update_pattern_booleans();
     if (validate) {
         this->validate();
+    }
+}
+
+void BiallelicData::update_max_allele_counts() {
+    this->max_allele_counts_.assign(this->get_number_of_populations(), 0);
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        const std::vector<unsigned int>& allele_cts = this->get_allele_counts(pattern_idx);
+        for (unsigned int pop_idx = 0; pop_idx < allele_cts.size(); ++pop_idx) {
+            if (allele_cts.at(pop_idx) > this->max_allele_counts_.at(pop_idx)) {
+                this->max_allele_counts_.at(pop_idx) = allele_cts.at(pop_idx);
+            }
+        }
     }
 }
 
@@ -289,6 +302,14 @@ const std::vector<unsigned int>& BiallelicData::get_allele_counts(unsigned int p
 
 const unsigned int& BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
     return this->pattern_weights_.at(pattern_index);
+}
+
+const unsigned int& BiallelicData::get_max_allele_count(unsigned int population_index) const {
+    return this->max_allele_counts_.at(population_index);
+}
+
+const std::vector<unsigned int>& BiallelicData::get_max_allele_counts() const {
+    return this->max_allele_counts_;
 }
 
 const unsigned int& BiallelicData::get_population_index(std::string population_label) const {
@@ -509,6 +530,7 @@ unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
         number_removed += 1;
     }
     this->update_pattern_booleans();
+    this->update_max_allele_counts();
     if (validate) {
         this->validate();
     }
@@ -526,6 +548,7 @@ unsigned int BiallelicData::remove_missing_population_patterns(const bool valida
         number_removed += 1;
     }
     this->update_pattern_booleans();
+    this->update_max_allele_counts();
     if (validate) {
         this->validate();
     }

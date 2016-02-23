@@ -53,6 +53,8 @@ class BiallelicData {
         const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
         const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
         const unsigned int& get_pattern_weight(unsigned int pattern_index) const;
+        const unsigned int& get_max_allele_count(unsigned int population_index) const;
+        const std::vector<unsigned int>& get_max_allele_counts() const;
         const unsigned int& get_population_index(std::string population_label) const;
         const unsigned int& get_population_index_from_seq_label(std::string seq_label) const;
         const std::string& get_population_label(unsigned int population_index) const;
@@ -93,6 +95,7 @@ class BiallelicData {
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
         std::vector<unsigned int> pattern_weights_;
+        std::vector<unsigned int> max_allele_counts_;
         std::vector<std::string> population_labels_;
         std::vector< std::vector<std::string> > sequence_labels_;
         std::unordered_map<std::string, std::string> seq_label_to_pop_label_map_;
@@ -108,6 +111,7 @@ class BiallelicData {
         int remove_first_constant_pattern();
         int remove_first_missing_population_pattern();
         int fold_first_mirrored_pattern();
+        void update_max_allele_counts();
 };
 
 #endif
