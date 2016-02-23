@@ -47,46 +47,141 @@ class Node: public BaseNode<Node>{
 class PopulationNode: public BaseNode<PopulationNode>{
     private:
         typedef BaseNode<PopulationNode> BaseClass;
-        BiallelicPatternProbabilityMatrix pattern_probs_bottom_;
-        BiallelicPatternProbabilityMatrix pattern_probs_top_;
+        BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
+        BiallelicPatternProbabilityMatrix top_pattern_probs_;
 
     public:
         PopulationNode() { }
         PopulationNode(const Node& node) : BaseClass(node) { }
+        PopulationNode(const PopulationNode& node) : BaseClass(node) {
+            this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
+            this->top_pattern_probs_ = node.top_pattern_probs_;
+        }
         PopulationNode(std::string label) : BaseClass(label) { }
         PopulationNode(double height) : BaseClass(height) { }
         PopulationNode(std::string label, double height) :
             BaseClass(label, height)
             { }
         PopulationNode(unsigned int allele_count) : BaseClass() {
-            this->pattern_probs_bottom_.resize(allele_count);
-            this->pattern_probs_top_.resize(allele_count);
+            this->bottom_pattern_probs_.resize(allele_count);
+            this->top_pattern_probs_.resize(allele_count);
         }
         PopulationNode(std::string label, unsigned int allele_count) :
             BaseClass(label)
         {
-            this->pattern_probs_bottom_.resize(allele_count);
-            this->pattern_probs_top_.resize(allele_count);
+            this->bottom_pattern_probs_.resize(allele_count);
+            this->top_pattern_probs_.resize(allele_count);
         }
         PopulationNode(double height, unsigned int allele_count) :
             BaseClass(height)
         {
-            this->pattern_probs_bottom_.resize(allele_count);
-            this->pattern_probs_top_.resize(allele_count);
+            this->bottom_pattern_probs_.resize(allele_count);
+            this->top_pattern_probs_.resize(allele_count);
         }
         PopulationNode(std::string label,
                 double height,
                 unsigned int allele_count) :
             BaseClass(label, height)
         {
-            this->pattern_probs_bottom_.resize(allele_count);
-            this->pattern_probs_top_.resize(allele_count);
+            this->bottom_pattern_probs_.resize(allele_count);
+            this->top_pattern_probs_.resize(allele_count);
         }
-// 
-//         // from NodeData
-//         unsigned int get_allele_count() const;
-//         void resize(unsigned int allele_count);
-//         void reset(unsigned int allele_count);
+
+        // overload copy operator
+        PopulationNode& operator=(const PopulationNode& node) {
+            this->children_ = node.children_;
+            this->parent_ = node.parent_;
+            this->height_ = node.height_;
+            this->label_ = node.label_;
+            this->is_dirty_ = node.is_dirty_;
+            this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
+            this->top_pattern_probs_ = node.top_pattern_probs_;
+            return * this;
+        }
+
+        // methods for accessing/changing pattern probabilities
+        unsigned int get_allele_count() const {
+            return this->bottom_pattern_probs_.get_allele_count();
+        }
+        void resize(unsigned int allele_count) {
+            this->bottom_pattern_probs_.resize(allele_count);
+            this->top_pattern_probs_.resize(allele_count);
+        }
+        void reset(unsigned int allele_count) {
+            this->bottom_pattern_probs_.reset(allele_count);
+            this->top_pattern_probs_.reset(allele_count);
+        }
+
+        const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs() const{
+            return this->bottom_pattern_probs_;
+        }
+        const BiallelicPatternProbabilityMatrix& get_top_pattern_probs() const{
+            return this->top_pattern_probs_;
+        }
+        BiallelicPatternProbabilityMatrix* clone_bottom_pattern_probs() const{
+            return this->bottom_pattern_probs_.clone();
+        }
+        BiallelicPatternProbabilityMatrix* clone_top_pattern_probs() const{
+            return this->top_pattern_probs_.clone();
+        }
+
+        void copy_bottom_pattern_probs(const BiallelicPatternProbabilityMatrix& m) {
+            if (m.get_allele_count() != this->top_pattern_probs_.get_allele_count()) {
+                throw EcoevolityError(
+                        "PopulationNode:copy_bottom_pattern_probs(); allele counts must be the same between top and bottom of branch");
+            }
+            this->bottom_pattern_probs_.copy(m);
+        }
+        void copy_top_pattern_probs(const BiallelicPatternProbabilityMatrix& m) {
+            if (m.get_allele_count() != this->bottom_pattern_probs_.get_allele_count()) {
+                throw EcoevolityError(
+                        "PopulationNode:copy_top_pattern_probs(); allele counts must be the same between top and bottom of branch");
+            }
+            this->top_pattern_probs_.copy(m);
+        }
+        void copy_pattern_probs(
+                const BiallelicPatternProbabilityMatrix& bottom_probs,
+                const BiallelicPatternProbabilityMatrix& top_probs) {
+            if (bottom_probs.get_allele_count() != top_probs.get_allele_count()) {
+                throw EcoevolityError(
+                        "PopulationNode:copy_pattern_probs(); allele counts must be the same between top and bottom of branch");
+            }
+            this->bottom_pattern_probs_.copy(bottom_probs);
+            this->top_pattern_probs_.copy(top_probs);
+        }
+
+        const double& get_bottom_pattern_probability(
+                unsigned int allele_count,
+                unsigned int red_allele_count) const {
+            return this->bottom_pattern_probs_.get_pattern_probability(
+                    allele_count,
+                    red_allele_count);
+        }
+        const double& get_top_pattern_probability(
+                unsigned int allele_count,
+                unsigned int red_allele_count) const {
+            return this->top_pattern_probs_.get_pattern_probability(
+                    allele_count,
+                    red_allele_count);
+        }
+        void set_bottom_pattern_probability(
+                unsigned int allele_count,
+                unsigned int red_allele_count,
+                double probability) {
+            this->bottom_pattern_probs_.set_pattern_probability(
+                    allele_count,
+                    red_allele_count,
+                    probability);
+        }
+        void set_top_pattern_probability(
+                unsigned int allele_count,
+                unsigned int red_allele_count,
+                double probability) {
+            this->top_pattern_probs_.set_pattern_probability(
+                    allele_count,
+                    red_allele_count,
+                    probability);
+        }
 };
 
 #endif
