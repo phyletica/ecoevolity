@@ -42,7 +42,7 @@
  */
 template<class DerivedNodeT>
 class BaseNode {
-    private:
+    protected:
         std::vector< DerivedNodeT * > children_;
         DerivedNodeT * parent_ = 0;
         std::string label_ = "";
