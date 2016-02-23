@@ -103,6 +103,18 @@ class PopulationNode: public BaseNode<PopulationNode>{
         unsigned int get_allele_count() const {
             return this->bottom_pattern_probs_.get_allele_count();
         }
+
+        unsigned int get_leaf_allele_count() const {
+            if (this->is_leaf()) {
+                return this->get_allele_count();
+            }
+            unsigned int n = 0;
+            for (auto child_iter: this->children_) {
+                n += child_iter->get_leaf_allele_count();
+            }
+            return n;
+        }
+
         void resize(unsigned int allele_count) {
             this->bottom_pattern_probs_.resize(allele_count);
             this->top_pattern_probs_.resize(allele_count);
@@ -110,6 +122,12 @@ class PopulationNode: public BaseNode<PopulationNode>{
         void reset(unsigned int allele_count) {
             this->bottom_pattern_probs_.reset(allele_count);
             this->top_pattern_probs_.reset(allele_count);
+        }
+        void resize_all() {
+            this->resize(this->get_leaf_allele_count());
+            for (auto child_iter: this->children_) {
+                child_iter->resize_all();
+            }
         }
 
         const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs() const{
