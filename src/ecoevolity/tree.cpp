@@ -57,33 +57,100 @@ PopulationTree::PopulationTree(
     this->pattern_probs_.assign(this->data_.get_number_of_patterns(), 0.0);
 }
 
-void PopulationTree::compute_pattern_probability(unsigned int pattern_index, PopulationNode * node) {
+void PopulationTree::compute_leaf_partials(
+        unsigned int pattern_index,
+        PopulationNode * node) {
+    unsigned int pop_idx = this->data_.get_population_index(node->get_label());
+    unsigned int red_allele_count = this->data_.get_red_allele_count(pattern_index, pop_idx));
+    unsigned int allele_count = this->data_.get_allele_count(pattern_index, pop_idx);
+    if ((this->data_.markers_are_dominant()) && (red_allele_count > 0)) {
+        BiallelicPatternProbabilityMatrix m(allele_count);
+        unsigned int n = allele_count / 2;
+        unsigned int n_reds = red_allele_count / 2;
+        double p_r_k_n = 1.0;
+        for (unsigned int r = 1; r <= n_reds; ++r) {
+            p_r_k_n = (p_r_k_n * 2.0 * (n - r + 1.0)) / ((2.0 * n) - r + 1.0);
+        }
+        for (unsigned int k = n_reds; k <= red_allele_count; ++k) {
+            if (k > n_reds) {
+                p_r_k_n = (p_r_k_n * ((2.0 * n_reds) - k + 1) * k) /
+                          (2.0 * ( k - n_reds) * ((2.0 * n) - k + 1.0));
+            }
+            m.set_pattern_probability(allele_count, k, p_r_k_n);
+        }
+        return;
+    }
+    BiallelicPatternProbabilityMatrix m(allele_count, red_allele_count);
+    node->copy_bottom_pattern_probs(m);
+    return;
+}
+
+void PopulationTree::compute_top_of_branch_partials(
+        unsigned int pattern_index,
+        PopulationNode * node) {
+    if (node.get_allele_count() == 0) {
+        node.copy_top_pattern_probs(node.get_bottom_pattern_probs());
+        return;
+    }
+
+    // TODO
+    BiallelicPatternProbabilityMatrix m = MatrixExponentiator.expQTtx(...);
+    node.copy_pattern_probs(m);
+}
+
+void PopulationTree::compute_internal_partials(
+        unsigned int pattern_index,
+        PopulationNode * node) {
+    if (node->get_number_of_children == 1) {
+        node.copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+        return;
+    }
+    if (node->get_child(0)->get_allele_count() == 0) {
+        node.copy_bottom_pattern_probs(node->get_child(1)->get_top_pattern_probs());
+        return;
+    }
+    if (node->get_child(1)->get_allele_count() == 0) {
+        node.copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+        return;
+    }
+    // TODO
+    // GET bottom probs from top of both children!
+}
+
+void PopulationTree::compute_pattern_partials(
+        unsigned int pattern_index,
+        PopulationNode * node) {
     if (node->is_leaf()) {
-        this->compute_leaf_probability(pattern_index, node);
+        this->compute_leaf_partials(pattern_index, node);
     }
     else if (node.get_number_of_children() == 1) {
-        compute_pattern_probability(pattern_index, node->get_child(0));
-        compute_top_of_branch_probability(pattern_index, node->get_child(0));
-        compute_internal_probability(pattern_index, node->get_child(0));
+        compute_pattern_partials(pattern_index, node->get_child(0));
+        compute_top_of_branch_partials(pattern_index, node->get_child(0));
+        compute_internal_partials(pattern_index, node);
     }
     else if (node.get_number_of_children() == 2) {
-        compute_pattern_probability(pattern_index, node->get_child(0));
-        compute_pattern_probability(pattern_index, node->get_child(1));
-        compute_top_of_branch_probability(pattern_index, node->get_child(0));
-        compute_top_of_branch_probability(pattern_index, node->get_child(1));
-        compute_internal_probability(pattern_index, node->get_child(0), node->get_child(1));
+        compute_pattern_partials(pattern_index, node->get_child(0));
+        compute_pattern_partials(pattern_index, node->get_child(1));
+        compute_top_of_branch_partials(pattern_index, node->get_child(0));
+        compute_top_of_branch_partials(pattern_index, node->get_child(1));
+        compute_internal_partials(pattern_index, node);
     }
     else {
         throw EcoevolityError(
-                "PopulationTree::compute_pattern_probability(); unexpected number of children");
+            "PopulationTree::compute_pattern_probability(); unexpected number of children");
     }
 }
 
-void PopulationTree::compute_pattern_probabilities() {
+void PopulationTree::compute_pattern_likelihood(unsigned int pattern_index) {
+    this->compute_pattern_partials(pattern_idx, this->root_);
+    double pattern_likelihood = this->compute_root_likelihood();
+    // store likelihood in pattern_probs_
+}
+
+void PopulationTree::compute_pattern_likelihoods() {
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
             ++pattern_idx) {
-        this->compute_pattern_probability(pattern_idx, this->root_);
+        this->compute_pattern_likelihood(pattern_idx, this->root_);
     }
-    this->compute_root_likelihood();
 }
