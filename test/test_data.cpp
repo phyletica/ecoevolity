@@ -49,6 +49,12 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
             REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
             REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+            for (unsigned int pop_idx = 0; pop_idx < bd.get_number_of_populations(); ++pop_idx) {
+                REQUIRE(bd.get_allele_count(pattern_idx, pop_idx) ==
+                        expected_allele_counts.at(pattern_idx).at(pop_idx));
+                REQUIRE(bd.get_red_allele_count(pattern_idx, pop_idx) ==
+                        expected_red_counts.at(pattern_idx).at(pop_idx));
+            }
         }
 
         std::vector<unsigned int> expected_max_cts = {6,4};
@@ -2880,6 +2886,12 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
             REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
             REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+            for (unsigned int pop_idx = 0; pop_idx < bd.get_number_of_populations(); ++pop_idx) {
+                REQUIRE(bd.get_allele_count(pattern_idx, pop_idx) ==
+                        expected_allele_counts.at(pattern_idx).at(pop_idx));
+                REQUIRE(bd.get_red_allele_count(pattern_idx, pop_idx) ==
+                        expected_red_counts.at(pattern_idx).at(pop_idx));
+            }
         }
 
         expected_max_cts = {4,6,4};

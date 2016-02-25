@@ -52,6 +52,12 @@ class BiallelicData {
         //Methods
         const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
         const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
+
+        const unsigned int& get_red_allele_count(unsigned int pattern_index,
+                unsigned int population_index) const;
+        const unsigned int& get_allele_count(unsigned int pattern_index,
+                unsigned int population_index) const;
+
         const unsigned int& get_pattern_weight(unsigned int pattern_index) const;
         const unsigned int& get_max_allele_count(unsigned int population_index) const;
         const std::vector<unsigned int>& get_max_allele_counts() const;

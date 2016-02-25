@@ -299,6 +299,16 @@ const std::vector<unsigned int>& BiallelicData::get_red_allele_counts(unsigned i
 const std::vector<unsigned int>& BiallelicData::get_allele_counts(unsigned int pattern_index) const {
     return this->allele_counts_.at(pattern_index);
 }
+const unsigned int& BiallelicData::get_red_allele_count(
+        unsigned int pattern_index,
+        unsigned int population_index) const {
+    return this->red_allele_counts_.at(pattern_index).at(population_index);
+}
+const unsigned int& BiallelicData::get_allele_count(
+        unsigned int pattern_index,
+        unsigned int population_index) const {
+    return this->allele_counts_.at(pattern_index).at(population_index);
+}
 
 const unsigned int& BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
     return this->pattern_weights_.at(pattern_index);
