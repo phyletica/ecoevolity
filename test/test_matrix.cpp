@@ -270,3 +270,31 @@ TEST_CASE("Testing copy method of BiallelicPatternProbabilityMatrix",
         REQUIRE_THROWS_AS(m2.set_pattern_probability(3, 0, 1.0), std::out_of_range);
     }
 }
+
+TEST_CASE("Testing get_pattern_prob_matrix of BiallelicPatternProbabilityMatrix",
+        "[BiallelicPatternProbabilityMatrix]") {
+
+    SECTION("Testing get_pattern_prob_matrix") {
+        BiallelicPatternProbabilityMatrix m;
+        m.resize(3);
+        m.set_pattern_probability(1, 1, 0.5);
+        m.set_pattern_probability(3, 2, 0.5);
+
+        std::vector<double> expected_prob_matrix;
+        expected_prob_matrix = {0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
+
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+
+        std::vector<double> m_copy = m.get_pattern_prob_matrix();
+        m_copy.at(0) = 0.1;
+
+        std::vector<double> expected_copy;
+        expected_copy = {0.1, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
+
+        REQUIRE(m.get_pattern_prob_matrix() == expected_prob_matrix);
+        REQUIRE(m.get_pattern_prob_matrix() != expected_copy);
+
+        REQUIRE(m_copy == expected_copy);
+        REQUIRE(m_copy != expected_prob_matrix);
+    }
+}
