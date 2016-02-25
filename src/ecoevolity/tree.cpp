@@ -113,8 +113,58 @@ void PopulationTree::compute_internal_partials(
         node.copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
         return;
     }
-    // TODO
-    // GET bottom probs from top of both children!
+    unsigned int allele_count_child1 = node->get_child(0)->get_allele_count();
+    unsigned int allele_count_child2 = node->get_child(1)->get_allele_count();
+
+    std::vector<double> pattern_probs_child1 = node->get_child(0)->get_top_pattern_probs()->get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child2 = node->get_child(1)->get_top_pattern_probs()->get_pattern_prob_matrix();
+
+    for (int n = 1; n <= allele_count_child1; ++n) {
+        double b_nr = 1.0;
+        for (int r = 0; r <= n; ++r) {
+            pattern_probs_child1.at(((n*(n+1))/2)-1+r) *= b_nr;
+            b_nr *= ((double)n - r)/(r+1);
+        }
+    }
+
+    for (n = 1; n<= allele_count_child2; ++n) {
+        b_nr = 1.0;
+        for (r = 0; r <= n; ++r) {
+            pattern_probs_child2.at(((n*(n+1))/2)-1+r) *= b_nr;
+            b_nr *= ((double)n - r)/(r+1);
+        }
+    }
+
+    unsigned int allele_count = allele_count_child1 + allele_count_child2;
+    std::vector<double> pattern_probs; 
+    pattern_probs_.assign(
+            ((((allele_count + 1) * (allele_count + 2))/2) - 1),
+            0);
+    for (int n1 = 1; n1 <= allele_count_child1; ++n1) {
+        for (int r1 = 0; r1 <= n1; ++r1) {
+            double f11 = pattern_probs_child1.at(n1*(n1+1)/2-1+r1);
+            for (int n2 = 1; n2 <= allele_count_child2; ++n2) {
+                for (int r2 = 0; r2 <= n2; ++r2) {
+                    pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += f11 * pattern_probs_child2.at(n2*(n2+1)/2-1+r2);
+                }
+            }
+        }
+    }
+
+    for (n = 1; n <= allele_count; ++n) {
+        b_nr = 1.0;
+        for (r = 0; r <= n; ++r) {
+            double f_nr = pattern_probs.at(n*(n+1)/2-1+r);
+            f_nr /= b_nr;
+            // TODO: better way to fix this?
+            f_nr = std::max(f_nr, 0.0);
+            pattern_probs.at(n*(n+1)/2-1+r) = f_nr;
+            b_nr *= ((double)n - r)/(r+1);
+
+        }
+    }
+    BiallelicPatternProbabilityMatrix m(allele_count, pattern_probs);
+    node.copy_bottom_pattern_probs(m);
 }
 
 void PopulationTree::compute_pattern_partials(
@@ -144,7 +194,7 @@ void PopulationTree::compute_pattern_partials(
 void PopulationTree::compute_pattern_likelihood(unsigned int pattern_index) {
     this->compute_pattern_partials(pattern_idx, this->root_);
     double pattern_likelihood = this->compute_root_likelihood();
-    // store likelihood in pattern_probs_
+    // TODO: store likelihood in pattern_probs_
 }
 
 void PopulationTree::compute_pattern_likelihoods() {
