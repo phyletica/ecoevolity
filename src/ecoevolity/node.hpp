@@ -145,10 +145,12 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
 
         void copy_bottom_pattern_probs(const BiallelicPatternProbabilityMatrix& m) {
-            if (m.get_allele_count() != this->top_pattern_probs_.get_allele_count()) {
-                throw EcoevolityError(
-                        "PopulationNode:copy_bottom_pattern_probs(); allele counts must be the same between top and bottom of branch");
-            }
+            // No check here; bottom probs will be updated first and can differ
+            // in size until the top is also updated.
+            // if (m.get_allele_count() != this->top_pattern_probs_.get_allele_count()) {
+            //     throw EcoevolityError(
+            //             "PopulationNode:copy_bottom_pattern_probs(); allele counts must be the same between top and bottom of branch");
+            // }
             this->bottom_pattern_probs_.copy(m);
         }
         void copy_top_pattern_probs(const BiallelicPatternProbabilityMatrix& m) {
