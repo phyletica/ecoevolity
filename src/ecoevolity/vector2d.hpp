@@ -17,6 +17,15 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "debug.hpp"
+#include "assert.hpp"
+#include "error.hpp"
+
 /**
  * @brief   1-based 2x2 matrix
  */
@@ -25,6 +34,17 @@ class Vector2d {
         unsigned int nrows_;
         unsigned int ncols_;
         std::vector<double> values_;
+
+        void check_row_index(unsigned int i) const {
+            if ((i < 1) || (i > this->nrows_)) {
+                throw std::out_of_range("Vector2d: row index out of range");
+            }
+        }
+        void check_column_index(unsigned int j) const {
+            if ((j < 1) || (j > this->ncols_)) {
+                throw std::out_of_range("Vector2d: col index out of range");
+            }
+        }
 
     public:
         Vector2d(unsigned int nrows, unsigned int ncols) {
@@ -69,6 +89,8 @@ class Vector2d {
         }
 
         unsigned int get_index(unsigned int i, unsigned int j) const {
+            this->check_row_index(i);
+            this->check_column_index(j);
             return ((i - 1) * this->ncols_) + j - 1;
         }
 
@@ -105,7 +127,7 @@ class Vector2d {
         void add(double multiplier,
                  const std::vector<double>& addends) {
             ECOEVOLITY_ASSERT(this->values_.size() == addends.size());
-            for (unsigned int = 0; i < this->values_size(); ++i) {
+            for (unsigned int i = 0; i < this->values_.size(); ++i) {
                 this->values_.at(i) += multiplier * addends.at(i);
             }
         }
@@ -114,7 +136,7 @@ class Vector2d {
          * @brief   Get transposed copy of current matrix
          */
         Vector2d transpose() const {
-            Vector2d transpose(this->nrows_, this->ncols_);
+            Vector2d transpose(this->ncols_, this->nrows_);
             for (unsigned int row_idx = 1; row_idx <= this->nrows_; ++row_idx) {
                 for (unsigned int col_idx = 1; col_idx <= this->ncols_; ++col_idx) {
                     transpose.set(col_idx, row_idx, this->at(row_idx, col_idx));
@@ -136,6 +158,7 @@ class Vector2d {
          * @brief   Get column as 1-based vector
          */
         std::vector<double> get_column(unsigned int column_index) const {
+            this->check_column_index(column_index);
             std::vector<double> c (this->nrows_ + 1, 0);
             for (unsigned int row_idx = 1; row_idx <= this->nrows_; ++row_idx) {
                 c.at(row_idx) = this->at(row_idx, column_index);
@@ -144,6 +167,7 @@ class Vector2d {
         }
         void get_column(unsigned int column_index,
                         std::vector<double>& column) const {
+            this->check_column_index(column_index);
             column.resize(this->nrows_ + 1);
             for (unsigned int row_idx = 1; row_idx <= this->nrows_; ++row_idx) {
                 column.at(row_idx) = this->at(row_idx, column_index);
