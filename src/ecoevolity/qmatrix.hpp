@@ -314,6 +314,177 @@ class QMatrix : public AbstractMatrix {
             )
             return x;
         }
+
+        std::vector<double> find_orthogonal_vector() {
+            //Finds non-zero vector x such that x'Q' = 0
+            /* Want to find non-zero x such that x' Q' = 0.
+             Let x = [x_1,x_2,...,x_n]
+             We first solve x_1 ' M_1 = 0 manually.
+             Then use the recursion
+             
+             x_{n-1} R_{n-1} + x_n M_n = 0  for n=2,3,...,N
+             
+             */
+            unsigned int nrows = this->get_nrows();
+        
+            std::vector<double> x (nrows + 1, 0.0);        
+            std::vector<double> xn (this->n_ + 1, 0.0); 
+            std::vector<double> yn (this->n_ + 1, 0.0);
+            
+            //First solve the n=1 case.
+            //M_1 = [-v   v; -u u] which has solution [u  v]
+            xn.at(0) = this->u_; xn.at(1) = this->v_;
+            x.at(1) = this->u_;
+            x.at(2) = this->v_;
+            unsigned int xptr = 3;
+            
+            //Now the rest.
+            for (unsigned int n = 2; n <= this->n_; ++n) {
+                
+                /***
+                 We use the recursion 
+                 x_{n-1}' R_{n-1} + x_n' M_n = 0.
+                 or equivalently
+                 M_n' x_n = - R_{n-1}' x_{n-1}
+                 
+                 
+                 First compute y_n = - R_{n-1}' x_{n-1}  
+                 
+                 Second, solve M_n' x_n = y_n
+                 
+                 ****/
+                
+                ECOEVOLITY_DEBUG(
+                    std::cerr << "xn = [";
+                    for (unsigned int r = 0; r <= n-1; ++r) {
+                        std::cerr << xn.at(r) << " ";
+                    }
+                    std::cerr << "];" << std::endl;
+                )
+                
+                yn.at(0) = - ((this->coalescence_rate_*(n-1.0)*n)/2.0)*xn.at(0);
+                for (unsigned int r = 1; r < n; ++r) {
+                    yn.at(r) = - ( (this->coalescence_rate_*(r-1.0)*n)/2.0 )*xn.at(r-1) - ( (this->coalescence_rate_*(n-1.0-r)*n)/2.0 )*xn.at(r);
+                }        
+                yn.at(n) = - ( (this->coalescence_rate_*(n-1.0)*n)/2.0 )*xn.at(n-1);
+                
+                if (printd) {
+                    std::cerr << "yn = [";
+                    for(unsigned int r = 0;r <= n; ++r) {
+                        std::cerr << yn.at(r) << " ";
+                    }
+                    std::cerr << "];" << std::endl;
+                }
+                
+                
+                xn = this->solve_central_block_transposed(
+                        yn,
+                        0,
+                        n,
+                        this->u_,
+                        this->v_,
+                        this->coalescence_rate_);
+                
+                for (unsigned int i = 0; i < xn.size(); ++i) {
+                    x.at(xptr++) = xn.at(i);
+                }
+                
+                ECOEVOLITY_DEBUG(
+                    std::cerr << "xn2 = [";
+                    for(unsigned int r = 0; r <= n; ++r) {
+                        std::cerr << xn.at(r) << " ";
+                    }
+                    std::cerr << "];" << std::endl;
+                )
+            }
+            return x;
+        }
+
+        void solve(const std::vector<Complex>& y,
+                   const Complex& offset,
+                   const std::vector<Complex>& x) {
+            /* Suppose that y = [y1',y2',...,yn']' as above. We solve (Q^t + offset*I) x = y.
+             This gives us the equations
+             
+             M_n x_n + R_n x_{n+1} + offset*x_n  = y_n  for n=1,2,...,N - 1
+             and
+             M_N x_N + offset x_N = y_N
+             
+             These can be solved in reverse, starting with (M_N + offset * I)x_N = y_N
+             and then
+             (M_n + offset I) x_n = y_n - R_n x_{n+1}  n = N-1,N_2,...,1
+             
+             The solution of the tridiaongal system (M_n + offset I) x_n = z 
+             is done by the routine solveCentralBlock. The computation of Rn x_{n+1} is done by MultiplyUpperBlock.
+             */
+            
+            if (x.size() != y.size()) {
+                throw EcoevolityError("QMatrix.solve(): x & y differ in length");
+            }
+            for (unsigned int i = 0; i < x.size(); ++i) {
+                x.at(i).re_ = 0;
+                x.at(i).im_ = 0;
+            }
+            
+            std::vector<Complex> xn (this->n_ + 1);
+            std::vector<Complex> yn (this->n_ + 1);
+            // for (unsigned int i = 0; i < (this->n_ + 1); ++i) {
+            //     xn.at(i) = Complex();
+            //     yn.at(i) = Complex();
+            // }
+            
+            
+            unsigned int xptr = x.size() - 1 - this->n_;
+            unsigned int yptr = y.size() - 1 - this->n_;
+            
+            //Solve (M_N + offset * I)x_N = y_N and copy solution into xn.
+            for (unsigned int i = 0; i < yn.size(); ++i) {
+                yn.at(i).re_ = y.at(yptr + i).re_;
+                yn.at(i).im_ = y.at(yptr + i).im_;
+            }
+            this->solve_central_block(
+                    yn,
+                    offset,
+                    this->n_,
+                    this->u_,
+                    this->v_,
+                    this->coalescence_rate_,
+                    xn);
+
+            for (unsigned int i = 0; i < xn.size(); ++i) {
+                x.at(xptr+i).re_ = xn.at(i).re_;
+                x.at(xptr+i).im_ = xn.at(i).im_;
+            }
+            
+            //Solve for the rest
+            for (unsigned int n = this->n_-1; n >= 1; --n) {
+                xptr = xptr - (n+1);
+                this->multiply_upper_block(
+                        xn,
+                        n,
+                        this->coalescence_rate_,
+                        yn);
+                yptr = yptr - (n+1);
+                for (unsigned int r = 0; r <= n; ++r) {
+                    yn.at(r).re_ = y.at(yptr + r).re_ - yn.at(r).re_; 
+                    yn.at(r).im_ = y.at(yptr + r).im_ - yn.at(r).im_; 
+                }
+                
+                this->solve_central_block(
+                        yn,
+                        offset,
+                        n,
+                        this->u_,
+                        this->v_,
+                        this->coalescence_rate_,
+                        xn);
+                
+                for (unsigned int i = 0; i <= n; ++i) {
+                    x.at(xptr + i).re_ = xn.at(i).re_;
+                    x.at(xptr + i).im_ = xn.at(i).im_;
+                }
+            }
+        }
 };
 
 #endif
