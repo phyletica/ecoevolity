@@ -56,4 +56,3 @@ std::vector<std::string> split(
         char delimiter);
 
 #endif
-
