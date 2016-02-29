@@ -20,6 +20,9 @@
 #ifndef ECOEVOLITY_QMATRIX_HPP
 #define ECOEVOLITY_QMATRIX_HPP
 
+#include "vector2d.hpp"
+#include "complex.hpp"
+
 /**
  * @brief Abstract matrix (or linear operator) type; used for sparse matrices.
  */
@@ -88,6 +91,109 @@ class AbstractMatrix {
                 sum += v.at(i) * v.at(i);
             }
             return std::sqrt(sum);
+        }
+};
+
+class QMatrix : public AbstractMatrix {
+    private:
+        double u_;
+        double v_;
+        double coalescence_rate_;
+        unsigned int n_;
+
+    public:
+        Qmatrix(unsigned int n, double u, double v, double coalescence_rate) {
+            this->n_ = n;
+            this->u_ = u;
+            this->v_ = v;
+            this->coalescence_rate_ = coalescence_rate;
+        }
+
+        unsigned int get_nrows() const {
+            return ((this-n_ + 1) * (this->n_ + 1) + this->n_ - 1)/2;
+        }
+        unsigned int get_ncols() const {
+            return this->get_nrows();
+        }
+
+        double inf_norm() {
+            if (this->u_ > this->v_) {
+                return std::max(
+                        2.0 * this->u_ * (this->n_ - 1) + this->coalescence_rate_ * (this->n_ - 1) * (this->n_ - 1),
+                        2.0 * this->u_ * (this->n_) + this->coalescence_rate_ * (this->n_) * (this->n_ - 1)/2.0
+                        );
+            }
+            else {
+                return std::max(
+                        2.0 * this->v_ * (this->n_ - 1) + this->coalescence_rate_ * (this->n_ - 1) * (this->n_ - 1),
+                        2.0 * this->v_ * (this->n_) + this->coalescence_rate_ * (this->n_) * (this->n_ - 1)/2.0
+                        );
+            }
+        }
+
+        double trace() {
+            return -this->coalescence_rate_ * (this->n_ - 1) * this->n_ * (this->n_ + 1) * (this->n_ + 2)/8 - this->n_ * (this->n_ + 1) * (this->n_ + 2) * (this->u_ + this->v_)/6;
+        }
+
+        void multiply(const std::vector<double>& x,
+                      const std::vector<double>& ax) {
+            unsigned int index = 1;
+            for (unsigned int n = 1; n <= this->n_; ++n) {
+                double sum = 0.0;
+                sum += (- (this->coalescence_rate*(n*(n-1.0)))/2.0 - this->v_*n)*x.at(index);
+                sum += n*this->v_*x.at(index+1);
+                
+                if (n < this->n_) {
+                    sum += (n*(n+1.0)/2.0)*this->coalescence_rate_*x.at(index+n+1);
+                }
+                ax.at(index) = sum;
+                index++;
+                
+                for(unsigned int r = 1; r < n; ++r) {
+                    sum = r*this->u_*x.at(index-1);
+                    sum +=  (- (this->coalescence_rate_*(n*(n-1.0)))/2.0 - this->v_*(n-r) - this->u_*r)*x.at(index);
+                    if (r < n)
+                        sum += (n-r)*this->v_*x.at(index+1);
+                    
+                    if (n < this->n_) {
+                        sum += ((n-r)*(n+1.0)/2.0)*this->coalescence_rate_*x.at(index+n+1);
+                        sum += (r*(n+1.0)/2.0)*this->coalescence_rate_*x.at(index+n+2);
+                    }
+                    ax.at(index) = sum;
+                    index++;
+                }
+                sum = n*this->u_*x.at(index-1);
+                sum += (- (this->coalescence_rate_*(n*(n-1.0)))/2.0 - this->u_*n)*x.at(index);
+            
+                if (n < this->n_) {
+                    sum += (n*(n+1.0)/2.0)*this->coalescence_rate_*x.at(index+n+2);
+                }
+                ax.at(index) = sum;
+                index++;
+            }
+        }
+
+        void multiply_orig(const std::vector<double>& x,
+                           const std::vector<double>& ax) {
+            unsigned int index = 1;
+            for(unsigned int n = 1; n <= this->n_; ++n) {
+                for(unsigned int r = 0; r <= n; ++r) {
+                    double sum = 0.0;
+                    if (r > 0) {
+                        sum += r*this->u_*x.at(index-1);
+                    }
+                    sum += (- (this->coalescence_rate_*(n*(n-1.0)))/2.0 - this->v_*(n-r) - this->u_*r)*x.at(index);
+                    if (r < n)
+                        sum += (n-r)*this->v_*x.at(index+1);
+                    
+                    if (n < this->n_) {
+                        sum += ((n-r)*(n+1.0)/2.0)*this->coalescence_rate_*x.at(index+n+1);
+                        sum += (r*(n+1.0)/2.0)*this->coalescence_rate_*x.at(index+n+2);
+                    }
+                    ax.at(index) = sum;
+                    index++;
+                }
+            }
         }
 };
 
