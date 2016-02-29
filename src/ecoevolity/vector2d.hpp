@@ -17,6 +17,9 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+#ifndef ECOEVOLITY_VECTOR2D_HPP
+#define ECOEVOLITY_VECTOR2D_HPP
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -212,3 +215,5 @@ class Vector2d {
             return ss.str();
         }
 };
+
+#endif
