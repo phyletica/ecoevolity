@@ -20,6 +20,9 @@
 #ifndef ECOEVOLITY_QMATRIX_HPP
 #define ECOEVOLITY_QMATRIX_HPP
 
+#include <cmath>
+#include <algorithm>
+
 #include "vector2d.hpp"
 #include "complex.hpp"
 

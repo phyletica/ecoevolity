@@ -20,6 +20,8 @@
 #ifndef ECOEVOLITY_TREE_HPP
 #define ECOEVOLITY_TREE_HPP
 
+#include <algorithm>
+
 #include "data.hpp"
 #include "node.hpp"
 #include "error.hpp"
