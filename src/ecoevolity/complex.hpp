@@ -29,6 +29,9 @@
 #include "assert.hpp"
 #include "error.hpp"
 
+/**
+ * @note    Translated from COMPLEX class of COMPLEX.java of the SnAP package.
+ */
 class Complex {
     public:
         double re_ = 0.0;
