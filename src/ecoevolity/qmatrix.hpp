@@ -195,6 +195,122 @@ class QMatrix : public AbstractMatrix {
                 }
             }
         }
+
+        void check_mrr(double mrr) {
+            // TODO: Comparing floats for equality (!!)
+            if (mrr == 0.0) {
+                throw EcoevolityError("QMatrix: Error in matrix solve");
+            }
+        }
+
+        // TODO: check if passed or member variable gets precedence in java;
+        // assuming passed gets precedence in translating this from SnAP.
+        std::vector<double> solve_central_block_transposed(
+                const std::vector<double>& y,
+                const double offset,
+                const unsigned int n,
+                const double u,
+                const double v,
+                const double coalescence_rate) {
+
+            ECOEVOLITY_DEBUG(
+            std::cerr << "ylocal = [";
+            for (unsigned int i = 0; i < y.size(); ++i) {
+                std::cerr << y.at(i) << " ";
+            }
+            std::cerr << "];" << std::endl;
+            )
+
+            std::vector<double> x (n + 1, 0.0);
+
+            double K = -(coalescence_rate*(n*(n-1.0)))/2.0 - n*v + offset;
+            
+            // TODO: More comparing floats
+            if ((u == 0.0) && (v == 0.0)) { 
+                for (unsigned int r = 0; r <= n; ++r) {
+                    x.at(r) = y.at(r)/K;
+                }
+            } else if (u == 0.0) {
+                double Mrr = K;
+                this->check_mrr(Mrr);
+                x.at(0) = y.at(0) / Mrr;
+                for(unsigned int r = 1; r <= n; ++r) {
+                    Mrr = K+r*(v-u);
+                    this->check_mrr(Mrr);
+                    x.at(r) = (y.at(r) - ((n-r+1.0)*v)*x.at(r-1))/Mrr;    
+                }
+            } 
+            else if (v == 0.0) {
+                double Mrr = K + n*(v-u);
+                this->check_mrr(Mrr);
+                x.at(n) = y.at(n) / Mrr;
+                for(unsigned int r = n-1; r >= 0; --r) {
+                    Mrr = (K+r*(v-u));
+                    x.at(r) = (y.at(r) - ((r+1.0)*u)*x.at(r+1))/Mrr;
+                }
+            }
+            else {
+                std::vector<double> d (n+1, 0.0);
+                std::vector<double> e (n+1, 0.0);
+                d.at(0) = K;
+                e.at(0) = y.at(0);
+                for(unsigned int r = 1; r <= n; ++r) {
+                    this->check_mrr(d.at(r-1));
+                    double m = ((n-r+1.0)*v)/d.at(r-1);
+                    d.at(r) = K+r*(v-u) - m*r*u;
+                    e.at(r) = y.at(r) - m*e.at(r-1);
+                }
+                
+                ECOEVOLITY_DEBUG(
+                    std::cerr << "d = [";
+                    for (unsigned int i = 0; i < d.size(); ++i) {
+                        std::cerr << d.at(i) << " ";
+                    }
+                    std::cerr << "];" << std::endl;
+                    
+                    std::cerr << "e = [";
+                    for (i = 0; i < e.size(); ++i) {
+                        std::cerr << e.at(i) << " ";
+                    }
+                    std::cerr << "];" << std::endl;
+                )
+                
+                //now solve the upper biadiagonal. diagonal is d, upper is same as M
+                x.at(n) = e.at(n)/d.at(n);
+                for(unsigned int r = n-1; r >= 0 ; --r) {
+                    this->check_mrr(d.at(r));
+                    x.at(r) = (e.at(r) - (r+1.0)*u*x.at(r+1))/d.at(r);
+                }
+            }
+            
+            ECOEVOLITY_DEBUG(
+                std::cerr << "xlocal = ";
+                for(unsigned int i = 0; i < x.size(); ++i) {
+                    std::cerr << x.at(i) << " ";
+                }
+                std::cerr << "];" << std::endl;
+                
+                double diff = 0.0;
+                for(unsigned int r=0; r <= n; ++r) {
+                    double sum = 0.0;
+                    if (r > 0) {
+                        sum += (n+1.0-r)*v*x.at(r-1);
+                    }
+                    sum += (- (coalescence_rate*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x.at(r);
+                    if (r < n) {
+                        sum+= (r+1.0)*u*x.at(r+1);
+                    }
+                    
+                    std::cerr << sum << std::endl;
+                    
+                    diff = std::max(diff, std::abs(sum-y.at(r))); //Check that it solves the system
+                }
+                if (diff > 1e-10) {
+                    std::cerr << "QMatrix.solve_central_block_transposed(): Error in solve" << std::endl;
+                }
+            )
+            return x;
+        }
 };
 
 #endif
