@@ -27,7 +27,11 @@
 #include "complex.hpp"
 
 /**
- * @brief Abstract matrix (or linear operator) type; used for sparse matrices.
+ * @brief   Abstract matrix (or linear operator) type; used for sparse
+ *          matrices.
+ *
+ * @note    Translated/modified from AbstractMatrix class of the SnAP
+ *          package.
  */
 class AbstractMatrix {
     public:
@@ -97,6 +101,10 @@ class AbstractMatrix {
         }
 };
 
+ /**
+ * @note    Translated/modified from QMatrix class of the SnAP
+ *          package.
+ */
 class QMatrix : public AbstractMatrix {
     private:
         double u_;
@@ -199,7 +207,7 @@ class QMatrix : public AbstractMatrix {
             }
         }
 
-        void check_mrr(double mrr) {
+        void check_mrr(double mrr) const {
             // TODO: Comparing floats for equality (!!)
             if (mrr == 0.0) {
                 throw EcoevolityError("QMatrix: Error in matrix solve");
@@ -482,6 +490,315 @@ class QMatrix : public AbstractMatrix {
                 for (unsigned int i = 0; i <= n; ++i) {
                     x.at(xptr + i).re_ = xn.at(i).re_;
                     x.at(xptr + i).im_ = xn.at(i).im_;
+                }
+            }
+        }
+
+        void multiply_upper_block(
+                const std::vector<Complex>& x,
+                unsigned int n,
+                double coalescence_rate,
+                const std::vector<Complex>& y) {
+            if (y.size() < n+1) {
+                throw EcoevolityError("QMatrix.multiply_upper_block(): y vector of Complexes shorter than expected");
+            }
+            for (unsigned int r = 0;r <= n; ++r) { 
+              y.at(r).muladd((coalescence_rate*(double)(n-r)*(n+1.0)/2.0), x.at(r), (coalescence_rate*(double)r*(n+1.0)/2.0),x.at(r+1));
+            }
+        }
+
+        void check_mrr(const Complex& mrr) const {
+            if ((std::abs(mrr.re_) < 1e-20) && (std::abs(mrr.im_) < 1e-20)) {
+                throw EcoevolityError("QMatrix.check_mrr(): Error in matrix solve");
+            }
+            
+        }
+
+        void solve_central_block(
+                const std::vector<Complex>& y,
+                const Complex& offset,
+                unsigned int n,
+                double u,
+                double v,
+                double coalescence_rate,
+                const std::vector<Complex>& x) {
+            Complex K((double)(-coalescence_rate*(double)n*(n-1.0)/2.0 - n*v) + offset.re_, offset.im_);
+            Complex tmp();
+
+            if (x.size() < n+1) {
+                throw EcoevolityError("QMatrix.solve_central_block(): x vector of Complexes shorter than expected");
+            }
+            
+            Complex Mrr();
+            
+            if (v == 0.0) {
+                //Lower bidagonal.
+                Mrr = K;
+                this->check_mrr(Mrr);
+                x.at(0).divide(y.at(0), Mrr);
+                for (unsigned int r = 1; r <= n; ++r) {
+                    Mrr.re_ = K.re_ + (double)r*(v-u);
+                    Mrr.im_ = K.im_;
+                    this->check_mrr(Mrr);
+                    tmp.re_ = y.at(r).re_ - x.at(r-1).re_*(double)(u*r);
+                    tmp.im_ = y.at(r).im_ - x.at(r-1).im_*(double)(u*r);
+                    x.at(r).divide(tmp, Mrr);
+                }
+            } //Upper bidiagonal
+            else if (u == 0.0) {
+                Mrr.re_ = K.re_ + (double)n*(v-u);
+                Mrr.im_ = K.im_;
+                this->check_mrr(Mrr);
+                x.at(n).divide(y.at(n), Mrr);
+                for (unsigned int r = n-1; r >= 0; --r) {
+                    Mrr.re_ = K.re_ + (double)r*(v-u);
+                    Mrr.im_ = K.im_;
+                    tmp.re_ = y.at(r).re_ - ((double)(n-r)*v*x.at(r+1).re_);
+                    tmp.im_ = y.at(r).im_ - ((double)(n-r)*v*x.at(r+1).im_);
+                    x.at(r).divide(tmp, Mrr);
+                }
+            }
+            else {
+                std::vector<Complex> d (n+1, Complex());
+                // for (unsigned int i = 0; i < n+1; ++i) {
+                //     d.at(i) = Complex();
+                // }
+                std::vector<Complex> e (n+1, Complex());
+                // for (unsigned int i = 0; i < n+1; ++i) {
+                //     e.at(i) = Complex();
+                // }
+                d.at(0).re_ = K.re_;
+                d.at(0).im_ = K.im_;
+                e.at(0).re_ = y.at(0).re_;
+                e.at(0).im_ = y.at(0).im_;
+                for (unsigned int r = 1;r <= n; ++r) {
+                    //zero out lower triangular
+                    this->check_mrr(d.at(r-1));
+                    tmp.re_ = r*u;
+                    tmp.im_ = 0.0;
+                    Complex m();
+                    m.divide(tmp, d.at(r-1));
+                    d.at(r).re_ = K.re_+r*(v-u) - m.re_*(n-r+1.0)*v;
+                    d.at(r).im_ = K.im_+        - m.im_*(n-r+1.0)*v;
+                    tmp.mul(m, e.at(r-1));
+                    e.at(r).re_ = y.at(r).re_ - tmp.re_;
+                    e.at(r).im_ = y.at(r).im_ - tmp.im_;
+                }
+                
+                //now solve the upper biadiagonal. diagonal is d, upper is same as M
+                x.at(n).divide(e.at(n), d.at(n));
+                for (unsigned int r = n-1; r >= 0; --r) {
+                    this->check_mrr(d.at(r));
+                    tmp.re_ = (e.at(r).re_ - (double)(n-r)*v*x.at(r+1).re_);
+                    tmp.im_ = (e.at(r).im_ - (double)(n-r)*v*x.at(r+1).im_);
+                    x.at(r).divide(tmp, d.at(r));
+                }
+            }
+        }
+
+        void check_mrr(double mrr_r, double mrr_i) const {
+            if ((std::abs(mrr_r) < 1e-20) && (std::abs(mrr_i) < 1e-20)) {
+               throw EcoevolityError("QMatrix.check_mrr(): Error in matrix solve");
+            }
+        }
+
+        void multiply_upper_block(
+                const std::vector<double>& x_r,
+                const std::vector<double>& x_i,
+                unsigned int n,
+                double coalescence_rate,
+                const std::vector<double>& y_r,
+                const std::vector<double>& y_i) {
+            if ((y_r.size() < n+1) || (y_i.size() < n+1)) {
+                throw EcoevolityError("QMatrix.multiply_upper_block(): y vector shorter than expected");
+            }
+            for (unsigned int r = 0; r <= n; ++r) { 
+                y_r.at(r) = coalescence_rate*(double)(n-r)*(n+1.0)/2.0 * x_r.at(r) + (coalescence_rate*(double)r*(n+1.0)/2.0)*x_r.at(r+1);
+                y_i.at(r) = coalescence_rate*(double)(n-r)*(n+1.0)/2.0 * x_i.at(r) + (coalescence_rate*(double)r*(n+1.0)/2.0)*x_i.at(r+1);
+            }
+            
+        }
+
+        void solve_central_block(
+                const std::vector<double>& y_r,
+                const std::vector<double>& y_i,
+                double offset_r,
+                double offest_i,
+                unsigned int n,
+                double u,
+                double v,
+                double coalescence_rate,
+                const std::vector<double>& x_r,
+                const std::vector<double>& x_i) {
+            double K_r = (double)(-coalescence_rate*(double)n*(n-1.0)/2.0 - n*v) + offset_r;
+            double K_i = offset_i;
+            double tmp_r;
+            double tmp_i;
+            double Mrr_r;
+            double Mrr_i;
+
+            if (v == 0.0) {
+                //Lower bidagonal.
+                Mrr_r = K_r;
+                Mrr_i = K_i;
+                this->check_mrr(Mrr_r, Mrr_i);
+                double f = Mrr_r * Mrr_r + Mrr_i * Mrr_i; 
+                x_r.at(0) = (y_r.at(0) * Mrr_r + y_i.at(0) * Mrr_i) / f;
+                x_i.at(0) = (y_i.at(0) * Mrr_r - y_r.at(0) * Mrr_i) / f;
+
+                for (unsigned int r = 1; r <= n; ++r) {
+                    Mrr_r = K_r + (double)r*(v-u);
+                    Mrr_i = K_i;
+                    this->check_mrr(Mrr_r, Mrr_i);
+                    tmp_r = y_r.at(r) - x_r.at(r-1)*(double)(u*r);
+                    tmp_i = y_i.at(r) - x_i.at(r-1)*(double)(u*r);
+                    f = Mrr_r * Mrr_r + Mrr_i * Mrr_i; 
+                    x_r.at(r) = (tmp_r * Mrr_r + tmp_i * Mrr_i) / f;
+                    x_i.at(r) = (tmp_i * Mrr_r - tmp_r * Mrr_i) / f;
+                }
+            } //Upper bidiagonal
+            else if (u == 0.0) {
+                Mrr_r = K_r + (double)n*(v-u);
+                Mrr_i = K_i;
+                this->check_mrr(Mrr_r, Mrr_i);
+                double f = Mrr_r * Mrr_r + Mrr_i * Mrr_i; 
+                x_r.at(n) = (y_r.at(n) * Mrr_r + y_i.at(n) * Mrr_i) / f;
+                x_i.at(n) = (y_i.at(n) * Mrr_r - y_r.at(n) * Mrr_i) / f;
+                for (unsigned int r = n-1; r >= 0; --r) {
+                    Mrr_r = K_r + (double)r*(v-u);
+                    Mrr_i = K_i;
+                    tmp_r = y_r.at(r) - ((double)(n-r)*v*x_r.at(r+1));
+                    tmp_i = y_i.at(r) - ((double)(n-r)*v*x_i.at(r+1));
+                    f = Mrr_r * Mrr_r + Mrr_i * Mrr_i; 
+                    x_r.at(r) = (tmp_r * Mrr_r + tmp_i * Mrr_i) / f;
+                    x_i.at(r) = (tmp_i * Mrr_r - tmp_r * Mrr_i) / f;
+                }
+            }
+            else {
+                std::vector<double> d_r (n+1, 0.0);
+                std::vector<double> d_i (n+1, 0.0);
+                std::vector<double> e_r (n+1, 0.0);
+                std::vector<double> e_i (n+1, 0.0);
+                d_r.at(0) = K_r;
+                d_i.at(0) = K_i;
+                e_r.at(0) = y_r.at(0);
+                e_i.at(0) = y_i.at(0);
+                for (unsigned int r = 1; r <= n; ++r) {
+                    this->check_mrr(d_r.at(r-1), d_i.at(r-1));
+                    tmp_r = r*u;
+                    tmp_i = 0.0;
+                    double f = d_r.at(r-1) * d_r.at(r-1) + d_i.at(r-1) * d_i.at(r-1); 
+                    double m_r = (tmp_r * d_r.at(r-1) + tmp_i * d_i.at(r-1)) / f;
+                    double m_i = (tmp_i * d_r.at(r-1) - tmp_r * d_i.at(r-1)) / f;
+                    d_r.at(r) = K_r + r*(v-u) - m_r*(n-r+1.0)*v;
+                    d_i.at(r) = K_i +         - m_i*(n-r+1.0)*v;
+                    tmp_r = m_r * e_r.at(r-1) - m_i * e_i.at(r-1);
+                    tmp_i = m_i * e_r.at(r-1) + m_r * e_i.at(r-1);
+                    e_r.at(r) = y_r.at(r) - tmp_r;
+                    e_i.at(r) = y_i.at(r) - tmp_i;
+                }
+
+                //now solve the upper biadiagonal. diagonal is d, upper is same as M
+                double f = d_r.at(n) * d_r.at(n) + d_i.at(n) * d_i.at(n); 
+                x_r.at(n) = (e_r.at(n) * d_r.at(n) + e_i.at(n) * d_i.at(n)) / f;
+                x_i.at(n) = (e_i.at(n) * d_r.at(n) - e_r.at(n) * d_i.at(n)) / f;
+                for (unsigned int r = n-1; r >= 0; --r) {
+                    this->check_mrr(d_r.at(r), d_i.at(r));
+                    tmp_r = (e_r.at(r) - (double)(n-r)*v*x_r.at(r+1));
+                    tmp_i = (e_i.at(r) - (double)(n-r)*v*x_i.at(r+1));
+                    f = d_r.at(r) * d_r.at(r) + d_i.at(r) * d_i.at(r); 
+                    x_r.at(r) = (tmp_r * d_r.at(r) + tmp_i * d_i.at(r)) / f;
+                    x_i.at(r) = (tmp_i * d_r.at(r) - tmp_r * d_i.at(r)) / f;
+                }
+            }
+        }
+
+        void solve(
+                const std::vector<double>& y_r,
+                const std::vector<double>& y_i,
+                double offset_r,
+                double offset_i,
+                const std::vector<double>& x_r,
+                const std::vector<double>& x_i) {
+            /* Suppose that y = [y1',y2',...,yn']' as above. We solve (Q^t + offset*I) x = y.
+             This gives us the equations
+             
+             M_n x_n + R_n x_{n+1} + offset*x_n  = y_n  for n=1,2,...,N - 1
+             and
+             M_N x_N + offset x_N = y_N
+             
+             These can be solved in reverse, starting with (M_N + offset * I)x_N = y_N
+             and then
+             (M_n + offset I) x_n = y_n - R_n x_{n+1}  n = N-1,N_2,...,1
+             
+             The solution of the tridiaongal system (M_n + offset I) x_n = z 
+             is done by the routine solveCentralBlock. The computation of Rn x_{n+1} is done by MultiplyUpperBlock.
+             */
+            
+            x_r.assign(x_r.size(), 0.0);
+            x_i.assign(x_i.size(), 0.0);
+            
+            std::vector<double> xn_r (this->n_ + 1, 0.0);
+            std::vector<double> xn_i (this->n_ + 1, 0.0);
+            std::vector<double> yn_r (this->n_ + 1, 0.0);
+            std::vector<double> yn_i (this->n_ + 1, 0.0);
+            
+            int xptr = x_r.size() - 1 - this->n_;
+            int yptr = y_r.size() - 1 - this->n_;
+            
+            for (unsigned int i = 0; i < yn_r.size(); ++i) {
+                yn_r.at(i) = y_r.at(yptr + i);
+                yn_i.at(i) = y_i.at(yptr + i);
+            }
+            this->solve_central_block(
+                    yn_r, 
+                    yn_i,
+                    offset_r,
+                    offset_i,
+                    this->n_,
+                    this->u_,
+                    this->v_,
+                    this->coalescence_rate_,
+                    xn_r,
+                    xn_i);
+            
+            
+            for (unsigned int i = 0; i < xn_r.size(); ++i) {
+                x_r.at(xptr+i) = xn_r.at(i);
+                x_i.at(xptr+i) = xn_i.at(i);
+            }
+            
+            //Solve for the rest
+            for (unsigned int n = this->n_-1; n >= 1; --n) {
+                xptr = xptr - (n+1);
+                this->multiply_upper_block(
+                        xn_r,
+                        xn_i,
+                        n,
+                        this->coalescence_rate_,
+                        yn_r,
+                        yn_i);
+                yptr = yptr - (n+1);
+                for (unsigned int r = 0; r <= n; ++r) {
+                    yn_r.at(r) = y_r.at(yptr + r) - yn_r.at(r); 
+                    yn_i.at(r) = y_i.at(yptr + r) - yn_i.at(r); 
+                }
+                
+                this->solve_central_block(
+                        yn_r,
+                        yn_i,
+                        offset_r,
+                        offset_i,
+                        n,
+                        this->u_,
+                        this->v_,
+                        this->coalescence_rate_,
+                        xn_r,
+                        xn_i);
+                
+                for (unsigned int i = 0; i <= n; ++i) {
+                    x_r.at(xptr + i) = xn_r.at(i);
+                    x_i.at(xptr + i) = xn_i.at(i);
                 }
             }
         }
