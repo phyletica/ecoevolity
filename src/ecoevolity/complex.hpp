@@ -38,9 +38,15 @@ class Complex {
         double im_ = 0.0;
 
         Complex() { }
-        Complex(double re, im) {
+        Complex(double re, double im) {
             this->re_ = re;
             this->im_ = im;
+        }
+
+        Complex& operator=(const Complex& c) {
+            this->re_ = c.re_;
+            this->im_ = c.im_;
+            return * this;
         }
 
         void divide(const Complex& numerator, double divisor) {
