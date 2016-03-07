@@ -113,8 +113,8 @@ class AbstractMatrix {
                            const std::vector<double>& vc_i,
                            const double offset_r,
                            const double offset_i,
-                           const std::vector<double>& xc_r,
-                           const std::vector<double>& xc_i) = 0;
+                           std::vector<double>& xc_r,
+                           std::vector<double>& xc_i) = 0;
 
         /**
          * @brief   Computes infinity norm (pg 56 of Golub and van Loan)
@@ -776,8 +776,8 @@ class QMatrix : public AbstractMatrix {
                 const std::vector<double>& y_i,
                 double offset_r,
                 double offset_i,
-                const std::vector<double>& x_r,
-                const std::vector<double>& x_i) {
+                std::vector<double>& x_r,
+                std::vector<double>& x_i) {
             /* Suppose that y = [y1',y2',...,yn']' as above. We solve (Q^t + offset*I) x = y.
              This gives us the equations
              
@@ -860,6 +860,144 @@ class QMatrix : public AbstractMatrix {
                 }
             }
         }
+};
+
+class MatrixExponentiator {
+    private:
+        const static int CF_DEG_ = 12;
+        const std::array<double, 12> ci_real_ { {
+                0.000818433612497,
+                -0.068571505514864,
+                1.319411815998137,
+                -8.238258033274786,
+                18.785982629476070,
+                -11.799383335697918,
+                -11.799383335697890,
+                18.785982629476067,
+                -8.238258033274763,
+                1.319411815998138,
+                -0.068571505514865,
+                0.000818433612497
+                } };
+
+        const std::array<double, 12> ci_imag_ { {
+                0.000581353207069,
+                -0.038419074245887,
+                0.183523497750480,
+                2.796192505614474,
+                -20.237292093573895,
+                46.411650777279597,
+                -46.411650777279569,
+                20.237292093573895,
+                -2.796192505614448,
+                -0.183523497750480,
+                0.038419074245888,
+                -0.000581353207069
+                } };
+        const std::array<double, 12> zi_real_ { {
+                -6.998688082445778,
+                -2.235968223749446,
+                0.851707264834878,
+                2.917868800307170,
+                4.206124506834328,
+                4.827493775040721,
+                4.827493775040721,
+                4.206124506834328,
+                2.917868800307170,
+                0.851707264834878,
+                -2.235968223749446,
+                -6.998688082445778
+                } };
+        const std::array<double, 12> zi_imag_ { {
+                -13.995917029301355,
+                -11.109296400461870,
+                -8.503832905826961,
+                -6.017345968518187,
+                -3.590920783130140,
+                -1.193987999180278,
+                1.193987999180278,
+                3.590920783130140,
+                6.017345968518187,
+                8.503832905826961,
+                11.109296400461870,
+                13.995917029301355
+                } };
+ 
+    public:
+        std::vector<double> cf_expmvCOMPLEX(
+                double time,
+                AbstractMatrix& A,
+                const std::vector<double>& v) const {
+            unsigned int n = v.size();
+            std::vector<double> w = v;
+
+            if (time == 0) {
+                return w;
+            }
+
+            std::vector<Complex> xc (n, Complex());
+            std::vector<Complex> wc (n, Complex());
+            std::vector<Complex> vc (n, Complex());
+
+            for (unsigned int i = 1; i < n; ++i) {
+                wc.at(i) = Complex(v.at(i), 0.0);
+            }
+
+            unsigned int steps = 1;
+            double stepsize = time/(double)steps;
+
+            for (unsigned int k = 0; k < steps; ++k) {
+
+                for (unsigned int i = 1; i < n; ++i) {
+                    vc.at(i).re_ = wc.at(i).re_ / stepsize;
+                    vc.at(i).im_ = wc.at(i).im_ / stepsize;
+                    wc.at(i).re_ = 0.0;
+                    wc.at(i).im_ = 0.0;
+                }
+
+                for (unsigned int i = 0; i < this->CF_DEG_; ++i) {
+                    Complex offset = Complex(-this->zi_real_.at(i) / stepsize, -this->zi_imag_.at(i) / stepsize);
+                    A.solve(vc, offset, xc);
+                    Complex c_i = Complex(this->ci_real_.at(i), this->ci_imag_.at(i));
+
+                    for (unsigned int j = 1; j < n; ++j) {
+                        wc.at(j).muladd(c_i, xc.at(j));
+                    }
+                }
+            }
+
+            for (unsigned int i = 1; i < n; ++i) {
+                w.at(i) = wc.at(i).re_;
+            }
+            return w;
+        }
+
+
+        BiallelicPatternProbabilityMatrix expQTtx(
+                unsigned int N,
+                double u,
+                double v,
+                double gamma,
+                double t,
+                const BiallelicPatternProbabilityMatrix& x) const {
+            QMatrix Q = QMatrix(N, u, v, gamma);
+
+            std::vector<double> prob_vector = x.get_pattern_prob_matrix();
+            std::vector<double> xcol(prob_vector.size() + 1, 0.0);
+            for (unsigned int i = 0; i < prob_vector.size(); ++i) {
+                xcol.at(i+1) = prob_vector.at(i);
+            }
+
+            std::vector<double> _y1 = this->cf_expmvCOMPLEX(t, Q, xcol);
+            std::vector<double> y0 (_y1.size() - 1, 0.0);
+            for (unsigned int i = 0; i < y0.size(); ++i) {
+                y0.at(i) = _y1.at(i + 1);
+            }
+
+            BiallelicPatternProbabilityMatrix y = BiallelicPatternProbabilityMatrix(N, y0);
+            return y;
+        }
+
 };
 
 #endif
