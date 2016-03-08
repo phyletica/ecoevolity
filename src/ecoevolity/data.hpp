@@ -88,9 +88,14 @@ class BiallelicData {
         unsigned int remove_missing_population_patterns(const bool validate = true);
         unsigned int fold_patterns(const bool validate = true);
 
+        unsigned int get_number_of_constant_sites_removed() const;
+        unsigned int get_number_of_missing_sites_removed() const;
+
         void validate() const;
 
     private:
+        unsigned int number_of_constant_sites_removed_ = 0;
+        unsigned int number_of_missing_sites_removed_ = 0;
         bool markers_are_dominant_ = true;
         bool genotypes_are_diploid_ = true;
         bool has_missing_population_patterns_ = false;

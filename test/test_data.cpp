@@ -1084,8 +1084,10 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
 
         // Removing patterns
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
         unsigned int number_removed = bd.remove_missing_population_patterns();
         REQUIRE(number_removed == 3);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 4);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(! bd.markers_are_dominant());
@@ -1206,8 +1208,10 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
 
         // Removing patterns
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
         unsigned int number_removed = bd.remove_constant_patterns();
         REQUIRE(number_removed == 2);
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 3);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(! bd.markers_are_dominant());
@@ -2040,6 +2044,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
 
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
 
         std::vector< std::vector<unsigned int> > expected_allele_counts(9);
@@ -2109,6 +2116,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
 
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1,1};
 
@@ -2153,6 +2163,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
 
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
 
@@ -2194,6 +2207,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
