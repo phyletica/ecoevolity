@@ -262,7 +262,50 @@ void PopulationTree::compute_pattern_likelihoods() {
             ++pattern_idx) {
         this->pattern_likelihoods_.at(pattern_index) = this->compute_pattern_likelihood(pattern_idx);
     }
-    // TODO: compute constant probs here
+    this->all_green_pattern_likelihood_ = this->compute_pattern_likelihood(-1);
+    this->all_red_pattern_likelihood_ = this->all_green_pattern_likelihood_;
+    if (! this->data_->patterns_are_folded) {
+        this->all_red_pattern_likelihood_ = this->compute_pattern_likelihood(-2);
+    }
+}
+
+void PopulationTree::calculate_likelihood_correction() {
+    this->log_likelihood_correction_ = 0.0;
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->data_.get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int pop_idx = 0;
+                pop_idx < this->data_.get_number_of_populations();
+                ++pop_idx) {
+            this->log_likelihood_correction_ -= (
+                    this->calculate_log_binomial(
+                        this->data_.get_red_allele_count(pattern_idx, pop_idx),
+                        this->data_.get_allele_count(pattern_idx, pop_idx)) *
+                    this->data_.get_pattern_weight(pattern_idx)
+                    );
+        }
+    }
+    this->likelihood_correction_was_calculated = true;
+    ECOEVOLITY_DEBUG(
+        std::cerr << "Log likelihood correction: " << this->log_likelihood_correction_ << std::endl;
+    )
+}
+
+double PopulationTree::get_likelihood_correction(bool force) {
+    if ((! this->likelihood_correction_was_calculated) || (force)) {
+        this->calculate_likelihood_correction();
+    }
+    return this->log_likelihood_correction_;
+}
+
+double PopulationTree::calculate_log_binomial(
+        unsigned int red_allele_count,
+        unsigned int allele_count) {
+    double f = 0.0;
+    for (unsigned int i = red_allele_count + 1; i <= allele_count; ++i) {
+        f += std::log(i) - std::log(allele_count - i + 1);
+    }
+    return f;
 }
 
 double PopulationTree::compute_log_likelihood() {
@@ -281,8 +324,32 @@ double PopulationTree::compute_log_likelihood() {
     }
 
     if (this->correct_for_constant_patterns_) {
-        // TODO: correct for constant sites here
+        if (this->use_provided_constant_site_counts_) {
+            double constant_log_likelihood =
+                    ((double)this->number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_)) +
+                    ((double)this->number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_));
+            this->log_likelihood_ += constant_log_likelihood;
+        }
+        else if (this->use_removed_constant_site_counts_){
+            double constant_log_likelihood =
+                    ((double)this->data_->get_number_of_constant_green_sites_removed() * std::log(this->all_green_pattern_likelihood_)) +
+                    ((double)this->data_->get_number_of_constant_red_sites_removed() * std::log(this->all_red_pattern_likelihood_));
+            this->log_likelihood_ += constant_log_likelihood;
+        }
+        else {
+            this->log_likelihood_ -= ((double)this->data_.get_number_of_sites() * 
+                    std::log(1.0 - this->all_green_pattern_likelihood_ - this->all_red_pattern_likelihood_));
+        }
     }
 
+    if (this->correct_for_full_likelihood_) {
+        this->log_likelihood_ += this->get_likelihood_correction();
+    }
+
+    ECOEVOLITY_DEBUG(
+        std::cerr << "PopulationTree::compute_log_likelihood(): " << this->log_likelihood_ << std::endl;
+    )
+
+    return this->log_likelihood_;
 }
 
