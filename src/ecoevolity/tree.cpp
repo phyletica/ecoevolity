@@ -54,15 +54,28 @@ PopulationTree::PopulationTree(
     }
     this->root_.resize_all();
 
-    this->pattern_probs_.assign(this->data_.get_number_of_patterns(), 0.0);
+    this->pattern_likelihoods_.assign(this->data_.get_number_of_patterns(), 0.0);
 }
 
 void PopulationTree::compute_leaf_partials(
-        unsigned int pattern_index,
+        int pattern_index,
         PopulationNode * node) {
     unsigned int pop_idx = this->data_.get_population_index(node->get_label());
-    unsigned int red_allele_count = this->data_.get_red_allele_count(pattern_index, pop_idx));
-    unsigned int allele_count = this->data_.get_allele_count(pattern_index, pop_idx);
+    if (pattern_index == -1) {
+        unsigned int allele_count = this->data_.get_max_allele_count(pop_idx);
+        unsigned int red_allele_count = 0;
+    }
+    else if (pattern_index == -2) {
+        unsigned int allele_count = this->data_.get_max_allele_count(pop_idx);
+        unsigned int red_allele_count = allele_count;
+    }
+    else if (pattern_index > -1} {
+        unsigned int allele_count = this->data_.get_allele_count(pattern_index, pop_idx);
+        unsigned int red_allele_count = this->data_.get_red_allele_count(pattern_index, pop_idx);
+    }
+    else {
+        throw EcoevolityError("PopulationTree::compute_leaf_partials(): Unexpected negative pattern index");
+    }
     if ((this->data_.markers_are_dominant()) && (red_allele_count > 0)) {
         BiallelicPatternProbabilityMatrix m(allele_count);
         unsigned int n = allele_count / 2;
@@ -86,20 +99,23 @@ void PopulationTree::compute_leaf_partials(
 }
 
 void PopulationTree::compute_top_of_branch_partials(
-        unsigned int pattern_index,
         PopulationNode * node) {
-    if (node.get_allele_count() == 0) {
-        node.copy_top_pattern_probs(node.get_bottom_pattern_probs());
+    if (node->get_allele_count() == 0) {
+        node->copy_top_pattern_probs(node.get_bottom_pattern_probs());
         return;
     }
 
-    // TODO
-    BiallelicPatternProbabilityMatrix m = MatrixExponentiator.expQTtx(...);
+    BiallelicPatternProbabilityMatrix m = MatrixExponentiator.expQTtx(
+            node->get_allele_count(),
+            this->u_,
+            this->v_,
+            this->coalescence_rate_,
+            node->get_length(),
+            node->get_bottom_pattern_probs());
     node.copy_pattern_probs(m);
 }
 
 void PopulationTree::compute_internal_partials(
-        unsigned int pattern_index,
         PopulationNode * node) {
     if (node->get_number_of_children == 1) {
         node.copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
@@ -168,22 +184,22 @@ void PopulationTree::compute_internal_partials(
 }
 
 void PopulationTree::compute_pattern_partials(
-        unsigned int pattern_index,
+        int pattern_index,
         PopulationNode * node) {
     if (node->is_leaf()) {
         this->compute_leaf_partials(pattern_index, node);
     }
     else if (node.get_number_of_children() == 1) {
         compute_pattern_partials(pattern_index, node->get_child(0));
-        compute_top_of_branch_partials(pattern_index, node->get_child(0));
-        compute_internal_partials(pattern_index, node);
+        compute_top_of_branch_partials(node->get_child(0));
+        compute_internal_partials(node);
     }
     else if (node.get_number_of_children() == 2) {
         compute_pattern_partials(pattern_index, node->get_child(0));
         compute_pattern_partials(pattern_index, node->get_child(1));
-        compute_top_of_branch_partials(pattern_index, node->get_child(0));
-        compute_top_of_branch_partials(pattern_index, node->get_child(1));
-        compute_internal_partials(pattern_index, node);
+        compute_top_of_branch_partials(node->get_child(0));
+        compute_top_of_branch_partials(node->get_child(1));
+        compute_internal_partials(node);
     }
     else {
         throw EcoevolityError(
@@ -191,16 +207,82 @@ void PopulationTree::compute_pattern_partials(
     }
 }
 
-void PopulationTree::compute_pattern_likelihood(unsigned int pattern_index) {
+std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() {
+    unsigned int N = this->root_->get_allele_count()
+    std::vector< std::vector<double> > x (N + 1); 
+    QMatrix q = QMatrix(
+            N,
+            this->u_,
+            this->v_,
+            this->root_->coalescence_rate_);
+    std::vector<double> xcol = q.find_orthogonal_vector();
+
+    unsigned int index = 1;
+    for (unsigned int n = 1; n <= N; ++n) {
+        x.at(n).resize(n + 1, 0.0);
+        double row_sum = 0.0;
+        for (unsigned int r = 0; r <= n; ++r) {
+            double xcol_index = std::max(xcol.at(index), 0.0);
+            row_sum += xcol_index;
+            x.at(n).at(r) = xcol_index;
+            index++;
+        }
+        for (unsigned int r = 0; r <= n; ++r) {
+            x.at(n).at(r) = x.at(n).at(r) / row_sum;
+        }
+    }
+    return x;
+}
+
+double PopulationTree::compute_root_likelihood() {
+    unsigned int N = this->root_->get_allele_count();
+    std::vector< std::vector<double> > conditionals = this->compute_root_probabilities();
+
+    double sum = 0.0;
+    for (unsigned int n = 1; n <= N; ++n) {
+        for (unsigned int r = 0; r <= n; ++r) {
+            double term = conditionals.at(n).at(r) * this->root_->get_bottom_pattern_probability(n, r);
+            sum += term;
+            if (sum < 0.0) {
+                throw EcoevolityError("PopulationTree::compute_root_likelihood(): Numerical error");
+            }
+        }
+    }
+    return sum;
+}
+
+double PopulationTree::compute_pattern_likelihood(int pattern_index) {
     this->compute_pattern_partials(pattern_idx, this->root_);
-    double pattern_likelihood = this->compute_root_likelihood();
-    // TODO: store likelihood in pattern_probs_
+    return this->compute_root_likelihood();
 }
 
 void PopulationTree::compute_pattern_likelihoods() {
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
             ++pattern_idx) {
-        this->compute_pattern_likelihood(pattern_idx, this->root_);
+        this->pattern_likelihoods_.at(pattern_index) = this->compute_pattern_likelihood(pattern_idx);
     }
+    // TODO: compute constant probs here
 }
+
+double PopulationTree::compute_log_likelihood() {
+    this->log_likelihood_ = 0.0;
+    this->compute_pattern_likelihoods();
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->data_.get_number_of_patterns();
+            ++pattern_idx) {
+        double pattern_likelihood = this->pattern_likelihoods_.at(pattern_idx);
+        double weight = (double) this->data_.get_pattern_weight(pattern_idx);
+        if (pattern_likelihood ==  0.0) {
+            this->log_likelihood_ = -10e100;
+            break;
+        }
+        this->log_likelihood_ += weight * std::log(pattern_likelihood);
+    }
+
+    if (this->correct_for_constant_patterns_) {
+        // TODO: correct for constant sites here
+    }
+
+}
+

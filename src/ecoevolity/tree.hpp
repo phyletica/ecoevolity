@@ -24,6 +24,7 @@
 
 #include "data.hpp"
 #include "node.hpp"
+#include "matrix.hpp"
 #include "error.hpp"
 #include "assert.hpp"
 
@@ -31,9 +32,12 @@ class PopulationTree {
     private:
         BiallelicData data_;
         PopulationNode * root_;
-        double u = 1.0;
-        double v = 1.0;
-        std::vector<double> pattern_probs_;
+        double u_ = 1.0;
+        double v_ = 1.0;
+        std::vector<double> pattern_likelihoods_;
+        double log_likelihood_ = 0.0;
+        double all_green_pattern_likelihood_ = 0.0;
+        double all_red_pattern_likelihood_ = 0.0;
 
         void compute_pattern_probability(unsigned int pattern_index);
         void compute_pattern_probabilities();
