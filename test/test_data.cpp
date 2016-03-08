@@ -1209,9 +1209,13 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
 
         // Removing patterns
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 0);
         unsigned int number_removed = bd.remove_constant_patterns();
         REQUIRE(number_removed == 2);
         REQUIRE(bd.get_number_of_constant_sites_removed() == 3);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 1);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(! bd.markers_are_dominant());
@@ -2117,6 +2121,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.patterns_are_folded() == false);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
 
         expected_wts.clear();
@@ -2164,6 +2170,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.patterns_are_folded() == false);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
 
         expected_wts.clear();
@@ -2209,6 +2217,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.patterns_are_folded() == true);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
 
         expected_wts.clear();

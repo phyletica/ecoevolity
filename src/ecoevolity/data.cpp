@@ -477,9 +477,13 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
 int BiallelicData::remove_first_constant_pattern() {
     std::vector<unsigned int> no_red_pattern (this->get_number_of_populations(), 0);
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
-        if ((this->get_red_allele_counts(pattern_idx) == no_red_pattern) ||
-            (this->get_red_allele_counts(pattern_idx) == this->get_allele_counts(pattern_idx))) {
-            this->number_of_constant_sites_removed_ += this->get_pattern_weight(pattern_idx);
+        if (this->get_red_allele_counts(pattern_idx) == no_red_pattern) {
+            this->number_of_constant_green_sites_removed_ += this->get_pattern_weight(pattern_idx);
+            this->remove_pattern(pattern_idx);
+            return pattern_idx;
+        }
+        if (this->get_red_allele_counts(pattern_idx) == this->get_allele_counts(pattern_idx)) {
+            this->number_of_constant_red_sites_removed_ += this->get_pattern_weight(pattern_idx);
             this->remove_pattern(pattern_idx);
             return pattern_idx;
         }
@@ -600,10 +604,19 @@ unsigned int BiallelicData::fold_patterns(const bool validate) {
 }
 
 unsigned int BiallelicData::get_number_of_constant_sites_removed() const {
-    return this->number_of_constant_sites_removed_;
+    return (this->number_of_constant_green_sites_removed_ +
+            this->number_of_constant_red_sites_removed_);
 }
 
-unsigned int BiallelicData::get_number_of_missing_sites_removed() const {
+const unsigned int& BiallelicData::get_number_of_constant_green_sites_removed() const {
+    return this->number_of_constant_green_sites_removed_;
+}
+
+const unsigned int& BiallelicData::get_number_of_constant_red_sites_removed() const {
+    return this->number_of_constant_red_sites_removed_;
+}
+
+const unsigned int& BiallelicData::get_number_of_missing_sites_removed() const {
     return this->number_of_missing_sites_removed_;
 }
 
