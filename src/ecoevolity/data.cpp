@@ -347,6 +347,14 @@ unsigned int BiallelicData::get_number_of_patterns() const {
     return this->pattern_weights_.size();
 }
 
+unsigned int BiallelicData::get_number_of_sites() const {
+    unsigned int nsites = 0;
+    for (auto weight_iter: this->pattern_weights_) {
+        nsites += weight_iter;
+    }
+    return nsites;
+}
+
 unsigned int BiallelicData::get_number_of_populations() const {
     return this->population_labels_.size();
 }

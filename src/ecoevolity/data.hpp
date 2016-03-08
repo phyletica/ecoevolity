@@ -68,6 +68,7 @@ class BiallelicData {
         const std::string& get_path() const;
 
         unsigned int get_number_of_patterns() const;
+        unsigned int get_number_of_sites() const;
         unsigned int get_number_of_populations() const;
 
         const bool& markers_are_dominant() const;
