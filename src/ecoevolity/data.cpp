@@ -34,9 +34,9 @@ BiallelicData::BiallelicData(
     this->markers_are_dominant_ = markers_are_dominant;
     this->path_ = path;
 
-    if ((this->markers_are_dominant_) and (! this->genotypes_are_diploid_)) {
+    if ((this->markers_are_dominant_) and (this->genotypes_are_diploid_)) {
         throw EcoevolityBiallelicDataError(
-                "Haploid genotypes cannot be dominant",
+                "Dominant markers must be coded as haploid (i.e., 0/1)",
                 this->path_);
     }
 
@@ -158,9 +158,9 @@ BiallelicData::BiallelicData(
                                 char_block->GetTaxonLabel(taxon_idx),
                                 site_idx);
                     }
-                    if ((state_code == 1) && (this->markers_are_dominant_)) {
+                    if ((state_code > 1) && (! this->genotypes_are_diploid_)) {
                         throw EcoevolityInvalidCharacterError(
-                                "Invalid het character for dominant data",
+                                "Invalid diploid character (2) for haploid data",
                                 this->path_,
                                 char_block->GetTaxonLabel(taxon_idx),
                                 site_idx);
@@ -184,6 +184,11 @@ BiallelicData::BiallelicData(
     else if ((data_type == NxsCharactersBlock::DataTypesEnum::nucleotide) ||
              (data_type == NxsCharactersBlock::DataTypesEnum::dna) ||
              (data_type == NxsCharactersBlock::DataTypesEnum::rna)) {
+        if (this->markers_are_dominant_) {
+            throw EcoevolityBiallelicDataError(
+                    "Dominant data must be coded as 0/1 (not nucleotides)",
+                    this->path_);
+        }
         for (unsigned int site_idx = 0; site_idx < num_chars; ++site_idx) {
             std::vector<unsigned int> allele_cts (this->get_number_of_populations(), 0);
             std::vector<unsigned int> red_allele_cts (this->get_number_of_populations(), 0);
@@ -200,21 +205,12 @@ BiallelicData::BiallelicData(
                                 char_block->GetTaxonLabel(taxon_idx),
                                 site_idx);
                     }
-                    if (num_states > 1) {
-                        if (! this->genotypes_are_diploid_) {
-                            throw EcoevolityInvalidCharacterError(
-                                    "Polymorphic characters are not allowed for haploid data",
-                                    this->path_,
-                                    char_block->GetTaxonLabel(taxon_idx),
-                                    site_idx);
-                        }
-                        if (this->markers_are_dominant_) {
-                            throw EcoevolityInvalidCharacterError(
-                                    "Polymorphic characters are not allowed for dominant data",
-                                    this->path_,
-                                    char_block->GetTaxonLabel(taxon_idx),
-                                    site_idx);
-                        }
+                    if ((num_states > 1) && (! this->genotypes_are_diploid_)) {
+                        throw EcoevolityInvalidCharacterError(
+                                "Polymorphic characters are not allowed for haploid data",
+                                this->path_,
+                                char_block->GetTaxonLabel(taxon_idx),
+                                site_idx);
                     }
                     ECOEVOLITY_ASSERT((num_states > 0) && (num_states < 3));
                     std::vector<NxsDiscreteStateCell> states;
