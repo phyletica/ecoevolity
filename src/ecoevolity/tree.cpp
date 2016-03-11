@@ -69,28 +69,35 @@ void PopulationTree::compute_leaf_partials(
         unsigned int allele_count = this->data_.get_max_allele_count(pop_idx);
         unsigned int red_allele_count = allele_count;
     }
-    else if (pattern_index > -1} {
+    else if (pattern_index > -1) {
         unsigned int allele_count = this->data_.get_allele_count(pattern_index, pop_idx);
         unsigned int red_allele_count = this->data_.get_red_allele_count(pattern_index, pop_idx);
     }
     else {
         throw EcoevolityError("PopulationTree::compute_leaf_partials(): Unexpected negative pattern index");
     }
-    if ((this->data_.markers_are_dominant()) && (red_allele_count > 0)) {
-        BiallelicPatternProbabilityMatrix m(allele_count);
-        unsigned int n = allele_count / 2;
-        unsigned int n_reds = red_allele_count / 2;
-        double p_r_k_n = 1.0;
-        for (unsigned int r = 1; r <= n_reds; ++r) {
-            p_r_k_n = (p_r_k_n * 2.0 * (n - r + 1.0)) / ((2.0 * n) - r + 1.0);
-        }
-        for (unsigned int k = n_reds; k <= red_allele_count; ++k) {
-            if (k > n_reds) {
-                p_r_k_n = (p_r_k_n * ((2.0 * n_reds) - k + 1) * k) /
-                          (2.0 * ( k - n_reds) * ((2.0 * n) - k + 1.0));
+    if (this->data_.markers_are_dominant()) {
+        unsigned int n = allele_count;
+        unsigned int n_reds = red_allele_count;
+        allele_count = allele_count * 2;
+        if (red_allele_count > 0) {
+            BiallelicPatternProbabilityMatrix m(allele_count);
+            double p_r_k_n = 1.0;
+            for (unsigned int r = 1; r <= n_reds; ++r) {
+                p_r_k_n = (p_r_k_n * 2.0 * (n - r + 1.0)) / ((2.0 * n) - r + 1.0);
             }
-            m.set_pattern_probability(allele_count, k, p_r_k_n);
+            for (unsigned int k = n_reds; k <= (2 * n_reds); ++k) {
+                if (k > n_reds) {
+                    p_r_k_n = (p_r_k_n * ((2.0 * n_reds) - k + 1) * k) /
+                              (2.0 * ( k - n_reds) * ((2.0 * n) - k + 1.0));
+                }
+                m.set_pattern_probability(allele_count, k, p_r_k_n);
+            }
+            node->copy_bottom_pattern_probs(m);
+            return;
         }
+        BiallelicPatternProbabilityMatrix m(allele_count, n_reds);
+        node->copy_bottom_pattern_probs(m);
         return;
     }
     BiallelicPatternProbabilityMatrix m(allele_count, red_allele_count);
