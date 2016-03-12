@@ -32,15 +32,46 @@ class PopulationTree {
     private:
         BiallelicData data_;
         PopulationNode * root_;
+        MatrixExponentiator matrix_exponentiator;
         double u_ = 1.0;
         double v_ = 1.0;
         std::vector<double> pattern_likelihoods_;
         double log_likelihood_ = 0.0;
+        double log_likelihood_correction_ = 0.0;
+        bool likelihood_correction_was_calculated_ = false;
         double all_green_pattern_likelihood_ = 0.0;
         double all_red_pattern_likelihood_ = 0.0;
+        bool correct_for_full_likelihood_ = true;
+        bool correct_for_constant_patterns_ = true;
+        int number_of_constant_red_sites_ = -1;
+        int number_of_constant_green_sites_ = -1;
+        bool use_removed_constant_site_counts_ = false;
 
-        void compute_pattern_probability(unsigned int pattern_index);
-        void compute_pattern_probabilities();
+        // methods
+        bool constant_site_counts_were_provided();
+        void calculate_likelihood_correction();
+
+        double get_likelihood_correction(bool force = false);
+
+        double calculate_log_binomial(
+                unsigned int red_allele_count,
+                unsigned int allele_count) const;
+
+        double compute_pattern_likelihood(int pattern_index);
+        void compute_pattern_likelihoods();
+
+        std::vector< std::vector<double> > compute_root_probabilities();
+        double compute_root_likelihood();
+
+        void compute_pattern_partials(
+                int pattern_index,
+                PopulationNode * node);
+        void compute_internal_partials(PopulationNode * node);
+        void compute_top_of_branch_partials(PopulationNode * node);
+        void compute_leaf_partials(
+                int pattern_index,
+                PopulationNode * node);
+        
 
     public:
         PopulationTree(
@@ -51,6 +82,8 @@ class PopulationTree {
                 const bool markers_are_dominant = false,
                 const bool validate = true);
         ~PopulationTree () { }
+
+        double compute_log_likelihood();
 };
 
 #endif

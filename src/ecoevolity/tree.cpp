@@ -26,33 +26,39 @@ PopulationTree::PopulationTree(
         const bool genotypes_are_diploid,
         const bool markers_are_dominant,
         const bool validate) {
-    this->data_ = BiallelicData(
+    this->data_.init(
             path,
             population_name_delimiter,
             population_name_is_prefix,
             genotypes_are_diploid,
             markers_are_dominant,
             validate);
-    if (this->data_.get_number_of_populations > 2) {
+    if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityError("PopulationTree(); does not support > 2 tips");
     }
+    unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
+    if (this->correct_for_constant_patterns_) {
+        unsigned int number_of_constant_patterns_removed = this->data_.remove_constant_patterns();
+    }
+    //this->data_.fold_patterns();
 
-    std::string root_label = ""
+
+    std::string root_label = "";
     for (unsigned int pop_idx = 0;
             pop_idx < this->data_.get_number_of_populations();
             ++pop_idx) {
         root_label += this->data_.get_population_label(pop_idx);
     }
     this->root_ = new PopulationNode(root_label, 0.01);
-    for (pop_idx = 0;
+    for (unsigned int pop_idx = 0;
             pop_idx < this->data_.get_number_of_populations();
             ++pop_idx) {
-        this->root_.add_child(new PopulationNode(
+        this->root_->add_child(new PopulationNode(
                 this->data_.get_population_label(pop_idx),
                 0.0,
                 this->data_.get_max_allele_count(pop_idx)));
     }
-    this->root_.resize_all();
+    this->root_->resize_all();
 
     this->pattern_likelihoods_.assign(this->data_.get_number_of_patterns(), 0.0);
 }
@@ -61,17 +67,19 @@ void PopulationTree::compute_leaf_partials(
         int pattern_index,
         PopulationNode * node) {
     unsigned int pop_idx = this->data_.get_population_index(node->get_label());
+    unsigned int allele_count = 0;
+    unsigned int red_allele_count = 0;
     if (pattern_index == -1) {
-        unsigned int allele_count = this->data_.get_max_allele_count(pop_idx);
-        unsigned int red_allele_count = 0;
+        allele_count = this->data_.get_max_allele_count(pop_idx);
+        red_allele_count = 0;
     }
     else if (pattern_index == -2) {
-        unsigned int allele_count = this->data_.get_max_allele_count(pop_idx);
-        unsigned int red_allele_count = allele_count;
+        allele_count = this->data_.get_max_allele_count(pop_idx);
+        red_allele_count = allele_count;
     }
     else if (pattern_index > -1) {
-        unsigned int allele_count = this->data_.get_allele_count(pattern_index, pop_idx);
-        unsigned int red_allele_count = this->data_.get_red_allele_count(pattern_index, pop_idx);
+        allele_count = this->data_.get_allele_count(pattern_index, pop_idx);
+        red_allele_count = this->data_.get_red_allele_count(pattern_index, pop_idx);
     }
     else {
         throw EcoevolityError("PopulationTree::compute_leaf_partials(): Unexpected negative pattern index");
@@ -108,51 +116,51 @@ void PopulationTree::compute_leaf_partials(
 void PopulationTree::compute_top_of_branch_partials(
         PopulationNode * node) {
     if (node->get_allele_count() == 0) {
-        node->copy_top_pattern_probs(node.get_bottom_pattern_probs());
+        node->copy_top_pattern_probs(node->get_bottom_pattern_probs());
         return;
     }
 
-    BiallelicPatternProbabilityMatrix m = MatrixExponentiator.expQTtx(
+    BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node->get_allele_count(),
             this->u_,
             this->v_,
-            this->coalescence_rate_,
+            node->get_coalescence_rate(),
             node->get_length(),
             node->get_bottom_pattern_probs());
-    node.copy_pattern_probs(m);
+    node->copy_top_pattern_probs(m);
 }
 
 void PopulationTree::compute_internal_partials(
         PopulationNode * node) {
-    if (node->get_number_of_children == 1) {
-        node.copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+    if (node->get_number_of_children() == 1) {
+        node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
         return;
     }
     if (node->get_child(0)->get_allele_count() == 0) {
-        node.copy_bottom_pattern_probs(node->get_child(1)->get_top_pattern_probs());
+        node->copy_bottom_pattern_probs(node->get_child(1)->get_top_pattern_probs());
         return;
     }
     if (node->get_child(1)->get_allele_count() == 0) {
-        node.copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+        node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
         return;
     }
     unsigned int allele_count_child1 = node->get_child(0)->get_allele_count();
     unsigned int allele_count_child2 = node->get_child(1)->get_allele_count();
 
-    std::vector<double> pattern_probs_child1 = node->get_child(0)->get_top_pattern_probs()->get_pattern_prob_matrix();
-    std::vector<double> pattern_probs_child2 = node->get_child(1)->get_top_pattern_probs()->get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child1 = node->get_child(0)->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child2 = node->get_child(1)->get_top_pattern_probs().get_pattern_prob_matrix();
 
-    for (int n = 1; n <= allele_count_child1; ++n) {
+    for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
-        for (int r = 0; r <= n; ++r) {
+        for (unsigned int r = 0; r <= n; ++r) {
             pattern_probs_child1.at(((n*(n+1))/2)-1+r) *= b_nr;
             b_nr *= ((double)n - r)/(r+1);
         }
     }
 
-    for (n = 1; n<= allele_count_child2; ++n) {
-        b_nr = 1.0;
-        for (r = 0; r <= n; ++r) {
+    for (unsigned int n = 1; n<= allele_count_child2; ++n) {
+        double b_nr = 1.0;
+        for (unsigned int r = 0; r <= n; ++r) {
             pattern_probs_child2.at(((n*(n+1))/2)-1+r) *= b_nr;
             b_nr *= ((double)n - r)/(r+1);
         }
@@ -160,23 +168,23 @@ void PopulationTree::compute_internal_partials(
 
     unsigned int allele_count = allele_count_child1 + allele_count_child2;
     std::vector<double> pattern_probs; 
-    pattern_probs_.assign(
+    pattern_probs.assign(
             ((((allele_count + 1) * (allele_count + 2))/2) - 1),
             0);
-    for (int n1 = 1; n1 <= allele_count_child1; ++n1) {
-        for (int r1 = 0; r1 <= n1; ++r1) {
+    for (unsigned int n1 = 1; n1 <= allele_count_child1; ++n1) {
+        for (unsigned int r1 = 0; r1 <= n1; ++r1) {
             double f11 = pattern_probs_child1.at(n1*(n1+1)/2-1+r1);
-            for (int n2 = 1; n2 <= allele_count_child2; ++n2) {
-                for (int r2 = 0; r2 <= n2; ++r2) {
+            for (unsigned int n2 = 1; n2 <= allele_count_child2; ++n2) {
+                for (unsigned int r2 = 0; r2 <= n2; ++r2) {
                     pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += f11 * pattern_probs_child2.at(n2*(n2+1)/2-1+r2);
                 }
             }
         }
     }
 
-    for (n = 1; n <= allele_count; ++n) {
-        b_nr = 1.0;
-        for (r = 0; r <= n; ++r) {
+    for (unsigned int n = 1; n <= allele_count; ++n) {
+        double b_nr = 1.0;
+        for (unsigned int r = 0; r <= n; ++r) {
             double f_nr = pattern_probs.at(n*(n+1)/2-1+r);
             f_nr /= b_nr;
             // TODO: better way to fix this?
@@ -187,7 +195,7 @@ void PopulationTree::compute_internal_partials(
         }
     }
     BiallelicPatternProbabilityMatrix m(allele_count, pattern_probs);
-    node.copy_bottom_pattern_probs(m);
+    node->copy_bottom_pattern_probs(m);
 }
 
 void PopulationTree::compute_pattern_partials(
@@ -196,12 +204,12 @@ void PopulationTree::compute_pattern_partials(
     if (node->is_leaf()) {
         this->compute_leaf_partials(pattern_index, node);
     }
-    else if (node.get_number_of_children() == 1) {
+    else if (node->get_number_of_children() == 1) {
         compute_pattern_partials(pattern_index, node->get_child(0));
         compute_top_of_branch_partials(node->get_child(0));
         compute_internal_partials(node);
     }
-    else if (node.get_number_of_children() == 2) {
+    else if (node->get_number_of_children() == 2) {
         compute_pattern_partials(pattern_index, node->get_child(0));
         compute_pattern_partials(pattern_index, node->get_child(1));
         compute_top_of_branch_partials(node->get_child(0));
@@ -215,14 +223,22 @@ void PopulationTree::compute_pattern_partials(
 }
 
 std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() {
-    unsigned int N = this->root_->get_allele_count()
+    unsigned int N = this->root_->get_allele_count();
     std::vector< std::vector<double> > x (N + 1); 
     QMatrix q = QMatrix(
             N,
             this->u_,
             this->v_,
-            this->root_->coalescence_rate_);
+            this->root_->get_coalescence_rate());
     std::vector<double> xcol = q.find_orthogonal_vector();
+
+    ECOEVOLITY_DEBUG(
+        std::cerr << "xcol = [";
+        for (unsigned int i = 0; i < xcol.size(); ++i) {
+            std::cerr << xcol.at(i) << " ";
+        }
+        std::cerr << "]" << std::endl;
+    )
 
     unsigned int index = 1;
     for (unsigned int n = 1; n <= N; ++n) {
@@ -245,6 +261,16 @@ double PopulationTree::compute_root_likelihood() {
     unsigned int N = this->root_->get_allele_count();
     std::vector< std::vector<double> > conditionals = this->compute_root_probabilities();
 
+    ECOEVOLITY_DEBUG(
+        for (unsigned int n = 1; n <= N; ++n) {
+            for (unsigned int r = 0; r <= n; ++r) {
+                std::cerr << "root height: " << this->root_->get_height() << std::endl;
+                std::cerr << "conditional[" << n << ", " << r << "] = " << conditionals.at(n).at(r) << std::endl;
+                std::cerr << "bottom_pattern_probs[" << n << ", " << r << "] = " << this->root_->get_bottom_pattern_probability(n, r) << std::endl;
+            }
+        }
+    )
+
     double sum = 0.0;
     for (unsigned int n = 1; n <= N; ++n) {
         for (unsigned int r = 0; r <= n; ++r) {
@@ -255,11 +281,15 @@ double PopulationTree::compute_root_likelihood() {
             }
         }
     }
+
+    ECOEVOLITY_DEBUG(
+        std::cerr << "root likelihood: " << sum << std::endl;
+    )
     return sum;
 }
 
 double PopulationTree::compute_pattern_likelihood(int pattern_index) {
-    this->compute_pattern_partials(pattern_idx, this->root_);
+    this->compute_pattern_partials(pattern_index, this->root_);
     return this->compute_root_likelihood();
 }
 
@@ -267,11 +297,11 @@ void PopulationTree::compute_pattern_likelihoods() {
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
             ++pattern_idx) {
-        this->pattern_likelihoods_.at(pattern_index) = this->compute_pattern_likelihood(pattern_idx);
+        this->pattern_likelihoods_.at(pattern_idx) = this->compute_pattern_likelihood(pattern_idx);
     }
     this->all_green_pattern_likelihood_ = this->compute_pattern_likelihood(-1);
     this->all_red_pattern_likelihood_ = this->all_green_pattern_likelihood_;
-    if (! this->data_->patterns_are_folded) {
+    if (! this->data_.patterns_are_folded()) {
         this->all_red_pattern_likelihood_ = this->compute_pattern_likelihood(-2);
     }
 }
@@ -292,14 +322,14 @@ void PopulationTree::calculate_likelihood_correction() {
                     );
         }
     }
-    this->likelihood_correction_was_calculated = true;
+    this->likelihood_correction_was_calculated_ = true;
     ECOEVOLITY_DEBUG(
         std::cerr << "Log likelihood correction: " << this->log_likelihood_correction_ << std::endl;
     )
 }
 
 double PopulationTree::get_likelihood_correction(bool force) {
-    if ((! this->likelihood_correction_was_calculated) || (force)) {
+    if ((! this->likelihood_correction_was_calculated_) || (force)) {
         this->calculate_likelihood_correction();
     }
     return this->log_likelihood_correction_;
@@ -307,12 +337,19 @@ double PopulationTree::get_likelihood_correction(bool force) {
 
 double PopulationTree::calculate_log_binomial(
         unsigned int red_allele_count,
-        unsigned int allele_count) {
+        unsigned int allele_count) const {
     double f = 0.0;
     for (unsigned int i = red_allele_count + 1; i <= allele_count; ++i) {
         f += std::log(i) - std::log(allele_count - i + 1);
     }
     return f;
+}
+
+bool PopulationTree::constant_site_counts_were_provided() {
+    if ((this->number_of_constant_green_sites_ > -1) && (this->number_of_constant_red_sites_ > -1)) {
+        return true;
+    }
+    return false;
 }
 
 double PopulationTree::compute_log_likelihood() {
@@ -329,9 +366,9 @@ double PopulationTree::compute_log_likelihood() {
         }
         this->log_likelihood_ += weight * std::log(pattern_likelihood);
     }
-
+    
     if (this->correct_for_constant_patterns_) {
-        if (this->use_provided_constant_site_counts_) {
+        if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
                     ((double)this->number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_)) +
                     ((double)this->number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_));
@@ -339,8 +376,8 @@ double PopulationTree::compute_log_likelihood() {
         }
         else if (this->use_removed_constant_site_counts_){
             double constant_log_likelihood =
-                    ((double)this->data_->get_number_of_constant_green_sites_removed() * std::log(this->all_green_pattern_likelihood_)) +
-                    ((double)this->data_->get_number_of_constant_red_sites_removed() * std::log(this->all_red_pattern_likelihood_));
+                    ((double)this->data_.get_number_of_constant_green_sites_removed() * std::log(this->all_green_pattern_likelihood_)) +
+                    ((double)this->data_.get_number_of_constant_red_sites_removed() * std::log(this->all_red_pattern_likelihood_));
             this->log_likelihood_ += constant_log_likelihood;
         }
         else {

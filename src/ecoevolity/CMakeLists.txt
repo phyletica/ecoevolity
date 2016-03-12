@@ -6,6 +6,7 @@ set(ECOEVOLITY_SOURCES
     util.cpp
     matrix.cpp
     node.cpp
+    tree.cpp
     data.cpp)
 
 foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})
