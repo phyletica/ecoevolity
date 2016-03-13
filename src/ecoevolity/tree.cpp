@@ -26,6 +26,21 @@ PopulationTree::PopulationTree(
         const bool genotypes_are_diploid,
         const bool markers_are_dominant,
         const bool validate) {
+    this->init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               validate);
+}
+
+void PopulationTree::init(
+        const std::string path, 
+        const char population_name_delimiter,
+        const bool population_name_is_prefix,
+        const bool genotypes_are_diploid,
+        const bool markers_are_dominant,
+        const bool validate) {
     this->data_.init(
             path,
             population_name_delimiter,

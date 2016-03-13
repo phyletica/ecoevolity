@@ -74,6 +74,7 @@ class PopulationTree {
         
 
     public:
+        PopulationTree() { }
         PopulationTree(
                 const std::string path, 
                 const char population_name_delimiter = '_',
@@ -82,6 +83,14 @@ class PopulationTree {
                 const bool markers_are_dominant = false,
                 const bool validate = true);
         ~PopulationTree () { }
+
+        void init(
+                const std::string path, 
+                const char population_name_delimiter = '_',
+                const bool population_name_is_prefix = true,
+                const bool genotypes_are_diploid = true,
+                const bool markers_are_dominant = false,
+                const bool validate = true);
 
         double compute_log_likelihood();
 };
