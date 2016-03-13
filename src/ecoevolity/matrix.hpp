@@ -282,13 +282,13 @@ class QMatrix : public AbstractMatrix {
                 const double v,
                 const double coalescence_rate) {
 
-            ECOEVOLITY_DEBUG(
-            std::cerr << "ylocal = [";
-            for (unsigned int i = 0; i < y.size(); ++i) {
-                std::cerr << y.at(i) << " ";
-            }
-            std::cerr << "];" << std::endl;
-            )
+            // ECOEVOLITY_DEBUG(
+            // std::cerr << "ylocal = [";
+            // for (unsigned int i = 0; i < y.size(); ++i) {
+            //     std::cerr << y.at(i) << " ";
+            // }
+            // std::cerr << "];" << std::endl;
+            // )
 
             std::vector<double> x (n + 1, 0.0);
 
@@ -330,19 +330,19 @@ class QMatrix : public AbstractMatrix {
                     e.at(r) = y.at(r) - m*e.at(r-1);
                 }
                 
-                ECOEVOLITY_DEBUG(
-                    std::cerr << "d = [";
-                    for (unsigned int i = 0; i < d.size(); ++i) {
-                        std::cerr << d.at(i) << " ";
-                    }
-                    std::cerr << "];" << std::endl;
-                    
-                    std::cerr << "e = [";
-                    for (unsigned int i = 0; i < e.size(); ++i) {
-                        std::cerr << e.at(i) << " ";
-                    }
-                    std::cerr << "];" << std::endl;
-                )
+                // ECOEVOLITY_DEBUG(
+                //     std::cerr << "d = [";
+                //     for (unsigned int i = 0; i < d.size(); ++i) {
+                //         std::cerr << d.at(i) << " ";
+                //     }
+                //     std::cerr << "];" << std::endl;
+                //     
+                //     std::cerr << "e = [";
+                //     for (unsigned int i = 0; i < e.size(); ++i) {
+                //         std::cerr << e.at(i) << " ";
+                //     }
+                //     std::cerr << "];" << std::endl;
+                // )
                 
                 //now solve the upper biadiagonal. diagonal is d, upper is same as M
                 x.at(n) = e.at(n)/d.at(n);
@@ -352,32 +352,32 @@ class QMatrix : public AbstractMatrix {
                 }
             }
             
-            ECOEVOLITY_DEBUG(
-                std::cerr << "xlocal = ";
-                for(unsigned int i = 0; i < x.size(); ++i) {
-                    std::cerr << x.at(i) << " ";
-                }
-                std::cerr << "];" << std::endl;
-                
-                double diff = 0.0;
-                for(unsigned int r=0; r <= n; ++r) {
-                    double sum = 0.0;
-                    if (r > 0) {
-                        sum += (n+1.0-r)*v*x.at(r-1);
-                    }
-                    sum += (- (coalescence_rate*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x.at(r);
-                    if (r < n) {
-                        sum+= (r+1.0)*u*x.at(r+1);
-                    }
-                    
-                    std::cerr << sum << std::endl;
-                    
-                    diff = std::max(diff, std::abs(sum-y.at(r))); //Check that it solves the system
-                }
-                if (diff > 1e-10) {
-                    std::cerr << "QMatrix.solve_central_block_transposed(): Error in solve" << std::endl;
-                }
-            )
+            // ECOEVOLITY_DEBUG(
+            //     std::cerr << "xlocal = ";
+            //     for(unsigned int i = 0; i < x.size(); ++i) {
+            //         std::cerr << x.at(i) << " ";
+            //     }
+            //     std::cerr << "];" << std::endl;
+            //     
+            //     double diff = 0.0;
+            //     for(unsigned int r=0; r <= n; ++r) {
+            //         double sum = 0.0;
+            //         if (r > 0) {
+            //             sum += (n+1.0-r)*v*x.at(r-1);
+            //         }
+            //         sum += (- (coalescence_rate*(n*(n-1.0)))/2.0 - v*(n-r) - u*r)*x.at(r);
+            //         if (r < n) {
+            //             sum+= (r+1.0)*u*x.at(r+1);
+            //         }
+            //         
+            //         std::cerr << sum << std::endl;
+            //         
+            //         diff = std::max(diff, std::abs(sum-y.at(r))); //Check that it solves the system
+            //     }
+            //     if (diff > 1e-10) {
+            //         std::cerr << "QMatrix.solve_central_block_transposed(): Error in solve" << std::endl;
+            //     }
+            // )
             return x;
         }
 
@@ -420,13 +420,13 @@ class QMatrix : public AbstractMatrix {
                  
                  ****/
                 
-                ECOEVOLITY_DEBUG(
-                    std::cerr << "xn = [";
-                    for (unsigned int r = 0; r <= n-1; ++r) {
-                        std::cerr << xn.at(r) << " ";
-                    }
-                    std::cerr << "];" << std::endl;
-                )
+                // ECOEVOLITY_DEBUG(
+                //     std::cerr << "xn = [";
+                //     for (unsigned int r = 0; r <= n-1; ++r) {
+                //         std::cerr << xn.at(r) << " ";
+                //     }
+                //     std::cerr << "];" << std::endl;
+                // )
                 
                 yn.at(0) = - ((this->coalescence_rate_*(n-1.0)*n)/2.0)*xn.at(0);
                 for (unsigned int r = 1; r < n; ++r) {
@@ -434,13 +434,13 @@ class QMatrix : public AbstractMatrix {
                 }        
                 yn.at(n) = - ( (this->coalescence_rate_*(n-1.0)*n)/2.0 )*xn.at(n-1);
                 
-                ECOEVOLITY_DEBUG(
-                    std::cerr << "yn = [";
-                    for(unsigned int r = 0;r <= n; ++r) {
-                        std::cerr << yn.at(r) << " ";
-                    }
-                    std::cerr << "];" << std::endl;
-                )
+                // ECOEVOLITY_DEBUG(
+                //     std::cerr << "yn = [";
+                //     for(unsigned int r = 0;r <= n; ++r) {
+                //         std::cerr << yn.at(r) << " ";
+                //     }
+                //     std::cerr << "];" << std::endl;
+                // )
                 
                 
                 xn = this->solve_central_block_transposed(
@@ -455,13 +455,13 @@ class QMatrix : public AbstractMatrix {
                     x.at(xptr++) = xn.at(i);
                 }
                 
-                ECOEVOLITY_DEBUG(
-                    std::cerr << "xn2 = [";
-                    for(unsigned int r = 0; r <= n; ++r) {
-                        std::cerr << xn.at(r) << " ";
-                    }
-                    std::cerr << "];" << std::endl;
-                )
+                // ECOEVOLITY_DEBUG(
+                //     std::cerr << "xn2 = [";
+                //     for(unsigned int r = 0; r <= n; ++r) {
+                //         std::cerr << xn.at(r) << " ";
+                //     }
+                //     std::cerr << "];" << std::endl;
+                // )
             }
             return x;
         }

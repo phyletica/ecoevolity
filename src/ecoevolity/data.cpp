@@ -84,10 +84,10 @@ void BiallelicData::init(
     NxsCharactersBlock::DataTypesEnum data_type;
     data_type = char_block->GetDataType();
 
-    ECOEVOLITY_DEBUG(
-    std::cerr << "Char block " << char_block_title << " has data type: " <<
-            (int)data_type << std::endl;
-    )
+    // ECOEVOLITY_DEBUG(
+    // std::cerr << "Char block " << char_block_title << " has data type: " <<
+    //         (int)data_type << std::endl;
+    // )
 
     for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
         NxsString seq_label = char_block->GetTaxonLabel(taxon_idx);
@@ -114,17 +114,17 @@ void BiallelicData::init(
         this->seq_label_to_pop_label_map_[seq_label] = pop_label;
     }
 
-    ECOEVOLITY_DEBUG(
-    std::cerr << "this->populations_labels_:" << std::endl;
-    unsigned int pop_idx = 0;
-    for (auto p_label: this->population_labels_) {
-        std::cerr << p_label << std::endl;
-        for (auto s_label: this->sequence_labels_[pop_idx]) {
-            std::cerr << "\t" << s_label << std::endl;
-        }
-        pop_idx += 1;
-    }
-    )
+    // ECOEVOLITY_DEBUG(
+    // std::cerr << "this->populations_labels_:" << std::endl;
+    // unsigned int pop_idx = 0;
+    // for (auto p_label: this->population_labels_) {
+    //     std::cerr << p_label << std::endl;
+    //     for (auto s_label: this->sequence_labels_[pop_idx]) {
+    //         std::cerr << "\t" << s_label << std::endl;
+    //     }
+    //     pop_idx += 1;
+    // }
+    // )
 
     std::vector<const NxsDiscreteDatatypeMapper *> data_type_mappers = char_block->GetAllDatatypeMappers();
     if (data_type_mappers.size() < 1) {

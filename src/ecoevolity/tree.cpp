@@ -64,7 +64,7 @@ void PopulationTree::init(
             ++pop_idx) {
         root_label += this->data_.get_population_label(pop_idx);
     }
-    this->root_ = new PopulationNode(root_label, 0.01);
+    this->root_ = new PopulationNode(root_label, 0.0);
     for (unsigned int pop_idx = 0;
             pop_idx < this->data_.get_number_of_populations();
             ++pop_idx) {
@@ -247,13 +247,13 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
             this->root_->get_coalescence_rate());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
-    ECOEVOLITY_DEBUG(
-        std::cerr << "xcol = [";
-        for (unsigned int i = 0; i < xcol.size(); ++i) {
-            std::cerr << xcol.at(i) << " ";
-        }
-        std::cerr << "]" << std::endl;
-    )
+    // ECOEVOLITY_DEBUG(
+    //     std::cerr << "xcol = [";
+    //     for (unsigned int i = 0; i < xcol.size(); ++i) {
+    //         std::cerr << xcol.at(i) << " ";
+    //     }
+    //     std::cerr << "]" << std::endl;
+    // )
 
     unsigned int index = 1;
     for (unsigned int n = 1; n <= N; ++n) {
@@ -276,15 +276,15 @@ double PopulationTree::compute_root_likelihood() {
     unsigned int N = this->root_->get_allele_count();
     std::vector< std::vector<double> > conditionals = this->compute_root_probabilities();
 
-    ECOEVOLITY_DEBUG(
-        for (unsigned int n = 1; n <= N; ++n) {
-            for (unsigned int r = 0; r <= n; ++r) {
-                std::cerr << "root height: " << this->root_->get_height() << std::endl;
-                std::cerr << "conditional[" << n << ", " << r << "] = " << conditionals.at(n).at(r) << std::endl;
-                std::cerr << "bottom_pattern_probs[" << n << ", " << r << "] = " << this->root_->get_bottom_pattern_probability(n, r) << std::endl;
-            }
-        }
-    )
+    // ECOEVOLITY_DEBUG(
+    //     for (unsigned int n = 1; n <= N; ++n) {
+    //         for (unsigned int r = 0; r <= n; ++r) {
+    //             std::cerr << "root height: " << this->root_->get_height() << std::endl;
+    //             std::cerr << "conditional[" << n << ", " << r << "] = " << conditionals.at(n).at(r) << std::endl;
+    //             std::cerr << "bottom_pattern_probs[" << n << ", " << r << "] = " << this->root_->get_bottom_pattern_probability(n, r) << std::endl;
+    //         }
+    //     }
+    // )
 
     double sum = 0.0;
     for (unsigned int n = 1; n <= N; ++n) {
@@ -297,9 +297,9 @@ double PopulationTree::compute_root_likelihood() {
         }
     }
 
-    ECOEVOLITY_DEBUG(
-        std::cerr << "root likelihood: " << sum << std::endl;
-    )
+    // ECOEVOLITY_DEBUG(
+    //     std::cerr << "root likelihood: " << sum << std::endl;
+    // )
     return sum;
 }
 
@@ -338,9 +338,9 @@ void PopulationTree::calculate_likelihood_correction() {
         }
     }
     this->likelihood_correction_was_calculated_ = true;
-    ECOEVOLITY_DEBUG(
-        std::cerr << "Log likelihood correction: " << this->log_likelihood_correction_ << std::endl;
-    )
+    // ECOEVOLITY_DEBUG(
+    //     std::cerr << "Log likelihood correction: " << this->log_likelihood_correction_ << std::endl;
+    // )
 }
 
 double PopulationTree::get_likelihood_correction(bool force) {
@@ -405,10 +405,40 @@ double PopulationTree::compute_log_likelihood() {
         this->log_likelihood_ += this->get_likelihood_correction();
     }
 
-    ECOEVOLITY_DEBUG(
-        std::cerr << "PopulationTree::compute_log_likelihood(): " << this->log_likelihood_ << std::endl;
-    )
+    // ECOEVOLITY_DEBUG(
+    //     std::cerr << "PopulationTree::compute_log_likelihood(): " << this->log_likelihood_ << std::endl;
+    // )
 
     return this->log_likelihood_;
 }
 
+void PopulationTree::fold_patterns() {
+    this->data_.fold_patterns();
+}
+
+void PopulationTree::set_height(double height) {
+    this->root_->set_height(height);
+}
+const double& PopulationTree::get_height() const {
+    return this->root_->get_height();
+}
+
+void PopulationTree::set_u(double u) {
+    this->u_ = u;
+}
+void PopulationTree::set_v(double v) {
+    this->v_ = v;
+}
+const double& PopulationTree::get_u() const {
+    return this->u_;
+}
+const double& PopulationTree::get_v() const {
+    return this->v_;
+}
+
+void PopulationTree::set_root_coalescence_rate(double rate) {
+    this->root_->set_coalescence_rate(rate);
+}
+void PopulationTree::set_child_coalescence_rate(unsigned int child_index, double rate) {
+    this->root_->get_child(child_index)->set_coalescence_rate(rate);
+}

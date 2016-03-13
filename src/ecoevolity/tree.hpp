@@ -51,8 +51,6 @@ class PopulationTree {
         bool constant_site_counts_were_provided();
         void calculate_likelihood_correction();
 
-        double get_likelihood_correction(bool force = false);
-
         double calculate_log_binomial(
                 unsigned int red_allele_count,
                 unsigned int allele_count) const;
@@ -91,6 +89,21 @@ class PopulationTree {
                 const bool genotypes_are_diploid = true,
                 const bool markers_are_dominant = false,
                 const bool validate = true);
+
+        void fold_patterns();
+
+        void set_height(double height);
+        const double& get_height() const;
+
+        void set_u(double u);
+        void set_v(double v);
+        const double& get_u() const;
+        const double& get_v() const;
+
+        void set_root_coalescence_rate(double rate);
+        void set_child_coalescence_rate(unsigned int child_index, double rate);
+
+        double get_likelihood_correction(bool force = false);
 
         double compute_log_likelihood();
 };
