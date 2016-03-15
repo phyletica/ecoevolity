@@ -20,8 +20,18 @@
 #ifndef ECOEVOLITY_OPERATOR_HPP
 #define ECOEVOLITY_OPERATOR_HPP
 
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <cmath>
+#include <limits>
+
+#include "rng.hpp"
+#include "assert.hpp"
+
 class OperatorSchedule {
     protected:
+        RandomNumberGenerator * rng_ = RandomNumberGenerator();
         std::vector<Operator> operators_;
         double total_weight_ = 0.0;
         std::vector<double> cumulative_probs_;
@@ -46,6 +56,35 @@ class OperatorSchedule {
             }
         }
 
+        Operator& draw_operator() {
+            double u = this->rng_->uniform_real();
+            for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
+                if (u <= this->cumulative_probs_.at(i)) {
+                    return this->operators_.at(i);
+                }
+            return this->operators_.back();
+        }
+
+        double calc_delta(const Operator& operator, double log_alpha) {
+            if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
+                    (! this->auto_optimize_)) {
+                return 0.0;
+            }
+            double target = operator.get_target_acceptance_probability();
+            double count = (operator.get_number_rejected_for_correction() +
+                            operator.get_number_accepted_for_correction() +
+                            1.0);
+            double delta_p = ((1.0 / count) * (std::exp(std::min(log_alpha, 0)) - target));
+            double mx = std::numeric_limits<double>::max();
+            if ((delta_p > -mx) && (delta_p < mx)) {
+                return delta_p;
+            }
+            return 0.0;
+        }
+
+        const double& get_total_weight() const {
+            return this->total_weight_;
+        }
         const unsigned int& get_auto_optimize_delay_count() const {
             return this->auto_optimize_delay_count_;
         }
@@ -53,6 +92,14 @@ class OperatorSchedule {
             return this->auto_optimize_delay_;
         }
 
+        void write_operator_rates(std::ofstream out) {
+            const Operator& op = this->operators_.at(0);
+            out << op.header_string();
+            out << op.to_string();
+            for (unsigned int i = 1; i < this->operators_.size(); ++i) {
+                out << this->operators_.at(0).to_string();
+            }
+        }
 };
 
 class Operator {
@@ -79,15 +126,14 @@ class Operator {
             this->operator_schedule_ = os;
         }
 
-        virtual double get_coercable_parameter_value() = 0;
+        virtual double get_coercable_parameter_value() {
+            return std::numeric_limits<double>::quiet_NaN();
+        }
 
-        virtual void set_coercable_parameter_value(double value) = 0;
+        virtual void set_coercable_parameter_value(double value) { }
 
         const double& get_weight() const {
             return this->weight_;
-        }
-        void set_weight(double weight) {
-            this->weight_ = weight;
         }
 
         void accept() {
@@ -104,6 +150,51 @@ class Operator {
             }
         }
 
+        const unsigned int& get_number_rejected() const {
+            return this->number_rejected_;
+        }
+        const unsigned int& get_number_accepted() const {
+            return this->number_accepted_;
+        }
+        const unsigned int& get_number_rejected_for_correction() const {
+            return this->number_rejected_for_correction_;
+        }
+        const unsigned int& get_number_accepted_for_correction() const {
+            return this->number_accepted_for_correction_;
+        }
+
+        const std::string& get_name() const {
+            return this->name_;
+        }
+
+        std::string header_string() const {
+            return "name\tnumber_accepted\tnumber_rejected\tweight\tweight_prob\ttuning_parameter\n";
+        }
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "\t" 
+               << this->get_number_accepted() << "\t"
+               << this->get_number_rejected() << "\t"
+               << this->get_weight() << "\t";
+
+            if (this->operator_schedule_->get_total_weight() > 0.0) {
+                ss << this->get_weight() / this->operator_schedule_->get_total_weight() << "\t";
+            }
+            else {
+                ss << "\t";
+            }
+
+            double tuning = this->get_coercable_parameter_value();
+            if (std::isnan(tuning)) {
+                ss << "\t";
+            }
+            else {
+                ss << tuning << "\t";
+            }
+            ss << "\n";
+            return ss.str();
+        }
+
     protected:
         OperatorSchedule * operator_schedule_;
         double weight_ = 1.0;
@@ -111,6 +202,7 @@ class Operator {
         unsigned int number_accepted_ = 0;
         unsigned int number_rejected_for_correction = 0;
         unsigned int number_accepted_for_correction = 0;
+        std::string name_ = "BaseOperator";
 
         double calc_delta(double log_alpha) {
             return operator_schedule_->calc_delta(this, log_alpha);
