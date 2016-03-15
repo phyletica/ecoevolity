@@ -77,7 +77,7 @@ class RandomNumberGenerator {
                             a, b));
         }
 
-        inline long uniform_positive_int(unsigned int a, unsigned long b) {
+        inline long uniform_positive_int(unsigned long a, unsigned long b) {
             return this->uniform_positive_int_rng_(
                     this->engine_,
                     typename decltype(this->uniform_positive_int_rng_)::param_type(
