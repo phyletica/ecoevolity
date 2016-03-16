@@ -92,7 +92,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         PopulationNode& operator=(const PopulationNode& node) {
             this->children_ = node.children_;
             this->parent_ = node.parent_;
-            this->height_ = node.height_;
+            this->height_->set_value(node.height_->get_value());
             this->label_ = node.label_;
             this->is_dirty_ = node.is_dirty_;
             this->bottom_pattern_probs_ = node.bottom_pattern_probs_;

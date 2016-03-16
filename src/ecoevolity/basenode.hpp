@@ -47,7 +47,7 @@ class BaseNode {
         std::vector< DerivedNodeT * > children_;
         DerivedNodeT * parent_ = 0;
         std::string label_ = "";
-        PositiveRealParameter height_ = PositiveRealParameter(0.0);
+        PositiveRealParameter * height_ = new PositiveRealParameter(0.0);
         bool is_dirty_ = true;
 
     public:
@@ -56,7 +56,7 @@ class BaseNode {
         BaseNode(const DerivedNodeT& node) {
             this->children_ = node.children_;
             this->parent_ = node.parent_;
-            this->height_ = node.height_;
+            this->height_->set_value(node.height_->get_value());
             this->label_ = node.label_;
             this->is_dirty_ = node.is_dirty_;
         }
@@ -64,15 +64,16 @@ class BaseNode {
             this->label_ = label;
         }
         BaseNode(double height) {
-            this->height_.set_value(height);
+            this->height_->set_value(height);
         }
         BaseNode(std::string label, double height) {
             this->label_ = label;
-            this->height_.set_value(height);
+            this->height_->set_value(height);
         }
 
         // Destructor
         virtual ~BaseNode() {
+            delete this->height_;
             if (this->parent_) {
                 this->parent_->remove_child(static_cast<DerivedNodeT *>(this));
             }
@@ -84,7 +85,7 @@ class BaseNode {
         DerivedNodeT& operator=(const DerivedNodeT& node) {
             this->children_ = node.children_;
             this->parent_ = node.parent_;
-            this->height_ = node.height_;
+            this->height_->set_value(node.height_->get_value());
             this->label_ = node.label_;
             this->is_dirty_ = node.is_dirty_;
             return * this;
@@ -207,19 +208,27 @@ class BaseNode {
         }
 
         const double& get_height() const {
-            return this->height_.get_value();
+            return this->height_->get_value();
         }
 
         void set_height(double height) {
-            this->height_.set_value(height);
+            this->height_->set_value(height);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->make_dirty();
             }
         }
 
+        void set_height_parameter(PositiveRealParameter * height_parameter) {
+            this->height_ = height_parameter;
+        }
+
+        PositiveRealParameter * get_height_parameter() {
+            return this->height_;
+        }
+
         void update_height(double height) {
-            this->height_.update_value(height);
+            this->height_->update_value(height);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->make_dirty();
@@ -227,11 +236,11 @@ class BaseNode {
         }
 
         void store_height() {
-            this->height_.store();
+            this->height_->store();
         }
 
         void restore_height() {
-            this->height_.restore();
+            this->height_->restore();
         }
 
         double get_length() const {
