@@ -29,7 +29,7 @@
 #include "assert.hpp"
 
 class PopulationTree {
-    private:
+    protected:
         BiallelicData data_;
         PopulationNode * root_;
         MatrixExponentiator matrix_exponentiator;
@@ -48,6 +48,7 @@ class PopulationTree {
         bool use_removed_constant_site_counts_ = false;
 
         // methods
+        void init_tree();
         bool constant_site_counts_were_provided();
         void calculate_likelihood_correction();
 
@@ -92,8 +93,9 @@ class PopulationTree {
 
         void fold_patterns();
 
-        void set_height(double height);
-        const double& get_height() const;
+        PopulationNode * get_root() const {return this->root_;}
+        void set_root_height(double height);
+        const double& get_root_height() const;
 
         void set_u(double u);
         void set_v(double v);
@@ -101,11 +103,27 @@ class PopulationTree {
         const double& get_v() const;
 
         void set_root_coalescence_rate(double rate);
-        void set_child_coalescence_rate(unsigned int child_index, double rate);
+        void set_coalescence_rate(double rate);
 
         double get_likelihood_correction(bool force = false);
 
         double compute_log_likelihood();
+};
+
+class ComparisonPopulationTree: public PopulationTree {
+    public:
+        ComparisonPopulationTree() { }
+        ComparisonPopulationTree(
+                const std::string path, 
+                const char population_name_delimiter = '_',
+                const bool population_name_is_prefix = true,
+                const bool genotypes_are_diploid = true,
+                const bool markers_are_dominant = false,
+                const bool validate = true);
+
+        void set_child_coalescence_rate(unsigned int child_index, double rate);
+        void set_height(double height) {this->set_root_height(height);}
+        const double& get_height() const {return this->get_root_height();}
 };
 
 #endif

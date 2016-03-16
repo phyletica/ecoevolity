@@ -48,34 +48,46 @@ void PopulationTree::init(
             genotypes_are_diploid,
             markers_are_dominant,
             validate);
-    if (this->data_.get_number_of_populations() > 2) {
-        throw EcoevolityError("PopulationTree(); does not support > 2 tips");
+    if (this->data_.get_number_of_populations() < 1) {
+        throw EcoevolityError("PopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
     if (this->correct_for_constant_patterns_) {
         unsigned int number_of_constant_patterns_removed = this->data_.remove_constant_patterns();
     }
-    //this->data_.fold_patterns();
 
+    this->init_tree();
 
-    std::string root_label = "";
-    for (unsigned int pop_idx = 0;
-            pop_idx < this->data_.get_number_of_populations();
-            ++pop_idx) {
-        root_label += this->data_.get_population_label(pop_idx);
-    }
-    this->root_ = new PopulationNode(root_label, 0.0);
-    for (unsigned int pop_idx = 0;
-            pop_idx < this->data_.get_number_of_populations();
-            ++pop_idx) {
-        this->root_->add_child(new PopulationNode(
-                this->data_.get_population_label(pop_idx),
-                0.0,
-                this->data_.get_max_allele_count(pop_idx)));
-    }
     this->root_->resize_all();
 
     this->pattern_likelihoods_.assign(this->data_.get_number_of_patterns(), 0.0);
+}
+
+void PopulationTree::init_tree() {
+    if (this->data_.get_number_of_populations() < 3) {
+        this->root_ = new PopulationNode(0.0);
+        for (unsigned int pop_idx = 0;
+                pop_idx < this->data_.get_number_of_populations();
+                ++pop_idx) {
+            this->root_->add_child(new PopulationNode(
+                    this->data_.get_population_label(pop_idx),
+                    0.0,
+                    this->data_.get_max_allele_count(pop_idx)));
+        }
+        return;
+    }
+    PopulationNode * ancestor = new PopulationNode(0.0);
+    ancestor->add_child(new PopulationNode(this->data_.get_population_label(0)));
+    ancestor->add_child(new PopulationNode(this->data_.get_population_label(1)));
+    for (unsigned int pop_idx = 2;
+            pop_idx < this->data_.get_number_of_populations();
+            ++pop_idx) {
+        PopulationNode * next_ancestor = new PopulationNode(0.0);
+        next_ancestor->add_child(ancestor);
+        next_ancestor->add_child(new PopulationNode(this->data_.get_population_label(pop_idx)));
+        ancestor = next_ancestor;
+    }
+    this->root_ = ancestor;
 }
 
 void PopulationTree::compute_leaf_partials(
@@ -416,10 +428,10 @@ void PopulationTree::fold_patterns() {
     this->data_.fold_patterns();
 }
 
-void PopulationTree::set_height(double height) {
+void PopulationTree::set_root_height(double height) {
     this->root_->set_height(height);
 }
-const double& PopulationTree::get_height() const {
+const double& PopulationTree::get_root_height() const {
     return this->root_->get_height();
 }
 
@@ -439,6 +451,32 @@ const double& PopulationTree::get_v() const {
 void PopulationTree::set_root_coalescence_rate(double rate) {
     this->root_->set_coalescence_rate(rate);
 }
-void PopulationTree::set_child_coalescence_rate(unsigned int child_index, double rate) {
+void PopulationTree::set_coalescence_rate(double rate) {
+    this->root_->set_all_coalescence_rate(rate);
+}
+
+
+ComparisonPopulationTree::ComparisonPopulationTree(
+        const std::string path, 
+        const char population_name_delimiter,
+        const bool population_name_is_prefix,
+        const bool genotypes_are_diploid,
+        const bool markers_are_dominant,
+        const bool validate) {
+    this->init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               validate);
+    if (this->data_.get_number_of_populations() > 2) {
+        throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
+    }
+    this->root_->set_label("root-" + this->root_->get_child(0)->get_label());
+}
+
+void ComparisonPopulationTree::set_child_coalescence_rate(
+        unsigned int child_index,
+        double rate) {
     this->root_->get_child(child_index)->set_coalescence_rate(rate);
 }
