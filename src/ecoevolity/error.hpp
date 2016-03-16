@@ -101,4 +101,11 @@ class EcoevolityInvalidCharacterError: public EcoevolityBaseError {
                     file_name, taxon_label, character_index) { }
 };
 
+class EcoevolityParameterValueError: public EcoevolityBaseError {
+    public:
+        EcoevolityParameterValueError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityParameterValueError", message) { }
+};
+
 #endif
