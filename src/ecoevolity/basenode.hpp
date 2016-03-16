@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "matrix.hpp"
+#include "parameter.hpp"
 #include "debug.hpp"
 #include "assert.hpp"
 #include "error.hpp"
@@ -46,7 +47,7 @@ class BaseNode {
         std::vector< DerivedNodeT * > children_;
         DerivedNodeT * parent_ = 0;
         std::string label_ = "";
-        double height_ = 0.0;
+        PositiveRealParameter height_ = PositiveRealParameter(0.0);
         bool is_dirty_ = true;
 
     public:
@@ -63,11 +64,11 @@ class BaseNode {
             this->label_ = label;
         }
         BaseNode(double height) {
-            this->height_ = height;
+            this->height_.set_value(height);
         }
         BaseNode(std::string label, double height) {
             this->label_ = label;
-            this->height_ = height;
+            this->height_.set_value(height);
         }
 
         // Destructor
@@ -206,15 +207,31 @@ class BaseNode {
         }
 
         const double& get_height() const {
-            return this->height_;
+            return this->height_.get_value();
         }
 
         void set_height(double height) {
-            this->height_ = height;
+            this->height_.set_value(height);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->make_dirty();
             }
+        }
+
+        void update_height(double height) {
+            this->height_.update_value(height);
+            this->make_dirty();
+            for (auto child_iter: this->children_) {
+                child_iter->make_dirty();
+            }
+        }
+
+        void store_height() {
+            this->height_.store();
+        }
+
+        void restore_height() {
+            this->height_.restore();
         }
 
         double get_length() const {
