@@ -223,7 +223,7 @@ class BaseNode {
             this->height_ = height_parameter;
         }
 
-        PositiveRealParameter * get_height_parameter() {
+        PositiveRealParameter * get_height_parameter() const {
             return this->height_;
         }
 
