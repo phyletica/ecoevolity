@@ -149,8 +149,8 @@ void PopulationTree::compute_top_of_branch_partials(
 
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node->get_allele_count(),
-            this->u_,
-            this->v_,
+            this->u_->get_value(),
+            this->v_->get_value(),
             node->get_coalescence_rate(),
             node->get_length(),
             node->get_bottom_pattern_probs());
@@ -254,8 +254,8 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
     std::vector< std::vector<double> > x (N + 1); 
     QMatrix q = QMatrix(
             N,
-            this->u_,
-            this->v_,
+            this->u_->get_value(),
+            this->v_->get_value(),
             this->root_->get_coalescence_rate());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
@@ -436,15 +436,46 @@ const double& PopulationTree::get_root_height() const {
 }
 
 void PopulationTree::set_u(double u) {
-    this->u_ = u;
+    this->u_->set_value(u);
+}
+void PopulationTree::update_u(double u) {
+    this->u_->update_value(u);
 }
 void PopulationTree::set_v(double v) {
-    this->v_ = v;
+    this->v_->set_value(v);
+}
+void PopulationTree::update_v(double v) {
+    this->v_->update_value(v);
 }
 const double& PopulationTree::get_u() const {
-    return this->u_;
+    return this->u_->get_value();
 }
 const double& PopulationTree::get_v() const {
+    return this->v_->get_value();
+}
+void PopulationTree::store_u() {
+    this->u_->store();
+}
+void PopulationTree::store_v() {
+    this->v_->store();
+}
+void PopulationTree::restore_u() {
+    this->u_->restore();
+}
+void PopulationTree::restore_v() {
+    this->v_->restore();
+}
+
+void PopulationTree::set_u_parameter(PositiveRealParameter * u) {
+    this->u_ = u;
+}
+void PopulationTree::set_v_parameter(PositiveRealParameter * v) {
+    this->v_ = v;
+}
+PositiveRealParameter * PopulationTree::get_u_parameter() const {
+    return this->u_;
+}
+PositiveRealParameter * PopulationTree::get_v_parameter() const {
     return this->v_;
 }
 
