@@ -238,9 +238,21 @@ class BaseNode {
         void store_height() {
             this->height_->store();
         }
+        void store_all_heights() {
+            this->height_->store();
+            for (auto child_iter: this->children_) {
+                child_iter->store_all_heights();
+            }
+        }
 
         void restore_height() {
             this->height_->restore();
+        }
+        void restore_all_heights() {
+            this->height_->restore();
+            for (auto child_iter: this->children_) {
+                child_iter->restore_all_heights();
+            }
         }
 
         double get_length() const {

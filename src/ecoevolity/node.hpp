@@ -21,6 +21,7 @@
 #define ECOEVOLITY_NODE_HPP
 
 #include "basenode.hpp"
+#include "parameter.hpp"
 
 /**
  * Base class for a node of a phylogenetic tree.
@@ -49,7 +50,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         typedef BaseNode<PopulationNode> BaseClass;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
-        double coalescence_rate_ = 10.0;
+        PositiveRealParameter * coalescence_rate_ = new PositiveRealParameter(10.0);
 
     public:
         PopulationNode() { }
@@ -205,21 +206,60 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
 
         const double& get_coalescence_rate() const {
+            return this->coalescence_rate_->get_value();
+        }
+        PositiveRealParameter * get_coalescence_rate_parameter() const {
             return this->coalescence_rate_;
+        }
+        void set_coalescence_rate_parameter(PositiveRealParameter * rate) {
+            this->coalescence_rate_ = rate;
         }
 
         void set_coalescence_rate(double rate) {
-            this->coalescence_rate_ = rate;
+            this->coalescence_rate_->set_value(rate);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->make_dirty();
             }
         }
-        void set_all_coalescence_rate(double rate) {
-            this->coalescence_rate_ = rate;
+        void set_all_coalescence_rates(double rate) {
+            this->coalescence_rate_->set_value(rate);
             this->make_dirty();
             for (auto child_iter: this->children_) {
-                child_iter->set_all_coalescence_rate(rate);
+                child_iter->set_all_coalescence_rates(rate);
+            }
+        }
+        void update_coalescence_rate(double rate) {
+            this->coalescence_rate_->update_value(rate);
+            this->make_dirty();
+            for (auto child_iter: this->children_) {
+                child_iter->make_dirty();
+            }
+        }
+        void update_all_coalescence_rates(double rate) {
+            this->coalescence_rate_->update_value(rate);
+            this->make_dirty();
+            for (auto child_iter: this->children_) {
+                child_iter->update_all_coalescence_rates(rate);
+            }
+        }
+
+        void store_coalescence_rate() {
+            this->coalescence_rate_->store();
+        }
+        void restore_coalescence_rate() {
+            this->coalescence_rate_->restore();
+        }
+        void store_all_coalescence_rates() {
+            this->coalescence_rate_->store();
+            for (auto child_iter: this->children_) {
+                child_iter->store_all_coalescence_rates();
+            }
+        }
+        void restore_all_coalescence_rates() {
+            this->coalescence_rate_->restore();
+            for (auto child_iter: this->children_) {
+                child_iter->restore_all_coalescence_rates();
             }
         }
 };

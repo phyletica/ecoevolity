@@ -483,7 +483,7 @@ void PopulationTree::set_root_coalescence_rate(double rate) {
     this->root_->set_coalescence_rate(rate);
 }
 void PopulationTree::set_coalescence_rate(double rate) {
-    this->root_->set_all_coalescence_rate(rate);
+    this->root_->set_all_coalescence_rates(rate);
 }
 
 
