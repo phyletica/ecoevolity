@@ -326,22 +326,24 @@ void PopulationTree::compute_pattern_likelihoods() {
             ++pattern_idx) {
         this->pattern_likelihoods_.at(pattern_idx) = this->compute_pattern_likelihood(pattern_idx);
     }
-    this->all_green_pattern_likelihood_ = this->compute_pattern_likelihood(-1);
-    this->all_red_pattern_likelihood_ = this->all_green_pattern_likelihood_;
+    double all_green_pattern_likelihood = this->compute_pattern_likelihood(-1);
+    double all_red_pattern_likelihood = all_green_pattern_likelihood;
     if (! this->data_.patterns_are_folded()) {
-        this->all_red_pattern_likelihood_ = this->compute_pattern_likelihood(-2);
+        all_red_pattern_likelihood = this->compute_pattern_likelihood(-2);
     }
+    this->all_green_pattern_likelihood_.set_value(all_green_pattern_likelihood);
+    this->all_red_pattern_likelihood_.set_value(all_red_pattern_likelihood);
 }
 
 void PopulationTree::calculate_likelihood_correction() {
-    this->log_likelihood_correction_ = 0.0;
+    double log_likelihood_correction = 0.0;
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
             ++pattern_idx) {
         for (unsigned int pop_idx = 0;
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
-            this->log_likelihood_correction_ -= (
+            log_likelihood_correction -= (
                     this->calculate_log_binomial(
                         this->data_.get_red_allele_count(pattern_idx, pop_idx),
                         this->data_.get_allele_count(pattern_idx, pop_idx)) *
@@ -349,6 +351,7 @@ void PopulationTree::calculate_likelihood_correction() {
                     );
         }
     }
+    this->log_likelihood_correction_.set_value(log_likelihood_correction);
     this->likelihood_correction_was_calculated_ = true;
     // ECOEVOLITY_DEBUG(
     //     std::cerr << "Log likelihood correction: " << this->log_likelihood_correction_ << std::endl;
@@ -359,7 +362,7 @@ double PopulationTree::get_likelihood_correction(bool force) {
     if ((! this->likelihood_correction_was_calculated_) || (force)) {
         this->calculate_likelihood_correction();
     }
-    return this->log_likelihood_correction_;
+    return this->log_likelihood_correction_.get_value();
 }
 
 double PopulationTree::calculate_log_binomial(
@@ -380,7 +383,7 @@ bool PopulationTree::constant_site_counts_were_provided() {
 }
 
 double PopulationTree::compute_log_likelihood() {
-    this->log_likelihood_ = 0.0;
+    double log_likelihood = 0.0;
     this->compute_pattern_likelihoods();
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
@@ -388,40 +391,44 @@ double PopulationTree::compute_log_likelihood() {
         double pattern_likelihood = this->pattern_likelihoods_.at(pattern_idx);
         double weight = (double) this->data_.get_pattern_weight(pattern_idx);
         if (pattern_likelihood ==  0.0) {
-            this->log_likelihood_ = -10e100;
+            log_likelihood = -10e100;
             break;
         }
-        this->log_likelihood_ += weight * std::log(pattern_likelihood);
+        log_likelihood += weight * std::log(pattern_likelihood);
     }
     
     if (this->correct_for_constant_patterns_) {
         if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
-                    ((double)this->number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_)) +
-                    ((double)this->number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_));
-            this->log_likelihood_ += constant_log_likelihood;
+                    ((double)this->number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_.get_value())) +
+                    ((double)this->number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_.get_value()));
+            log_likelihood += constant_log_likelihood;
         }
         else if (this->use_removed_constant_site_counts_){
             double constant_log_likelihood =
-                    ((double)this->data_.get_number_of_constant_green_sites_removed() * std::log(this->all_green_pattern_likelihood_)) +
-                    ((double)this->data_.get_number_of_constant_red_sites_removed() * std::log(this->all_red_pattern_likelihood_));
-            this->log_likelihood_ += constant_log_likelihood;
+                    ((double)this->data_.get_number_of_constant_green_sites_removed() *
+                    std::log(this->all_green_pattern_likelihood_.get_value())) +
+                    ((double)this->data_.get_number_of_constant_red_sites_removed() *
+                    std::log(this->all_red_pattern_likelihood_.get_value()));
+            log_likelihood += constant_log_likelihood;
         }
         else {
-            this->log_likelihood_ -= ((double)this->data_.get_number_of_sites() * 
-                    std::log(1.0 - this->all_green_pattern_likelihood_ - this->all_red_pattern_likelihood_));
+            log_likelihood -= ((double)this->data_.get_number_of_sites() * 
+                    std::log(1.0 - this->all_green_pattern_likelihood_.get_value() -
+                            this->all_red_pattern_likelihood_.get_value()));
         }
     }
 
     if (this->correct_for_full_likelihood_) {
-        this->log_likelihood_ += this->get_likelihood_correction();
+        log_likelihood += this->get_likelihood_correction();
     }
 
     // ECOEVOLITY_DEBUG(
-    //     std::cerr << "PopulationTree::compute_log_likelihood(): " << this->log_likelihood_ << std::endl;
+    //     std::cerr << "PopulationTree::compute_log_likelihood(): " << log_likelihood << std::endl;
     // )
 
-    return this->log_likelihood_;
+    this->log_likelihood_.set_value(log_likelihood);
+    return log_likelihood;
 }
 
 void PopulationTree::fold_patterns() {
@@ -431,8 +438,23 @@ void PopulationTree::fold_patterns() {
 void PopulationTree::set_root_height(double height) {
     this->root_->set_height(height);
 }
+void PopulationTree::update_root_height(double height) {
+    this->root_->update_height(height);
+}
 const double& PopulationTree::get_root_height() const {
     return this->root_->get_height();
+}
+void PopulationTree::store_root_height() {
+    this->root_->store_height();
+}
+void PopulationTree::restore_root_height() {
+    this->root_->restore_height();
+}
+void PopulationTree::set_root_height_parameter(PositiveRealParameter * h) {
+    this->root_->set_height_parameter(h);
+}
+PositiveRealParameter * PopulationTree::get_root_height_parameter() const {
+    return this->root_->get_height_parameter();
 }
 
 void PopulationTree::set_u(double u) {
@@ -486,6 +508,50 @@ void PopulationTree::set_coalescence_rate(double rate) {
     this->root_->set_all_coalescence_rates(rate);
 }
 
+void PopulationTree::store_state() {
+    this->store_likelihood();
+    this->store_parameters();
+}
+void PopulationTree::store_likelihood() {
+    this->log_likelihood_.store();
+    this->all_green_pattern_likelihood_.store();
+    this->all_red_pattern_likelihood_.store();
+}
+void PopulationTree::store_parameters() {
+    this->store_u();
+    this->store_v();
+    this->store_all_coalescence_rates();
+    this->store_all_heights();
+}
+void PopulationTree::store_all_coalescence_rates() {
+    this->root_->store_all_coalescence_rates();
+}
+void PopulationTree::store_all_heights() {
+    this->root_->store_all_heights();
+}
+
+void PopulationTree::restore_state() {
+    this->restore_likelihood();
+    this->restore_parameters();
+}
+void PopulationTree::restore_likelihood() {
+    this->log_likelihood_.restore();
+    this->all_green_pattern_likelihood_.restore();
+    this->all_red_pattern_likelihood_.restore();
+}
+void PopulationTree::restore_parameters() {
+    this->restore_u();
+    this->restore_v();
+    this->restore_all_coalescence_rates();
+    this->restore_all_heights();
+}
+void PopulationTree::restore_all_coalescence_rates() {
+    this->root_->restore_all_coalescence_rates();
+}
+void PopulationTree::restore_all_heights() {
+    this->root_->restore_all_heights();
+}
+
 
 ComparisonPopulationTree::ComparisonPopulationTree(
         const std::string path, 
@@ -510,4 +576,30 @@ void ComparisonPopulationTree::set_child_coalescence_rate(
         unsigned int child_index,
         double rate) {
     this->root_->get_child(child_index)->set_coalescence_rate(rate);
+}
+void ComparisonPopulationTree::update_child_coalescence_rate(
+        unsigned int child_index,
+        double rate) {
+    this->root_->get_child(child_index)->update_coalescence_rate(rate);
+}
+const double& ComparisonPopulationTree::get_child_coalescence_rate(
+        unsigned int child_index) {
+    return this->root_->get_child(child_index)->get_coalescence_rate();
+}
+void ComparisonPopulationTree::store_child_coalescence_rate(
+        unsigned int child_index) {
+    this->root_->get_child(child_index)->store_coalescence_rate();
+}
+void ComparisonPopulationTree::restore_child_coalescence_rate(
+        unsigned int child_index) {
+    this->root_->get_child(child_index)->restore_coalescence_rate();
+}
+void ComparisonPopulationTree::set_child_coalescence_rate_parameter(
+        unsigned int child_index,
+        PositiveRealParameter * r) {
+    this->root_->get_child(child_index)->set_coalescence_rate_parameter(r);
+}
+PositiveRealParameter * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
 }

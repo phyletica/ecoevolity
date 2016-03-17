@@ -37,11 +37,11 @@ class PopulationTree {
         PositiveRealParameter * u_ = new PositiveRealParameter(1.0);
         PositiveRealParameter * v_ = new PositiveRealParameter(1.0);
         std::vector<double> pattern_likelihoods_;
-        double log_likelihood_ = 0.0;
-        double log_likelihood_correction_ = 0.0;
+        LogProbability log_likelihood_ = LogProbability(0.0);
+        LogProbability log_likelihood_correction_ = LogProbability(0.0);
         bool likelihood_correction_was_calculated_ = false;
-        double all_green_pattern_likelihood_ = 0.0;
-        double all_red_pattern_likelihood_ = 0.0;
+        Probability all_green_pattern_likelihood_ = Probability(0.0);
+        Probability all_red_pattern_likelihood_ = Probability(0.0);
         bool correct_for_full_likelihood_ = true;
         bool correct_for_constant_patterns_ = true;
         int number_of_constant_red_sites_ = -1;
@@ -96,7 +96,12 @@ class PopulationTree {
 
         PopulationNode * get_root() const {return this->root_;}
         void set_root_height(double height);
+        void update_root_height(double height);
         const double& get_root_height() const;
+        void store_root_height();
+        void restore_root_height();
+        void set_root_height_parameter(PositiveRealParameter * h);
+        PositiveRealParameter * get_root_height_parameter() const;
 
         void set_u(double u);
         void set_v(double v);
@@ -119,6 +124,17 @@ class PopulationTree {
         double get_likelihood_correction(bool force = false);
 
         double compute_log_likelihood();
+
+        void store_state();
+        void store_likelihood();
+        void store_parameters();
+        void store_all_coalescence_rates();
+        virtual void store_all_heights();
+        void restore_state();
+        void restore_likelihood();
+        void restore_parameters();
+        void restore_all_coalescence_rates();
+        virtual void restore_all_heights();
 };
 
 class ComparisonPopulationTree: public PopulationTree {
@@ -133,8 +149,33 @@ class ComparisonPopulationTree: public PopulationTree {
                 const bool validate = true);
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
+        void update_child_coalescence_rate(unsigned int child_index, double rate);
+        const double& get_child_coalescence_rate(unsigned int child_index);
+        void store_child_coalescence_rate(unsigned int child_index);
+        void restore_child_coalescence_rate(unsigned int child_index);
+        void set_child_coalescence_rate_parameter(unsigned int child_index,
+                PositiveRealParameter * r);
+        PositiveRealParameter * get_child_coalescence_rate_parameter(
+                unsigned int child_index) const;
+
         void set_height(double height) {this->set_root_height(height);}
+        void update_height(double height) {this->update_root_height(height);}
         const double& get_height() const {return this->get_root_height();}
+        void store_height() {this->store_root_height();}
+        void restore_height() {this->restore_root_height();}
+        void set_height_parameter(PositiveRealParameter * h) {
+            this->set_root_height_parameter(h);
+        }
+        PositiveRealParameter * get_height_parameter() const {
+            return this->get_root_height_parameter();
+        }
+
+        void store_all_heights() {
+            this->store_height();
+        }
+        void restore_all_heights() {
+            this->restore_height();
+        }
 };
 
 #endif
