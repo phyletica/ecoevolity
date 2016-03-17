@@ -108,4 +108,11 @@ class EcoevolityParameterValueError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityParameterValueError", message) { }
 };
 
+class EcoevolityProbabilityDistributionError: public EcoevolityBaseError {
+    public:
+        EcoevolityProbabilityDistributionError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityProbabilityDistributionError", message) { }
+};
+
 #endif
