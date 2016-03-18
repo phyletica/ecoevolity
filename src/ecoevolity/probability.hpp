@@ -57,16 +57,16 @@ class ContinuousProbabilityDistribution {
 class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
     public:
         ImproperUniformDistribution() { }
-        ~ImproperUniformDistribution() { }
+        virtual ~ImproperUniformDistribution() { }
 
-        std::string get_name() const {
+        virtual std::string get_name() const {
             return "uniform(-inf, +inf)";
         }
-        std::string to_string() const {
+        virtual std::string to_string() const {
             return this->get_name();
         }
 
-        double relative_ln_pdf(double x) const {
+        virtual double relative_ln_pdf(double x) const {
             return 0.0;
         }
         double ln_pdf(double x) const {
@@ -83,6 +83,30 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
         }
 };
 
+class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
+    public:
+        ImproperPositiveUniformDistribution() { }
+        ~ImproperPositiveUniformDistribution() { }
+
+        std::string get_name() const {
+            return "uniform(0, +inf)";
+        }
+        std::string to_string() const {
+            return this->get_name();
+        }
+
+        virtual double get_min() const {
+            return 0.0;
+        }
+
+        double relative_ln_pdf(double x) const {
+            if (x < 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            return 0.0;
+        }
+};
+
 class UniformDistribution : public ContinuousProbabilityDistribution {
     protected:
         double min_ = 0.0;
@@ -91,6 +115,7 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
 
     public:
         UniformDistribution() { }
+        ~UniformDistribution() { }
         UniformDistribution(double a, double b) {
             if (b <= a) {
                 throw EcoevolityProbabilityDistributionError(
@@ -157,6 +182,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
 
     public:
         OffsetGammaDistribution() { }
+        ~OffsetGammaDistribution() { }
         OffsetGammaDistribution(double shape, double scale, double offset) {
             if ((shape <= 0.0) || (scale <= 0.0)) {
                 throw EcoevolityProbabilityDistributionError(
@@ -205,6 +231,16 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         double get_min() const {
             return this->min_;
         }
+        double get_offset() const {
+            return this->get_min();
+        }
+
+        double get_shape() const {
+            return this->shape_;
+        }
+        double get_scale() const {
+            return this->scale_;
+        }
 
         std::string get_name() const {
             return "gamma";
@@ -212,6 +248,83 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         std::string to_string() const {
             std::ostringstream ss;
             ss << this->get_name() << "(shape = " << this->shape_ << ", scale = " << this->scale_ << ", offset = " << this->min_ << ")";
+            return ss.str();
+        }
+};
+
+class GammaDistribution : public OffsetGammaDistribution {
+    public:
+        GammaDistribution() : OffsetGammaDistribution() { }
+        ~GammaDistribution() { }
+        GammaDistribution(double shape, double scale) : OffsetGammaDistribution(shape, scale, 0.0) { }
+
+        GammaDistribution& operator=(const GammaDistribution& other) {
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(shape = " << this->shape_ << ", scale = " << this->scale_ << ")";
+            return ss.str();
+        }
+};
+
+class OffsetExponentialDistribution : public OffsetGammaDistribution {
+    public:
+        OffsetExponentialDistribution() : OffsetGammaDistribution() { }
+        ~OffsetExponentialDistribution() { }
+        OffsetExponentialDistribution(double lambda, double offset)
+                : OffsetGammaDistribution(1.0, 1.0/lambda, offset) {
+            if (lambda <= 0.0) {
+                throw EcoevolityProbabilityDistributionError(
+                        "lambda must be greater than 0 for exponential distribution");
+            }
+        }
+        OffsetExponentialDistribution& operator=(const OffsetExponentialDistribution& other) {
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        double get_lambda() const {
+            return 1.0 / this->scale_;
+        }
+
+        std::string get_name() const {
+            return "exp";
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(lambda = " << this->get_lambda() << ", offset = " << this->min_ << ")";
+            return ss.str();
+        }
+};
+
+class ExponentialDistribution: public OffsetExponentialDistribution {
+    public:
+        ExponentialDistribution() : OffsetExponentialDistribution() { }
+        ~ExponentialDistribution() { }
+        ExponentialDistribution(double lambda)
+                : OffsetExponentialDistribution(lambda, 0.0) { }
+
+        ExponentialDistribution& operator=(const ExponentialDistribution& other) {
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(lambda = " << this->get_lambda() << ")";
             return ss.str();
         }
 };
