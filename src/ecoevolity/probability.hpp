@@ -30,11 +30,6 @@
 
 
 class ContinuousProbabilityDistribution {
-    protected:
-        std::string name_;
-        double min_ = -std::numeric_limits<double>::infinity();
-        double max_ = +std::numeric_limits<double>::infinity();
-
     public:
         ContinuousProbabilityDistribution() { }
         virtual ~ContinuousProbabilityDistribution() { }
@@ -48,28 +43,25 @@ class ContinuousProbabilityDistribution {
         virtual double get_mean() const = 0;
         virtual double get_variance() const = 0;
 
-        double get_min() const {
-            return this->min_;
+        virtual double get_min() const {
+            return -std::numeric_limits<double>::infinity();
         }
-        double get_max() const {
-            return this->max_;
+        virtual double get_max() const {
+            return std::numeric_limits<double>::infinity();
         }
 
-        std::string get_name() const {
-            return this->name_;
-        }
+        virtual std::string get_name() const = 0;
         virtual std::string to_string() const = 0;
 };
 
 class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
-    protected:
-        std::string name_ = "uniform(0, +inf)"
-        this->min_ = 0.0;
-
     public:
         ImproperUniformDistribution() { }
         ~ImproperUniformDistribution() { }
 
+        std::string get_name() const {
+            return "uniform(-inf, +inf)";
+        }
         std::string to_string() const {
             return this->get_name();
         }
@@ -93,7 +85,6 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
 
 class UniformDistribution : public ContinuousProbabilityDistribution {
     protected:
-        std::string name_ = "uniform";
         double min_ = 0.0;
         double max_ = 1.0;
         double ln_density_ = 0.0;
@@ -110,7 +101,6 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             this->ln_density_ = -1.0 * std::log(b - a);
         }
         UniformDistribution& operator=(const UniformDistribution& other) {
-            this->name_ = other.name_;
             this->min_ = other.min_;
             this->max_ = other.max_;
             this->ln_density_ = other.ln_density_;
@@ -136,23 +126,32 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             return ((this->max_ - this->min_) * (this->max_ - this->min_) / 12.0);
         }
 
+        double get_min() const {
+            return this->min_;
+        }
+        double get_max() const {
+            return this->max_;
+        }
+
+        std::string get_name() const {
+            return "uniform";
+        }
         std::string to_string() const {
             std::ostringstream ss;
-            ss << this.get_name() << "(" << this->min_ << ", " << this->max_ << ")";
+            ss << this->get_name() << "(" << this->min_ << ", " << this->max_ << ")";
             return ss.str();
         }
 };
 
 class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
     protected:
-        std::string name_ = "offset-gamma"
         double min_ = 0.0;
         double shape_ = 1.0;
         double scale_ = 1.0;
         double ln_constant_ = 0.0;
 
         void compute_ln_constant() {
-            double ln_gamma = this->ln_gamma_function(this->shape);
+            double ln_gamma = this->ln_gamma_function(this->shape_);
             this->ln_constant_ = -1.0*(this->shape_ * std::log(this->scale_) + ln_gamma);
         }
 
@@ -169,9 +168,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             this->compute_ln_constant();
         }
         OffsetGammaDistribution& operator=(const OffsetGammaDistribution& other) {
-            this->name_ = other.name_;
             this->min_ = other.min_;
-            this->max_ = other.max_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
             this->ln_constant_ = other.ln_constant_;
@@ -179,11 +176,17 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         }
 
         double ln_pdf(double x) const {
-            if ((x < this->min_) || ((x == this->min_) && (this->shape > 1.0))) {
+            if ((x < this->min_) || ((x == this->min_) && (this->shape_ > 1.0))) {
                 return -std::numeric_limits<double>::infinity();
             }
             x -= this->min_;
-            double term1 = (this->shape_ - 1.0) * std::log(x);
+            double term1 = (this->shape_ - 1.0);
+            // corner case when x=0 and shape=1
+            // the pdf should be 1.0, and so ln_pdf is 0.0
+            // avoiding std::log(0) which will return nan.
+            if (term1 != 0.0) {
+                term1 *= std::log(x);
+            }
             double term2 = -x / this->scale_;
             return (term1 + term2 + this->ln_constant_);
         }
@@ -195,13 +198,20 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         double get_mean() const {
             return (this->shape_ * this->scale_) + this->min_;
         }
-        double get_mean() const {
+        double get_variance() const {
             return this->shape_ * this->scale_ * this->scale_;
         }
 
+        double get_min() const {
+            return this->min_;
+        }
+
+        std::string get_name() const {
+            return "gamma";
+        }
         std::string to_string() const {
             std::ostringstream ss;
-            ss << this.get_name() << "(" << this->shape_ << ", " << this->scale_ << ", " << this->min_ << ")";
+            ss << this->get_name() << "(shape = " << this->shape_ << ", scale = " << this->scale_ << ", offset = " << this->min_ << ")";
             return ss.str();
         }
 };
