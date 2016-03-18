@@ -154,6 +154,12 @@ class Probability: public RealParameter {
         }
 };
 
+class ProbabilityDensity: public PositiveRealParameter {
+    public:
+        ProbabilityDensity() : PositiveRealParameter() {}
+        ProbabilityDensity(double value) : PositiveRealParameter(value) {}
+};
+
 class LogProbability: public RealParameter {
     public:
         LogProbability() : RealParameter() {
@@ -163,6 +169,12 @@ class LogProbability: public RealParameter {
             this->set_upper(0.0);
             this->set_value(value);
         }
+};
+
+class LogProbabilityDensity: public RealParameter {
+    public:
+        LogProbabilityDensity() : RealParameter() {}
+        LogProbabilityDensity(double value) : RealParameter(value) {}
 };
 
 #endif

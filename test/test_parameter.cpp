@@ -91,6 +91,28 @@ TEST_CASE("Testing Probability constructors", "[Probability]") {
     }
 }
 
+TEST_CASE("Testing ProbabilityDensity constructors", "[ProbabilityDensity]") {
+
+    SECTION("Testing bare") {
+        ProbabilityDensity p = ProbabilityDensity();
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == 0.0);
+    }
+
+    SECTION("Testing value") {
+        ProbabilityDensity p = ProbabilityDensity(0.1);
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == 0.0);
+        REQUIRE(p.get_value() == 0.1);
+        p.store();
+        REQUIRE(p.get_stored_value() == 0.1);
+    }
+}
+
 TEST_CASE("Testing LogProbability constructors", "[LogProbability]") {
 
     SECTION("Testing bare") {
@@ -106,6 +128,28 @@ TEST_CASE("Testing LogProbability constructors", "[LogProbability]") {
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == 0.0);
+        REQUIRE(p.get_lower() == std::numeric_limits<double>::lowest());
+        REQUIRE(p.get_value() == -0.1);
+        p.store();
+        REQUIRE(p.get_stored_value() == -0.1);
+    }
+}
+
+TEST_CASE("Testing LogProbabilityDensity constructors", "[LogProbabilityDensity]") {
+
+    SECTION("Testing bare") {
+        LogProbabilityDensity p = LogProbabilityDensity();
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == std::numeric_limits<double>::lowest());
+    }
+
+    SECTION("Testing value") {
+        LogProbabilityDensity p = LogProbabilityDensity(-0.1);
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
         REQUIRE(p.get_lower() == std::numeric_limits<double>::lowest());
         REQUIRE(p.get_value() == -0.1);
         p.store();

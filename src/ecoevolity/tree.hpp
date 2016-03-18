@@ -37,11 +37,11 @@ class PopulationTree {
         PositiveRealParameter * u_ = new PositiveRealParameter(1.0);
         PositiveRealParameter * v_ = new PositiveRealParameter(1.0);
         std::vector<double> pattern_likelihoods_;
-        LogProbability log_likelihood_ = LogProbability(0.0);
-        LogProbability log_likelihood_correction_ = LogProbability(0.0);
+        LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
+        LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
         bool likelihood_correction_was_calculated_ = false;
-        Probability all_green_pattern_likelihood_ = Probability(0.0);
-        Probability all_red_pattern_likelihood_ = Probability(0.0);
+        ProbabilityDensity all_green_pattern_likelihood_ = ProbabilityDensity(0.0);
+        ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
         bool correct_for_full_likelihood_ = true;
         bool correct_for_constant_patterns_ = true;
         int number_of_constant_red_sites_ = -1;
