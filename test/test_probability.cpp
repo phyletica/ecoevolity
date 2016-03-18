@@ -3,16 +3,16 @@
 
 #include <limits>
 
-TEST_CASE("Testing ImproperUniformDistribution", "[ImproperUniformDistribution]") {
+TEST_CASE("Testing ImproperUniformDist", "[ImproperUniformDist]") {
 
-    SECTION("Testing ImproperUniformDistribution") {
-        ImproperUniformDistribution u = ImproperUniformDistribution();
+    SECTION("Testing ImproperUniformDist") {
+        ImproperUniformDist u = ImproperUniformDist();
         REQUIRE(u.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(u.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(u.to_string() == "uniform(-inf, +inf)");
-        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistError);
         REQUIRE(u.relative_ln_pdf(1.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(100.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(-1.0) == 0.0);
@@ -20,16 +20,16 @@ TEST_CASE("Testing ImproperUniformDistribution", "[ImproperUniformDistribution]"
     }
 }
 
-TEST_CASE("Testing ImproperPositiveUniformDistribution", "[ImproperPositiveUniformDistribution]") {
+TEST_CASE("Testing ImproperPositiveUniformDist", "[ImproperPositiveUniformDist]") {
 
-    SECTION("Testing ImproperPositiveUniformDistribution") {
-        ImproperPositiveUniformDistribution u = ImproperPositiveUniformDistribution();
+    SECTION("Testing ImproperPositiveUniformDist") {
+        ImproperPositiveUniformDist u = ImproperPositiveUniformDist();
         REQUIRE(u.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(u.get_min() == 0.0);
         REQUIRE(u.to_string() == "uniform(0, +inf)");
-        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistError);
         REQUIRE(u.relative_ln_pdf(1.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(100.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(-1.0) == -std::numeric_limits<double>::infinity());
@@ -37,10 +37,10 @@ TEST_CASE("Testing ImproperPositiveUniformDistribution", "[ImproperPositiveUnifo
     }
 }
 
-TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
+TEST_CASE("Testing UniformDist", "[UniformDist]") {
 
-    SECTION("Testing UniformDistribution bare constructor") {
-        UniformDistribution u = UniformDistribution();
+    SECTION("Testing UniformDist bare constructor") {
+        UniformDist u = UniformDist();
         REQUIRE(u.get_max() == 1.0);
         REQUIRE(u.get_min() == 0.0);
         REQUIRE(u.to_string() == "uniform(0, 1)");
@@ -56,8 +56,8 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
         REQUIRE(u.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
     }
 
-    SECTION("Testing UniformDistribution bare constructor") {
-        UniformDistribution u = UniformDistribution(10.0, 20.0);
+    SECTION("Testing UniformDist bare constructor") {
+        UniformDist u = UniformDist(10.0, 20.0);
         REQUIRE(u.get_max() == 20.0);
         REQUIRE(u.get_min() == 10.0);
         REQUIRE(u.to_string() == "uniform(10, 20)");
@@ -78,9 +78,9 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
     }
 }
 
-TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
+TEST_CASE("Testing OffsetGammaDist", "[OffsetGammaDist]") {
     SECTION("Testing bare constructor") {
-        OffsetGammaDistribution f = OffsetGammaDistribution();
+        OffsetGammaDist f = OffsetGammaDist();
         REQUIRE(f.to_string() == "gamma(shape = 1, scale = 1, offset = 0)");
         REQUIRE(f.get_min() == 0.0);
         REQUIRE(f.get_max() == std::numeric_limits<double>::infinity());
@@ -103,14 +103,14 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
     }
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(0.0, 1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(1.0, 0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(-1.0, 1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(1.0, -1.0, 1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(OffsetGammaDist(0.0, 1.0, 1.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(OffsetGammaDist(1.0, 0.0, 1.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(OffsetGammaDist(-1.0, 1.0, 1.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(OffsetGammaDist(1.0, -1.0, 1.0), EcoevolityProbabilityDistError);
     }
 
-    SECTION("Testing OffsetGammaDistribution(2, 4, 5)") {
-        OffsetGammaDistribution f = OffsetGammaDistribution(2.0, 4.0, 5.0);
+    SECTION("Testing OffsetGammaDist(2, 4, 5)") {
+        OffsetGammaDist f = OffsetGammaDist(2.0, 4.0, 5.0);
         REQUIRE(f.to_string() == "gamma(shape = 2, scale = 4, offset = 5)");
         REQUIRE(f.get_min() == 5.0);
         REQUIRE(f.get_max() == std::numeric_limits<double>::infinity());
@@ -127,8 +127,8 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
         REQUIRE(f.get_scale() == 4.0);
     }
 
-    SECTION("Testing OffsetGammaDistribution(0.1, 100, -5)") {
-        OffsetGammaDistribution f = OffsetGammaDistribution(0.1, 100.0, -5.0);
+    SECTION("Testing OffsetGammaDist(0.1, 100, -5)") {
+        OffsetGammaDist f = OffsetGammaDist(0.1, 100.0, -5.0);
         REQUIRE(f.to_string() == "gamma(shape = 0.1, scale = 100, offset = -5)");
         REQUIRE(f.get_min() == -5.0);
         REQUIRE(f.get_max() == std::numeric_limits<double>::infinity());
@@ -147,9 +147,9 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
     }
 }
 
-TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
+TEST_CASE("Testing GammaDist", "[GammaDist]") {
     SECTION("Testing bare constructor") {
-        GammaDistribution f = GammaDistribution();
+        GammaDist f = GammaDist();
         REQUIRE(f.to_string() == "gamma(shape = 1, scale = 1)");
         REQUIRE(f.get_min() == 0.0);
         REQUIRE(f.get_max() == std::numeric_limits<double>::infinity());
@@ -171,14 +171,14 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         REQUIRE(f.get_scale() == 1.0);
     }
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(GammaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(GammaDistribution(1.0, 0.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(GammaDistribution(-1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(GammaDistribution(1.0, -1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(GammaDist(0.0, 1.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(GammaDist(1.0, 0.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(GammaDist(-1.0, 1.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(GammaDist(1.0, -1.0), EcoevolityProbabilityDistError);
     }
 
-    SECTION("Testing GammaDistribution(2, 4)") {
-        GammaDistribution f = GammaDistribution(2.0, 4.0);
+    SECTION("Testing GammaDist(2, 4)") {
+        GammaDist f = GammaDist(2.0, 4.0);
         REQUIRE(f.to_string() == "gamma(shape = 2, scale = 4)");
         REQUIRE(f.get_min() == 0.0);
         REQUIRE(f.get_max() == std::numeric_limits<double>::infinity());
@@ -195,8 +195,8 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         REQUIRE(f.get_scale() == 4.0);
     }
 
-    SECTION("Testing GammaDistribution(0.1, 100)") {
-        GammaDistribution f = GammaDistribution(0.1, 100.0);
+    SECTION("Testing GammaDist(0.1, 100)") {
+        GammaDist f = GammaDist(0.1, 100.0);
         REQUIRE(f.to_string() == "gamma(shape = 0.1, scale = 100)");
         REQUIRE(f.get_min() == 0.0);
         REQUIRE(f.get_max() == std::numeric_limits<double>::infinity());
@@ -215,9 +215,9 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
     }
 }
 
-TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistribution]") {
+TEST_CASE("Testing OffsetExponentialDist", "[OffsetExponentialDist]") {
     SECTION("Testing bare constructor") {
-        OffsetExponentialDistribution f = OffsetExponentialDistribution();
+        OffsetExponentialDist f = OffsetExponentialDist();
 
         REQUIRE(f.to_string() == "exp(lambda = 1, offset = 0)");
 
@@ -239,12 +239,12 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
     }
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(OffsetExponentialDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetExponentialDistribution(-0.01, 1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(OffsetExponentialDist(0.0, 1.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(OffsetExponentialDist(-0.01, 1.0), EcoevolityProbabilityDistError);
     }
 
-    SECTION("Testing OffsetExponentialDistribution(5, -5)") {
-        OffsetExponentialDistribution f = OffsetExponentialDistribution(5.0, -5.0);
+    SECTION("Testing OffsetExponentialDist(5, -5)") {
+        OffsetExponentialDist f = OffsetExponentialDist(5.0, -5.0);
 
         REQUIRE(f.to_string() == "exp(lambda = 5, offset = -5)");
 
@@ -266,9 +266,9 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
     }
 }
 
-TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
+TEST_CASE("Testing ExponentialDist", "[ExponentialDist]") {
     SECTION("Testing bare constructor") {
-        ExponentialDistribution f = ExponentialDistribution();
+        ExponentialDist f = ExponentialDist();
 
         REQUIRE(f.to_string() == "exp(lambda = 1)");
 
@@ -290,12 +290,12 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
     }
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(ExponentialDistribution(0.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(ExponentialDistribution(-0.01), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(ExponentialDist(0.0), EcoevolityProbabilityDistError);
+        REQUIRE_THROWS_AS(ExponentialDist(-0.01), EcoevolityProbabilityDistError);
     }
 
-    SECTION("Testing ExponentialDistribution(5)") {
-        ExponentialDistribution f = ExponentialDistribution(5.0);
+    SECTION("Testing ExponentialDist(5)") {
+        ExponentialDist f = ExponentialDist(5.0);
 
         REQUIRE(f.to_string() == "exp(lambda = 5)");
 

@@ -29,10 +29,10 @@
 #include "assert.hpp"
 
 
-class ContinuousProbabilityDistribution {
+class ContinuousProbabilityDist {
     public:
-        ContinuousProbabilityDistribution() { }
-        virtual ~ContinuousProbabilityDistribution() { }
+        ContinuousProbabilityDist() { }
+        virtual ~ContinuousProbabilityDist() { }
 
         double ln_gamma_function(double x) const {
             return std::lgamma(x);
@@ -54,10 +54,10 @@ class ContinuousProbabilityDistribution {
         virtual std::string to_string() const = 0;
 };
 
-class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
+class ImproperUniformDist : public ContinuousProbabilityDist {
     public:
-        ImproperUniformDistribution() { }
-        virtual ~ImproperUniformDistribution() { }
+        ImproperUniformDist() { }
+        virtual ~ImproperUniformDist() { }
 
         virtual std::string get_name() const {
             return "uniform(-inf, +inf)";
@@ -70,23 +70,23 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
             return 0.0;
         }
         double ln_pdf(double x) const {
-            throw EcoevolityProbabilityDistributionError(
-                    "The density is undefinded for ImproperUniformDistribution");
+            throw EcoevolityProbabilityDistError(
+                    "The density is undefinded for ImproperUniformDist");
         }
         double get_mean() const {
-            throw EcoevolityProbabilityDistributionError(
-                    "The mean is undefinded for ImproperUniformDistribution");
+            throw EcoevolityProbabilityDistError(
+                    "The mean is undefinded for ImproperUniformDist");
         }
         double get_variance() const {
-            throw EcoevolityProbabilityDistributionError(
-                    "The variance is undefinded for ImproperUniformDistribution");
+            throw EcoevolityProbabilityDistError(
+                    "The variance is undefinded for ImproperUniformDist");
         }
 };
 
-class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
+class ImproperPositiveUniformDist: public ImproperUniformDist {
     public:
-        ImproperPositiveUniformDistribution() { }
-        ~ImproperPositiveUniformDistribution() { }
+        ImproperPositiveUniformDist() { }
+        ~ImproperPositiveUniformDist() { }
 
         std::string get_name() const {
             return "uniform(0, +inf)";
@@ -107,25 +107,25 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
         }
 };
 
-class UniformDistribution : public ContinuousProbabilityDistribution {
+class UniformDist : public ContinuousProbabilityDist {
     protected:
         double min_ = 0.0;
         double max_ = 1.0;
         double ln_density_ = 0.0;
 
     public:
-        UniformDistribution() { }
-        ~UniformDistribution() { }
-        UniformDistribution(double a, double b) {
+        UniformDist() { }
+        ~UniformDist() { }
+        UniformDist(double a, double b) {
             if (b <= a) {
-                throw EcoevolityProbabilityDistributionError(
-                        "The upper limit must be greater than lower limit for UniformDistribution");
+                throw EcoevolityProbabilityDistError(
+                        "The upper limit must be greater than lower limit for UniformDist");
             }
             this->min_ = a;
             this->max_ = b;
             this->ln_density_ = -1.0 * std::log(b - a);
         }
-        UniformDistribution& operator=(const UniformDistribution& other) {
+        UniformDist& operator=(const UniformDist& other) {
             this->min_ = other.min_;
             this->max_ = other.max_;
             this->ln_density_ = other.ln_density_;
@@ -168,7 +168,7 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
         }
 };
 
-class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
+class OffsetGammaDist : public ContinuousProbabilityDist {
     protected:
         double min_ = 0.0;
         double shape_ = 1.0;
@@ -181,11 +181,11 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         }
 
     public:
-        OffsetGammaDistribution() { }
-        ~OffsetGammaDistribution() { }
-        OffsetGammaDistribution(double shape, double scale, double offset) {
+        OffsetGammaDist() { }
+        ~OffsetGammaDist() { }
+        OffsetGammaDist(double shape, double scale, double offset) {
             if ((shape <= 0.0) || (scale <= 0.0)) {
-                throw EcoevolityProbabilityDistributionError(
+                throw EcoevolityProbabilityDistError(
                         "Shape and scale must be greater than zero for gamma distribution");
             }
             this->shape_ = shape;
@@ -193,7 +193,7 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             this->min_ = offset;
             this->compute_ln_constant();
         }
-        OffsetGammaDistribution& operator=(const OffsetGammaDistribution& other) {
+        OffsetGammaDist& operator=(const OffsetGammaDist& other) {
             this->min_ = other.min_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
@@ -252,13 +252,13 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
         }
 };
 
-class GammaDistribution : public OffsetGammaDistribution {
+class GammaDist : public OffsetGammaDist {
     public:
-        GammaDistribution() : OffsetGammaDistribution() { }
-        ~GammaDistribution() { }
-        GammaDistribution(double shape, double scale) : OffsetGammaDistribution(shape, scale, 0.0) { }
+        GammaDist() : OffsetGammaDist() { }
+        ~GammaDist() { }
+        GammaDist(double shape, double scale) : OffsetGammaDist(shape, scale, 0.0) { }
 
-        GammaDistribution& operator=(const GammaDistribution& other) {
+        GammaDist& operator=(const GammaDist& other) {
             this->min_ = other.min_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
@@ -273,18 +273,18 @@ class GammaDistribution : public OffsetGammaDistribution {
         }
 };
 
-class OffsetExponentialDistribution : public OffsetGammaDistribution {
+class OffsetExponentialDist : public OffsetGammaDist {
     public:
-        OffsetExponentialDistribution() : OffsetGammaDistribution() { }
-        ~OffsetExponentialDistribution() { }
-        OffsetExponentialDistribution(double lambda, double offset)
-                : OffsetGammaDistribution(1.0, 1.0/lambda, offset) {
+        OffsetExponentialDist() : OffsetGammaDist() { }
+        ~OffsetExponentialDist() { }
+        OffsetExponentialDist(double lambda, double offset)
+                : OffsetGammaDist(1.0, 1.0/lambda, offset) {
             if (lambda <= 0.0) {
-                throw EcoevolityProbabilityDistributionError(
+                throw EcoevolityProbabilityDistError(
                         "lambda must be greater than 0 for exponential distribution");
             }
         }
-        OffsetExponentialDistribution& operator=(const OffsetExponentialDistribution& other) {
+        OffsetExponentialDist& operator=(const OffsetExponentialDist& other) {
             this->min_ = other.min_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
@@ -307,14 +307,14 @@ class OffsetExponentialDistribution : public OffsetGammaDistribution {
         }
 };
 
-class ExponentialDistribution: public OffsetExponentialDistribution {
+class ExponentialDist: public OffsetExponentialDist {
     public:
-        ExponentialDistribution() : OffsetExponentialDistribution() { }
-        ~ExponentialDistribution() { }
-        ExponentialDistribution(double lambda)
-                : OffsetExponentialDistribution(lambda, 0.0) { }
+        ExponentialDist() : OffsetExponentialDist() { }
+        ~ExponentialDist() { }
+        ExponentialDist(double lambda)
+                : OffsetExponentialDist(lambda, 0.0) { }
 
-        ExponentialDistribution& operator=(const ExponentialDistribution& other) {
+        ExponentialDist& operator=(const ExponentialDist& other) {
             this->min_ = other.min_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
