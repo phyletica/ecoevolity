@@ -23,36 +23,37 @@
 #include "error.hpp"
 #include "assert.hpp"
 
-template<class ParameterType>
-class Parameter {
+
+template<class VariableType>
+class Variable {
     protected:
-        ParameterType value_;
-        ParameterType stored_value_;
-        ParameterType upper_;
-        ParameterType lower_;
-        ParameterType min_;
-        ParameterType max_;
-        typedef Parameter<ParameterType> DerivedClass;
+        VariableType value_;
+        VariableType stored_value_;
+        VariableType upper_;
+        VariableType lower_;
+        VariableType min_;
+        VariableType max_;
+        typedef Variable<VariableType> DerivedClass;
 
     public:
         // Constructors
-        Parameter() {
-            this->upper_ = std::numeric_limits<ParameterType>::max();
-            this->lower_ = std::numeric_limits<ParameterType>::lowest();
+        Variable() {
+            this->upper_ = std::numeric_limits<VariableType>::max();
+            this->lower_ = std::numeric_limits<VariableType>::lowest();
             this->max_ = this->upper_;
-            if (std::numeric_limits<ParameterType>::has_infinity) {
-                this->max_ = std::numeric_limits<ParameterType>::infinity();
+            if (std::numeric_limits<VariableType>::has_infinity) {
+                this->max_ = std::numeric_limits<VariableType>::infinity();
             }
             this->min_ = 0;
-            if (std::numeric_limits<ParameterType>::is_signed) {
+            if (std::numeric_limits<VariableType>::is_signed) {
                 this->min_ = -this->max_;
             }
         }
-        Parameter(const ParameterType& value) : Parameter() {
+        Variable(const VariableType& value) : Variable() {
             this->set_value(value);
         }
 
-        virtual ~Parameter() { }
+        virtual ~Variable() { }
 
         DerivedClass& operator=(const DerivedClass& p) {
             this->value_ = p.value_;
@@ -69,30 +70,30 @@ class Parameter {
         }
         
         //Methods
-        const ParameterType& get_value() const { return this->value_; }
-        const ParameterType& get_stored_value() const { return this->stored_value_; }
-        const ParameterType& get_max() const { return this->max_; }
-        const ParameterType& get_min() const { return this->min_; }
-        const ParameterType& get_upper() const { return this->upper_; }
-        const ParameterType& get_lower() const { return this->lower_; }
+        const VariableType& get_value() const { return this->value_; }
+        const VariableType& get_stored_value() const { return this->stored_value_; }
+        const VariableType& get_max() const { return this->max_; }
+        const VariableType& get_min() const { return this->min_; }
+        const VariableType& get_upper() const { return this->upper_; }
+        const VariableType& get_lower() const { return this->lower_; }
 
-        void update_value(const ParameterType& value) {
+        void update_value(const VariableType& value) {
             this->store();
             this->set_value(value);
         }
-        void set_value(const ParameterType& value) {
+        void set_value(const VariableType& value) {
             if ((value < this->lower_) || (value > this->upper_)) {
                 throw EcoevolityParameterValueError("value outside of parameter bounds");
             }
             this->value_ = value;
         }
-        void set_upper(const ParameterType& upper) {
+        void set_upper(const VariableType& upper) {
             this->upper_ = upper;
         }
-        void set_lower(const ParameterType& lower) {
+        void set_lower(const VariableType& lower) {
             this->lower_ = lower;
         }
-        void set_bounds(const ParameterType& lower, const ParameterType& upper) {
+        void set_bounds(const VariableType& lower, const VariableType& upper) {
             this->set_lower(lower);
             this->set_upper(upper);
         }
@@ -110,71 +111,183 @@ class Parameter {
         }
 };
 
-class RealParameter: public Parameter<double> {
+class RealVariable: public Variable<double> {
     protected:
-        typedef Parameter<double> BaseClass;
+        typedef Variable<double> BaseClass;
 
     public:
-        RealParameter() : BaseClass() { }
-        RealParameter(double value) : BaseClass() {
+        RealVariable() : BaseClass() { }
+        RealVariable(double value) : BaseClass() {
             this->set_value(value);
         }
 };
 
-class PositiveRealParameter: public RealParameter {
+template<class PriorDistributionType>
+class RealParameter: public RealVariable {
     public:
-        PositiveRealParameter() : RealParameter() {
+        PriorDistributionType * prior = NULL;
+
+        RealParameter()
+                : RealVariable()
+                { }
+        RealParameter(PriorDistributionType * prior_ptr)
+                : RealVariable()
+        {
+            this->prior = prior_ptr;
+        }
+        RealParameter(double value)
+                : RealVariable(value)
+                { }
+        RealParameter(PriorDistributionType * prior_ptr, double value)
+                : RealVariable(value)
+        {
+            this->prior = prior_ptr;
+        }
+        virtual ~RealParameter() {
+            delete this->prior;
+        }
+
+        virtual void set_prior(PriorDistributionType * prior_ptr) {
+            this->prior = prior_ptr;
+        }
+        virtual void check_prior() const {
+            if (! this->prior) {
+                throw EcoevolityNullPointerError("tried to use null prior of real parameter");
+            }
+        }
+
+        virtual double draw_from_prior() {
+            this->check_prior();
+            return this->prior->draw();
+        }
+        virtual void set_value_from_prior() {
+            this->set_value(this->draw_from_prior());
+        }
+        virtual void update_value_from_prior() {
+            this->update_value(this->draw_from_prior());
+        }
+        virtual double get_prior_mean() const {
+            this->check_prior();
+            return this->prior->get_mean();
+        }
+        virtual double get_prior_variance() const {
+            this->check_prior();
+            return this->prior->get_variance();
+        }
+        virtual double get_prior_min() const {
+            this->check_prior();
+            return this->prior->get_min();
+        }
+        virtual double get_prior_max() const {
+            this->check_prior();
+            return this->prior->get_max();
+        }
+        virtual std::string get_prior_name() const {
+            this->check_prior();
+            return this->prior->get_name();
+        }
+        virtual std::string get_prior_string() const {
+            this->check_prior();
+            return this->prior->to_string();
+        }
+        virtual double prior_ln_pdf() const {
+            this->check_prior();
+            return this->prior->ln_pdf(this->get_value());
+        }
+        virtual double prior_ln_pdf(double x) const {
+            this->check_prior();
+            return this->prior->ln_pdf(x);
+        }
+        virtual double relative_prior_ln_pdf() const {
+            this->check_prior();
+            return this->prior->relative_ln_pdf(this->get_value());
+        }
+        virtual double relative_prior_ln_pdf(double x) const {
+            this->check_prior();
+            return this->prior->relative_ln_pdf(x);
+        }
+};
+
+class PositiveRealVariable: public RealVariable {
+    public:
+        PositiveRealVariable() : RealVariable() {
             this->set_lower(0.0);
         }
-        PositiveRealParameter(double value) : RealParameter() {
+        PositiveRealVariable(double value) : RealVariable() {
             this->set_lower(0.0);
             this->set_value(value);
         }
 };
 
-class IntParameter: public Parameter<int> {
+template<class PriorDistributionType>
+class PositiveRealParameter: public RealParameter<PriorDistributionType> {
+    public:
+        PositiveRealParameter() : RealParameter<PriorDistributionType>()
+        {
+            this->set_lower(0.0);
+        }
+        PositiveRealParameter(PriorDistributionType * prior_ptr)
+                : RealParameter<PriorDistributionType>(prior_ptr)
+        {
+            this->set_lower(0.0);
+        }
+        PositiveRealParameter(double value)
+                : RealParameter<PriorDistributionType>()
+        {
+            this->set_lower(0.0);
+            this->set_value(value);
+        }
+        PositiveRealParameter(PriorDistributionType * prior_ptr, double value)
+                : RealParameter<PriorDistributionType>(prior_ptr)
+        {
+            this->set_lower(0.0);
+            this->set_value(value);
+        }
+};
+
+class IntVariable: public Variable<int> {
     protected:
-        typedef Parameter<int> BaseClass;
+        typedef Variable<int> BaseClass;
 
     public:
-        IntParameter() : BaseClass() { }
-        IntParameter(int value) : BaseClass() {
+        IntVariable() : BaseClass() { }
+        IntVariable(int value) : BaseClass() {
             this->set_value(value);
         }
 };
 
-class Probability: public RealParameter {
+class Probability: public RealVariable {
     public:
-        Probability() : RealParameter() {
+        Probability() : RealVariable() {
             this->set_bounds(0.0, 1.0);
         }
-        Probability(double value) : RealParameter() {
+        Probability(double value) : RealVariable() {
             this->set_bounds(0.0, 1.0);
             this->set_value(value);
         }
 };
 
-class ProbabilityDensity: public PositiveRealParameter {
+class ProbabilityDensity: public PositiveRealVariable {
     public:
-        ProbabilityDensity() : PositiveRealParameter() {}
-        ProbabilityDensity(double value) : PositiveRealParameter(value) {}
+        ProbabilityDensity() : PositiveRealVariable() {}
+        ProbabilityDensity(double value) : PositiveRealVariable(value) {}
 };
 
-class LogProbability: public RealParameter {
+class LogProbability: public RealVariable {
     public:
-        LogProbability() : RealParameter() {
+        LogProbability() : RealVariable() {
             this->set_upper(0.0);
         }
-        LogProbability(double value) : RealParameter() {
+        LogProbability(double value) : RealVariable() {
             this->set_upper(0.0);
             this->set_value(value);
         }
 };
 
-class LogProbabilityDensity: public RealParameter {
+class LogProbabilityDensity: public RealVariable {
     public:
-        LogProbabilityDensity() : RealParameter() {}
-        LogProbabilityDensity(double value) : RealParameter(value) {}
+        LogProbabilityDensity() : RealVariable() {}
+        LogProbabilityDensity(double value) : RealVariable(value) {}
 };
 
 #endif
