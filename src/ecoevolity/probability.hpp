@@ -27,6 +27,7 @@
 
 #include "error.hpp"
 #include "assert.hpp"
+#include "rng.hpp"
 
 
 class ContinuousProbabilityDist {
@@ -54,19 +55,45 @@ class ContinuousProbabilityDist {
         virtual std::string to_string() const = 0;
 };
 
+class RandomValueGenerator {
+    public:
+        RandomNumberGenerator * rng_ = NULL;
+
+        RandomValueGenerator() {
+            this->rng_ = new RandomNumberGenerator();
+        }
+        RandomValueGenerator(long seed) {
+            this->rng_ = new RandomNumberGenerator(seed);
+        }
+        RandomValueGenerator(RandomNumberGenerator * rng) {
+            this->rng_ = rng;
+        }
+        virtual ~RandomValueGenerator() {
+            delete this->rng_;
+        }
+        RandomValueGenerator& operator=(const RandomValueGenerator& other) {
+            this->rng_ = other.rng_;
+            return * this;
+        }
+
+        virtual double draw() const = 0;
+};
+
+        
+
 class ImproperUniformDist : public ContinuousProbabilityDist {
     public:
         ImproperUniformDist() { }
-        virtual ~ImproperUniformDist() { }
+        ~ImproperUniformDist() { }
 
-        virtual std::string get_name() const {
+        std::string get_name() const {
             return "uniform(-inf, +inf)";
         }
-        virtual std::string to_string() const {
+        std::string to_string() const {
             return this->get_name();
         }
 
-        virtual double relative_ln_pdf(double x) const {
+        double relative_ln_pdf(double x) const {
             return 0.0;
         }
         double ln_pdf(double x) const {
@@ -95,7 +122,7 @@ class ImproperPositiveUniformDist: public ImproperUniformDist {
             return this->get_name();
         }
 
-        virtual double get_min() const {
+        double get_min() const {
             return 0.0;
         }
 
@@ -165,6 +192,27 @@ class UniformDist : public ContinuousProbabilityDist {
             std::ostringstream ss;
             ss << this->get_name() << "(" << this->min_ << ", " << this->max_ << ")";
             return ss.str();
+        }
+};
+
+class UniformDistribution : public UniformDist, public RandomValueGenerator {
+    public:
+        UniformDistribution() : UniformDist(), RandomValueGenerator() { }
+        UniformDistribution(double a, double b) : UniformDist(a, b), RandomValueGenerator() { }
+        UniformDistribution(double a, double b, long seed) : UniformDist(a, b), RandomValueGenerator(seed) { }
+        UniformDistribution(long seed) : UniformDist(), RandomValueGenerator(seed) { }
+        UniformDistribution(double a, double b, RandomNumberGenerator * rng) : UniformDist(a, b), RandomValueGenerator(rng) { }
+        UniformDistribution(RandomNumberGenerator * rng) : UniformDist(), RandomValueGenerator(rng) { }
+        UniformDistribution& operator=(const UniformDistribution& other) {
+            this->rng_ = other.rng_;
+            this->min_ = other.min_;
+            this->max_ = other.max_;
+            this->ln_density_ = other.ln_density_;
+            return * this;
+        }
+
+        double draw() const {
+            return this->rng_->uniform_real(this->min_, this->max_);
         }
 };
 
@@ -252,6 +300,40 @@ class OffsetGammaDist : public ContinuousProbabilityDist {
         }
 };
 
+class OffsetGammaDistribution : public OffsetGammaDist, public RandomValueGenerator {
+    public:
+        OffsetGammaDistribution() : OffsetGammaDist(), RandomValueGenerator() { }
+        OffsetGammaDistribution(double shape, double scale, double offset)
+                : OffsetGammaDist(shape, scale, offset),
+                  RandomValueGenerator() { }
+        OffsetGammaDistribution(double shape, double scale, double offset,
+                long seed)
+                : OffsetGammaDist(shape, scale, offset),
+                  RandomValueGenerator(seed) { }
+        OffsetGammaDistribution(long seed)
+                : OffsetGammaDist(),
+                  RandomValueGenerator(seed) { }
+        OffsetGammaDistribution(double shape, double scale, double offset,
+                RandomNumberGenerator * rng)
+                : OffsetGammaDist(shape, scale, offset),
+                  RandomValueGenerator(rng) { }
+        OffsetGammaDistribution(RandomNumberGenerator * rng)
+                : OffsetGammaDist(),
+                  RandomValueGenerator(rng) { }
+        OffsetGammaDistribution& operator=(const OffsetGammaDistribution& other) {
+            this->rng_ = other.rng_;
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        double draw() const {
+            return this->min_ + this->rng_->gamma(this->shape_, this->scale_);
+        }
+};
+
 class GammaDist : public OffsetGammaDist {
     public:
         GammaDist() : OffsetGammaDist() { }
@@ -259,6 +341,41 @@ class GammaDist : public OffsetGammaDist {
         GammaDist(double shape, double scale) : OffsetGammaDist(shape, scale, 0.0) { }
 
         GammaDist& operator=(const GammaDist& other) {
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(shape = " << this->shape_ << ", scale = " << this->scale_ << ")";
+            return ss.str();
+        }
+};
+
+class GammaDistribution : public OffsetGammaDistribution {
+    public:
+        GammaDistribution() : OffsetGammaDistribution() { }
+        GammaDistribution(double shape, double scale)
+                : OffsetGammaDistribution(shape, scale, 0.0)
+                { }
+        GammaDistribution(double shape, double scale, long seed)
+                : OffsetGammaDistribution(shape, scale, 0.0, seed)
+                { }
+        GammaDistribution(long seed)
+                : OffsetGammaDistribution(seed)
+                { }
+        GammaDistribution(double shape, double scale,
+                RandomNumberGenerator * rng)
+                : OffsetGammaDistribution(shape, scale, 0.0, rng)
+                { }
+        GammaDistribution(RandomNumberGenerator * rng)
+                : OffsetGammaDistribution(rng)
+                { }
+        GammaDistribution& operator=(const GammaDistribution& other) {
+            this->rng_ = other.rng_;
             this->min_ = other.min_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
@@ -307,6 +424,60 @@ class OffsetExponentialDist : public OffsetGammaDist {
         }
 };
 
+class OffsetExponentialDistribution : public OffsetGammaDistribution {
+    public:
+        OffsetExponentialDistribution() : OffsetGammaDistribution() { }
+        OffsetExponentialDistribution(double lambda, double offset)
+                : OffsetGammaDistribution(1.0, 1.0/lambda, offset) {
+            if (lambda <= 0.0) {
+                throw EcoevolityProbabilityDistError(
+                        "lambda must be greater than 0 for exponential distribution");
+            }
+        }
+        OffsetExponentialDistribution(double lambda, double offset, long seed)
+                : OffsetGammaDistribution(1.0, 1.0/lambda, offset, seed) {
+            if (lambda <= 0.0) {
+                throw EcoevolityProbabilityDistError(
+                        "lambda must be greater than 0 for exponential distribution");
+            }
+        }
+        OffsetExponentialDistribution(long seed)
+                : OffsetGammaDistribution(seed)
+                { }
+        OffsetExponentialDistribution(double lambda, double offset,
+                RandomNumberGenerator * rng)
+                : OffsetGammaDistribution(1.0, 1.0/lambda, offset, rng) {
+            if (lambda <= 0.0) {
+                throw EcoevolityProbabilityDistError(
+                        "lambda must be greater than 0 for exponential distribution");
+            }
+        }
+        OffsetExponentialDistribution(RandomNumberGenerator * rng)
+                : OffsetGammaDistribution(rng)
+                { }
+        OffsetExponentialDistribution& operator=(const OffsetExponentialDistribution& other) {
+            this->rng_ = other.rng_;
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        double get_lambda() const {
+            return 1.0 / this->scale_;
+        }
+
+        std::string get_name() const {
+            return "exp";
+        }
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(lambda = " << this->get_lambda() << ", offset = " << this->min_ << ")";
+            return ss.str();
+        }
+};
+
 class ExponentialDist: public OffsetExponentialDist {
     public:
         ExponentialDist() : OffsetExponentialDist() { }
@@ -315,6 +486,41 @@ class ExponentialDist: public OffsetExponentialDist {
                 : OffsetExponentialDist(lambda, 0.0) { }
 
         ExponentialDist& operator=(const ExponentialDist& other) {
+            this->min_ = other.min_;
+            this->shape_ = other.shape_;
+            this->scale_ = other.scale_;
+            this->ln_constant_ = other.ln_constant_;
+            return * this;
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(lambda = " << this->get_lambda() << ")";
+            return ss.str();
+        }
+};
+
+class ExponentialDistribution : public OffsetExponentialDistribution {
+    public:
+        ExponentialDistribution() : OffsetExponentialDistribution() { }
+        ExponentialDistribution(double lambda)
+                : OffsetExponentialDistribution(lambda, 0.0)
+                { }
+        ExponentialDistribution(double lambda, long seed)
+                : OffsetExponentialDistribution(lambda, 0.0, seed)
+                { }
+        ExponentialDistribution(long seed)
+                : OffsetExponentialDistribution(seed)
+                { }
+        ExponentialDistribution(double lambda,
+                RandomNumberGenerator * rng)
+                : OffsetExponentialDistribution(lambda, 0.0, rng)
+                { }
+        ExponentialDistribution(RandomNumberGenerator * rng)
+                : OffsetExponentialDistribution(rng)
+                { }
+        ExponentialDistribution& operator=(const ExponentialDistribution& other) {
+            this->rng_ = other.rng_;
             this->min_ = other.min_;
             this->shape_ = other.shape_;
             this->scale_ = other.scale_;
