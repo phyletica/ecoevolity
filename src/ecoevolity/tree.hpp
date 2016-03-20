@@ -34,8 +34,8 @@ class PopulationTree {
         BiallelicData data_;
         PopulationNode * root_;
         MatrixExponentiator matrix_exponentiator;
-        PositiveRealVariable * u_ = new PositiveRealVariable(1.0);
-        PositiveRealVariable * v_ = new PositiveRealVariable(1.0);
+        PositiveRealParameter * u_ = new PositiveRealParameter(1.0);
+        PositiveRealParameter * v_ = new PositiveRealParameter(1.0);
         std::vector<double> pattern_likelihoods_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
@@ -100,8 +100,8 @@ class PopulationTree {
         const double& get_root_height() const;
         void store_root_height();
         void restore_root_height();
-        void set_root_height_parameter(PositiveRealVariable * h);
-        PositiveRealVariable * get_root_height_parameter() const;
+        void set_root_height_parameter(PositiveRealParameter * h);
+        PositiveRealParameter * get_root_height_parameter() const;
 
         void set_u(double u);
         void set_v(double v);
@@ -113,10 +113,10 @@ class PopulationTree {
         void store_v();
         void restore_u();
         void restore_v();
-        void set_u_parameter(PositiveRealVariable * u);
-        void set_v_parameter(PositiveRealVariable * v);
-        PositiveRealVariable * get_u_parameter() const;
-        PositiveRealVariable * get_v_parameter() const;
+        void set_u_parameter(PositiveRealParameter * u);
+        void set_v_parameter(PositiveRealParameter * v);
+        PositiveRealParameter * get_u_parameter() const;
+        PositiveRealParameter * get_v_parameter() const;
 
         void set_root_coalescence_rate(double rate);
         void set_coalescence_rate(double rate);
@@ -154,8 +154,8 @@ class ComparisonPopulationTree: public PopulationTree {
         void store_child_coalescence_rate(unsigned int child_index);
         void restore_child_coalescence_rate(unsigned int child_index);
         void set_child_coalescence_rate_parameter(unsigned int child_index,
-                PositiveRealVariable * r);
-        PositiveRealVariable * get_child_coalescence_rate_parameter(
+                PositiveRealParameter * r);
+        PositiveRealParameter * get_child_coalescence_rate_parameter(
                 unsigned int child_index) const;
 
         void set_height(double height) {this->set_root_height(height);}
@@ -163,10 +163,10 @@ class ComparisonPopulationTree: public PopulationTree {
         const double& get_height() const {return this->get_root_height();}
         void store_height() {this->store_root_height();}
         void restore_height() {this->restore_root_height();}
-        void set_height_parameter(PositiveRealVariable * h) {
+        void set_height_parameter(PositiveRealParameter * h) {
             this->set_root_height_parameter(h);
         }
-        PositiveRealVariable * get_height_parameter() const {
+        PositiveRealParameter * get_height_parameter() const {
             return this->get_root_height_parameter();
         }
 

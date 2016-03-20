@@ -50,7 +50,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         typedef BaseNode<PopulationNode> BaseClass;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
-        PositiveRealVariable * coalescence_rate_ = new PositiveRealVariable(10.0);
+        PositiveRealParameter * coalescence_rate_ = new PositiveRealParameter(10.0);
 
     public:
         PopulationNode() { }
@@ -208,10 +208,10 @@ class PopulationNode: public BaseNode<PopulationNode>{
         const double& get_coalescence_rate() const {
             return this->coalescence_rate_->get_value();
         }
-        PositiveRealVariable * get_coalescence_rate_parameter() const {
+        PositiveRealParameter * get_coalescence_rate_parameter() const {
             return this->coalescence_rate_;
         }
-        void set_coalescence_rate_parameter(PositiveRealVariable * rate) {
+        void set_coalescence_rate_parameter(PositiveRealParameter * rate) {
             this->coalescence_rate_ = rate;
         }
 

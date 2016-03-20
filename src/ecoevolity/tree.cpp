@@ -450,10 +450,10 @@ void PopulationTree::store_root_height() {
 void PopulationTree::restore_root_height() {
     this->root_->restore_height();
 }
-void PopulationTree::set_root_height_parameter(PositiveRealVariable * h) {
+void PopulationTree::set_root_height_parameter(PositiveRealParameter * h) {
     this->root_->set_height_parameter(h);
 }
-PositiveRealVariable * PopulationTree::get_root_height_parameter() const {
+PositiveRealParameter * PopulationTree::get_root_height_parameter() const {
     return this->root_->get_height_parameter();
 }
 
@@ -488,16 +488,16 @@ void PopulationTree::restore_v() {
     this->v_->restore();
 }
 
-void PopulationTree::set_u_parameter(PositiveRealVariable * u) {
+void PopulationTree::set_u_parameter(PositiveRealParameter * u) {
     this->u_ = u;
 }
-void PopulationTree::set_v_parameter(PositiveRealVariable * v) {
+void PopulationTree::set_v_parameter(PositiveRealParameter * v) {
     this->v_ = v;
 }
-PositiveRealVariable * PopulationTree::get_u_parameter() const {
+PositiveRealParameter * PopulationTree::get_u_parameter() const {
     return this->u_;
 }
-PositiveRealVariable * PopulationTree::get_v_parameter() const {
+PositiveRealParameter * PopulationTree::get_v_parameter() const {
     return this->v_;
 }
 
@@ -596,10 +596,10 @@ void ComparisonPopulationTree::restore_child_coalescence_rate(
 }
 void ComparisonPopulationTree::set_child_coalescence_rate_parameter(
         unsigned int child_index,
-        PositiveRealVariable * r) {
+        PositiveRealParameter * r) {
     this->root_->get_child(child_index)->set_coalescence_rate_parameter(r);
 }
-PositiveRealVariable * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
+PositiveRealParameter * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
 }

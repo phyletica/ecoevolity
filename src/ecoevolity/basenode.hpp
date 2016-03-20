@@ -47,7 +47,7 @@ class BaseNode {
         std::vector< DerivedNodeT * > children_;
         DerivedNodeT * parent_ = 0;
         std::string label_ = "";
-        PositiveRealVariable * height_ = new PositiveRealVariable(0.0);
+        PositiveRealParameter * height_ = new PositiveRealParameter(0.0);
         bool is_dirty_ = true;
 
     public:
@@ -219,11 +219,11 @@ class BaseNode {
             }
         }
 
-        void set_height_parameter(PositiveRealVariable * height_parameter) {
+        void set_height_parameter(PositiveRealParameter * height_parameter) {
             this->height_ = height_parameter;
         }
 
-        PositiveRealVariable * get_height_parameter() const {
+        PositiveRealParameter * get_height_parameter() const {
             return this->height_;
         }
 
