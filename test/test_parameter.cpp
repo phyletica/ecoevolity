@@ -31,7 +31,7 @@ TEST_CASE("Testing RealVariable constructors", "[RealVariable]") {
 TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
 
     SECTION("Testing bare") {
-        RealParameter<UniformDistribution> p = RealParameter<UniformDistribution>();
+        RealParameter p = RealParameter();
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -56,7 +56,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
     }
 
     SECTION("Testing value") {
-        RealParameter<UniformDistribution> p = RealParameter<UniformDistribution>(1.1);
+        RealParameter p = RealParameter(1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -85,7 +85,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
 
     SECTION("Testing prior") {
         UniformDistribution * u = new UniformDistribution(10.0, 20.0);
-        RealParameter<UniformDistribution> p = RealParameter<UniformDistribution>(u);
+        RealParameter p = RealParameter(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -220,7 +220,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
 
     SECTION("Testing prior and value") {
         UniformDistribution * u = new UniformDistribution(10.0, 20.0);
-        RealParameter<UniformDistribution> p = RealParameter<UniformDistribution>(u, 1.1);
+        RealParameter p = RealParameter(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -386,7 +386,7 @@ TEST_CASE("Testing PositiveRealVariable constructors", "[PositiveRealVariable]")
 TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]") {
 
     SECTION("Testing bare") {
-        PositiveRealParameter<UniformDistribution> p = PositiveRealParameter<UniformDistribution>();
+        PositiveRealParameter p = PositiveRealParameter();
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -411,7 +411,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
     }
 
     SECTION("Testing value") {
-        PositiveRealParameter<UniformDistribution> p = PositiveRealParameter<UniformDistribution>(1.1);
+        PositiveRealParameter p = PositiveRealParameter(1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -440,7 +440,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
     SECTION("Testing prior") {
         UniformDistribution * u = new UniformDistribution(10.0, 20.0);
-        PositiveRealParameter<UniformDistribution> p = PositiveRealParameter<UniformDistribution>(u);
+        PositiveRealParameter p = PositiveRealParameter(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
@@ -573,7 +573,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
     SECTION("Testing prior and value") {
         UniformDistribution * u = new UniformDistribution(10.0, 20.0);
-        PositiveRealParameter<UniformDistribution> p = PositiveRealParameter<UniformDistribution>(u, 1.1);
+        PositiveRealParameter p = PositiveRealParameter(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());

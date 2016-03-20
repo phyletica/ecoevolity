@@ -23,6 +23,7 @@
 #include "error.hpp"
 #include "assert.hpp"
 #include "rng.hpp"
+#include "probability.hpp"
 
 
 template<class VariableType>
@@ -123,15 +124,14 @@ class RealVariable: public Variable<double> {
         }
 };
 
-template<class PriorDistributionType>
 class RealParameter: public RealVariable {
     public:
-        PriorDistributionType * prior = NULL;
+        ContinuousProbabilityDistribution * prior = NULL;
 
         RealParameter()
                 : RealVariable()
                 { }
-        RealParameter(PriorDistributionType * prior_ptr)
+        RealParameter(ContinuousProbabilityDistribution * prior_ptr)
                 : RealVariable()
         {
             this->prior = prior_ptr;
@@ -139,7 +139,7 @@ class RealParameter: public RealVariable {
         RealParameter(double value)
                 : RealVariable(value)
                 { }
-        RealParameter(PriorDistributionType * prior_ptr, double value)
+        RealParameter(ContinuousProbabilityDistribution * prior_ptr, double value)
                 : RealVariable(value)
         {
             this->prior = prior_ptr;
@@ -148,7 +148,7 @@ class RealParameter: public RealVariable {
             delete this->prior;
         }
 
-        virtual void set_prior(PriorDistributionType * prior_ptr) {
+        virtual void set_prior(ContinuousProbabilityDistribution * prior_ptr) {
             this->prior = prior_ptr;
         }
         virtual void check_prior() const {
@@ -220,26 +220,25 @@ class PositiveRealVariable: public RealVariable {
         }
 };
 
-template<class PriorDistributionType>
-class PositiveRealParameter: public RealParameter<PriorDistributionType> {
+class PositiveRealParameter: public RealParameter {
     public:
-        PositiveRealParameter() : RealParameter<PriorDistributionType>()
+        PositiveRealParameter() : RealParameter()
         {
             this->set_lower(0.0);
         }
-        PositiveRealParameter(PriorDistributionType * prior_ptr)
-                : RealParameter<PriorDistributionType>(prior_ptr)
+        PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr)
+                : RealParameter(prior_ptr)
         {
             this->set_lower(0.0);
         }
         PositiveRealParameter(double value)
-                : RealParameter<PriorDistributionType>()
+                : RealParameter()
         {
             this->set_lower(0.0);
             this->set_value(value);
         }
-        PositiveRealParameter(PriorDistributionType * prior_ptr, double value)
-                : RealParameter<PriorDistributionType>(prior_ptr)
+        PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr, double value)
+                : RealParameter(prior_ptr)
         {
             this->set_lower(0.0);
             this->set_value(value);
