@@ -216,6 +216,76 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mx < p.get_prior_max());
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
+
+        // Test more derived prior
+        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        p.set_prior(f);
+        delete u2;
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == std::numeric_limits<double>::lowest());
+
+        REQUIRE(p.get_prior_mean() == Approx(0.2));
+        REQUIRE(p.get_prior_variance() == Approx(1.0/25.0));
+        REQUIRE(p.get_prior_min() == 0.0);
+        REQUIRE(p.get_prior_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_prior_name() == "exp");
+        REQUIRE(p.get_prior_string() == "exp(lambda = 5)");
+        p.set_value(-0.1);
+        REQUIRE(p.prior_ln_pdf() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+
+        REQUIRE(p.prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+
+        p.set_value(0.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.6094379124341003));
+
+        p.set_value(0.01);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.5594379124341002));
+
+        p.set_value(1.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-3.3905620875658995));
+
+        p.set_value(100.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-498.39056208756591));
+
+        n = 0;
+        mean = 0.0;
+        sum_devs = 0.0;
+        d;
+        d_n;
+        mn = std::numeric_limits<double>::max();
+        mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = p.draw_from_prior(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(p.get_prior_mean()).epsilon(0.001));
+        REQUIRE(variance == Approx(p.get_prior_variance()).epsilon(0.01));
+        REQUIRE(mn >= p.get_prior_min());
+        REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
     }
 
     SECTION("Testing prior and value") {
@@ -358,6 +428,76 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mx < p.get_prior_max());
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
+
+        // Test more derived prior
+        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        p.set_prior(f);
+        delete u2;
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == std::numeric_limits<double>::lowest());
+
+        REQUIRE(p.get_prior_mean() == Approx(0.2));
+        REQUIRE(p.get_prior_variance() == Approx(1.0/25.0));
+        REQUIRE(p.get_prior_min() == 0.0);
+        REQUIRE(p.get_prior_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_prior_name() == "exp");
+        REQUIRE(p.get_prior_string() == "exp(lambda = 5)");
+        p.set_value(-0.1);
+        REQUIRE(p.prior_ln_pdf() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+
+        REQUIRE(p.prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+
+        p.set_value(0.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.6094379124341003));
+
+        p.set_value(0.01);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.5594379124341002));
+
+        p.set_value(1.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-3.3905620875658995));
+
+        p.set_value(100.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-498.39056208756591));
+
+        n = 0;
+        mean = 0.0;
+        sum_devs = 0.0;
+        d;
+        d_n;
+        mn = std::numeric_limits<double>::max();
+        mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = p.draw_from_prior(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(p.get_prior_mean()).epsilon(0.001));
+        REQUIRE(variance == Approx(p.get_prior_variance()).epsilon(0.01));
+        REQUIRE(mn >= p.get_prior_min());
+        REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
     }
 }
 
@@ -569,6 +709,74 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mx < p.get_prior_max());
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
+
+        // Test more derived prior
+        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        p.set_prior(f);
+        delete u2;
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == 0.0);
+
+        REQUIRE(p.get_prior_mean() == Approx(0.2));
+        REQUIRE(p.get_prior_variance() == Approx(1.0/25.0));
+        REQUIRE(p.get_prior_min() == 0.0);
+        REQUIRE(p.get_prior_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_prior_name() == "exp");
+        REQUIRE(p.get_prior_string() == "exp(lambda = 5)");
+
+        REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+
+        REQUIRE(p.prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+
+        p.set_value(0.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.6094379124341003));
+
+        p.set_value(0.01);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.5594379124341002));
+
+        p.set_value(1.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-3.3905620875658995));
+
+        p.set_value(100.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-498.39056208756591));
+
+        n = 0;
+        mean = 0.0;
+        sum_devs = 0.0;
+        d;
+        d_n;
+        mn = std::numeric_limits<double>::max();
+        mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = p.draw_from_prior(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(p.get_prior_mean()).epsilon(0.001));
+        REQUIRE(variance == Approx(p.get_prior_variance()).epsilon(0.01));
+        REQUIRE(mn >= p.get_prior_min());
+        REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
     }
 
     SECTION("Testing prior and value") {
@@ -709,6 +917,74 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mx < p.get_prior_max());
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
+
+        // Test more derived prior
+        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        p.set_prior(f);
+        delete u2;
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
+        REQUIRE(p.get_lower() == 0.0);
+
+        REQUIRE(p.get_prior_mean() == Approx(0.2));
+        REQUIRE(p.get_prior_variance() == Approx(1.0/25.0));
+        REQUIRE(p.get_prior_min() == 0.0);
+        REQUIRE(p.get_prior_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_prior_name() == "exp");
+        REQUIRE(p.get_prior_string() == "exp(lambda = 5)");
+
+        REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+        REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
+
+        REQUIRE(p.prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf(100.0) == Approx(-498.39056208756591));
+
+        p.set_value(0.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.6094379124341003));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.6094379124341003));
+
+        p.set_value(0.01);
+        REQUIRE(p.prior_ln_pdf() == Approx(1.5594379124341002));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(1.5594379124341002));
+
+        p.set_value(1.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-3.3905620875658995));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-3.3905620875658995));
+
+        p.set_value(100.0);
+        REQUIRE(p.prior_ln_pdf() == Approx(-498.39056208756591));
+        REQUIRE(p.relative_prior_ln_pdf() == Approx(-498.39056208756591));
+
+        n = 0;
+        mean = 0.0;
+        sum_devs = 0.0;
+        d;
+        d_n;
+        mn = std::numeric_limits<double>::max();
+        mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = p.draw_from_prior(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(p.get_prior_mean()).epsilon(0.001));
+        REQUIRE(variance == Approx(p.get_prior_variance()).epsilon(0.01));
+        REQUIRE(mn >= p.get_prior_min());
+        REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
     }
 }
 
