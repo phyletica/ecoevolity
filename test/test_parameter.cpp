@@ -2,6 +2,7 @@
 #include "ecoevolity/parameter.hpp"
 
 #include "ecoevolity/probability.hpp"
+#include "ecoevolity/rng.hpp"
 
 #include <limits>
 
@@ -36,10 +37,12 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
         REQUIRE(p.get_lower() == std::numeric_limits<double>::lowest());
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
@@ -62,10 +65,12 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         p.store();
         REQUIRE(p.get_stored_value() == Approx(1.1));
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
@@ -79,7 +84,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
     }
 
     SECTION("Testing prior") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0, 123);
+        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
         RealParameter<UniformDistribution> p = RealParameter<UniformDistribution>(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -118,6 +123,8 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(20.1) == -std::numeric_limits<double>::infinity());
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -126,7 +133,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -144,7 +151,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0, 123);
+        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
         p.set_prior(u2);
         delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
@@ -192,7 +199,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -212,7 +219,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
     }
 
     SECTION("Testing prior and value") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0, 123);
+        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
         RealParameter<UniformDistribution> p = RealParameter<UniformDistribution>(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -254,6 +261,8 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(20.1) == -std::numeric_limits<double>::infinity());
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -262,7 +271,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -280,7 +289,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0, 123);
+        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
         p.set_prior(u2);
         delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
@@ -332,7 +341,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -383,10 +392,12 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(p.get_upper() == std::numeric_limits<double>::max());
         REQUIRE(p.get_lower() == 0.0);
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
@@ -409,10 +420,12 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         p.store();
         REQUIRE(p.get_stored_value() == Approx(1.1));
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
         REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
@@ -426,7 +439,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
     }
 
     SECTION("Testing prior") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0, 123);
+        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
         PositiveRealParameter<UniformDistribution> p = PositiveRealParameter<UniformDistribution>(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -465,6 +478,8 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(20.1) == -std::numeric_limits<double>::infinity());
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -473,7 +488,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -491,7 +506,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0, 123);
+        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
         p.set_prior(u2);
         delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
@@ -537,7 +552,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -557,7 +572,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
     }
 
     SECTION("Testing prior and value") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0, 123);
+        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
         PositiveRealParameter<UniformDistribution> p = PositiveRealParameter<UniformDistribution>(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -599,6 +614,8 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(20.1) == -std::numeric_limits<double>::infinity());
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -607,7 +624,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -625,7 +642,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0, 123);
+        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
         p.set_prior(u2);
         delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
@@ -675,7 +692,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            double x = p.draw_from_prior();
+            double x = p.draw_from_prior(rng);
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;

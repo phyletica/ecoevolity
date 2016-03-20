@@ -22,6 +22,7 @@
 
 #include "error.hpp"
 #include "assert.hpp"
+#include "rng.hpp"
 
 
 template<class VariableType>
@@ -156,15 +157,15 @@ class RealParameter: public RealVariable {
             }
         }
 
-        virtual double draw_from_prior() {
+        virtual double draw_from_prior(RandomNumberGenerator & rng) {
             this->check_prior();
-            return this->prior->draw();
+            return this->prior->draw(rng);
         }
-        virtual void set_value_from_prior() {
-            this->set_value(this->draw_from_prior());
+        virtual void set_value_from_prior(RandomNumberGenerator & rng) {
+            this->set_value(this->draw_from_prior(rng));
         }
-        virtual void update_value_from_prior() {
-            this->update_value(this->draw_from_prior());
+        virtual void update_value_from_prior(RandomNumberGenerator & rng) {
+            this->update_value(this->draw_from_prior(rng));
         }
         virtual double get_prior_mean() const {
             this->check_prior();
