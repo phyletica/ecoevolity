@@ -26,6 +26,7 @@
 #include "node.hpp"
 #include "matrix.hpp"
 #include "parameter.hpp"
+#include "probability.hpp"
 #include "error.hpp"
 #include "assert.hpp"
 
@@ -34,8 +35,12 @@ class PopulationTree {
         BiallelicData data_;
         PopulationNode * root_;
         MatrixExponentiator matrix_exponentiator;
-        PositiveRealParameter * u_ = new PositiveRealParameter(1.0);
-        PositiveRealParameter * v_ = new PositiveRealParameter(1.0);
+        ContinuousProbabilityDistribution * u_prior_ = new ExponentialDistribution(1.0);
+        ContinuousProbabilityDistribution * v_prior_ = new ExponentialDistribution(1.0);
+        ContinuousProbabilityDistribution * node_height_prior_ = new ExponentialDistribution(10.0);
+        ContinuousProbabilityDistribution * coalescence_rate_prior_ = new GammaDistribution(1.0, 0.01);
+        PositiveRealParameter * u_ = new PositiveRealParameter(this->u_prior_, 1.0);
+        PositiveRealParameter * v_ = new PositiveRealParameter(this->v_prior_, 1.0);
         std::vector<double> pattern_likelihoods_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
