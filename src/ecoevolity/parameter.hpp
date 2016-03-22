@@ -35,6 +35,7 @@ class Variable {
         VariableType lower_;
         VariableType min_;
         VariableType max_;
+        bool is_fixed_ = false;
         typedef Variable<VariableType> DerivedClass;
 
     public:
@@ -79,11 +80,25 @@ class Variable {
         const VariableType& get_upper() const { return this->upper_; }
         const VariableType& get_lower() const { return this->lower_; }
 
+        bool is_fixed() const { return this->is_fixed_; }
+        void fix() {
+            this->is_fixed_ = true;
+        }
+        void estimate() {
+            this->is_fixed_ = false;
+        }
+
         void update_value(const VariableType& value) {
+            if (this->is_fixed()) {
+                return;
+            }
             this->store();
             this->set_value(value);
         }
         void set_value(const VariableType& value) {
+            if (this->is_fixed()) {
+                return;
+            }
             if ((value < this->lower_) || (value > this->upper_)) {
                 throw EcoevolityParameterValueError("value outside of parameter bounds");
             }
@@ -105,6 +120,9 @@ class Variable {
         }
 
         void restore() {
+            if (this->is_fixed()) {
+                return;
+            }
             this->value_ = this->stored_value_;
         }
 
@@ -162,9 +180,15 @@ class RealParameter: public RealVariable {
             return this->prior->draw(rng);
         }
         virtual void set_value_from_prior(RandomNumberGenerator & rng) {
+            if (this->is_fixed()) {
+                return;
+            }
             this->set_value(this->draw_from_prior(rng));
         }
         virtual void update_value_from_prior(RandomNumberGenerator & rng) {
+            if (this->is_fixed()) {
+                return;
+            }
             this->update_value(this->draw_from_prior(rng));
         }
         virtual double get_prior_mean() const {
@@ -192,18 +216,30 @@ class RealParameter: public RealVariable {
             return this->prior->to_string();
         }
         virtual double prior_ln_pdf() const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
             this->check_prior();
             return this->prior->ln_pdf(this->get_value());
         }
         virtual double prior_ln_pdf(double x) const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
             this->check_prior();
             return this->prior->ln_pdf(x);
         }
         virtual double relative_prior_ln_pdf() const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
             this->check_prior();
             return this->prior->relative_ln_pdf(this->get_value());
         }
         virtual double relative_prior_ln_pdf(double x) const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
             this->check_prior();
             return this->prior->relative_ln_pdf(x);
         }
