@@ -27,6 +27,7 @@
 
 #include "matrix.hpp"
 #include "parameter.hpp"
+#include "probability.hpp"
 #include "debug.hpp"
 #include "assert.hpp"
 #include "error.hpp"
@@ -318,6 +319,35 @@ class BaseNode {
                 n += child_iter->get_internal_node_count();
             }
             return n;
+        }
+
+        void set_node_height_prior(ContinuousProbabilityDistribution * prior) {
+            this->height_->set_prior(prior);
+        }
+        void set_all_node_height_priors(ContinuousProbabilityDistribution * prior) {
+            this->height_->set_prior(prior);
+            for (auto child_iter: this->children_) {
+                child_iter->set_all_node_height_priors(prior);
+            }
+        }
+
+        void fix_node_height() {
+            this->height_->fix();
+        }
+        void fix_all_node_heights() {
+            this->height_->fix();
+            for (auto child_iter: this->children_) {
+                child_iter->fix_all_node_heights();
+            }
+        }
+        void estimate_node_height() {
+            this->height_->estimate();
+        }
+        void estimate_all_node_heights() {
+            this->height_->estimate();
+            for (auto child_iter: this->children_) {
+                child_iter->estimate_all_node_heights();
+            }
         }
 };
 
