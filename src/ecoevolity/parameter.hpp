@@ -31,19 +31,15 @@ class Variable {
     protected:
         VariableType value_;
         VariableType stored_value_;
-        VariableType upper_;
-        VariableType lower_;
-        VariableType min_;
         VariableType max_;
+        VariableType min_;
         bool is_fixed_ = false;
         typedef Variable<VariableType> DerivedClass;
 
     public:
         // Constructors
         Variable() {
-            this->upper_ = std::numeric_limits<VariableType>::max();
-            this->lower_ = std::numeric_limits<VariableType>::lowest();
-            this->max_ = this->upper_;
+            this->max_ = std::numeric_limits<VariableType>::max();
             if (std::numeric_limits<VariableType>::has_infinity) {
                 this->max_ = std::numeric_limits<VariableType>::infinity();
             }
@@ -61,10 +57,8 @@ class Variable {
         DerivedClass& operator=(const DerivedClass& p) {
             this->value_ = p.value_;
             this->stored_value_ = p.stored_value_;
-            this->upper_ = p.upper_;
-            this->lower_ = p.lower_;
-            this->min_ = p.min_;
             this->max_ = p.max_;
+            this->min_ = p.min_;
             return * this;
         }
 
@@ -77,8 +71,6 @@ class Variable {
         const VariableType& get_stored_value() const { return this->stored_value_; }
         const VariableType& get_max() const { return this->max_; }
         const VariableType& get_min() const { return this->min_; }
-        const VariableType& get_upper() const { return this->upper_; }
-        const VariableType& get_lower() const { return this->lower_; }
 
         bool is_fixed() const { return this->is_fixed_; }
         void fix() {
@@ -99,20 +91,20 @@ class Variable {
             if (this->is_fixed()) {
                 return;
             }
-            if ((value < this->lower_) || (value > this->upper_)) {
+            if ((value < this->min_) || (value > this->max_)) {
                 throw EcoevolityParameterValueError("value outside of parameter bounds");
             }
             this->value_ = value;
         }
-        void set_upper(const VariableType& upper) {
-            this->upper_ = upper;
+        void set_max(const VariableType& max) {
+            this->max_ = max;
         }
-        void set_lower(const VariableType& lower) {
-            this->lower_ = lower;
+        void set_min(const VariableType& min) {
+            this->min_ = min;
         }
-        void set_bounds(const VariableType& lower, const VariableType& upper) {
-            this->set_lower(lower);
-            this->set_upper(upper);
+        void set_bounds(const VariableType& min, const VariableType& max) {
+            this->set_min(min);
+            this->set_max(max);
         }
 
         void store() {
@@ -248,10 +240,10 @@ class RealParameter: public RealVariable {
 class PositiveRealVariable: public RealVariable {
     public:
         PositiveRealVariable() : RealVariable() {
-            this->set_lower(0.0);
+            this->set_min(0.0);
         }
         PositiveRealVariable(double value) : RealVariable() {
-            this->set_lower(0.0);
+            this->set_min(0.0);
             this->set_value(value);
         }
 };
@@ -260,24 +252,100 @@ class PositiveRealParameter: public RealParameter {
     public:
         PositiveRealParameter() : RealParameter()
         {
-            this->set_lower(0.0);
+            this->set_min(0.0);
         }
         PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr)
                 : RealParameter(prior_ptr)
         {
-            this->set_lower(0.0);
+            this->set_min(0.0);
         }
         PositiveRealParameter(double value)
                 : RealParameter()
         {
-            this->set_lower(0.0);
+            this->set_min(0.0);
             this->set_value(value);
         }
         PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr, double value)
                 : RealParameter(prior_ptr)
         {
-            this->set_lower(0.0);
+            this->set_min(0.0);
             this->set_value(value);
+        }
+};
+
+class CoalescenceRateParameter: public PositiveRealParameter {
+    public:
+        CoalescenceRateParameter() : PositiveRealParameter() { }
+        CoalescenceRateParameter(ContinuousProbabilityDistribution * prior_ptr)
+                : PositiveRealParameter(prior_ptr) { }
+        CoalescenceRateParameter(double value)
+                : PositiveRealParameter(value) { }
+        CoalescenceRateParameter(ContinuousProbabilityDistribution * prior_ptr,
+                double value)
+                : PositiveRealParameter(prior_ptr, value) { }
+
+        double get_population_size_from_rate(double coalescence_rate) const {
+            if (coalescence_rate == 0.0) {
+                return std::numeric_limits<double>::infinity();
+            }
+            return 2.0 / coalescence_rate;
+        }
+        double get_rate_from_population_size(double population_size) const {
+            if (population_size == 0.0) {
+                return std::numeric_limits<double>::infinity();
+            }
+            return 2.0 / population_size;
+        }
+        double get_population_size() const {
+            return this->get_population_size_from_rate(this->get_value());
+        }
+
+        virtual double draw_from_prior(RandomNumberGenerator & rng) {
+            this->check_prior();
+            return this->get_rate_from_population_size(this->prior->draw(rng));
+        }
+        virtual void set_value_from_prior(RandomNumberGenerator & rng) {
+            if (this->is_fixed()) {
+                return;
+            }
+            this->set_value(this->draw_from_prior(rng));
+        }
+        virtual void update_value_from_prior(RandomNumberGenerator & rng) {
+            if (this->is_fixed()) {
+                return;
+            }
+            this->update_value(this->draw_from_prior(rng));
+        }
+
+        double prior_ln_pdf() const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->ln_pdf(this->get_population_size());
+        }
+        double prior_ln_pdf(double coalescence_rate) const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->ln_pdf(
+                    this->get_population_size_from_rate(coalescence_rate));
+        }
+        double relative_prior_ln_pdf() const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->relative_ln_pdf(this->get_population_size());
+        }
+        double relative_prior_ln_pdf(double coalescence_rate) const {
+            if (this->is_fixed()) {
+                return 0.0;
+            }
+            this->check_prior();
+            return this->prior->relative_ln_pdf(
+                    this->get_population_size_from_rate(coalescence_rate));
         }
 };
 
@@ -312,10 +380,10 @@ class ProbabilityDensity: public PositiveRealVariable {
 class LogProbability: public RealVariable {
     public:
         LogProbability() : RealVariable() {
-            this->set_upper(0.0);
+            this->set_max(0.0);
         }
         LogProbability(double value) : RealVariable() {
-            this->set_upper(0.0);
+            this->set_max(0.0);
             this->set_value(value);
         }
 };
