@@ -37,8 +37,8 @@ class PopulationTree {
         MatrixExponentiator matrix_exponentiator;
         ContinuousProbabilityDistribution * u_prior_ = new ExponentialDistribution(1.0);
         ContinuousProbabilityDistribution * v_prior_ = new ExponentialDistribution(1.0);
-        ContinuousProbabilityDistribution * node_height_prior_ = new ExponentialDistribution(10.0);
-        ContinuousProbabilityDistribution * coalescence_rate_prior_ = new GammaDistribution(1.0, 0.01);
+        ContinuousProbabilityDistribution * node_height_prior_ = new ExponentialDistribution(100.0);
+        ContinuousProbabilityDistribution * pop_size_prior_ = new GammaDistribution(1.0, 0.001);
         PositiveRealParameter * u_ = new PositiveRealParameter(this->u_prior_, 1.0);
         PositiveRealParameter * v_ = new PositiveRealParameter(this->v_prior_, 1.0);
         std::vector<double> pattern_likelihoods_;
@@ -159,8 +159,8 @@ class ComparisonPopulationTree: public PopulationTree {
         void store_child_coalescence_rate(unsigned int child_index);
         void restore_child_coalescence_rate(unsigned int child_index);
         void set_child_coalescence_rate_parameter(unsigned int child_index,
-                PositiveRealParameter * r);
-        PositiveRealParameter * get_child_coalescence_rate_parameter(
+                CoalescenceRateParameter * r);
+        CoalescenceRateParameter * get_child_coalescence_rate_parameter(
                 unsigned int child_index) const;
 
         void set_height(double height) {this->set_root_height(height);}

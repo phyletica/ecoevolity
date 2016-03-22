@@ -596,10 +596,10 @@ void ComparisonPopulationTree::restore_child_coalescence_rate(
 }
 void ComparisonPopulationTree::set_child_coalescence_rate_parameter(
         unsigned int child_index,
-        PositiveRealParameter * r) {
+        CoalescenceRateParameter * r) {
     this->root_->get_child(child_index)->set_coalescence_rate_parameter(r);
 }
-PositiveRealParameter * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
+CoalescenceRateParameter * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
 }
