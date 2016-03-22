@@ -262,6 +262,35 @@ class PopulationNode: public BaseNode<PopulationNode>{
                 child_iter->restore_all_coalescence_rates();
             }
         }
+
+        void set_coalescence_rate_prior(ContinuousProbabilityDistribution * prior) {
+            this->coalescence_rate_->set_prior(prior);
+        }
+        void set_all_coalescence_rate_priors(ContinuousProbabilityDistribution * prior) {
+            this->coalescence_rate_->set_prior(prior);
+            for (auto child_iter: this->children_) {
+                child_iter->set_all_coalescence_rate_priors(prior);
+            }
+        }
+
+        void fix_coalescence_rate() {
+            this->coalescence_rate_->fix();
+        }
+        void fix_all_coalescence_rates() {
+            this->coalescence_rate_->fix();
+            for (auto child_iter: this->children_) {
+                child_iter->fix_all_coalescence_rates();
+            }
+        }
+        void estimate_coalescence_rate() {
+            this->coalescence_rate_->estimate();
+        }
+        void estimate_all_coalescence_rates() {
+            this->coalescence_rate_->estimate();
+            for (auto child_iter: this->children_) {
+                child_iter->estimate_all_coalescence_rates();
+            }
+        }
 };
 
 #endif
