@@ -52,6 +52,13 @@ class PopulationNode: public BaseNode<PopulationNode>{
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         CoalescenceRateParameter * coalescence_rate_ = new CoalescenceRateParameter(10.0);
 
+        void add_ln_relative_coalescence_rate_prior_density(double& density) const {
+            density += this->coalescence_rate_->relative_prior_ln_pdf();
+            for (auto child_iter: this->children_) {
+                child_iter->add_ln_relative_coalescence_rate_prior_density(density);
+            }
+        }
+
     public:
         PopulationNode() { }
         PopulationNode(const Node& node) : BaseClass(node) { }
@@ -214,6 +221,18 @@ class PopulationNode: public BaseNode<PopulationNode>{
         void set_coalescence_rate_parameter(CoalescenceRateParameter * rate) {
             this->coalescence_rate_ = rate;
         }
+        void set_all_coalescence_rate_parameters(CoalescenceRateParameter * rate) {
+            this->coalescence_rate_ = rate;
+            for (auto child_iter: this->children_) {
+                child_iter->set_all_coalescence_rate_parameters(rate);
+            }
+        }
+        void set_all_coalescence_rate_parameters() {
+            CoalescenceRateParameter * rate = this->coalescence_rate_;
+            for (auto child_iter: this->children_) {
+                child_iter->set_all_coalescence_rate_parameters(rate);
+            }
+        }
 
         void set_coalescence_rate(double rate) {
             this->coalescence_rate_->set_value(rate);
@@ -263,13 +282,13 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
-        void set_coalescence_rate_prior(ContinuousProbabilityDistribution * prior) {
+        void set_population_size_prior(ContinuousProbabilityDistribution * prior) {
             this->coalescence_rate_->set_prior(prior);
         }
-        void set_all_coalescence_rate_priors(ContinuousProbabilityDistribution * prior) {
+        void set_all_population_size_priors(ContinuousProbabilityDistribution * prior) {
             this->coalescence_rate_->set_prior(prior);
             for (auto child_iter: this->children_) {
-                child_iter->set_all_coalescence_rate_priors(prior);
+                child_iter->set_all_population_size_priors(prior);
             }
         }
 
@@ -290,6 +309,12 @@ class PopulationNode: public BaseNode<PopulationNode>{
             for (auto child_iter: this->children_) {
                 child_iter->estimate_all_coalescence_rates();
             }
+        }
+
+        double calculate_ln_relative_coalescence_prior_density() const {
+            double d = 0.0;
+            this->add_ln_relative_coalescence_rate_prior_density(d);
+            return d;
         }
 };
 

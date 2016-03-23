@@ -1356,3 +1356,54 @@ TEST_CASE("Test simple tree building with PopulationNode", "[PopulationNode]") {
         REQUIRE(root.get_allele_count() == 15);
     }
 }
+
+TEST_CASE("Test node height prior", "[Node]") {
+
+    SECTION("Testing prior") {
+        Node root = Node("root", 1.0);
+        Node root_child1 = Node("root child 1", 0.8);
+        Node root_child2 = Node("root child 2", 0.3);
+        Node leaf1 = Node("leaf 1", 0.0);
+        Node leaf2 = Node("leaf 2", 0.0);
+        Node leaf3 = Node("leaf 3", 0.0);
+        Node leaf4 = Node("leaf 4", 0.0);
+        Node leaf5 = Node("leaf 5", 0.0);
+
+        root.add_child(&root_child1);
+        root.add_child(&root_child2);
+
+        leaf1.add_parent(&root_child1);
+        leaf2.add_parent(&root_child1);
+        leaf3.add_parent(&root_child1);
+
+        leaf4.add_parent(&root_child2);
+        leaf5.add_parent(&root_child2);
+
+        GammaDistribution * prior = new GammaDistribution(1.0, 1.0);
+        // TODO: causing SIGSEGV
+        root.set_all_node_height_priors(prior);
+        /* REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1)); */
+
+        /* leaf1.fix_node_height(); */
+        /* leaf2.fix_node_height(); */
+        /* leaf3.fix_node_height(); */
+        /* leaf4.fix_node_height(); */
+        /* leaf5.fix_node_height(); */
+
+        /* REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1)); */
+
+
+        /* GammaDistribution * prior2 = new GammaDistribution(1.0, 0.01); */
+        /* root.set_all_node_height_priors(prior2); */
+        /* REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-196.18448944203573)); */
+
+        /* leaf1.estimate_node_height(); */
+        /* leaf2.estimate_node_height(); */
+        /* leaf3.estimate_node_height(); */
+        /* leaf4.estimate_node_height(); */
+        /* leaf5.estimate_node_height(); */
+
+        /* REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-173.15863851209528)); */
+    }
+}
+

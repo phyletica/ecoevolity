@@ -51,6 +51,13 @@ class BaseNode {
         PositiveRealParameter * height_ = new PositiveRealParameter(0.0);
         bool is_dirty_ = true;
 
+        void add_ln_relative_node_height_prior_density(double& density) const {
+            density += this->height_->relative_prior_ln_pdf();
+            for (auto child_iter: this->children_) {
+                child_iter->add_ln_relative_node_height_prior_density(density);
+            }
+        }
+
     public:
         // Constructors
         BaseNode() { }
@@ -349,6 +356,13 @@ class BaseNode {
                 child_iter->estimate_all_node_heights();
             }
         }
+
+        double calculate_ln_relative_node_height_prior_density() const {
+            double d = 0.0;
+            this->add_ln_relative_node_height_prior_density(d);
+            return d;
+        }
+
 };
 
 #endif

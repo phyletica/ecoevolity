@@ -69,10 +69,12 @@ void PopulationTree::init_tree() {
         for (unsigned int pop_idx = 0;
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
-            this->root_->add_child(new PopulationNode(
+            PopulationNode * tip = new PopulationNode(
                     this->data_.get_population_label(pop_idx),
                     0.0,
-                    this->data_.get_max_allele_count(pop_idx)));
+                    this->data_.get_max_allele_count(pop_idx));
+            tip->fix_node_height();
+            this->root_->add_child(tip);
         }
         return;
     }
@@ -84,7 +86,12 @@ void PopulationTree::init_tree() {
             ++pop_idx) {
         PopulationNode * next_ancestor = new PopulationNode(0.0);
         next_ancestor->add_child(ancestor);
-        next_ancestor->add_child(new PopulationNode(this->data_.get_population_label(pop_idx)));
+        PopulationNode * tip = new PopulationNode(
+                this->data_.get_population_label(pop_idx),
+                0.0,
+                this->data_.get_max_allele_count(pop_idx));
+        tip->fix_node_height();
+        next_ancestor->add_child(tip);
         ancestor = next_ancestor;
     }
     this->root_ = ancestor;
@@ -550,6 +557,28 @@ void PopulationTree::restore_all_coalescence_rates() {
 }
 void PopulationTree::restore_all_heights() {
     this->root_->restore_all_heights();
+}
+
+void PopulationTree::set_node_height_prior(ContinuousProbabilityDistribution * prior) {
+    this->node_height_prior_ = prior;
+    this->root_->set_all_node_height_priors(prior);
+}
+
+void PopulationTree::set_population_size_prior(ContinuousProbabilityDistribution * prior) {
+    delete this->population_size_prior_;
+    this->population_size_prior_ = prior;
+    this->root_->set_all_population_size_priors(prior);
+}
+
+void PopulationTree::set_u_prior(ContinuousProbabilityDistribution * prior) {
+    delete this->u_prior_;
+    this->u_prior_ = prior;
+    this->u_->set_prior(prior);
+}
+void PopulationTree::set_v_prior(ContinuousProbabilityDistribution * prior) {
+    delete this->v_prior_;
+    this->v_prior_ = prior;
+    this->v_->set_prior(prior);
 }
 
 
