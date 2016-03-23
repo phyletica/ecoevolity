@@ -591,6 +591,11 @@ unsigned int BiallelicData::remove_missing_population_patterns(const bool valida
 }
 
 unsigned int BiallelicData::fold_patterns(const bool validate) {
+    if (this->markers_are_dominant()) {
+        throw EcoevolityBiallelicDataError(
+                "Site patterns cannot be folded for dominant markers",
+                this->path_);
+    }
     unsigned int number_removed = 0;
     int return_idx = 0;
     while (true) {

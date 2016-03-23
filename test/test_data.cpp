@@ -377,26 +377,7 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
 
         // Folding
-        unsigned int number_removed = bd.fold_patterns();
-        REQUIRE(number_removed == 0);
-        REQUIRE(bd.get_number_of_populations() == 2);
-        REQUIRE(bd.get_number_of_patterns() == 4);
-        REQUIRE(bd.get_number_of_sites() == 5);
-        REQUIRE(bd.markers_are_dominant());
-        REQUIRE(! bd.genotypes_are_diploid());
-        REQUIRE(bd.has_constant_patterns() == false);
-        REQUIRE(bd.has_missing_population_patterns() == false);
-        REQUIRE(bd.has_mirrored_patterns() == false);
-        REQUIRE(bd.patterns_are_folded() == true);
-
-        expected_red_counts[0] = {1, 0};
-        expected_red_counts[3] = {1, 1};
-
-        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
-            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
-            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
-            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
-        }
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/haploid-standard.nex as diploid and dominant") {
@@ -1016,25 +997,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
 
         // Folding
-        number_removed = bd.fold_patterns();
-        REQUIRE(number_removed == 0);
-        REQUIRE(bd.get_number_of_populations() == 2);
-        REQUIRE(bd.get_number_of_patterns() == 3);
-        REQUIRE(bd.get_number_of_sites() == 4);
-        REQUIRE(bd.markers_are_dominant());
-        REQUIRE(! bd.genotypes_are_diploid());
-        REQUIRE(bd.has_constant_patterns() == false);
-        REQUIRE(bd.has_missing_population_patterns() == false);
-        REQUIRE(bd.has_mirrored_patterns() == false);
-        REQUIRE(bd.patterns_are_folded() == true);
-
-        rm_expected_red_counts[1] = {1, 0};
-
-        for (unsigned int pattern_idx = 0; pattern_idx < rm_expected_wts.size(); ++pattern_idx) {
-            REQUIRE(bd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
-            REQUIRE(bd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
-            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
-        }
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/haploid-standard-constant.nex as diploid") {
@@ -1290,25 +1253,7 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
 
         // Folding
-        number_removed = bd.fold_patterns();
-        REQUIRE(number_removed == 0);
-        REQUIRE(bd.get_number_of_populations() == 2);
-        REQUIRE(bd.get_number_of_patterns() == 2);
-        REQUIRE(bd.get_number_of_sites() == 3);
-        REQUIRE(bd.markers_are_dominant());
-        REQUIRE(! bd.genotypes_are_diploid());
-        REQUIRE(bd.has_constant_patterns() == false);
-        REQUIRE(bd.has_missing_population_patterns() == false);
-        REQUIRE(bd.has_mirrored_patterns() == false);
-        REQUIRE(bd.patterns_are_folded() == true);
-
-        rm_expected_red_counts[1] = {1, 1};
-
-        for (unsigned int pattern_idx = 0; pattern_idx < rm_expected_wts.size(); ++pattern_idx) {
-            REQUIRE(bd.get_pattern_weight(pattern_idx) == rm_expected_wts.at(pattern_idx));
-            REQUIRE(bd.get_allele_counts(pattern_idx) == rm_expected_allele_counts.at(pattern_idx));
-            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
-        }
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
     }
 }
 
@@ -1650,25 +1595,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
 
         // Folding
-        number_removed = bd.fold_patterns();
-        REQUIRE(number_removed == 0);
-        REQUIRE(bd.get_number_of_populations() == 2);
-        REQUIRE(bd.get_number_of_patterns() == 2);
-        REQUIRE(bd.get_number_of_sites() == 3);
-        REQUIRE(bd.markers_are_dominant());
-        REQUIRE(! bd.genotypes_are_diploid());
-        REQUIRE(bd.has_constant_patterns() == false);
-        REQUIRE(bd.has_missing_population_patterns() == false);
-        REQUIRE(bd.has_mirrored_patterns() == false);
-        REQUIRE(bd.patterns_are_folded() == true);
-
-        rm_rm_expected_red_counts[1] = {1, 1};
-
-        for (unsigned int pattern_idx = 0; pattern_idx < rm_rm_expected_wts.size(); ++pattern_idx) {
-            REQUIRE(bd.get_pattern_weight(pattern_idx) == rm_rm_expected_wts.at(pattern_idx));
-            REQUIRE(bd.get_allele_counts(pattern_idx) == rm_rm_expected_allele_counts.at(pattern_idx));
-            REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
-        }
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
     }
 }
 
