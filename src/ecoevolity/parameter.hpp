@@ -154,9 +154,7 @@ class RealParameter: public RealVariable {
         {
             this->prior = prior_ptr;
         }
-        virtual ~RealParameter() {
-            delete this->prior;
-        }
+        virtual ~RealParameter() { }
 
         virtual void set_prior(ContinuousProbabilityDistribution * prior_ptr) {
             this->prior = prior_ptr;
