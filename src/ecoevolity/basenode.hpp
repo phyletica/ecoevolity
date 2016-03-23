@@ -261,9 +261,11 @@ class BaseNode {
 
         void restore_height() {
             this->height_->restore();
+            this->make_all_dirty();
         }
         void restore_all_heights() {
             this->height_->restore();
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->restore_all_heights();
             }
