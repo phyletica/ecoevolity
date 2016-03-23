@@ -57,6 +57,8 @@ class PopulationTree {
         bool mutation_rates_are_fixed_ = false;
         bool coalescence_rates_are_constrained_ = false;
         bool mutation_rates_are_constrained_ = false;
+        bool is_dirty_ = true;
+        unsigned int number_of_likelihood_calculations_ = 0;
 
         // methods
         void init_tree();
@@ -125,6 +127,10 @@ class PopulationTree {
         void restore_u();
         void restore_v();
 
+        bool is_dirty() const;
+        void make_dirty();
+        void make_clean();
+
         void set_u_parameter(PositiveRealParameter * u);
         void set_v_parameter(PositiveRealParameter * v);
         PositiveRealParameter * get_u_parameter() const;
@@ -132,8 +138,18 @@ class PopulationTree {
 
         void set_root_coalescence_rate(double rate);
         void set_coalescence_rate(double rate);
+        double get_root_coalescence_rate() const;
 
         double get_likelihood_correction(bool force = false);
+
+        virtual void compute_log_likelihood_and_prior() {
+            if (this->is_dirty()) {
+                this->compute_log_likelihood();
+                this->compute_log_prior_density();
+                this->make_clean();
+            }
+            return;
+        }
 
         double compute_log_likelihood();
 
@@ -221,9 +237,14 @@ class PopulationTree {
             this->u_->set_value(1.0);
             this->u_->fix();
             this->v_ = this->u_;
+            this->make_dirty();
         }
         bool mutation_rates_are_constrained() const {
             return this->mutation_rates_are_constrained_;
+        }
+
+        unsigned int get_number_of_likelihood_calculations() {
+            return this->number_of_likelihood_calculations_;
         }
 };
 
@@ -240,7 +261,7 @@ class ComparisonPopulationTree: public PopulationTree {
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
         void update_child_coalescence_rate(unsigned int child_index, double rate);
-        const double& get_child_coalescence_rate(unsigned int child_index);
+        const double& get_child_coalescence_rate(unsigned int child_index) const;
         void store_child_coalescence_rate(unsigned int child_index);
         void restore_child_coalescence_rate(unsigned int child_index);
         void set_child_coalescence_rate_parameter(unsigned int child_index,

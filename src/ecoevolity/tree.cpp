@@ -335,7 +335,7 @@ void PopulationTree::compute_pattern_likelihoods() {
     }
     double all_green_pattern_likelihood = this->compute_pattern_likelihood(-1);
     double all_red_pattern_likelihood = all_green_pattern_likelihood;
-    if (! this->data_.patterns_are_folded()) {
+    if (! this->mutation_rates_are_constrained()) {
         all_red_pattern_likelihood = this->compute_pattern_likelihood(-2);
     }
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_likelihood);
@@ -403,7 +403,7 @@ double PopulationTree::compute_log_likelihood() {
         }
         log_likelihood += weight * std::log(pattern_likelihood);
     }
-    
+
     if (this->correct_for_constant_patterns_) {
         if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
@@ -426,6 +426,7 @@ double PopulationTree::compute_log_likelihood() {
         }
     }
 
+
     if (this->correct_for_full_likelihood_) {
         log_likelihood += this->get_likelihood_correction();
     }
@@ -435,6 +436,7 @@ double PopulationTree::compute_log_likelihood() {
     // )
 
     this->log_likelihood_.set_value(log_likelihood);
+    ++this->number_of_likelihood_calculations_;
     return log_likelihood;
 }
 
@@ -446,7 +448,13 @@ double PopulationTree::get_stored_log_likelihood_value() const {
 }
 
 void PopulationTree::fold_patterns() {
+    if (! this->mutation_rates_are_constrained()) {
+        std::cerr << 
+            "WARNING: Site patterns are being folded when foward/backward\n" <<
+            "         mutation rates are not constrained." << std::endl;
+    }
     this->data_.fold_patterns();
+    this->make_dirty();
 }
 
 void PopulationTree::set_root_height(double height) {
@@ -473,15 +481,19 @@ PositiveRealParameter * PopulationTree::get_root_height_parameter() const {
 
 void PopulationTree::set_u(double u) {
     this->u_->set_value(u);
+    this->make_dirty();
 }
 void PopulationTree::update_u(double u) {
     this->u_->update_value(u);
+    this->make_dirty();
 }
 void PopulationTree::set_v(double v) {
     this->v_->set_value(v);
+    this->make_dirty();
 }
 void PopulationTree::update_v(double v) {
     this->v_->update_value(v);
+    this->make_dirty();
 }
 const double& PopulationTree::get_u() const {
     return this->u_->get_value();
@@ -497,16 +509,20 @@ void PopulationTree::store_v() {
 }
 void PopulationTree::restore_u() {
     this->u_->restore();
+    this->make_dirty();
 }
 void PopulationTree::restore_v() {
     this->v_->restore();
+    this->make_dirty();
 }
 
 void PopulationTree::set_u_parameter(PositiveRealParameter * u) {
     this->u_ = u;
+    this->make_dirty();
 }
 void PopulationTree::set_v_parameter(PositiveRealParameter * v) {
     this->v_ = v;
+    this->make_dirty();
 }
 PositiveRealParameter * PopulationTree::get_u_parameter() const {
     return this->u_;
@@ -520,6 +536,9 @@ void PopulationTree::set_root_coalescence_rate(double rate) {
 }
 void PopulationTree::set_coalescence_rate(double rate) {
     this->root_->set_all_coalescence_rates(rate);
+}
+double PopulationTree::get_root_coalescence_rate() const {
+    return this->root_->get_coalescence_rate();
 }
 
 void PopulationTree::store_state() {
@@ -589,11 +608,13 @@ void PopulationTree::set_u_prior(ContinuousProbabilityDistribution * prior) {
     delete this->u_prior_;
     this->u_prior_ = prior;
     this->u_->set_prior(prior);
+    this->make_dirty();
 }
 void PopulationTree::set_v_prior(ContinuousProbabilityDistribution * prior) {
     delete this->v_prior_;
     this->v_prior_ = prior;
     this->v_->set_prior(prior);
+    this->make_dirty();
 }
 
 double PopulationTree::compute_log_prior_density() {
@@ -623,6 +644,21 @@ double PopulationTree::get_log_prior_density_value() const {
 }
 double PopulationTree::get_stored_log_prior_density_value() const {
     return this->log_prior_density_.get_stored_value();
+}
+
+bool PopulationTree::is_dirty() const {
+    if (this->is_dirty_) {
+        return true;
+    }
+    return this->root_->clade_has_dirt();
+}
+
+void PopulationTree::make_dirty() {
+    this->is_dirty_ = true;
+}
+void PopulationTree::make_clean() {
+    this->is_dirty_ = false;
+    this->root_->make_all_clean();
 }
 
 
@@ -656,7 +692,7 @@ void ComparisonPopulationTree::update_child_coalescence_rate(
     this->root_->get_child(child_index)->update_coalescence_rate(rate);
 }
 const double& ComparisonPopulationTree::get_child_coalescence_rate(
-        unsigned int child_index) {
+        unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate();
 }
 void ComparisonPopulationTree::store_child_coalescence_rate(
