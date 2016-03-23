@@ -52,10 +52,22 @@ class PopulationNode: public BaseNode<PopulationNode>{
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         CoalescenceRateParameter * coalescence_rate_ = new CoalescenceRateParameter(10.0);
 
-        void add_ln_relative_coalescence_rate_prior_density(double& density) const {
-            density += this->coalescence_rate_->relative_prior_ln_pdf();
+        void add_ln_relative_coalescence_rate_prior_density(
+                double& density,
+                std::vector<CoalescenceRateParameter *>& parameters) const {
+            bool parameter_found = false;
+            for (auto parameter_iter : parameters) {
+                if (parameter_iter == this->coalescence_rate_) {
+                    parameter_found = true;
+                    break;
+                }
+            }
+            if (! parameter_found) {
+                density += this->coalescence_rate_->relative_prior_ln_pdf();
+                parameters.push_back(this->coalescence_rate_);
+            }
             for (auto child_iter: this->children_) {
-                child_iter->add_ln_relative_coalescence_rate_prior_density(density);
+                child_iter->add_ln_relative_coalescence_rate_prior_density(density, parameters);
             }
         }
 
@@ -311,9 +323,10 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
-        double calculate_ln_relative_coalescence_prior_density() const {
+        double calculate_ln_relative_coalescence_rate_prior_density() const {
             double d = 0.0;
-            this->add_ln_relative_coalescence_rate_prior_density(d);
+            std::vector<CoalescenceRateParameter *> parameters(this->get_node_count());
+            this->add_ln_relative_coalescence_rate_prior_density(d, parameters);
             return d;
         }
 };

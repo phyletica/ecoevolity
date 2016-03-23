@@ -51,10 +51,22 @@ class BaseNode {
         PositiveRealParameter * height_ = new PositiveRealParameter(0.0);
         bool is_dirty_ = true;
 
-        void add_ln_relative_node_height_prior_density(double& density) const {
-            density += this->height_->relative_prior_ln_pdf();
+        void add_ln_relative_node_height_prior_density(
+                double& density,
+                std::vector<PositiveRealParameter *>& parameters) const {
+            bool parameter_found = false;
+            for (auto parameter_iter : parameters) {
+                if (parameter_iter == this->height_) {
+                    parameter_found = true;
+                    break;
+                }
+            }
+            if (! parameter_found) {
+                density += this->height_->relative_prior_ln_pdf();
+                parameters.push_back(this->height_);
+            }
             for (auto child_iter: this->children_) {
-                child_iter->add_ln_relative_node_height_prior_density(density);
+                child_iter->add_ln_relative_node_height_prior_density(density, parameters);
             }
         }
 
@@ -81,7 +93,6 @@ class BaseNode {
 
         // Destructor
         virtual ~BaseNode() {
-            delete this->height_;
             if (this->parent_) {
                 this->parent_->remove_child(static_cast<DerivedNodeT *>(this));
             }
@@ -359,7 +370,8 @@ class BaseNode {
 
         double calculate_ln_relative_node_height_prior_density() const {
             double d = 0.0;
-            this->add_ln_relative_node_height_prior_density(d);
+            std::vector<PositiveRealParameter *> parameters(this->get_node_count());
+            this->add_ln_relative_node_height_prior_density(d, parameters);
             return d;
         }
 

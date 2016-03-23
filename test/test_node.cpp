@@ -1409,3 +1409,80 @@ TEST_CASE("Test node height prior", "[Node]") {
     }
 }
 
+TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
+
+    SECTION("Testing prior") {
+        PopulationNode root = PopulationNode("root", 1.0);
+        PopulationNode root_child1 = PopulationNode("root child 1", 0.8);
+        PopulationNode root_child2 = PopulationNode("root child 2", 0.3);
+        PopulationNode leaf1 = PopulationNode("leaf 1", 0.0);
+        PopulationNode leaf2 = PopulationNode("leaf 2", 0.0);
+        PopulationNode leaf3 = PopulationNode("leaf 3", 0.0);
+        PopulationNode leaf4 = PopulationNode("leaf 4", 0.0);
+        PopulationNode leaf5 = PopulationNode("leaf 5", 0.0);
+
+        root.add_child(&root_child1);
+        root.add_child(&root_child2);
+
+        leaf1.add_parent(&root_child1);
+        leaf2.add_parent(&root_child1);
+        leaf3.add_parent(&root_child1);
+
+        leaf4.add_parent(&root_child2);
+        leaf5.add_parent(&root_child2);
+
+        ContinuousProbabilityDistribution * prior = new GammaDistribution(1.0, 1.0);
+        root.set_all_node_height_priors(prior);
+        root.set_all_population_size_priors(prior);
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(-0.2*8));
+
+        leaf1.fix_node_height();
+        leaf2.fix_node_height();
+        leaf3.fix_node_height();
+        leaf4.fix_node_height();
+        leaf5.fix_node_height();
+
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(-0.2*8));
+
+
+        GammaDistribution * prior2 = new GammaDistribution(1.0, 0.01);
+        root.set_all_node_height_priors(prior2);
+        root.set_all_population_size_priors(prior2);
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-196.18448944203573));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(-15.39482981401191*8));
+
+        leaf1.estimate_node_height();
+        leaf2.estimate_node_height();
+        leaf3.estimate_node_height();
+        leaf4.estimate_node_height();
+        leaf5.estimate_node_height();
+
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-173.15863851209528));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(-15.39482981401191*8));
+
+        root.set_all_coalescence_rates(100.0);
+
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-173.15863851209528));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909*8));
+
+        root.set_all_coalescence_rate_parameters();
+        root_child1.set_height_parameter(root_child2.get_height_parameter());
+
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-97.76380869808338));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909));
+
+        leaf1.fix_node_height();
+        leaf2.fix_node_height();
+        leaf3.fix_node_height();
+        leaf4.fix_node_height();
+        leaf5.fix_node_height();
+
+        REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-120.78965962802383));
+        REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909));
+
+        delete prior;
+        delete prior2;
+    }
+}
