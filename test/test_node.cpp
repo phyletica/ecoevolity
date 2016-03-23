@@ -527,6 +527,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(leaf3.is_dirty());
         REQUIRE(leaf4.is_dirty());
         REQUIRE(leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(root_child1.clade_has_dirt());
+        REQUIRE(root_child2.clade_has_dirt());
+        REQUIRE(leaf1.clade_has_dirt());
+        REQUIRE(leaf2.clade_has_dirt());
+        REQUIRE(leaf3.clade_has_dirt());
+        REQUIRE(leaf4.clade_has_dirt());
+        REQUIRE(leaf5.clade_has_dirt());
 
         root.make_all_clean();
 
@@ -538,6 +546,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(! leaf3.is_dirty());
         REQUIRE(! leaf4.is_dirty());
         REQUIRE(! leaf5.is_dirty());
+        REQUIRE(! root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(! root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
 
         root_child1.make_all_dirty();
 
@@ -549,6 +565,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(leaf3.is_dirty());
         REQUIRE(! leaf4.is_dirty());
         REQUIRE(! leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(root_child1.clade_has_dirt());
+        REQUIRE(! root_child2.clade_has_dirt());
+        REQUIRE(leaf1.clade_has_dirt());
+        REQUIRE(leaf2.clade_has_dirt());
+        REQUIRE(leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
 
         root.make_all_clean();
 
@@ -560,6 +584,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(! leaf3.is_dirty());
         REQUIRE(! leaf4.is_dirty());
         REQUIRE(! leaf5.is_dirty());
+        REQUIRE(! root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(! root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
 
         root_child2.make_all_dirty();
 
@@ -571,6 +603,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(! leaf3.is_dirty());
         REQUIRE(leaf4.is_dirty());
         REQUIRE(leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(leaf4.clade_has_dirt());
+        REQUIRE(leaf5.clade_has_dirt());
 
         root_child1.make_all_clean();
 
@@ -582,6 +622,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(! leaf3.is_dirty());
         REQUIRE(leaf4.is_dirty());
         REQUIRE(leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(leaf4.clade_has_dirt());
+        REQUIRE(leaf5.clade_has_dirt());
 
         root_child2.make_all_clean();
 
@@ -593,6 +641,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(! leaf3.is_dirty());
         REQUIRE(! leaf4.is_dirty());
         REQUIRE(! leaf5.is_dirty());
+        REQUIRE(! root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(! root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
 
         leaf1.make_all_dirty();
 
@@ -604,6 +660,14 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(! leaf3.is_dirty());
         REQUIRE(! leaf4.is_dirty());
         REQUIRE(! leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(root_child1.clade_has_dirt());
+        REQUIRE(! root_child2.clade_has_dirt());
+        REQUIRE(leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
 
         root.make_all_dirty();
 
@@ -615,6 +679,52 @@ TEST_CASE("Test simple tree cleaning Node", "[Node]") {
         REQUIRE(leaf3.is_dirty());
         REQUIRE(leaf4.is_dirty());
         REQUIRE(leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(root_child1.clade_has_dirt());
+        REQUIRE(root_child2.clade_has_dirt());
+        REQUIRE(leaf1.clade_has_dirt());
+        REQUIRE(leaf2.clade_has_dirt());
+        REQUIRE(leaf3.clade_has_dirt());
+        REQUIRE(leaf4.clade_has_dirt());
+        REQUIRE(leaf5.clade_has_dirt());
+
+        root.make_all_clean();
+
+        REQUIRE(! root.is_dirty());
+        REQUIRE(! root_child1.is_dirty());
+        REQUIRE(! root_child2.is_dirty());
+        REQUIRE(! leaf1.is_dirty());
+        REQUIRE(! leaf2.is_dirty());
+        REQUIRE(! leaf3.is_dirty());
+        REQUIRE(! leaf4.is_dirty());
+        REQUIRE(! leaf5.is_dirty());
+        REQUIRE(! root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(! root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
+
+        root_child2.make_dirty();
+
+        REQUIRE(! root.is_dirty());
+        REQUIRE(! root_child1.is_dirty());
+        REQUIRE(root_child2.is_dirty());
+        REQUIRE(! leaf1.is_dirty());
+        REQUIRE(! leaf2.is_dirty());
+        REQUIRE(! leaf3.is_dirty());
+        REQUIRE(! leaf4.is_dirty());
+        REQUIRE(! leaf5.is_dirty());
+        REQUIRE(root.clade_has_dirt());
+        REQUIRE(! root_child1.clade_has_dirt());
+        REQUIRE(root_child2.clade_has_dirt());
+        REQUIRE(! leaf1.clade_has_dirt());
+        REQUIRE(! leaf2.clade_has_dirt());
+        REQUIRE(! leaf3.clade_has_dirt());
+        REQUIRE(! leaf4.clade_has_dirt());
+        REQUIRE(! leaf5.clade_has_dirt());
     }
 }
 

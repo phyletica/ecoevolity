@@ -232,14 +232,12 @@ class BaseNode {
 
         void set_height(double height) {
             this->height_->set_value(height);
-            this->make_dirty();
-            for (auto child_iter: this->children_) {
-                child_iter->make_dirty();
-            }
+            this->make_all_dirty();
         }
 
         void set_height_parameter(PositiveRealParameter * height_parameter) {
             this->height_ = height_parameter;
+            this->make_all_dirty();
         }
 
         PositiveRealParameter * get_height_parameter() const {
@@ -248,10 +246,7 @@ class BaseNode {
 
         void update_height(double height) {
             this->height_->update_value(height);
-            this->make_dirty();
-            for (auto child_iter: this->children_) {
-                child_iter->make_dirty();
-            }
+            this->make_all_dirty();
         }
 
         void store_height() {
@@ -290,6 +285,18 @@ class BaseNode {
 
         const bool& is_dirty() const {
             return this->is_dirty_;
+        }
+
+        bool clade_has_dirt() const {
+            if (this->is_dirty()) {
+                return true;
+            }
+            for (auto child_iter: this->children_) {
+                if (child_iter->clade_has_dirt()) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         void make_dirty() {
@@ -341,9 +348,11 @@ class BaseNode {
 
         void set_node_height_prior(ContinuousProbabilityDistribution * prior) {
             this->height_->set_prior(prior);
+            this->make_all_dirty();
         }
         void set_all_node_height_priors(ContinuousProbabilityDistribution * prior) {
             this->height_->set_prior(prior);
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_node_height_priors(prior);
             }

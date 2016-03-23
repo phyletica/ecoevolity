@@ -248,10 +248,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         void set_coalescence_rate(double rate) {
             this->coalescence_rate_->set_value(rate);
-            this->make_dirty();
-            for (auto child_iter: this->children_) {
-                child_iter->make_dirty();
-            }
+            this->make_all_dirty();
         }
         void set_all_coalescence_rates(double rate) {
             this->coalescence_rate_->set_value(rate);
@@ -262,10 +259,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
         void update_coalescence_rate(double rate) {
             this->coalescence_rate_->update_value(rate);
-            this->make_dirty();
-            for (auto child_iter: this->children_) {
-                child_iter->make_dirty();
-            }
+            this->make_all_dirty();
         }
         void update_all_coalescence_rates(double rate) {
             this->coalescence_rate_->update_value(rate);
@@ -296,9 +290,11 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         void set_population_size_prior(ContinuousProbabilityDistribution * prior) {
             this->coalescence_rate_->set_prior(prior);
+            this->make_all_dirty();
         }
         void set_all_population_size_priors(ContinuousProbabilityDistribution * prior) {
             this->coalescence_rate_->set_prior(prior);
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_population_size_priors(prior);
             }
