@@ -438,6 +438,13 @@ double PopulationTree::compute_log_likelihood() {
     return log_likelihood;
 }
 
+double PopulationTree::get_log_likelihood_value() const {
+    return this->log_likelihood_.get_value();
+}
+double PopulationTree::get_stored_log_likelihood_value() const {
+    return this->log_likelihood_.get_stored_value();
+}
+
 void PopulationTree::fold_patterns() {
     this->data_.fold_patterns();
 }
@@ -517,12 +524,16 @@ void PopulationTree::set_coalescence_rate(double rate) {
 
 void PopulationTree::store_state() {
     this->store_likelihood();
+    this->store_prior_density();
     this->store_parameters();
 }
 void PopulationTree::store_likelihood() {
     this->log_likelihood_.store();
     this->all_green_pattern_likelihood_.store();
     this->all_red_pattern_likelihood_.store();
+}
+void PopulationTree::store_prior_density() {
+    this->log_prior_density_.store();
 }
 void PopulationTree::store_parameters() {
     this->store_u();
@@ -539,12 +550,16 @@ void PopulationTree::store_all_heights() {
 
 void PopulationTree::restore_state() {
     this->restore_likelihood();
+    this->restore_prior_density();
     this->restore_parameters();
 }
 void PopulationTree::restore_likelihood() {
     this->log_likelihood_.restore();
     this->all_green_pattern_likelihood_.restore();
     this->all_red_pattern_likelihood_.restore();
+}
+void PopulationTree::restore_prior_density() {
+    this->log_prior_density_.restore();
 }
 void PopulationTree::restore_parameters() {
     this->restore_u();
@@ -579,6 +594,35 @@ void PopulationTree::set_v_prior(ContinuousProbabilityDistribution * prior) {
     delete this->v_prior_;
     this->v_prior_ = prior;
     this->v_->set_prior(prior);
+}
+
+double PopulationTree::compute_log_prior_density() {
+    double d = 0.0;
+    d += this->compute_log_prior_density_of_mutation_rates();
+    d += this->compute_log_prior_density_of_node_heights();
+    d += this->compute_log_prior_density_of_coalescence_rates();
+    this->log_prior_density_.set_value(d);
+    return d;
+}
+double PopulationTree::compute_log_prior_density_of_mutation_rates() const {
+    double d = this->u_->relative_prior_ln_pdf();
+    if (! this->mutation_rates_are_constrained()) {
+        d += this->v_->relative_prior_ln_pdf();
+    }
+    return d;
+}
+double PopulationTree::compute_log_prior_density_of_node_heights() const {
+    return this->root_->calculate_ln_relative_node_height_prior_density();
+}
+double PopulationTree::compute_log_prior_density_of_coalescence_rates() const {
+    return this->root_->calculate_ln_relative_coalescence_rate_prior_density();
+}
+
+double PopulationTree::get_log_prior_density_value() const {
+    return this->log_prior_density_.get_value();
+}
+double PopulationTree::get_stored_log_prior_density_value() const {
+    return this->log_prior_density_.get_stored_value();
 }
 
 
@@ -631,4 +675,15 @@ void ComparisonPopulationTree::set_child_coalescence_rate_parameter(
 CoalescenceRateParameter * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
+}
+
+// Node eight sharing needs to be dealt with in next level up in
+// class hierarchy
+double ComparisonPopulationTree::compute_log_prior_density() {
+    double d = 0.0;
+    d += this->compute_log_prior_density_of_mutation_rates();
+    // d += this->compute_log_prior_density_of_node_heights();
+    d += this->compute_log_prior_density_of_coalescence_rates();
+    this->log_prior_density_.set_value(d);
+    return d;
 }

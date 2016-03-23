@@ -543,3 +543,68 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
         REQUIRE(l == Approx(-31.77866581319647));
     }
 }
+
+TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
+
+    SECTION("Testing constructor and prior calc") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        PopulationTree tree(nex_path, '_', true, true);
+
+        tree.set_root_height(0.1);
+        tree.set_coalescence_rate(100.0);
+        tree.set_u(10.0/19.0);
+        tree.set_v(10.0);
+
+        tree.set_node_height_prior(new ExponentialDistribution(100.0));
+        tree.set_population_size_prior(new GammaDistribution(10.0, 0.0001));
+        tree.set_u_prior(new ExponentialDistribution(10.0));
+        tree.set_v_prior(new ExponentialDistribution(0.1));
+
+        // height   -5.3948298140119091
+        // sizes     3 * -155.90663080917298
+        // u        -2.9605728017427961
+        // v        -3.3025850929940459
+        // total    -479.37788013626772
+        
+        REQUIRE(tree.compute_log_prior_density_of_node_heights() == Approx(-5.3948298140119091));
+        REQUIRE(tree.compute_log_prior_density_of_coalescence_rates() == Approx(-467.71989242751897));
+        REQUIRE(tree.compute_log_prior_density_of_mutation_rates() == Approx(-6.2631578947368425));
+
+        double d = tree.compute_log_prior_density();
+
+        REQUIRE(d == Approx(-479.37788013626772));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-479.37788013626772));
+
+
+        tree.store_prior_density();
+        tree.constrain_mutation_rates();
+
+        REQUIRE(tree.compute_log_prior_density_of_node_heights() == Approx(-5.3948298140119091));
+        REQUIRE(tree.compute_log_prior_density_of_coalescence_rates() == Approx(-467.71989242751897));
+        REQUIRE(tree.compute_log_prior_density_of_mutation_rates() == 0.0);
+
+        d = tree.compute_log_prior_density();
+
+        REQUIRE(d == Approx(-473.1147222415309));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-473.1147222415309));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-479.37788013626772));
+
+
+        tree.store_prior_density();
+        tree.constrain_coalescence_rates();
+
+        REQUIRE(tree.compute_log_prior_density_of_node_heights() == Approx(-5.3948298140119091));
+        REQUIRE(tree.compute_log_prior_density_of_coalescence_rates() == Approx(-155.90663080917298));
+        REQUIRE(tree.compute_log_prior_density_of_mutation_rates() == 0.0);
+
+        d = tree.compute_log_prior_density();
+
+        REQUIRE(d == Approx(-161.30146062318488));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-161.30146062318488));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-473.1147222415309));
+
+        tree.restore_prior_density();
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-473.1147222415309));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-473.1147222415309));
+    }
+}

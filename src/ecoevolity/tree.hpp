@@ -44,7 +44,7 @@ class PopulationTree {
         std::vector<double> pattern_likelihoods_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
-        // LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         bool likelihood_correction_was_calculated_ = false;
         ProbabilityDensity all_green_pattern_likelihood_ = ProbabilityDensity(0.0);
         ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
@@ -137,15 +137,25 @@ class PopulationTree {
 
         double compute_log_likelihood();
 
-        // double compute_log_prior_density();
+        double get_log_likelihood_value() const;
+        double get_stored_log_likelihood_value() const;
+
+        virtual double compute_log_prior_density();
+        double compute_log_prior_density_of_mutation_rates() const;
+        double compute_log_prior_density_of_node_heights() const;
+        double compute_log_prior_density_of_coalescence_rates() const;
+        double get_log_prior_density_value() const;
+        double get_stored_log_prior_density_value() const;
 
         void store_state();
         void store_likelihood();
+        void store_prior_density();
         void store_parameters();
         void store_all_coalescence_rates();
         virtual void store_all_heights();
         void restore_state();
         void restore_likelihood();
+        void restore_prior_density();
         void restore_parameters();
         void restore_all_coalescence_rates();
         virtual void restore_all_heights();
@@ -256,6 +266,8 @@ class ComparisonPopulationTree: public PopulationTree {
         void restore_all_heights() {
             this->restore_height();
         }
+
+        double compute_log_prior_density();
 };
 
 #endif
