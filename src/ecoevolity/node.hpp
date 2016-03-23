@@ -232,15 +232,18 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
         void set_coalescence_rate_parameter(CoalescenceRateParameter * rate) {
             this->coalescence_rate_ = rate;
+            this->make_all_dirty();
         }
         void set_all_coalescence_rate_parameters(CoalescenceRateParameter * rate) {
             this->coalescence_rate_ = rate;
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_coalescence_rate_parameters(rate);
             }
         }
         void set_all_coalescence_rate_parameters() {
             CoalescenceRateParameter * rate = this->coalescence_rate_;
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_coalescence_rate_parameters(rate);
             }
@@ -274,6 +277,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
         void restore_coalescence_rate() {
             this->coalescence_rate_->restore();
+            this->make_all_dirty();
         }
         void store_all_coalescence_rates() {
             this->coalescence_rate_->store();
@@ -283,6 +287,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
         void restore_all_coalescence_rates() {
             this->coalescence_rate_->restore();
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->restore_all_coalescence_rates();
             }
