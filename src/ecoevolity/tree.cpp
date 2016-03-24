@@ -516,6 +516,25 @@ void PopulationTree::restore_v() {
     this->make_dirty();
 }
 
+void PopulationTree::set_node_height_multiplier(double m) {
+    this->node_height_multiplier_->set_value(m);
+    this->make_dirty();
+}
+void PopulationTree::update_node_height_multiplier(double m) {
+    this->node_height_multiplier_->update_value(m);
+    this->make_dirty();
+}
+const double& PopulationTree::get_node_height_multiplier() const {
+    return this->node_height_multiplier_->get_value();
+}
+void PopulationTree::store_node_height_multiplier() {
+    this->node_height_multiplier_->store();
+}
+void PopulationTree::restore_node_height_multiplier() {
+    this->node_height_multiplier_->restore();
+    this->make_dirty();
+}
+
 void PopulationTree::set_u_parameter(PositiveRealParameter * u) {
     this->u_ = u;
     this->make_dirty();
@@ -529,6 +548,14 @@ PositiveRealParameter * PopulationTree::get_u_parameter() const {
 }
 PositiveRealParameter * PopulationTree::get_v_parameter() const {
     return this->v_;
+}
+
+void PopulationTree::set_node_height_multiplier_parameter(PositiveRealParameter * h) {
+    this->node_height_multiplier_ = h;
+    this->make_dirty();
+}
+PositiveRealParameter * PopulationTree::get_node_height_multiplier_parameter() const {
+    return this->node_height_multiplier_;
 }
 
 void PopulationTree::set_root_coalescence_rate(double rate) {
@@ -557,6 +584,7 @@ void PopulationTree::store_prior_density() {
 void PopulationTree::store_parameters() {
     this->store_u();
     this->store_v();
+    this->store_node_height_multiplier();
     this->store_all_coalescence_rates();
     this->store_all_heights();
 }
@@ -583,6 +611,7 @@ void PopulationTree::restore_prior_density() {
 void PopulationTree::restore_parameters() {
     this->restore_u();
     this->restore_v();
+    this->restore_node_height_multiplier();
     this->restore_all_coalescence_rates();
     this->restore_all_heights();
 }
@@ -599,27 +628,34 @@ void PopulationTree::set_node_height_prior(ContinuousProbabilityDistribution * p
 }
 
 void PopulationTree::set_population_size_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->population_size_prior_;
+    /* delete this->population_size_prior_; */
     this->population_size_prior_ = prior;
     this->root_->set_all_population_size_priors(prior);
 }
 
 void PopulationTree::set_u_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->u_prior_;
+    /* delete this->u_prior_; */
     this->u_prior_ = prior;
     this->u_->set_prior(prior);
     this->make_dirty();
 }
 void PopulationTree::set_v_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->v_prior_;
+    /* delete this->v_prior_; */
     this->v_prior_ = prior;
     this->v_->set_prior(prior);
+    this->make_dirty();
+}
+void PopulationTree::set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior) {
+    /* delete this->node_height_prior_; */
+    this->node_height_prior_ = prior;
+    this->node_height_multiplier_->set_prior(prior);
     this->make_dirty();
 }
 
 double PopulationTree::compute_log_prior_density() {
     double d = 0.0;
     d += this->compute_log_prior_density_of_mutation_rates();
+    d += this->compute_log_prior_density_of_node_height_multiplier();
     d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_coalescence_rates();
     this->log_prior_density_.set_value(d);
@@ -631,6 +667,9 @@ double PopulationTree::compute_log_prior_density_of_mutation_rates() const {
         d += this->v_->relative_prior_ln_pdf();
     }
     return d;
+}
+double PopulationTree::compute_log_prior_density_of_node_height_multiplier() const {
+    return this->node_height_multiplier_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_node_heights() const {
     return this->root_->calculate_ln_relative_node_height_prior_density();
@@ -718,6 +757,7 @@ CoalescenceRateParameter * ComparisonPopulationTree::get_child_coalescence_rate_
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
     d += this->compute_log_prior_density_of_mutation_rates();
+    d += this->compute_log_prior_density_of_node_height_multiplier();
     // d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_coalescence_rates();
     this->log_prior_density_.set_value(d);

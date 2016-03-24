@@ -133,11 +133,11 @@ class PopulationTree {
         void restore_u();
         void restore_v();
 
-        // void set_node_height_multiplier(double m);
-        // void update_node_height_multiplier(double m);
-        // const double& get_node_height_multiplier() const;
-        // void store_node_height_multiplier();
-        // void restore_node_height_multiplier();
+        void set_node_height_multiplier(double m);
+        void update_node_height_multiplier(double m);
+        const double& get_node_height_multiplier() const;
+        void store_node_height_multiplier();
+        void restore_node_height_multiplier();
 
         bool is_dirty() const;
         void make_dirty();
@@ -148,8 +148,8 @@ class PopulationTree {
         PositiveRealParameter * get_u_parameter() const;
         PositiveRealParameter * get_v_parameter() const;
 
-        // void set_node_height_multiplier_parameter(PositiveRealParameter * h);
-        // PositiveRealParameter * get_node_height_multiplier_parameter() const;
+        void set_node_height_multiplier_parameter(PositiveRealParameter * h);
+        PositiveRealParameter * get_node_height_multiplier_parameter() const;
 
         void set_root_coalescence_rate(double rate);
         void set_coalescence_rate(double rate);
@@ -173,6 +173,7 @@ class PopulationTree {
 
         virtual double compute_log_prior_density();
         double compute_log_prior_density_of_mutation_rates() const;
+        double compute_log_prior_density_of_node_height_multiplier() const;
         double compute_log_prior_density_of_node_heights() const;
         double compute_log_prior_density_of_coalescence_rates() const;
         double get_log_prior_density_value() const;
@@ -210,10 +211,10 @@ class PopulationTree {
             return this->v_prior_;
         }
 
-        // void set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior);
-        // ContinuousProbabilityDistribution * get_node_height_multiplier_prior() const {
-        //     return this->node_height_multiplier_prior_;
-        // }
+        void set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior);
+        ContinuousProbabilityDistribution * get_node_height_multiplier_prior() const {
+            return this->node_height_multiplier_prior_;
+        }
 
         void fix_coalescence_rates() {
             this->coalescence_rates_are_fixed_ = true;

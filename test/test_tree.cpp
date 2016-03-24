@@ -811,6 +811,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 1.0);
         REQUIRE(tree.get_root_coalescence_rate() == 10.0);
         REQUIRE(tree.get_child_coalescence_rate(0) == 10.0);
         REQUIRE(tree.get_child_coalescence_rate(1) == 10.0);
@@ -822,5 +823,330 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1935.1833649722266));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.5500949166799));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
+
+        tree.store_state();
+        tree.estimate_node_height_multiplier();
+        REQUIRE(! tree.node_height_multiplier_is_fixed());
+        tree.set_node_height_multiplier(1.0);
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+        tree.set_node_height_multiplier_prior(new GammaDistribution(10.0, 0.1));
+        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.get_child_coalescence_rate(0) == 10.0);
+        REQUIRE(tree.get_child_coalescence_rate(1) == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.9593415223676));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1935.1833649722266));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
+
+        tree.store_state();
+        tree.set_node_height_multiplier(2.0);
+        tree.set_height(0.1);
+        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 2.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.get_child_coalescence_rate(0) == 10.0);
+        REQUIRE(tree.get_child_coalescence_rate(1) == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1938.7210168973281));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.9593415223676));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
+
+        tree.restore_state();
+        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.get_child_coalescence_rate(0) == 10.0);
+        REQUIRE(tree.get_child_coalescence_rate(1) == 10.0);
+        REQUIRE(tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.9593415223676));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.9593415223676));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
+    }
+}
+
+TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[PopulationTree]") {
+
+    SECTION("Testing state manipulation") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, '_', true, true, false);
+
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        ContinuousProbabilityDistribution * height_prior = new ExponentialDistribution(10.0);
+        tree.set_node_height_prior(height_prior);
+
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        ContinuousProbabilityDistribution * size_prior = new GammaDistribution(10.0, 0.0001);
+        tree.set_population_size_prior(size_prior);
+
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        ContinuousProbabilityDistribution * rate_prior = new ExponentialDistribution(1.0);
+        tree.set_u_prior(rate_prior);
+
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        tree.set_v_prior(rate_prior);
+
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        tree.set_root_height(0.01);
+        REQUIRE(tree.get_root_height() == 0.01);
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        tree.set_coalescence_rate(10.0);
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        tree.set_u(1.0);
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+
+        tree.set_v(1.0);
+        REQUIRE(tree.is_dirty());
+
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 0);
+
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.3475098236859));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
+
+        tree.store_state();
+        tree.set_root_height(0.0);
+        REQUIRE(tree.get_root_height() == 0.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.2475098236855));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.3475098236859));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
+
+        tree.restore_state();
+        REQUIRE(tree.get_root_height() == 0.01);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.3475098236859));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.3475098236859));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
+
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.3475098236859));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.3475098236859));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
+
+        tree.store_state();
+        tree.set_root_height(0.0);
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 4);
+
+
+        tree.store_state();
+        tree.set_root_height(0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5807.2475098236855));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.2475098236855));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
+
+
+        tree.store_state();
+        tree.set_root_height(0.03);
+        tree.set_u(10.0);
+        tree.set_v(10.0/19.0);
+        REQUIRE(tree.get_root_height() == 0.03);
+        REQUIRE(tree.get_u() == 10.0);
+        REQUIRE(tree.get_v() == Approx(10.0/19.0));
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5814.073825613159));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5807.2475098236855));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
+
+
+        tree.store_state();
+        tree.set_u(10.0/19.0);
+        tree.set_v(10.0);
+        REQUIRE(tree.get_root_height() == 0.03);
+        REQUIRE(tree.get_v() == 10.0);
+        REQUIRE(tree.get_u() == Approx(10.0/19.0));
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5814.073825613159));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5814.073825613159));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
+
+
+        tree.store_state();
+        tree.set_coalescence_rate(111.1);
+        REQUIRE(tree.get_root_height() == 0.03);
+        REQUIRE(tree.get_v() == 10.0);
+        REQUIRE(tree.get_u() == Approx(10.0/19.0));
+        REQUIRE(tree.get_root_coalescence_rate() == 111.1);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-419.13966231229091));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5814.073825613159));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
+
+        tree.store_state();
+        tree.constrain_mutation_rates();
+        tree.set_coalescence_rate(10.0);
+        tree.set_root_height(0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.2475098236855));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-419.13966231229091));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
+
+
+        tree.store_state();
+        tree.fold_patterns();
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.2475098236855));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.2475098236855));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
+
+
+        tree.store_state();
+        tree.constrain_coalescence_rates();
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.8807798792325));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.2475098236855));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
+
+        tree.store_state();
+        tree.estimate_node_height_multiplier();
+        REQUIRE(! tree.node_height_multiplier_is_fixed());
+        tree.set_node_height_multiplier(1.0);
+        REQUIRE(tree.is_dirty());
+        tree.make_clean();
+        REQUIRE(! tree.is_dirty());
+        ContinuousProbabilityDistribution * m_prior = new GammaDistribution(10.0, 0.1);
+        tree.set_node_height_multiplier_prior(m_prior);
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.6567564293734));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.8807798792325));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
+
+        tree.store_state();
+        tree.set_node_height_multiplier(2.0);
+        tree.set_root_height(0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 2.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        tree.compute_log_likelihood_and_prior();
+        REQUIRE(! tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1937.418431804334));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.6567564293734));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
+
+        tree.restore_state();
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.get_v() == 1.0);
+        REQUIRE(tree.get_u() == 1.0);
+        REQUIRE(tree.get_node_height_multiplier() == 1.0);
+        REQUIRE(tree.get_root_coalescence_rate() == 10.0);
+        REQUIRE(tree.is_dirty());
+        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.6567564293734));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.6567564293734));
+        REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
     }
 }
