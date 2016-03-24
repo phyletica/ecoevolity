@@ -30,6 +30,8 @@
 class ComparisonPopulationTreeCollection {
     private:
         std::vector<ComparisonPopulationTree> trees_;
+        std::vector<PositiveRealParameter> events_;
+        std::vector<unsigned int> event_indices_;
 };
 
 #endif
