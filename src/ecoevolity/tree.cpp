@@ -159,7 +159,7 @@ void PopulationTree::compute_top_of_branch_partials(
             this->u_->get_value(),
             this->v_->get_value(),
             node->get_coalescence_rate(),
-            node->get_length(),
+            node->get_length() * this->node_height_multiplier_->get_value(),
             node->get_bottom_pattern_probs());
     node->copy_top_pattern_probs(m);
 }

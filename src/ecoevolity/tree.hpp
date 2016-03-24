@@ -37,10 +37,16 @@ class PopulationTree {
         MatrixExponentiator matrix_exponentiator;
         ContinuousProbabilityDistribution * u_prior_ = new ExponentialDistribution(1.0);
         ContinuousProbabilityDistribution * v_prior_ = new ExponentialDistribution(1.0);
+        ContinuousProbabilityDistribution * node_height_multiplier_prior_ = new GammaDistribution(100.0, 0.01);
         ContinuousProbabilityDistribution * node_height_prior_ = new ExponentialDistribution(100.0);
         ContinuousProbabilityDistribution * population_size_prior_ = new GammaDistribution(1.0, 0.001);
         PositiveRealParameter * u_ = new PositiveRealParameter(this->u_prior_, 1.0);
         PositiveRealParameter * v_ = new PositiveRealParameter(this->v_prior_, 1.0);
+        bool node_height_multiplier_is_fixed_ = true;
+        PositiveRealParameter * node_height_multiplier_ = new PositiveRealParameter(
+                this->node_height_multiplier_prior_,
+                1.0,
+                this->node_height_multiplier_is_fixed_);
         std::vector<double> pattern_likelihoods_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
@@ -127,6 +133,12 @@ class PopulationTree {
         void restore_u();
         void restore_v();
 
+        // void set_node_height_multiplier(double m);
+        // void update_node_height_multiplier(double m);
+        // const double& get_node_height_multiplier() const;
+        // void store_node_height_multiplier();
+        // void restore_node_height_multiplier();
+
         bool is_dirty() const;
         void make_dirty();
         void make_clean();
@@ -135,6 +147,9 @@ class PopulationTree {
         void set_v_parameter(PositiveRealParameter * v);
         PositiveRealParameter * get_u_parameter() const;
         PositiveRealParameter * get_v_parameter() const;
+
+        // void set_node_height_multiplier_parameter(PositiveRealParameter * h);
+        // PositiveRealParameter * get_node_height_multiplier_parameter() const;
 
         void set_root_coalescence_rate(double rate);
         void set_coalescence_rate(double rate);
@@ -195,6 +210,11 @@ class PopulationTree {
             return this->v_prior_;
         }
 
+        // void set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior);
+        // ContinuousProbabilityDistribution * get_node_height_multiplier_prior() const {
+        //     return this->node_height_multiplier_prior_;
+        // }
+
         void fix_coalescence_rates() {
             this->coalescence_rates_are_fixed_ = true;
             this->root_->fix_all_coalescence_rates();
@@ -222,6 +242,18 @@ class PopulationTree {
         }
         bool mutation_rates_are_fixed() const {
             return this->mutation_rates_are_fixed_;
+        }
+
+        void fix_node_height_multiplier() {
+            this->node_height_multiplier_is_fixed_ = true;
+            this->node_height_multiplier_->fix();
+        }
+        void estimate_node_height_multiplier() {
+            this->node_height_multiplier_is_fixed_ = false;
+            this->node_height_multiplier_->estimate();
+        }
+        bool node_height_multiplier_is_fixed() {
+            return this->node_height_multiplier_is_fixed_;
         }
 
         void constrain_coalescence_rates() {
