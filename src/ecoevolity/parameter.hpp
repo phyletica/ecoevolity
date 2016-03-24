@@ -48,8 +48,9 @@ class Variable {
                 this->min_ = -this->max_;
             }
         }
-        Variable(const VariableType& value) : Variable() {
+        Variable(const VariableType& value, bool fix = false) : Variable() {
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 
         virtual ~Variable() { }
@@ -59,6 +60,7 @@ class Variable {
             this->stored_value_ = p.stored_value_;
             this->max_ = p.max_;
             this->min_ = p.min_;
+            this->is_fixed_ = p.is_fixed_;
             return * this;
         }
 
@@ -129,8 +131,9 @@ class RealVariable: public Variable<double> {
 
     public:
         RealVariable() : BaseClass() { }
-        RealVariable(double value) : BaseClass() {
+        RealVariable(double value, bool fix = false) : BaseClass() {
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 };
 
@@ -146,11 +149,11 @@ class RealParameter: public RealVariable {
         {
             this->prior = prior_ptr;
         }
-        RealParameter(double value)
-                : RealVariable(value)
+        RealParameter(double value, bool fix = false)
+                : RealVariable(value, fix)
                 { }
-        RealParameter(ContinuousProbabilityDistribution * prior_ptr, double value)
-                : RealVariable(value)
+        RealParameter(ContinuousProbabilityDistribution * prior_ptr, double value, bool fix = false)
+                : RealVariable(value, fix)
         {
             this->prior = prior_ptr;
         }
@@ -240,9 +243,10 @@ class PositiveRealVariable: public RealVariable {
         PositiveRealVariable() : RealVariable() {
             this->set_min(0.0);
         }
-        PositiveRealVariable(double value) : RealVariable() {
+        PositiveRealVariable(double value, bool fix = false) : RealVariable() {
             this->set_min(0.0);
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 };
 
@@ -257,17 +261,19 @@ class PositiveRealParameter: public RealParameter {
         {
             this->set_min(0.0);
         }
-        PositiveRealParameter(double value)
+        PositiveRealParameter(double value, bool fix = false)
                 : RealParameter()
         {
             this->set_min(0.0);
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
-        PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr, double value)
+        PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr, double value, bool fix = false)
                 : RealParameter(prior_ptr)
         {
             this->set_min(0.0);
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 };
 
@@ -276,11 +282,12 @@ class CoalescenceRateParameter: public PositiveRealParameter {
         CoalescenceRateParameter() : PositiveRealParameter() { }
         CoalescenceRateParameter(ContinuousProbabilityDistribution * prior_ptr)
                 : PositiveRealParameter(prior_ptr) { }
-        CoalescenceRateParameter(double value)
-                : PositiveRealParameter(value) { }
+        CoalescenceRateParameter(double value, bool fix = false)
+                : PositiveRealParameter(value, fix) { }
         CoalescenceRateParameter(ContinuousProbabilityDistribution * prior_ptr,
-                double value)
-                : PositiveRealParameter(prior_ptr, value) { }
+                double value,
+                bool fix = false)
+                : PositiveRealParameter(prior_ptr, value, fix) { }
 
         double get_population_size_from_rate(double coalescence_rate) const {
             if (coalescence_rate == 0.0) {
@@ -353,8 +360,9 @@ class IntVariable: public Variable<int> {
 
     public:
         IntVariable() : BaseClass() { }
-        IntVariable(int value) : BaseClass() {
+        IntVariable(int value, bool fix = false) : BaseClass() {
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 };
 
@@ -363,16 +371,17 @@ class Probability: public RealVariable {
         Probability() : RealVariable() {
             this->set_bounds(0.0, 1.0);
         }
-        Probability(double value) : RealVariable() {
+        Probability(double value, bool fix = false) : RealVariable() {
             this->set_bounds(0.0, 1.0);
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 };
 
 class ProbabilityDensity: public PositiveRealVariable {
     public:
         ProbabilityDensity() : PositiveRealVariable() {}
-        ProbabilityDensity(double value) : PositiveRealVariable(value) {}
+        ProbabilityDensity(double value, bool fix = false) : PositiveRealVariable(value, fix) {}
 };
 
 class LogProbability: public RealVariable {
@@ -380,16 +389,17 @@ class LogProbability: public RealVariable {
         LogProbability() : RealVariable() {
             this->set_max(0.0);
         }
-        LogProbability(double value) : RealVariable() {
+        LogProbability(double value, bool fix = false) : RealVariable() {
             this->set_max(0.0);
             this->set_value(value);
+            this->is_fixed_ = fix;
         }
 };
 
 class LogProbabilityDensity: public RealVariable {
     public:
         LogProbabilityDensity() : RealVariable() {}
-        LogProbabilityDensity(double value) : RealVariable(value) {}
+        LogProbabilityDensity(double value, bool fix = false) : RealVariable(value, fix) {}
 };
 
 #endif
