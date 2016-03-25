@@ -894,28 +894,25 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        ContinuousProbabilityDistribution * height_prior = new ExponentialDistribution(10.0);
-        tree.set_node_height_prior(height_prior);
+        tree.set_node_height_prior(new ExponentialDistribution(10.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        ContinuousProbabilityDistribution * size_prior = new GammaDistribution(10.0, 0.0001);
-        tree.set_population_size_prior(size_prior);
+        tree.set_population_size_prior(new GammaDistribution(10.0, 0.0001));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        ContinuousProbabilityDistribution * rate_prior = new ExponentialDistribution(1.0);
-        tree.set_u_prior(rate_prior);
+        tree.set_u_prior(new ExponentialDistribution(1.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_v_prior(rate_prior);
+        tree.set_v_prior(new ExponentialDistribution(1.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
@@ -1103,8 +1100,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
-        ContinuousProbabilityDistribution * m_prior = new GammaDistribution(10.0, 0.1);
-        tree.set_node_height_multiplier_prior(m_prior);
+        tree.set_node_height_multiplier_prior(new GammaDistribution(10.0, 0.1));
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);

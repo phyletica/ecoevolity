@@ -628,26 +628,26 @@ void PopulationTree::set_node_height_prior(ContinuousProbabilityDistribution * p
 }
 
 void PopulationTree::set_population_size_prior(ContinuousProbabilityDistribution * prior) {
-    /* delete this->population_size_prior_; */
+    delete this->population_size_prior_;
     this->population_size_prior_ = prior;
     this->root_->set_all_population_size_priors(prior);
 }
 
 void PopulationTree::set_u_prior(ContinuousProbabilityDistribution * prior) {
-    /* delete this->u_prior_; */
+    delete this->u_prior_;
     this->u_prior_ = prior;
     this->u_->set_prior(prior);
     this->make_dirty();
 }
 void PopulationTree::set_v_prior(ContinuousProbabilityDistribution * prior) {
-    /* delete this->v_prior_; */
+    delete this->v_prior_;
     this->v_prior_ = prior;
     this->v_->set_prior(prior);
     this->make_dirty();
 }
 void PopulationTree::set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior) {
-    /* delete this->node_height_prior_; */
-    this->node_height_prior_ = prior;
+    delete this->node_height_multiplier_prior_;
+    this->node_height_multiplier_prior_ = prior;
     this->node_height_multiplier_->set_prior(prior);
     this->make_dirty();
 }
