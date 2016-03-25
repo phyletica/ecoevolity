@@ -105,9 +105,7 @@ class OperatorSchedule {
 class Operator {
     public:
         Operator() { }
-        virtual ~Operator() {
-            delete this->operator_schedule_;
-        }
+        virtual ~Operator() { }
 
         /**
          * @brief   Propose a new state.
