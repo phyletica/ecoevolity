@@ -101,7 +101,7 @@ class PopulationTree {
                 const bool genotypes_are_diploid = true,
                 const bool markers_are_dominant = false,
                 const bool validate = true);
-        ~PopulationTree () { }
+        ~PopulationTree () { delete this->root_; }
 
         void init(
                 const std::string path, 
