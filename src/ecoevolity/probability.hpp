@@ -34,6 +34,9 @@ class ContinuousProbabilityDistribution {
     public:
         ContinuousProbabilityDistribution() { }
         virtual ~ContinuousProbabilityDistribution() { }
+        ContinuousProbabilityDistribution& operator=(const ContinuousProbabilityDistribution& other) {
+            return * this;
+        }
 
         double ln_gamma_function(double x) const {
             return std::lgamma(x);
@@ -61,6 +64,9 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
     public:
         ImproperUniformDistribution() { }
         ~ImproperUniformDistribution() { }
+        ImproperUniformDistribution& operator=(const ImproperUniformDistribution& other) {
+            return * this;
+        }
 
         std::string get_name() const {
             return "uniform(-inf, +inf)";
@@ -96,6 +102,9 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
     public:
         ImproperPositiveUniformDistribution() { }
         ~ImproperPositiveUniformDistribution() { }
+        ImproperPositiveUniformDistribution& operator=(const ImproperPositiveUniformDistribution& other) {
+            return * this;
+        }
 
         std::string get_name() const {
             return "uniform(0, +inf)";
