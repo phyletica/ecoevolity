@@ -76,7 +76,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
     }
 
     SECTION("Testing prior") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         RealParameter p = RealParameter(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -141,9 +141,8 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
+        std::shared_ptr<UniformDistribution> u2 = std::make_shared<UniformDistribution>(0.0, 1.0);
         p.set_prior(u2);
-        delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
 
@@ -206,9 +205,8 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
         // Test more derived prior
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         p.set_prior(f);
-        delete u2;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
 
@@ -276,7 +274,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
 
     SECTION("Testing derived exp prior") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         RealParameter p = RealParameter(f);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -344,7 +342,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
     }
 
     SECTION("Testing prior and value") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         RealParameter p = RealParameter(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
@@ -412,9 +410,8 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
+        std::shared_ptr<UniformDistribution> u2 = std::make_shared<UniformDistribution>(0.0, 1.0);
         p.set_prior(u2);
-        delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.get_value() == Approx(20.1));
@@ -481,9 +478,8 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
         // Test more derived prior
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         p.set_prior(f);
-        delete u2;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
 
@@ -620,7 +616,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
     }
 
     SECTION("Testing prior") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         PositiveRealParameter p = PositiveRealParameter(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
@@ -685,9 +681,8 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
+        std::shared_ptr<UniformDistribution> u2 = std::make_shared<UniformDistribution>(0.0, 1.0);
         p.set_prior(u2);
-        delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
 
@@ -748,9 +743,8 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
         // Test more derived prior
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         p.set_prior(f);
-        delete u2;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
 
@@ -816,7 +810,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
     SECTION("Testing derived exp prior") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         PositiveRealParameter p = PositiveRealParameter(f);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
@@ -882,7 +876,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
     }
 
     SECTION("Testing prior and value") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         PositiveRealParameter p = PositiveRealParameter(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
@@ -950,9 +944,8 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
+        std::shared_ptr<UniformDistribution> u2 = std::make_shared<UniformDistribution>(0.0, 1.0);
         p.set_prior(u2);
-        delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
         REQUIRE(p.get_value() == Approx(20.1));
@@ -1017,9 +1010,8 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
         // Test more derived prior
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         p.set_prior(f);
-        delete u2;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
 
@@ -1412,7 +1404,7 @@ TEST_CASE("Testing CoalescenceRateParameter value constructor", "[CoalescenceRat
 
 TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]") {
     SECTION("Testing prior") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         CoalescenceRateParameter p = CoalescenceRateParameter(u);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
@@ -1477,9 +1469,8 @@ TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]"
         REQUIRE(mn == Approx(p.get_prior_min()).epsilon(0.001));
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
-        UniformDistribution * u2 = new UniformDistribution(0.0, 1.0);
+        std::shared_ptr<UniformDistribution> u2 = std::make_shared<UniformDistribution>(0.0, 1.0);
         p.set_prior(u2);
-        delete u;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
 
@@ -1540,9 +1531,8 @@ TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]"
         REQUIRE(mx == Approx(p.get_prior_max()).epsilon(0.001));
 
         // Test more derived prior
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         p.set_prior(f);
-        delete u2;
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
 
@@ -1610,7 +1600,7 @@ TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]"
 TEST_CASE("Testing CoalescenceRateParameter derived prior", "[CoalescenceRateParameter]") {
     SECTION("Testing derived exp prior") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        ExponentialDistribution * f = new ExponentialDistribution(5.0);
+        std::shared_ptr<ExponentialDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
         CoalescenceRateParameter p = CoalescenceRateParameter(f);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
@@ -1679,7 +1669,7 @@ TEST_CASE("Testing CoalescenceRateParameter derived prior", "[CoalescenceRatePar
 
 TEST_CASE("Testing CoalescenceRateParameter prior and value", "[CoalescenceRateParameter]") {
     SECTION("Testing prior and value") {
-        UniformDistribution * u = new UniformDistribution(10.0, 20.0);
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         CoalescenceRateParameter p = CoalescenceRateParameter(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);

@@ -20,6 +20,8 @@
 #ifndef ECOEVOLITY_PARAMETER_HPP
 #define ECOEVOLITY_PARAMETER_HPP
 
+#include <memory>
+
 #include "error.hpp"
 #include "assert.hpp"
 #include "rng.hpp"
@@ -148,12 +150,12 @@ class RealVariable: public Variable<double> {
 
 class RealParameter: public RealVariable {
     public:
-        ContinuousProbabilityDistribution * prior = NULL;
+        std::shared_ptr<ContinuousProbabilityDistribution> prior;
 
         RealParameter()
                 : RealVariable()
                 { }
-        RealParameter(ContinuousProbabilityDistribution * prior_ptr)
+        RealParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr)
                 : RealVariable()
         {
             this->prior = prior_ptr;
@@ -161,7 +163,7 @@ class RealParameter: public RealVariable {
         RealParameter(double value, bool fix = false)
                 : RealVariable(value, fix)
                 { }
-        RealParameter(ContinuousProbabilityDistribution * prior_ptr, double value, bool fix = false)
+        RealParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr, double value, bool fix = false)
                 : RealVariable(value, fix)
         {
             this->prior = prior_ptr;
@@ -177,7 +179,7 @@ class RealParameter: public RealVariable {
             return * this;
         }
 
-        virtual void set_prior(ContinuousProbabilityDistribution * prior_ptr) {
+        virtual void set_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr) {
             this->prior = prior_ptr;
         }
         virtual void check_prior() const {
@@ -283,7 +285,7 @@ class PositiveRealParameter: public RealParameter {
         {
             this->set_min(0.0);
         }
-        PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr)
+        PositiveRealParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr)
                 : RealParameter(prior_ptr)
         {
             this->set_min(0.0);
@@ -295,7 +297,7 @@ class PositiveRealParameter: public RealParameter {
             this->set_value(value);
             this->is_fixed_ = fix;
         }
-        PositiveRealParameter(ContinuousProbabilityDistribution * prior_ptr, double value, bool fix = false)
+        PositiveRealParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr, double value, bool fix = false)
                 : RealParameter(prior_ptr)
         {
             this->set_min(0.0);
@@ -317,11 +319,11 @@ class PositiveRealParameter: public RealParameter {
 class CoalescenceRateParameter: public PositiveRealParameter {
     public:
         CoalescenceRateParameter() : PositiveRealParameter() { }
-        CoalescenceRateParameter(ContinuousProbabilityDistribution * prior_ptr)
+        CoalescenceRateParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr)
                 : PositiveRealParameter(prior_ptr) { }
         CoalescenceRateParameter(double value, bool fix = false)
                 : PositiveRealParameter(value, fix) { }
-        CoalescenceRateParameter(ContinuousProbabilityDistribution * prior_ptr,
+        CoalescenceRateParameter(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr,
                 double value,
                 bool fix = false)
                 : PositiveRealParameter(prior_ptr, value, fix) { }

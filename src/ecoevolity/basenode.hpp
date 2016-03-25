@@ -24,6 +24,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "matrix.hpp"
 #include "parameter.hpp"
@@ -48,12 +49,12 @@ class BaseNode {
         std::vector< DerivedNodeT * > children_;
         DerivedNodeT * parent_ = 0;
         std::string label_ = "";
-        PositiveRealParameter * height_ = new PositiveRealParameter(0.0);
+        std::shared_ptr<PositiveRealParameter> height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
 
         void add_ln_relative_node_height_prior_density(
                 double& density,
-                std::vector<PositiveRealParameter *>& parameters) const {
+                std::vector< std::shared_ptr<PositiveRealParameter> >& parameters) const {
             bool parameter_found = false;
             for (auto parameter_iter : parameters) {
                 if (parameter_iter == this->height_) {
@@ -235,12 +236,12 @@ class BaseNode {
             this->make_all_dirty();
         }
 
-        void set_height_parameter(PositiveRealParameter * height_parameter) {
+        void set_height_parameter(std::shared_ptr<PositiveRealParameter> height_parameter) {
             this->height_ = height_parameter;
             this->make_all_dirty();
         }
 
-        PositiveRealParameter * get_height_parameter() const {
+        std::shared_ptr<PositiveRealParameter> get_height_parameter() const {
             return this->height_;
         }
 
@@ -348,11 +349,11 @@ class BaseNode {
             return n;
         }
 
-        void set_node_height_prior(ContinuousProbabilityDistribution * prior) {
+        void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->height_->set_prior(prior);
             this->make_all_dirty();
         }
-        void set_all_node_height_priors(ContinuousProbabilityDistribution * prior) {
+        void set_all_node_height_priors(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->height_->set_prior(prior);
             this->make_dirty();
             for (auto child_iter: this->children_) {
@@ -381,7 +382,7 @@ class BaseNode {
 
         double calculate_ln_relative_node_height_prior_density() const {
             double d = 0.0;
-            std::vector<PositiveRealParameter *> parameters(this->get_node_count());
+            std::vector< std::shared_ptr<PositiveRealParameter> > parameters(this->get_node_count());
             this->add_ln_relative_node_height_prior_density(d, parameters);
             return d;
         }

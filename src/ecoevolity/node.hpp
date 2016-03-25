@@ -20,6 +20,8 @@
 #ifndef ECOEVOLITY_NODE_HPP
 #define ECOEVOLITY_NODE_HPP
 
+#include <memory>
+
 #include "basenode.hpp"
 #include "parameter.hpp"
 
@@ -50,11 +52,11 @@ class PopulationNode: public BaseNode<PopulationNode>{
         typedef BaseNode<PopulationNode> BaseClass;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
-        CoalescenceRateParameter * coalescence_rate_ = new CoalescenceRateParameter(10.0);
+        std::shared_ptr<CoalescenceRateParameter> coalescence_rate_ = std::make_shared<CoalescenceRateParameter>(10.0);
 
         void add_ln_relative_coalescence_rate_prior_density(
                 double& density,
-                std::vector<CoalescenceRateParameter *>& parameters) const {
+                std::vector< std::shared_ptr<CoalescenceRateParameter> >& parameters) const {
             bool parameter_found = false;
             for (auto parameter_iter : parameters) {
                 if (parameter_iter == this->coalescence_rate_) {
@@ -227,14 +229,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
         const double& get_coalescence_rate() const {
             return this->coalescence_rate_->get_value();
         }
-        CoalescenceRateParameter * get_coalescence_rate_parameter() const {
+        std::shared_ptr<CoalescenceRateParameter> get_coalescence_rate_parameter() const {
             return this->coalescence_rate_;
         }
-        void set_coalescence_rate_parameter(CoalescenceRateParameter * rate) {
+        void set_coalescence_rate_parameter(std::shared_ptr<CoalescenceRateParameter> rate) {
             this->coalescence_rate_ = rate;
             this->make_all_dirty();
         }
-        void set_all_coalescence_rate_parameters(CoalescenceRateParameter * rate) {
+        void set_all_coalescence_rate_parameters(std::shared_ptr<CoalescenceRateParameter> rate) {
             this->coalescence_rate_ = rate;
             this->make_dirty();
             for (auto child_iter: this->children_) {
@@ -242,7 +244,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
         void set_all_coalescence_rate_parameters() {
-            CoalescenceRateParameter * rate = this->coalescence_rate_;
+            std::shared_ptr<CoalescenceRateParameter> rate = this->coalescence_rate_;
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_coalescence_rate_parameters(rate);
@@ -293,11 +295,11 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
-        void set_population_size_prior(ContinuousProbabilityDistribution * prior) {
+        void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->coalescence_rate_->set_prior(prior);
             this->make_all_dirty();
         }
-        void set_all_population_size_priors(ContinuousProbabilityDistribution * prior) {
+        void set_all_population_size_priors(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->coalescence_rate_->set_prior(prior);
             this->make_dirty();
             for (auto child_iter: this->children_) {
@@ -326,7 +328,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         double calculate_ln_relative_coalescence_rate_prior_density() const {
             double d = 0.0;
-            std::vector<CoalescenceRateParameter *> parameters(this->get_node_count());
+            std::vector< std::shared_ptr<CoalescenceRateParameter> > parameters(this->get_node_count());
             this->add_ln_relative_coalescence_rate_prior_density(d, parameters);
             return d;
         }

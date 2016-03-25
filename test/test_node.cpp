@@ -1489,7 +1489,7 @@ TEST_CASE("Test node height prior", "[Node]") {
         leaf4.add_parent(&root_child2);
         leaf5.add_parent(&root_child2);
 
-        ContinuousProbabilityDistribution * prior = new GammaDistribution(1.0, 1.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(1.0, 1.0);
         root.set_all_node_height_priors(prior);
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
 
@@ -1502,7 +1502,7 @@ TEST_CASE("Test node height prior", "[Node]") {
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
 
 
-        GammaDistribution * prior2 = new GammaDistribution(1.0, 0.01);
+        std::shared_ptr<GammaDistribution> prior2 = std::make_shared<GammaDistribution>(1.0, 0.01);
         root.set_all_node_height_priors(prior2);
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-196.18448944203573));
 
@@ -1513,9 +1513,6 @@ TEST_CASE("Test node height prior", "[Node]") {
         leaf5.estimate_node_height();
 
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-173.15863851209528));
-
-        delete prior;
-        delete prior2;
     }
 }
 
@@ -1541,7 +1538,7 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         leaf4.add_parent(&root_child2);
         leaf5.add_parent(&root_child2);
 
-        ContinuousProbabilityDistribution * prior = new GammaDistribution(1.0, 1.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(1.0, 1.0);
         root.set_all_node_height_priors(prior);
         root.set_all_population_size_priors(prior);
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
@@ -1557,7 +1554,7 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(-0.2*8));
 
 
-        GammaDistribution * prior2 = new GammaDistribution(1.0, 0.01);
+        std::shared_ptr<GammaDistribution> prior2 = std::make_shared<GammaDistribution>(1.0, 0.01);
         root.set_all_node_height_priors(prior2);
         root.set_all_population_size_priors(prior2);
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-196.18448944203573));
@@ -1591,8 +1588,5 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
 
         REQUIRE(root.calculate_ln_relative_node_height_prior_density() == Approx(-120.78965962802383));
         REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909));
-
-        delete prior;
-        delete prior2;
     }
 }

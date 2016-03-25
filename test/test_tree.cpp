@@ -538,10 +538,10 @@ TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
         tree.set_u(10.0/19.0);
         tree.set_v(10.0);
 
-        tree.set_node_height_prior(new ExponentialDistribution(100.0));
-        tree.set_population_size_prior(new GammaDistribution(10.0, 0.0001));
-        tree.set_u_prior(new ExponentialDistribution(10.0));
-        tree.set_v_prior(new ExponentialDistribution(0.1));
+        tree.set_node_height_prior(std::make_shared<ExponentialDistribution>(100.0));
+        tree.set_population_size_prior(std::make_shared<GammaDistribution>(10.0, 0.0001));
+        tree.set_u_prior(std::make_shared<ExponentialDistribution>(10.0));
+        tree.set_v_prior(std::make_shared<ExponentialDistribution>(0.1));
 
         // height   -5.3948298140119091
         // sizes     3 * -155.90663080917298
@@ -605,25 +605,25 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_node_height_prior(new ExponentialDistribution(10.0));
+        tree.set_node_height_prior(std::make_shared<ExponentialDistribution>(10.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_population_size_prior(new GammaDistribution(10.0, 0.0001));
+        tree.set_population_size_prior(std::make_shared<GammaDistribution>(10.0, 0.0001));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_u_prior(new ExponentialDistribution(1.0));
+        tree.set_u_prior(std::make_shared<ExponentialDistribution>(1.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_v_prior(new ExponentialDistribution(1.0));
+        tree.set_v_prior(std::make_shared<ExponentialDistribution>(1.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
@@ -831,7 +831,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
-        tree.set_node_height_multiplier_prior(new GammaDistribution(10.0, 0.1));
+        tree.set_node_height_multiplier_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
         REQUIRE(tree.get_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
@@ -894,25 +894,25 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_node_height_prior(new ExponentialDistribution(10.0));
+        tree.set_node_height_prior(std::make_shared<ExponentialDistribution>(10.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_population_size_prior(new GammaDistribution(10.0, 0.0001));
+        tree.set_population_size_prior(std::make_shared<GammaDistribution>(10.0, 0.0001));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_u_prior(new ExponentialDistribution(1.0));
+        tree.set_u_prior(std::make_shared<ExponentialDistribution>(1.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_v_prior(new ExponentialDistribution(1.0));
+        tree.set_v_prior(std::make_shared<ExponentialDistribution>(1.0));
 
         REQUIRE(tree.is_dirty());
         tree.make_clean();
@@ -1100,7 +1100,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
-        tree.set_node_height_multiplier_prior(new GammaDistribution(10.0, 0.1));
+        tree.set_node_height_multiplier_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);

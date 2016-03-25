@@ -21,6 +21,7 @@
 #define ECOEVOLITY_TREE_HPP
 
 #include <algorithm>
+#include <memory>
 
 #include "data.hpp"
 #include "node.hpp"
@@ -35,15 +36,15 @@ class PopulationTree {
         BiallelicData data_;
         PopulationNode * root_;
         MatrixExponentiator matrix_exponentiator;
-        ContinuousProbabilityDistribution * u_prior_ = new ExponentialDistribution(1.0);
-        ContinuousProbabilityDistribution * v_prior_ = new ExponentialDistribution(1.0);
-        ContinuousProbabilityDistribution * node_height_multiplier_prior_ = new GammaDistribution(100.0, 0.01);
-        ContinuousProbabilityDistribution * node_height_prior_ = new ExponentialDistribution(100.0);
-        ContinuousProbabilityDistribution * population_size_prior_ = new GammaDistribution(1.0, 0.001);
-        PositiveRealParameter * u_ = new PositiveRealParameter(this->u_prior_, 1.0);
-        PositiveRealParameter * v_ = new PositiveRealParameter(this->v_prior_, 1.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> u_prior_ = std::make_shared<ExponentialDistribution>(1.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> v_prior_ = std::make_shared<ExponentialDistribution>(1.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> node_height_multiplier_prior_ = std::make_shared<GammaDistribution>(100.0, 0.01);
+        std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
+        std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(this->u_prior_, 1.0);
+        std::shared_ptr<PositiveRealParameter> v_ = std::make_shared<PositiveRealParameter>(this->v_prior_, 1.0);
         bool node_height_multiplier_is_fixed_ = true;
-        PositiveRealParameter * node_height_multiplier_ = new PositiveRealParameter(
+        std::shared_ptr<PositiveRealParameter> node_height_multiplier_ = std::make_shared<PositiveRealParameter>(
                 this->node_height_multiplier_prior_,
                 1.0,
                 this->node_height_multiplier_is_fixed_);
@@ -119,8 +120,8 @@ class PopulationTree {
         void store_root_height();
         void restore_root_height();
 
-        void set_root_height_parameter(PositiveRealParameter * h);
-        PositiveRealParameter * get_root_height_parameter() const;
+        void set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h);
+        std::shared_ptr<PositiveRealParameter> get_root_height_parameter() const;
 
         void set_u(double u);
         void set_v(double v);
@@ -143,13 +144,13 @@ class PopulationTree {
         void make_dirty();
         void make_clean();
 
-        void set_u_parameter(PositiveRealParameter * u);
-        void set_v_parameter(PositiveRealParameter * v);
-        PositiveRealParameter * get_u_parameter() const;
-        PositiveRealParameter * get_v_parameter() const;
+        void set_u_parameter(std::shared_ptr<PositiveRealParameter> u);
+        void set_v_parameter(std::shared_ptr<PositiveRealParameter> v);
+        std::shared_ptr<PositiveRealParameter> get_u_parameter() const;
+        std::shared_ptr<PositiveRealParameter> get_v_parameter() const;
 
-        void set_node_height_multiplier_parameter(PositiveRealParameter * h);
-        PositiveRealParameter * get_node_height_multiplier_parameter() const;
+        void set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h);
+        std::shared_ptr<PositiveRealParameter> get_node_height_multiplier_parameter() const;
 
         void set_root_coalescence_rate(double rate);
         void set_coalescence_rate(double rate);
@@ -192,27 +193,27 @@ class PopulationTree {
         void restore_all_coalescence_rates();
         virtual void restore_all_heights();
 
-        void set_node_height_prior(ContinuousProbabilityDistribution * prior);
-        ContinuousProbabilityDistribution * get_node_height_prior() const {
+        void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_prior() const {
             return this->node_height_prior_;
         }
 
-        void set_population_size_prior(ContinuousProbabilityDistribution * prior);
-        ContinuousProbabilityDistribution * get_population_size_prior() const {
+        void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_population_size_prior() const {
             return this->population_size_prior_;
         }
 
-        void set_u_prior(ContinuousProbabilityDistribution * prior);
-        void set_v_prior(ContinuousProbabilityDistribution * prior);
-        ContinuousProbabilityDistribution * get_u_prior() const {
+        void set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        void set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_u_prior() const {
             return this->u_prior_;
         }
-        ContinuousProbabilityDistribution * get_v_prior() const {
+        std::shared_ptr<ContinuousProbabilityDistribution> get_v_prior() const {
             return this->v_prior_;
         }
 
-        void set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior);
-        ContinuousProbabilityDistribution * get_node_height_multiplier_prior() const {
+        void set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_multiplier_prior() const {
             return this->node_height_multiplier_prior_;
         }
 
@@ -298,8 +299,8 @@ class ComparisonPopulationTree: public PopulationTree {
         void store_child_coalescence_rate(unsigned int child_index);
         void restore_child_coalescence_rate(unsigned int child_index);
         void set_child_coalescence_rate_parameter(unsigned int child_index,
-                CoalescenceRateParameter * r);
-        CoalescenceRateParameter * get_child_coalescence_rate_parameter(
+                std::shared_ptr<CoalescenceRateParameter> r);
+        std::shared_ptr<CoalescenceRateParameter> get_child_coalescence_rate_parameter(
                 unsigned int child_index) const;
 
         void set_height(double height) {this->set_root_height(height);}
@@ -307,10 +308,10 @@ class ComparisonPopulationTree: public PopulationTree {
         const double& get_height() const {return this->get_root_height();}
         void store_height() {this->store_root_height();}
         void restore_height() {this->restore_root_height();}
-        void set_height_parameter(PositiveRealParameter * h) {
+        void set_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
             this->set_root_height_parameter(h);
         }
-        PositiveRealParameter * get_height_parameter() const {
+        std::shared_ptr<PositiveRealParameter> get_height_parameter() const {
             return this->get_root_height_parameter();
         }
 

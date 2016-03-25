@@ -472,10 +472,10 @@ void PopulationTree::store_root_height() {
 void PopulationTree::restore_root_height() {
     this->root_->restore_height();
 }
-void PopulationTree::set_root_height_parameter(PositiveRealParameter * h) {
+void PopulationTree::set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
     this->root_->set_height_parameter(h);
 }
-PositiveRealParameter * PopulationTree::get_root_height_parameter() const {
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter() const {
     return this->root_->get_height_parameter();
 }
 
@@ -535,26 +535,26 @@ void PopulationTree::restore_node_height_multiplier() {
     this->make_dirty();
 }
 
-void PopulationTree::set_u_parameter(PositiveRealParameter * u) {
+void PopulationTree::set_u_parameter(std::shared_ptr<PositiveRealParameter> u) {
     this->u_ = u;
     this->make_dirty();
 }
-void PopulationTree::set_v_parameter(PositiveRealParameter * v) {
+void PopulationTree::set_v_parameter(std::shared_ptr<PositiveRealParameter> v) {
     this->v_ = v;
     this->make_dirty();
 }
-PositiveRealParameter * PopulationTree::get_u_parameter() const {
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
 }
-PositiveRealParameter * PopulationTree::get_v_parameter() const {
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_v_parameter() const {
     return this->v_;
 }
 
-void PopulationTree::set_node_height_multiplier_parameter(PositiveRealParameter * h) {
+void PopulationTree::set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
     this->node_height_multiplier_ = h;
     this->make_dirty();
 }
-PositiveRealParameter * PopulationTree::get_node_height_multiplier_parameter() const {
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_node_height_multiplier_parameter() const {
     return this->node_height_multiplier_;
 }
 
@@ -622,31 +622,27 @@ void PopulationTree::restore_all_heights() {
     this->root_->restore_all_heights();
 }
 
-void PopulationTree::set_node_height_prior(ContinuousProbabilityDistribution * prior) {
+void PopulationTree::set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->node_height_prior_ = prior;
     this->root_->set_all_node_height_priors(prior);
 }
 
-void PopulationTree::set_population_size_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->population_size_prior_;
+void PopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->population_size_prior_ = prior;
     this->root_->set_all_population_size_priors(prior);
 }
 
-void PopulationTree::set_u_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->u_prior_;
+void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->u_prior_ = prior;
     this->u_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_v_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->v_prior_;
+void PopulationTree::set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->v_prior_ = prior;
     this->v_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_node_height_multiplier_prior(ContinuousProbabilityDistribution * prior) {
-    delete this->node_height_multiplier_prior_;
+void PopulationTree::set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->node_height_multiplier_prior_ = prior;
     this->node_height_multiplier_->set_prior(prior);
     this->make_dirty();
@@ -744,10 +740,10 @@ void ComparisonPopulationTree::restore_child_coalescence_rate(
 }
 void ComparisonPopulationTree::set_child_coalescence_rate_parameter(
         unsigned int child_index,
-        CoalescenceRateParameter * r) {
+        std::shared_ptr<CoalescenceRateParameter> r) {
     this->root_->get_child(child_index)->set_coalescence_rate_parameter(r);
 }
-CoalescenceRateParameter * ComparisonPopulationTree::get_child_coalescence_rate_parameter(
+std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_coalescence_rate_parameter(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
 }
