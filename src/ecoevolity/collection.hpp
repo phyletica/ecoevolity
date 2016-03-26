@@ -30,7 +30,7 @@
 class ComparisonPopulationTreeCollection {
     private:
         std::vector<ComparisonPopulationTree> trees_;
-        std::vector<PositiveRealParameter> node_heights_;
+        std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
         std::vector<unsigned int> node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);

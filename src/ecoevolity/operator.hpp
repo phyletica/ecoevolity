@@ -65,14 +65,14 @@ class OperatorSchedule {
             return this->operators_.back();
         }
 
-        double calc_delta(const Operator& operator, double log_alpha) {
+        double calc_delta(const Operator& op, double log_alpha) {
             if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
                     (! this->auto_optimize_)) {
                 return 0.0;
             }
-            double target = operator.get_target_acceptance_probability();
-            double count = (operator.get_number_rejected_for_correction() +
-                            operator.get_number_accepted_for_correction() +
+            double target = op.get_target_acceptance_probability();
+            double count = (op.get_number_rejected_for_correction() +
+                            op.get_number_accepted_for_correction() +
                             1.0);
             double delta_p = ((1.0 / count) * (std::exp(std::min(log_alpha, 0)) - target));
             double mx = std::numeric_limits<double>::max();
@@ -106,12 +106,13 @@ class Operator {
     public:
         Operator() { }
         virtual ~Operator() { }
-		enum TargetTypeEnum {
-            ComparisonPopulationTree = 1,
-            ComparisonPopulationTreeCollection = 2
+		enum OperatorTypeEnum {
+            tree_operator = 1;
+            time_operator = 2;
+            model_operator = 3;
         };
 
-        virtual Operator::TargetTypeEnum get_target_type() const = 0;
+        virtual Operator::OperatorTypeEnum get_type() const = 0;
 
         virtual void optimize(double log_alpha) = 0;
 
@@ -207,13 +208,13 @@ class Operator {
 
 };
 
-class ComparisonCollectionOperator : public Operator {
+class ModelOperator : public Operator {
     public:
-        ComparisonCollectionOperator() : Operator() { }
-        virtual ~ComparisonCollectionOperator() { }
+        ModelOperator() : Operator() { }
+        virtual ~ModelOperator() { }
 
-        Operator::TargetTypeEnum get_target_type() const {
-            return Operator::TargetTypeEnum::ComparisonPopulationTreeCollection;
+        Operator::OperatorTypeEnum get_type() const {
+            return Operator::OperatorTypeEnum::model_operator;
         }
 
         /**
@@ -230,8 +231,8 @@ class ComparisonTreeOperator : public Operator {
         ComparisonTreeOperator() : Operator() { }
         virtual ~ComparisonTreeOperator() { }
 
-        Operator::TargetTypeEnum get_target_type() const {
-            return Operator::TargetTypeEnum::ComparisonPopulationTree;
+        Operator::OperatorTypeEnum get_type() const {
+            return Operator::OperatorTypeEnum::tree_operator;
         }
 
         /**
@@ -241,6 +242,24 @@ class ComparisonTreeOperator : public Operator {
          */
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) = 0;
+};
+
+class NodeHeightOperator : public Operator {
+    public:
+        NodeHeightOperator() : Operator() { }
+        virtual ~NodeHeightOperator() { }
+
+        Operator::OperatorTypeEnum get_type() const {
+            return Operator::OperatorTypeEnum::time_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) = 0;
 };
 
 class MutationRateMover : public ComparisonTreeOperator {
@@ -275,16 +294,57 @@ class MutationRateMover : public ComparisonTreeOperator {
         }
 };
 
+class NodeHeightMultiplierScaler : public ComparisonTreeOperator {
+    protected:
+        double scale_ = 0.3;
+
+    public:
+        NodeHeightMultiplierScaler() : ComparisonTreeOperator() { }
+        NodeHeightMultiplierScaler(double scale) : ComparisonTreeOperator() {
+            this->set_scale(scale);
+        }
+        virtual ~NodeHeightMultiplierScaler() { }
+
+        void set_scale(double scale) {
+            this->scale_ = scale;
+        }
+        double get_scale() const {
+            return this->scale_;
+        }
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) {
+            double v = tree->get_node_height_multiplier();
+            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+            tree->set_node_height_multiplier(v * multiplier);
+            return std::log(multiplier);
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->calc_delta(log_alpha);
+            delta += std::log(this->scale_);
+            this->scale_ = std::exp(delta);
+        }
+
+        double get_coercable_parameter_value() {
+            return this->scale_;
+        }
+
+        void set_coercable_parameter_value(double value) {
+            this->scale_ = value;
+        }
+};
+
 class ChildCoalescenceRateScaler : public ComparisonTreeOperator {
     protected:
         double scale_ = 0.5;
 
     public:
-        CoalescenceRateScaler() : ComparisonTreeOperator() { }
-        CoalescenceRateScaler(double scale) : ComparisonTreeOperator() {
+        ChildCoalescenceRateScaler() : ComparisonTreeOperator() { }
+        ChildCoalescenceRateScaler(double scale) : ComparisonTreeOperator() {
             this->set_scale(scale);
         }
-        virtual ~CoalescenceRateScaler() { }
+        virtual ~ChildCoalescenceRateScaler() { }
 
         void set_scale(double scale) {
             this->scale_ = scale;
@@ -335,6 +395,47 @@ class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
             tree->set_root_coalescence_rate(rate * multiplier);
 
             return std::log(multiplier);
+        }
+};
+
+class ComparisonHeightScaler : public NodeHeightOperator {
+    protected:
+        double scale_ = 0.5;
+
+    public:
+        ComparisonHeightScaler() : NodeHeightOperator() { }
+        ComparisonHeightScaler(double scale) : NodeHeightOperator() {
+            this->set_scale(scale);
+        }
+        virtual ~ComparisonHeightScaler() { }
+
+        void set_scale(double scale) {
+            this->scale_ = scale;
+        }
+        double get_scale() const {
+            return this->scale_;
+        }
+        double propose(
+                RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) {
+            double h = node_height->get_value();
+            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+            node_height.set_value(h * multiplier);
+            return std::log(multiplier);
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->calc_delta(log_alpha);
+            delta += std::log(this->scale_);
+            this->scale_ = std::exp(delta);
+        }
+
+        double get_coercable_parameter_value() {
+            return this->scale_;
+        }
+
+        void set_coercable_parameter_value(double value) {
+            this->scale_ = value;
         }
 };
 

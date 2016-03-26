@@ -88,13 +88,13 @@ void ComparisonPopulationTreeCollection::mcmc() {
     for (unsigned int gen = 0; gen < ngens; ++gen) {
         this->store_state();
         Operator& op = this->operator_schedule_.draw_operator(this->rng_);
-        if (op.get_target_type() == Operator::TargetTypeEnum::ComparisonPopulationTree) {
+        if (op.get_type() == Operator::OperatorTypeEnum::tree_operator) {
             std::vector<double> hastings_ratios(this->trees_.size());
-            for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++ tree_idx) {
+            for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
                 hastings_ratios.push_back(op.propose(this->rng_, this->trees_.at(tree_idx)));
             }
             this->compute_tree_partials();
-            for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++ tree_idx) {
+            for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
                 double likelihood_ratio =
                         this->trees_.at(tree_idx).get_log_likelihood_value() -
                         this->trees_.at(tree_idx).get_stored_log_likelihood_value();
@@ -118,7 +118,50 @@ void ComparisonPopulationTreeCollection::mcmc() {
             }
             this->compute_log_likelihood_and_prior(false);
         }
-        else if (op.get_target_type() == Operator::TargetTypeEnum::ComparisonPopulationTreeCollection) {
+        else if (op.get_type() == Operator::OperatorTypeEnum::time_operator) {
+            std::vector<double> hastings_ratios(this->node_heights_.size());
+            for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
+                hastings_ratios.push_back(op.propose(this->rng_, *(this->heights_.at(height_idx))));
+            }
+            this->compute_tree_partials();
+            for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
+                double old_lnl = 0.0;
+                double new_lnl = 0.0;
+                for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
+                    if (this->node_height_indices_.at(tree_idx) == height_idx) {
+                        old_lnl += this->trees_.at(tree_idx).get_stored_log_likelihood_value();
+                        new_lnl += this->trees_.at(tree_idx).get_log_likelihood_value();
+                    }
+                }
+                double likelihood_ratio = new_lnl - old_lnl;
+                double prior_ratio =
+                        this->node_heights_.at(height_idx)->relative_prior_ln_pdf() -
+                        this->node_heights_.at(height_idx)->relative_prior_ln_pdf(
+                                this->node_heights_.at(height_idx)->get_stored_value());
+                double hastings_ratio = hastings_ratios.at(height_idx);
+                double acceptance_probability =
+                        likelihood_ratio + 
+                        prior_ratio +
+                        hastings_ratio;
+                double u = this->rng_.uniform_real();
+                if (u < acceptance_probability) {
+                    op.accept();
+                }
+                else {
+                    op.reject();
+                    this->node_heights_.at(height_idx).restore_state();
+                    for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
+                        if (this->node_height_indices_.at(tree_idx) == height_idx) {
+                            this->trees_.at(tree_idx).restore_likelihood();
+                            // this->trees_.at(tree_idx).restore_prior_density();
+                        }
+                    }
+                }
+            }
+            this->make_trees_clean();
+            this->compute_log_likelihood_and_prior(false);
+        }
+        else if (op.get_type() == Operator::OperatorTypeEnum::model_operator) {
             double hastings_ratio = op.propose(this->rng_, this);
             this->compute_log_likelihood_and_prior(true);
             double likelihood_ratio = 
