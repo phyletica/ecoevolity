@@ -25,13 +25,13 @@
 #include <fstream>
 #include <cmath>
 #include <limits>
+#include <memory>
 
 #include "rng.hpp"
 #include "assert.hpp"
 
 class OperatorSchedule {
     protected:
-        RandomNumberGenerator * rng_ = RandomNumberGenerator();
         std::vector<Operator> operators_;
         double total_weight_ = 0.0;
         std::vector<double> cumulative_probs_;
@@ -56,8 +56,8 @@ class OperatorSchedule {
             }
         }
 
-        Operator& draw_operator() {
-            double u = this->rng_->uniform_real();
+        Operator& draw_operator(RandomNumberGenerator& rng) {
+            double u = this->rng.uniform_real();
             for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
                 if (u <= this->cumulative_probs_.at(i)) {
                     return this->operators_.at(i);
@@ -106,13 +106,12 @@ class Operator {
     public:
         Operator() { }
         virtual ~Operator() { }
+		enum TargetTypeEnum {
+            ComparisonPopulationTree = 1,
+            ComparisonPopulationTreeCollection = 2
+        };
 
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        virtual double proposal() = 0;
+        virtual Operator::TargetTypeEnum get_target_type() const = 0;
 
         virtual void optimize(double log_alpha) = 0;
 
@@ -120,7 +119,7 @@ class Operator {
             return 0.234;
         }
 
-        void set_operator_schedule(OperatorSchedule * os) {
+        void set_operator_schedule(std::shared_ptr<OperatorSchedule> os) {
             this->operator_schedule_ = os;
         }
 
@@ -194,7 +193,7 @@ class Operator {
         }
 
     protected:
-        OperatorSchedule * operator_schedule_;
+        std::shared_ptr<OperatorSchedule> operator_schedule_;
         double weight_ = 1.0;
         unsigned int number_rejected_ = 0;
         unsigned int number_accepted_ = 0;
@@ -207,5 +206,137 @@ class Operator {
         }
 
 };
+
+class ComparisonCollectionOperator : public Operator {
+    public:
+        ComparisonCollectionOperator() : Operator() { }
+        virtual ~ComparisonCollectionOperator() { }
+
+        Operator::TargetTypeEnum get_target_type() const {
+            return Operator::TargetTypeEnum::ComparisonPopulationTreeCollection;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons) = 0;
+};
+
+class ComparisonTreeOperator : public Operator {
+    public:
+        ComparisonTreeOperator() : Operator() { }
+        virtual ~ComparisonTreeOperator() { }
+
+        Operator::TargetTypeEnum get_target_type() const {
+            return Operator::TargetTypeEnum::ComparisonPopulationTree;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) = 0;
+};
+
+class MutationRateMover : public ComparisonTreeOperator {
+    protected:
+        double window_size_ = 0.1;
+
+    public:
+        MutationRateMover() : ComparisonTreeOperator() { }
+        MutationRateMover(double window_size) : ComparisonTreeOperator() {
+            this->set_window_size(window_size);
+        }
+        virtual ~MutationRateMover() { }
+
+        void set_window_size(double window_size) {
+            this->window_size_ = window_size;
+        }
+        double get_window_size() const {
+            return this->window_size_;
+        }
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) {
+            double red_freq = tree->get_v() / (tree->get_u() + tree->get_v());
+            double x = this->window_size_ * ((2.0 * rng.uniform_real()) - 1.0);
+            if ((red_freq + x >= 0.0) && (red_freq + x <= 1.0)) {
+                red_freq += x;
+                this->set_u(1.0 / (2.0 * red_freq));
+                this->set_v(1.0 / (2.0 * (1.0 - red_freq)));
+                return 0.0;
+            }
+            return -std::numeric_limits<double>::infinity();
+        }
+};
+
+class ChildCoalescenceRateScaler : public ComparisonTreeOperator {
+    protected:
+        double scale_ = 0.5;
+
+    public:
+        CoalescenceRateScaler() : ComparisonTreeOperator() { }
+        CoalescenceRateScaler(double scale) : ComparisonTreeOperator() {
+            this->set_scale(scale);
+        }
+        virtual ~CoalescenceRateScaler() { }
+
+        void set_scale(double scale) {
+            this->scale_ = scale;
+        }
+        double get_scale() const {
+            return this->scale_;
+        }
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) {
+            int pop_idx = rng.uniform_int(0, tree->get_leaf_allele_count() - 1);
+            double rate = tree->get_child_coalescence_rate(pop_idx);
+
+            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+
+            tree->set_child_coalescence_rate(pop_idx, rate * multiplier);
+
+            return std::log(multiplier);
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->calc_delta(log_alpha);
+            delta += std::log(this->scale_);
+            this->scale_ = std::exp(delta);
+        }
+
+        double get_coercable_parameter_value() {
+            return this->scale_;
+        }
+
+        void set_coercable_parameter_value(double value) {
+            this->scale_ = value;
+        }
+};
+
+class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
+        RootCoalescenceRateScaler() : ChildCoalescenceRateScaler() { }
+        RootCoalescenceRateScaler(double scale) : ChildCoalescenceRateScaler(scale) { }
+        virtual ~RootCoalescenceRateScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) {
+            double rate = tree->get_root_coalescence_rate();
+
+            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+
+            tree->set_root_coalescence_rate(rate * multiplier);
+
+            return std::log(multiplier);
+        }
+};
+
 
 #endif

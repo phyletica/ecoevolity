@@ -30,8 +30,22 @@
 class ComparisonPopulationTreeCollection {
     private:
         std::vector<ComparisonPopulationTree> trees_;
-        std::vector<PositiveRealParameter> events_;
-        std::vector<unsigned int> event_indices_;
+        std::vector<PositiveRealParameter> node_heights_;
+        std::vector<unsigned int> node_height_indices_;
+        LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
+        LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        bool use_multithreading_ = false;
+
+        double compute_log_prior_density_of_node_heights();
+
+    public:
+        void store_state();
+        void restore_state();
+        void compute_log_likelihood_and_prior();
+
+        unsigned int get_number_of_comparisons() const {
+            return this->trees_.size();
+        }
 };
 
 #endif

@@ -280,6 +280,9 @@ class PopulationTree {
         unsigned int get_number_of_likelihood_calculations() {
             return this->number_of_likelihood_calculations_;
         }
+        unsigned int get_leaf_node_count() const {
+            return this->root_->get_leaf_node_count();
+        }
 };
 
 class ComparisonPopulationTree: public PopulationTree {
