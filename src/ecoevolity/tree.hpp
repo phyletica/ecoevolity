@@ -65,6 +65,7 @@ class PopulationTree {
         bool coalescence_rates_are_constrained_ = false;
         bool mutation_rates_are_constrained_ = false;
         bool is_dirty_ = true;
+        bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
         // methods
@@ -143,6 +144,13 @@ class PopulationTree {
         bool is_dirty() const;
         void make_dirty();
         void make_clean();
+
+        void ignore_data() {
+            this->ignore_data_ = true;
+        }
+        void use_data() {
+            this->ignore_data_ = false;
+        }
 
         void set_u_parameter(std::shared_ptr<PositiveRealParameter> u);
         void set_v_parameter(std::shared_ptr<PositiveRealParameter> v);

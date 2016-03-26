@@ -390,6 +390,10 @@ bool PopulationTree::constant_site_counts_were_provided() {
 }
 
 double PopulationTree::compute_log_likelihood() {
+    if (this->ignore_data_) {
+        this->log_likelihood_.set_value(0.0);
+        return 0.0;
+    }
     double log_likelihood = 0.0;
     this->compute_pattern_likelihoods();
     for (unsigned int pattern_idx = 0;
