@@ -1,0 +1,65 @@
+---
+event_model_prior:
+    dirichlet_process:
+        shape:      2.0
+        scale:      1.0
+    prior_mean_number_of_events: 10
+
+time_prior:
+    gamma_distribution:
+        shape: 1.0
+        scale: 1.0
+        rate:  1.0
+        offset: 0.0
+
+mcmc_settings:
+    chain_length: 100000
+    sample_every: 100
+
+global_comparison_settings:
+    genotypes_are_diploid: true
+    markers_are_dominant: false # make global?
+    population_name_delimiter: "_"
+    population_name_is_prefix: true
+    constant_sites_included: false # make global?
+    constrain_population_sizes: false
+    constrain_mutation_rates: true
+    population_size:
+        value: 0.001
+        estimate: true
+        prior:
+            gamma_distribution:
+                shape: 1.0
+                scale: 1.0
+                rate:  1.0
+                offset: 0.0
+    u_rate:
+        value: empirical
+        estimate: true
+        prior:
+            exponential_distribution:
+                rate: 1.0
+
+    v_rate:
+        value: empirical
+        estimate: true
+        prior:
+            exponential_distribution:
+                rate: 1.0
+
+    time_multiplier:
+        value: 1.0
+        estimate: false
+
+
+comparisons:
+- comparison:
+    path: "data1.nex"
+    constrain_population_sizes: true
+    population_size:
+        value: 0.01
+        estimate: false
+        
+- comparison:
+    path: "data2.nex"
+    constant_sites_included: true
