@@ -102,6 +102,11 @@ class OperatorSchedule {
         }
 };
 
+
+//////////////////////////////////////////////////////////////////////////////
+// Operator base class
+//////////////////////////////////////////////////////////////////////////////
+
 class Operator {
     public:
         Operator() { }
@@ -161,9 +166,11 @@ class Operator {
             return this->number_accepted_for_correction_;
         }
 
-        const std::string& get_name() const {
-            return this->name_;
+        virtual std::string get_name() const {
+            return "BaseOperator";
         }
+
+        virtual std::string target_parameter() const = 0;
 
         std::string header_string() const {
             return "name\tnumber_accepted\tnumber_rejected\tweight\tweight_prob\ttuning_parameter\n";
@@ -200,13 +207,17 @@ class Operator {
         unsigned int number_accepted_ = 0;
         unsigned int number_rejected_for_correction = 0;
         unsigned int number_accepted_for_correction = 0;
-        std::string name_ = "BaseOperator";
 
         double calc_delta(double log_alpha) {
             return operator_schedule_->calc_delta(this, log_alpha);
         }
 
 };
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Operator Type base class
+//////////////////////////////////////////////////////////////////////////////
 
 class ModelOperator : public Operator {
     public:
@@ -224,6 +235,14 @@ class ModelOperator : public Operator {
          */
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons) = 0;
+
+        std::string get_name() const {
+            return "ModelOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "model";
+        }
 };
 
 class ComparisonTreeOperator : public Operator {
@@ -242,6 +261,10 @@ class ComparisonTreeOperator : public Operator {
          */
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) = 0;
+
+        std::string get_name() const {
+            return "ComparisonTreeOperator";
+        }
 };
 
 class NodeHeightOperator : public Operator {
@@ -260,15 +283,121 @@ class NodeHeightOperator : public Operator {
          */
         virtual double propose(RandomNumberGenerator& rng,
                 PositiveRealParameter& node_height) = 0;
+
+        std::string get_name() const {
+            return "NodeHeightOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "node height";
+        }
 };
 
-class MutationRateMover : public ComparisonTreeOperator {
+
+//////////////////////////////////////////////////////////////////////////////
+// Operator base classes for each parameter
+//////////////////////////////////////////////////////////////////////////////
+
+class ConcentrationOperator : public ModelOperator {
+    public:
+        ConcentrationOperator() : ModelOperator() { }
+        virtual ~ConcentrationOperator() { }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) = 0;
+
+        std::string get_name() const {
+            return "ConcentrationOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "concentration";
+        }
+};
+
+class MutationRateOperator : public ComparisonTreeOperator {
+    public:
+        MutationRateOperator() : ComparisonTreeOperator() { }
+        virtual ~MutationRateOperator() { }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) = 0;
+
+        std::string get_name() const {
+            return "MutationRateOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "mutation rate";
+        }
+};
+
+class CoalescenceRateOperator : public ComparisonTreeOperator {
+    public:
+        CoalescenceRateOperator() : ComparisonTreeOperator() { }
+        virtual ~CoalescenceRateOperator() { }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) = 0;
+
+        std::string get_name() const {
+            return "CoalescenceRateOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "coalescence rate";
+        }
+};
+
+class NodeHeightMultiplierOperator : public ComparisonTreeOperator {
+    public:
+        NodeHeightMultiplierOperator() : ComparisonTreeOperator() { }
+        virtual ~NodeHeightMultiplierOperator() { }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) = 0;
+
+        std::string get_name() const {
+            return "NodeHeightMultiplierOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "node height multiplier";
+        }
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Derived Operator classes
+//////////////////////////////////////////////////////////////////////////////
+
+class MutationRateMover : public MutationRateOperator {
     protected:
         double window_size_ = 0.1;
 
     public:
-        MutationRateMover() : ComparisonTreeOperator() { }
-        MutationRateMover(double window_size) : ComparisonTreeOperator() {
+        MutationRateMover() : MutationRateOperator() { }
+        MutationRateMover(double window_size) : MutationRateOperator() {
             this->set_window_size(window_size);
         }
         virtual ~MutationRateMover() { }
@@ -292,15 +421,19 @@ class MutationRateMover : public ComparisonTreeOperator {
             }
             return -std::numeric_limits<double>::infinity();
         }
+
+        std::string get_name() const {
+            return "MutationRateMover";
+        }
 };
 
-class NodeHeightMultiplierScaler : public ComparisonTreeOperator {
+class NodeHeightMultiplierScaler : public NodeHeightMultiplierOperator {
     protected:
         double scale_ = 0.3;
 
     public:
-        NodeHeightMultiplierScaler() : ComparisonTreeOperator() { }
-        NodeHeightMultiplierScaler(double scale) : ComparisonTreeOperator() {
+        NodeHeightMultiplierScaler() : NodeHeightMultiplierOperator() { }
+        NodeHeightMultiplierScaler(double scale) : NodeHeightMultiplierOperator() {
             this->set_scale(scale);
         }
         virtual ~NodeHeightMultiplierScaler() { }
@@ -333,15 +466,19 @@ class NodeHeightMultiplierScaler : public ComparisonTreeOperator {
         void set_coercable_parameter_value(double value) {
             this->scale_ = value;
         }
+
+        std::string get_name() const {
+            return "NodeHeightMultiplierScaler";
+        }
 };
 
-class ChildCoalescenceRateScaler : public ComparisonTreeOperator {
+class ChildCoalescenceRateScaler : public CoalescenceRateOperator {
     protected:
         double scale_ = 0.5;
 
     public:
-        ChildCoalescenceRateScaler() : ComparisonTreeOperator() { }
-        ChildCoalescenceRateScaler(double scale) : ComparisonTreeOperator() {
+        ChildCoalescenceRateScaler() : CoalescenceRateOperator() { }
+        ChildCoalescenceRateScaler(double scale) : CoalescenceRateOperator() {
             this->set_scale(scale);
         }
         virtual ~ChildCoalescenceRateScaler() { }
@@ -378,6 +515,10 @@ class ChildCoalescenceRateScaler : public ComparisonTreeOperator {
         void set_coercable_parameter_value(double value) {
             this->scale_ = value;
         }
+
+        std::string get_name() const {
+            return "ChildCoalescenceRateScaler";
+        }
 };
 
 class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
@@ -395,6 +536,10 @@ class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
             tree->set_root_coalescence_rate(rate * multiplier);
 
             return std::log(multiplier);
+        }
+
+        std::string get_name() const {
+            return "RootCoalescenceRateScaler";
         }
 };
 
@@ -436,6 +581,10 @@ class ComparisonHeightScaler : public NodeHeightOperator {
 
         void set_coercable_parameter_value(double value) {
             this->scale_ = value;
+        }
+
+        std::string get_name() const {
+            return "ComparisonHeightScaler";
         }
 };
 
