@@ -484,18 +484,30 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter
 }
 
 void PopulationTree::set_u(double u) {
+    if (this->mutation_rates_are_fixed_) {
+        return;
+    }
     this->u_->set_value(u);
     this->make_dirty();
 }
 void PopulationTree::update_u(double u) {
+    if (this->mutation_rates_are_fixed_) {
+        return;
+    }
     this->u_->update_value(u);
     this->make_dirty();
 }
 void PopulationTree::set_v(double v) {
+    if (this->mutation_rates_are_fixed_) {
+        return;
+    }
     this->v_->set_value(v);
     this->make_dirty();
 }
 void PopulationTree::update_v(double v) {
+    if (this->mutation_rates_are_fixed_) {
+        return;
+    }
     this->v_->update_value(v);
     this->make_dirty();
 }
@@ -521,10 +533,16 @@ void PopulationTree::restore_v() {
 }
 
 void PopulationTree::set_node_height_multiplier(double m) {
+    if (this->node_height_multiplier_is_fixed_) {
+        return;
+    }
     this->node_height_multiplier_->set_value(m);
     this->make_dirty();
 }
 void PopulationTree::update_node_height_multiplier(double m) {
+    if (this->node_height_multiplier_is_fixed_) {
+        return;
+    }
     this->node_height_multiplier_->update_value(m);
     this->make_dirty();
 }
@@ -563,9 +581,15 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_node_height_multiplie
 }
 
 void PopulationTree::set_root_coalescence_rate(double rate) {
+    if (this->coalescence_rates_are_fixed_) {
+        return;
+    }
     this->root_->set_coalescence_rate(rate);
 }
 void PopulationTree::set_coalescence_rate(double rate) {
+    if (this->coalescence_rates_are_fixed_) {
+        return;
+    }
     this->root_->set_all_coalescence_rates(rate);
 }
 double PopulationTree::get_root_coalescence_rate() const {
@@ -723,11 +747,17 @@ ComparisonPopulationTree::ComparisonPopulationTree(
 void ComparisonPopulationTree::set_child_coalescence_rate(
         unsigned int child_index,
         double rate) {
+    if (this->coalescence_rates_are_fixed_) {
+        return;
+    }
     this->root_->get_child(child_index)->set_coalescence_rate(rate);
 }
 void ComparisonPopulationTree::update_child_coalescence_rate(
         unsigned int child_index,
         double rate) {
+    if (this->coalescence_rates_are_fixed_) {
+        return;
+    }
     this->root_->get_child(child_index)->update_coalescence_rate(rate);
 }
 const double& ComparisonPopulationTree::get_child_coalescence_rate(
