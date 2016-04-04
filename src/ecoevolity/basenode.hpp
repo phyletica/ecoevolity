@@ -380,6 +380,22 @@ class BaseNode {
             }
         }
 
+        bool node_height_is_fixed() const {
+            return this->height_->is_fixed();
+        }
+
+        bool all_node_heights_are_fixed() const {
+            if (! this->node_height_is_fixed()) {
+                return false;
+            }
+            for (auto child_iter: this->children_) {
+                if (! child_iter->all_node_heights_are_fixed()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         double calculate_ln_relative_node_height_prior_density() const {
             double d = 0.0;
             std::vector< std::shared_ptr<PositiveRealParameter> > parameters(this->get_node_count());

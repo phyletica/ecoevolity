@@ -332,6 +332,23 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->add_ln_relative_coalescence_rate_prior_density(d, parameters);
             return d;
         }
+
+        bool coalescence_rate_is_fixed() const {
+            return this->coalescence_rate_->is_fixed();
+        }
+
+        bool all_coalescence_rates_are_fixed() const {
+            if (! this->coalescence_rate_is_fixed()) {
+                return false;
+            }
+            for (auto child_iter: this->children_) {
+                if (! child_iter->all_coalescence_rates_are_fixed()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
 };
 
 #endif

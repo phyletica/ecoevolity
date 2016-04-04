@@ -1590,3 +1590,123 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         REQUIRE(root.calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909));
     }
 }
+
+TEST_CASE("Test node height fixing", "[Node]") {
+
+    SECTION("Testing fixing of node height parameters") {
+        Node root = Node("root", 1.0);
+        Node root_child1 = Node("root child 1", 0.8);
+        Node root_child2 = Node("root child 2", 0.3);
+        Node leaf1 = Node("leaf 1", 0.0);
+        Node leaf2 = Node("leaf 2", 0.0);
+        Node leaf3 = Node("leaf 3", 0.0);
+        Node leaf4 = Node("leaf 4", 0.0);
+        Node leaf5 = Node("leaf 5", 0.0);
+
+        root.add_child(&root_child1);
+        root.add_child(&root_child2);
+
+        leaf1.add_parent(&root_child1);
+        leaf2.add_parent(&root_child1);
+        leaf3.add_parent(&root_child1);
+
+        leaf4.add_parent(&root_child2);
+        leaf5.add_parent(&root_child2);
+
+        REQUIRE(root.node_height_is_fixed() == false);
+        REQUIRE(root.all_node_heights_are_fixed() == false);
+
+        root.fix_all_node_heights();
+
+        REQUIRE(root.node_height_is_fixed() == true);
+        REQUIRE(root.all_node_heights_are_fixed() == true);
+
+        root.estimate_all_node_heights();
+
+        REQUIRE(root.node_height_is_fixed() == false);
+        REQUIRE(root.all_node_heights_are_fixed() == false);
+
+        root_child1.fix_node_height();
+
+        REQUIRE(root_child1.node_height_is_fixed() == true);
+        REQUIRE(root_child1.all_node_heights_are_fixed() == false);
+        REQUIRE(leaf1.node_height_is_fixed() == false);
+        REQUIRE(leaf2.node_height_is_fixed() == false);
+        REQUIRE(leaf3.node_height_is_fixed() == false);
+
+        root_child1.fix_all_node_heights();
+
+        REQUIRE(root_child1.node_height_is_fixed() == true);
+        REQUIRE(root_child1.all_node_heights_are_fixed() == true);
+        REQUIRE(leaf1.node_height_is_fixed() == true);
+        REQUIRE(leaf2.node_height_is_fixed() == true);
+        REQUIRE(leaf3.node_height_is_fixed() == true);
+
+        leaf2.estimate_node_height();
+        REQUIRE(root_child1.node_height_is_fixed() == true);
+        REQUIRE(root_child1.all_node_heights_are_fixed() == false);
+        REQUIRE(leaf1.node_height_is_fixed() == true);
+        REQUIRE(leaf2.node_height_is_fixed() == false);
+        REQUIRE(leaf3.node_height_is_fixed() == true);
+    }
+}
+
+TEST_CASE("Test coalescence rate fixing", "[PopulationNode]") {
+
+    SECTION("Testing fixing of coalescence rate parameters") {
+        PopulationNode root = PopulationNode("root", 1.0);
+        PopulationNode root_child1 = PopulationNode("root child 1", 0.8);
+        PopulationNode root_child2 = PopulationNode("root child 2", 0.3);
+        PopulationNode leaf1 = PopulationNode("leaf 1", 0.0);
+        PopulationNode leaf2 = PopulationNode("leaf 2", 0.0);
+        PopulationNode leaf3 = PopulationNode("leaf 3", 0.0);
+        PopulationNode leaf4 = PopulationNode("leaf 4", 0.0);
+        PopulationNode leaf5 = PopulationNode("leaf 5", 0.0);
+
+        root.add_child(&root_child1);
+        root.add_child(&root_child2);
+
+        leaf1.add_parent(&root_child1);
+        leaf2.add_parent(&root_child1);
+        leaf3.add_parent(&root_child1);
+
+        leaf4.add_parent(&root_child2);
+        leaf5.add_parent(&root_child2);
+
+        REQUIRE(root.coalescence_rate_is_fixed() == false);
+        REQUIRE(root.all_coalescence_rates_are_fixed() == false);
+
+        root.fix_all_coalescence_rates();
+
+        REQUIRE(root.coalescence_rate_is_fixed() == true);
+        REQUIRE(root.all_coalescence_rates_are_fixed() == true);
+
+        root.estimate_all_coalescence_rates();
+
+        REQUIRE(root.coalescence_rate_is_fixed() == false);
+        REQUIRE(root.all_coalescence_rates_are_fixed() == false);
+
+        root_child1.fix_coalescence_rate();
+
+        REQUIRE(root_child1.coalescence_rate_is_fixed() == true);
+        REQUIRE(root_child1.all_coalescence_rates_are_fixed() == false);
+        REQUIRE(leaf1.coalescence_rate_is_fixed() == false);
+        REQUIRE(leaf2.coalescence_rate_is_fixed() == false);
+        REQUIRE(leaf3.coalescence_rate_is_fixed() == false);
+
+        root_child1.fix_all_coalescence_rates();
+
+        REQUIRE(root_child1.coalescence_rate_is_fixed() == true);
+        REQUIRE(root_child1.all_coalescence_rates_are_fixed() == true);
+        REQUIRE(leaf1.coalescence_rate_is_fixed() == true);
+        REQUIRE(leaf2.coalescence_rate_is_fixed() == true);
+        REQUIRE(leaf3.coalescence_rate_is_fixed() == true);
+
+        leaf2.estimate_coalescence_rate();
+        REQUIRE(root_child1.coalescence_rate_is_fixed() == true);
+        REQUIRE(root_child1.all_coalescence_rates_are_fixed() == false);
+        REQUIRE(leaf1.coalescence_rate_is_fixed() == true);
+        REQUIRE(leaf2.coalescence_rate_is_fixed() == false);
+        REQUIRE(leaf3.coalescence_rate_is_fixed() == true);
+    }
+}
