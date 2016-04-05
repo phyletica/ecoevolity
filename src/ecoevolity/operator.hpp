@@ -29,6 +29,7 @@
 
 #include "rng.hpp"
 #include "assert.hpp"
+#include "util.hpp"
 
 class OperatorSchedule {
     protected:
@@ -681,7 +682,10 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                     ln_category_probs.push_back(lnl + ln_concentration_over_num_aux);
                 }
 
-                normalize(ln_category_probs);
+                normalize_log_likelihoods(ln_category_probs);
+                unsigned int new_height_index = rng.weighted_index(ln_category_probs);
+                // TODO: handle switching/adding tree's height parameter (or do
+                // nothing if put back in same category)
 
 
 
