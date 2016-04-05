@@ -82,3 +82,42 @@ SCENARIO("split provides Python-like splitting of strings", "[util]") {
         REQUIRE(words[4] == "Split");
     }
 }
+
+TEST_CASE("Testing normalize_log_likelihoods") {
+
+    SECTION("Testing round trip", "[util]") {
+        std::vector<double> v = {0.2, 0.2, 0.2, 0.2, 0.2};
+        std::vector<double> v2(v.size());
+        for (unsigned int i = 0; i < v.size(); ++i) {
+            v2.at(i) = std::log(v.at(i));
+        }
+        normalize_log_likelihoods(v2);
+        for (unsigned int i = 0; i < v.size(); ++i) {
+            REQUIRE(v.at(i) == Approx(v2.at(i)));
+        }
+    }
+
+    SECTION("Testing uneven round trip", "[util]") {
+        std::vector<double> v = {0.1, 0.2, 0.3, 0.4};
+        std::vector<double> v2(v.size());
+        for (unsigned int i = 0; i < v.size(); ++i) {
+            v2.at(i) = std::log(v.at(i));
+        }
+        normalize_log_likelihoods(v2);
+        for (unsigned int i = 0; i < v.size(); ++i) {
+            REQUIRE(v.at(i) == Approx(v2.at(i)));
+        }
+    }
+
+    SECTION("Testing uneven unnormalized round trip", "[util]") {
+        std::vector<double> v = {0.00001, 0.00002, 0.00003, 0.00004};
+        std::vector<double> v2(v.size());
+        for (unsigned int i = 0; i < v.size(); ++i) {
+            v2.at(i) = std::log(v.at(i));
+        }
+        normalize_log_likelihoods(v2);
+        for (unsigned int i = 0; i < v.size(); ++i) {
+            REQUIRE(v.at(i) * 10000.0 == Approx(v2.at(i)));
+        }
+    }
+}

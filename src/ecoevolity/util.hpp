@@ -25,6 +25,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cmath>
 
 /**
  * Function for accessing map elements.
@@ -54,5 +55,30 @@ std::vector<std::string> & split(
 std::vector<std::string> split(
         const std::string &s,
         char delimiter);
+
+
+inline void normalize_log_likelihoods(std::vector<double>& v) {
+    double mx = v.at(0);
+    for (auto v_iter : v) {
+        if (v_iter > mx) {
+            mx = v_iter;
+        }
+    }
+
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        v.at(i) -= mx;
+    }
+
+    double sum = 0.0;
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        v.at(i) = std::exp(v.at(i));
+        sum += v.at(i);
+    }
+
+
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        v.at(i) /= sum;
+    }
+}
 
 #endif
