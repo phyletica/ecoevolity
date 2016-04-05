@@ -23,6 +23,8 @@
 #include <ctime>
 #include <random>
 
+#include "assert.hpp"
+
 class RandomNumberGenerator {
     public:
         typedef typename std::mt19937 EngineType;
@@ -103,6 +105,19 @@ class RandomNumberGenerator {
                     this->engine_,
                     typename decltype(this->gamma_rng_)::param_type(
                             shape, scale));
+        }
+
+        inline unsigned int weighted_index(
+                const std::vector<double>& probabilities) {
+            double u = this->uniform_real();
+            for (unsigned int i = 0; i < probabilities.size(); ++i) {
+                u -= probabilities.at(i);
+                if (u < 0.0) {
+                    return i;
+                }
+            }
+            ECOEVOLITY_ASSERT_APPROX_EQUAL(u, 0.0);
+            return probabilities.size() - 1;
         }
 };
 

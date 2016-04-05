@@ -142,3 +142,32 @@ TEST_CASE("Testing uniform_positive_int", "[RandomNumberGenerator]") {
         REQUIRE(n4 / 100000.0 == Approx(1.0/3.0).epsilon(0.001));
     }
 }
+
+TEST_CASE("Testing weighted_index", "[RandomNumberGenerator]") {
+
+    SECTION("Testing weighted_index with even weights") {
+        RandomNumberGenerator rng(11111);
+        std::vector<double> weights = {0.25, 0.25, 0.25, 0.25};
+        std::vector<unsigned int> counts(4, 0);
+
+        for (unsigned int i = 0; i < 100000; ++i) {
+            unsigned int x = rng.weighted_index(weights);
+            ++counts.at(x);
+        }
+
+        REQUIRE(counts.at(0) / 100000.0 == Approx(0.25).epsilon(0.001));
+    }
+
+    SECTION("Testing weighted_index with uneven weights") {
+        RandomNumberGenerator rng(11111);
+        std::vector<double> weights = {0.2, 0.5, 0.3};
+        std::vector<unsigned int> counts(3, 0);
+
+        for (unsigned int i = 0; i < 100000; ++i) {
+            unsigned int x = rng.weighted_index(weights);
+            ++counts.at(x);
+        }
+
+        REQUIRE(counts.at(1) / 100000.0 == Approx(0.5).epsilon(0.001));
+    }
+}
