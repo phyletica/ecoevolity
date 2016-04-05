@@ -657,7 +657,9 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                     tree_idx < comparisons.get_number_of_comparisons();
                     ++tree_idx) {
                 std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
-                std::vector<double> ln_category_probs(other_height_indices.size() + comparisons.get_number_of_auxiliary_heights());
+                std::vector<double> ln_category_probs;
+                ln_category_probs.reserve(other_height_indices.size() +
+                        comparisons.get_number_of_auxiliary_heights());
 
                 for (auto height_idx : other_height_indices) {
                     unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height_index(height_idx);
@@ -669,7 +671,8 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                     ln_category_probs.push_back(lnl + std::log(number_of_elements));
                 }
 
-                std::vector<double> auxiliary_heights(comparisons.get_number_of_auxiliary_heights());
+                std::vector<double> auxiliary_heights;
+                auxiliary_heights.reserve(comparisons.get_number_of_auxiliary_heights());
                 for (unsigned int i = 0; i < comparisons.get_number_of_auxiliary_heights(); ++i) {
                     double fresh_height = comparisons.node_height_prior.draw(rng);
                     auxiliary_heights.push_back(fresh_height);

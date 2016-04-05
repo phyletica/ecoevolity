@@ -328,7 +328,8 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         double calculate_ln_relative_coalescence_rate_prior_density() const {
             double d = 0.0;
-            std::vector< std::shared_ptr<CoalescenceRateParameter> > parameters(this->get_node_count());
+            std::vector< std::shared_ptr<CoalescenceRateParameter> > parameters;
+            parameters.reserve(this->get_node_count());
             this->add_ln_relative_coalescence_rate_prior_density(d, parameters);
             return d;
         }

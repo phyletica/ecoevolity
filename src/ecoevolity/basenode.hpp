@@ -398,7 +398,8 @@ class BaseNode {
 
         double calculate_ln_relative_node_height_prior_density() const {
             double d = 0.0;
-            std::vector< std::shared_ptr<PositiveRealParameter> > parameters(this->get_node_count());
+            std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
+            parameters.reserve(this->get_node_count());
             this->add_ln_relative_node_height_prior_density(d, parameters);
             return d;
         }

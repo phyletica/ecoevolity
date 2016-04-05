@@ -63,7 +63,8 @@ void ComparisonPopulationTreeCollection::compute_tree_partials() {
 }
 
 void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
-    std::vector<std::thread> threads(this->trees_.size());
+    std::vector<std::thread> threads;
+    threads.reserve(this->trees_.size());
 
     for (auto tree_iter : this->trees_) {
         threads.push_back(std::thread(tree_iter->compute_log_likelihood_and_prior));
@@ -86,7 +87,8 @@ void ComparisonPopulationTreeCollection::mcmc() {
         this->store_state();
         Operator& op = this->operator_schedule_.draw_operator(this->rng_);
         if (op.get_type() == Operator::OperatorTypeEnum::tree_operator) {
-            std::vector<double> hastings_ratios(this->trees_.size());
+            std::vector<double> hastings_ratios;
+            hastings_ratios.reserve(this->trees_.size());
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
                 hastings_ratios.push_back(op.propose(this->rng_, this->trees_.at(tree_idx)));
             }
@@ -134,7 +136,8 @@ void ComparisonPopulationTreeCollection::mcmc() {
             this->compute_log_likelihood_and_prior(false);
         }
         else if (op.get_type() == Operator::OperatorTypeEnum::time_operator) {
-            std::vector<double> hastings_ratios(this->node_heights_.size());
+            std::vector<double> hastings_ratios;
+            hastings_ratios.reserve(this->node_heights_.size());
             for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
                 hastings_ratios.push_back(op.propose(this->rng_, *(this->heights_.at(height_idx))));
             }
