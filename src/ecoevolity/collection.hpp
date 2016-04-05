@@ -34,9 +34,9 @@ class ComparisonPopulationTreeCollection {
         std::vector<unsigned int> node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        std::shared_ptr<ContinuousProbabilityDistribution> concentration_prior_ = std::make_shared<GammaDistribution>(1.0, 1.0);
+        std::shared_ptr<PositiveRealParameter> concentration_ = std::make_shared<PositiveRealParameter>(this->concentration_prior_, 1.0);
         bool use_multithreading_ = false;
-
-        double compute_log_prior_density_of_node_heights();
 
     public:
         void store_state();
@@ -46,6 +46,13 @@ class ComparisonPopulationTreeCollection {
         unsigned int get_number_of_comparisons() const {
             return this->trees_.size();
         }
+
+        unsigned int get_height_index(unsigned int tree_index) const;
+        std::shared_ptr<PositiveRealParameter> get_height_parameter(unsigned int tree_index) const;
+        double get_height(unsigned int tree_index) const;
+
+        unsigned int get_number_of_trees_mapped_to_height(unsigned int height_index) const;
+
 };
 
 #endif

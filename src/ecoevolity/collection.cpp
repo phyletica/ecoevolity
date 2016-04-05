@@ -19,9 +19,6 @@
 
 #include "collection.hpp"
 
-double ComparisonPopulationTreeCollection::compute_log_prior_density_of_node_heights() {
-}
-
 void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
@@ -95,6 +92,24 @@ void ComparisonPopulationTreeCollection::mcmc() {
             }
             this->compute_tree_partials();
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
+                // Check to see if we updated a fixed parameter. If so, do
+                // nothing and continue to next tree (to avoid counting toward
+                // operator acceptance ratio).
+                if ((op.target_parameter() == "coalescence rate") &&
+                        (this->trees_.at(tree_index).coalescence_rates_are_fixed())) {
+                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_index).is_dirty());
+                    continue;
+                }
+                if ((op.target_parameter() == "mutation rate") &&
+                        (this->trees_.at(tree_index).mutation_rates_are_fixed())) {
+                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_index).is_dirty());
+                    continue;
+                }
+                if ((op.target_parameter() == "node height multiplier") &&
+                        (this->trees_.at(tree_index).node_height_multiplier_is_fixed())) {
+                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_index).is_dirty());
+                    continue;
+                }
                 double likelihood_ratio =
                         this->trees_.at(tree_idx).get_log_likelihood_value() -
                         this->trees_.at(tree_idx).get_stored_log_likelihood_value();

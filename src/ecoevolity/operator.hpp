@@ -309,7 +309,7 @@ class ConcentrationOperator : public ModelOperator {
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) = 0;
+                ComparisonPopulationTreeCollection& comparisons) = 0;
 
         std::string get_name() const {
             return "ConcentrationOperator";
@@ -424,6 +424,50 @@ class MutationRateMover : public MutationRateOperator {
 
         std::string get_name() const {
             return "MutationRateMover";
+        }
+};
+
+class ConcentrationScaler: public ConcentrationOperator {
+    protected:
+        double scale_ = 0.5;
+
+    public:
+        ConcentrationScaler() : ConcentrationOperator() { }
+        ConcentrationScaler(double scale) : public ConcentrationOperator() {
+            this->set_scale(scale);
+        }
+        virtual ~ConcentrationScaler() { }
+
+        void set_scale(double scale) {
+            this->scale_ = scale;
+        }
+        double get_scale() const {
+            return this->scale_;
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons) {
+            double v = comparisons->get_concentration();
+            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+            comparisons->set_concentration(v * multiplier);
+            return std::log(multiplier);
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->calc_delta(log_alpha);
+            delta += std::log(this->scale_);
+            this->scale_ = std::exp(delta);
+        }
+
+        double get_coercable_parameter_value() {
+            return this->scale_;
+        }
+
+        void set_coercable_parameter_value(double value) {
+            this->scale_ = value;
+        }
+
+        std::string get_name() const {
+            return "ConcentrationScaler";
         }
 };
 
@@ -585,6 +629,60 @@ class ComparisonHeightScaler : public NodeHeightOperator {
 
         std::string get_name() const {
             return "ComparisonHeightScaler";
+        }
+};
+
+class DirichletProcessGibbsSampler : public ModelOperator {
+    public:
+        DirichletProcessGibbsSampler() : ModelOperator() { }
+        virtual ~DirichletProcessGibbsSampler() { }
+
+        std::string get_name() const {
+            return "DirichletProcessGibbsSampler";
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons) {
+
+            const double ln_concentration_over_num_aux = std::log(
+                    comparisons.get_concentration() /
+                    comparisons.get_number_of_auxiliary_heights())
+
+            for (unsigned int tree_idx = 0;
+                    tree_idx < comparisons.get_number_of_comparisons();
+                    ++tree_idx) {
+                std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
+                std::vector<double> ln_category_probs(other_height_indices.size() + comparisons.get_number_of_auxiliary_heights());
+
+                for (auto height_idx : other_height_indices) {
+                    unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height_index(height_idx);
+                    if (height_idx == tree_idx) {
+                        --number_of_elements;
+                    }
+                    comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx).get_value());
+                    double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
+                    ln_category_probs.push_back(lnl + std::log(number_of_elements));
+                }
+
+                std::vector<double> auxiliary_heights(comparisons.get_number_of_auxiliary_heights());
+                for (unsigned int i = 0; i < comparisons.get_number_of_auxiliary_heights(); ++i) {
+                    double fresh_height = comparisons.node_height_prior.draw(rng);
+                    auxiliary_heights.push_back(fresh_height);
+                    comparisons.trees_.at(tree_idx).set_height(fresh_height);
+                    double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
+                    ln_category_probs.push_back(lnl + ln_concentration_over_num_aux);
+                }
+
+                normalize(ln_category_probs);
+
+
+
+            }
         }
 };
 
