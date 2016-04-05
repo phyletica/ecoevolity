@@ -27,6 +27,8 @@
 #include <vector>
 #include <cmath>
 
+#include "assert.hpp"
+
 /**
  * Function for accessing map elements.
  *
@@ -75,10 +77,12 @@ inline void normalize_log_likelihoods(std::vector<double>& v) {
         sum += v.at(i);
     }
 
-
+    double t = 0.0;
     for (unsigned int i = 0; i < v.size(); ++i) {
         v.at(i) /= sum;
+        t += v.at(i);
     }
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
 }
 
 #endif
