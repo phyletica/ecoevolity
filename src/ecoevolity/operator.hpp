@@ -655,11 +655,11 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                     comparisons.get_number_of_auxiliary_heights())
 
             for (unsigned int tree_idx = 0;
-                    tree_idx < comparisons.get_number_of_comparisons();
+                    tree_idx < comparisons.get_number_of_trees();
                     ++tree_idx) {
                 std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
-                std::vector<double> ln_category_probs;
-                ln_category_probs.reserve(other_height_indices.size() +
+                std::vector<double> ln_category_likelihoods;
+                ln_category_likelihoods.reserve(other_height_indices.size() +
                         comparisons.get_number_of_auxiliary_heights());
 
                 for (auto height_idx : other_height_indices) {
@@ -669,26 +669,35 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                     }
                     comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx).get_value());
                     double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
-                    ln_category_probs.push_back(lnl + std::log(number_of_elements));
+                    ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
                 }
 
                 std::vector<double> auxiliary_heights;
                 auxiliary_heights.reserve(comparisons.get_number_of_auxiliary_heights());
                 for (unsigned int i = 0; i < comparisons.get_number_of_auxiliary_heights(); ++i) {
-                    double fresh_height = comparisons.node_height_prior.draw(rng);
+                    double fresh_height = comparisons.node_height_prior_.draw(rng);
                     auxiliary_heights.push_back(fresh_height);
                     comparisons.trees_.at(tree_idx).set_height(fresh_height);
                     double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
-                    ln_category_probs.push_back(lnl + ln_concentration_over_num_aux);
+                    ln_category_likelihoods.push_back(lnl + ln_concentration_over_num_aux);
                 }
 
-                normalize_log_likelihoods(ln_category_probs);
-                unsigned int new_height_index = rng.weighted_index(ln_category_probs);
-                // TODO: handle switching/adding tree's height parameter (or do
-                // nothing if put back in same category)
-
-
-
+                std::vector<double> category_probs(ln_category_likelihoods);
+                normalize_log_likelihoods(category_probs);
+                unsigned int prob_index = rng.weighted_index(category_probs);
+                if (prob_index < other_height_indices.size()) {
+                    comparisons.remap_tree(
+                            tree_idx,
+                            other_height_indices.at(prob_idx),
+                            ln_category_likelihoods.at(prob_idx));
+                }
+                else {
+                    comparisons.map_tree_to_new_height(
+                            tree_idx,
+                            auxiliary_heights.at(new_height_index -
+                                    other_height_indices.size()),
+                            ln_category_likelihoods.at(prob_idx));
+                }
             }
         }
 };
