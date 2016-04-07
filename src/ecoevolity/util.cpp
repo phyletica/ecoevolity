@@ -39,3 +39,10 @@ std::vector<std::string> split(
     return elements;
 }
 
+std::string get_indent(unsigned int level) {
+    std::string s = "";
+    for (unsigned int i = 0; i < 4 * level; ++i) {
+        s += " ";
+    }
+    return s;
+}

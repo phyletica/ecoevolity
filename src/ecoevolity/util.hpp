@@ -58,6 +58,8 @@ std::vector<std::string> split(
         const std::string &s,
         char delimiter);
 
+std::string get_indent(unsigned int level = 1);
+
 
 inline void normalize_log_likelihoods(std::vector<double>& v) {
     double mx = v.at(0);

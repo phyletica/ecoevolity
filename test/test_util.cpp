@@ -133,3 +133,13 @@ TEST_CASE("Testing normalize_log_likelihoods of copy", "[util]") {
         REQUIRE(v.at(3) == -45.12);
     }
 }
+
+TEST_CASE("Testing get_indent", "[util]") {
+    SECTION("Testing get_indent") {
+        REQUIRE(get_indent() == "    ");
+        REQUIRE(get_indent(0) == "");
+        REQUIRE(get_indent(1) == "    ");
+        REQUIRE(get_indent(2) == "        ");
+        REQUIRE(get_indent(3) == "            ");
+    }
+}
