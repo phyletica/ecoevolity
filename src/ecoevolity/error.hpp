@@ -115,4 +115,32 @@ class EcoevolityProbabilityDistributionError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityProbabilityDistributionError", message) { }
 };
 
+class ContinuousDistributionSettingError: public EcoevolityBaseError {
+    public:
+        ContinuousDistributionSettingError(
+                const std::string & message) :
+            EcoevolityBaseError("ContinuousDistributionSettingError", message) { }
+};
+
+class PositiveRealParameterSettingError: public EcoevolityBaseError {
+    public:
+        PositiveRealParameterSettingError(
+                const std::string & message) :
+            EcoevolityBaseError("PositiveRealParameterSettingError", message) { }
+};
+
+class ComparisonSettingError: public EcoevolityBaseError {
+    public:
+        ComparisonSettingError(
+                const std::string & message) :
+            EcoevolityBaseError("ComparisonSettingError", message) { }
+};
+
+class CollectionSettingError: public EcoevolityBaseError {
+    public:
+        CollectionSettingError(
+                const std::string & message) :
+            EcoevolityBaseError("CollectionSettingError", message) { }
+};
+
 #endif
