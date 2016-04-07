@@ -294,6 +294,9 @@ class PopulationTree {
 };
 
 class ComparisonPopulationTree: public PopulationTree {
+
+    friend class ComparisonPopulationTreeCollection;
+
     public:
         ComparisonPopulationTree() { }
         ComparisonPopulationTree(
