@@ -1,15 +1,16 @@
 ---
 event_model_prior:
     dirichlet_process:
+        value:      1.0
+        estimate:   true
+        prior_mean_number_of_events: 10
         shape:      2.0
-        scale:      1.0
-    prior_mean_number_of_events: 10
+        scale:      2.0
 
 time_prior:
     gamma_distribution:
         shape: 1.0
         scale: 1.0
-        rate:  1.0
         offset: 0.0
 
 mcmc_settings:
@@ -31,7 +32,6 @@ global_comparison_settings:
             gamma_distribution:
                 shape: 1.0
                 scale: 1.0
-                rate:  1.0
                 offset: 0.0
     u_rate:
         value: empirical
