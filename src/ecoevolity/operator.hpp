@@ -662,12 +662,21 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                 ln_category_likelihoods.reserve(other_height_indices.size() +
                         comparisons.get_number_of_auxiliary_heights());
 
+                // store height associated with this tree
+                comparisons.node_heights_.at(comparisons.get_height_index(tree_idx)).store();
                 for (auto height_idx : other_height_indices) {
-                    unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height_index(height_idx);
-                    if (height_idx == tree_idx) {
+                    unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height(height_idx);
+                    if (height_idx == comparisons.get_height_index(tree_idx)) {
                         --number_of_elements;
+                        if (! comparisons.trees_.at(tree_idx).is_dirty()) {
+                            double lnl = comparisons.trees_.at(tree_idx).get_log_likelihood_value();
+                            ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
+                            continue;
+                        }
                     }
-                    comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx).get_value());
+                    else {
+                        comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx).get_value());
+                    }
                     double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
                     ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
                 }
@@ -681,6 +690,9 @@ class DirichletProcessGibbsSampler : public ModelOperator {
                     double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
                     ln_category_likelihoods.push_back(lnl + ln_concentration_over_num_aux);
                 }
+
+                // restore height associated with this tree
+                comparisons.node_heights_.at(comparisons.get_height_index(tree_idx)).restore();
 
                 std::vector<double> category_probs(ln_category_likelihoods);
                 normalize_log_likelihoods(category_probs);

@@ -42,6 +42,25 @@ class ComparisonPopulationTreeCollection {
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         bool use_multithreading_ = false;
 
+        void compute_tree_partials();
+        void compute_tree_partials_threaded();
+        void make_trees_clean();
+
+        void remap_tree(unsigned int tree_index,
+                        unsigned int height_index,
+                        double log_likelihood);
+
+        void map_tree_to_new_height(
+                unsigned int tree_index,
+                double height,
+                double log_likelihood);
+
+        void add_height(
+                double height,
+                const std::vector<unsigned int>& mapped_tree_indices);
+
+        void remove_height(unsigned int height_index);
+
     public:
         void store_state();
         void restore_state();
@@ -53,37 +72,35 @@ class ComparisonPopulationTreeCollection {
 
         unsigned int get_number_of_trees_mapped_to_height(
                 unsigned int height_index) const;
+        unsigned int get_number_of_partners(
+                unsigned int tree_index) const;
 
-        unsigned int get_height_index(unsigned int tree_index) const;
-        std::shared_ptr<PositiveRealParameter> get_height_parameter(unsigned int tree_index) const;
-        double get_height(unsigned int tree_index) const;
+        unsigned int get_height_index(unsigned int tree_index) const {
+            return this->node_height_indices_.at(tree_index);
+        }
 
-        double get_concentration() const;
+        std::shared_ptr<PositiveRealParameter> get_height_parameter(
+                unsigned int height_index) const {
+            return this->node_heights_.at(height_index);
+        }
 
-        unsigned int get_number_of_auxiliary_heights() const;
+        double get_height(unsigned int tree_index) const {
+            return this->node_heights_.at(tree_index).get_value();
+        }
+
+        double get_concentration() const {
+            return this->concentration_.get_value();
+        }
+
+        unsigned int get_number_of_auxiliary_heights() const {
+            return this->number_of_auxiliary_heights_;
+        }
 
         std::vector<unsigned int> get_other_height_indices(
                 unsigned int tree_index) const;
 
 
-        // if the new index is not the same as old
-        //      - change index in node_height_indices_ for tree_index
-        //      - set_height_parameter for tree accordingly
-        // set tree's likelihood value and make clean
-        void remap_tree(unsigned int tree_index,
-                        unsigned int height_index,
-                        double log_likelihood);
-
-
-        // Add new neight parameter to node_heights_
-        // change index in node_height_indices_ for tree
-        // set_height_parameter for tree accordingly
-        // set tree's likelihood value and make clean
-        void map_tree_to_new_height(
-                unsigned int tree_index,
-                double height,
-                double log_likelihood);
-
+        void mcmc();
 };
 
 #endif

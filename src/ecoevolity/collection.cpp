@@ -81,6 +81,83 @@ void ComparisonPopulationTreeCollection::make_trees_clean() {
     }
 }
 
+unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
+        unsigned int height_index) const {
+    unsigned int count = 0;
+    for (auto h_index_iter : this->node_height_indices_) {
+        if (h_index_iter == height_index) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+unsigned int ComparisonPopulationTreeCollection::get_number_of_partners(
+        unsigned int tree_index) const {
+    unsigned int h_index = this->node_height_indices_.at(tree_index);
+    unsigned int count = this->get_number_of_trees_mapped_to_height(h_index);
+    // should always find at least itself
+    ECOEVOLITY_ASSERT(count > 0);
+    return count - 1;
+}
+
+void ComparisonPopulationTreeCollection::remap_tree(
+        unsigned int tree_index,
+        unsigned int height_index,
+        double log_likelihood) {
+    if (! this->get_height_index(tree_index) == height_index) {
+        unsigned int num_partners = this->get_number_of_partners(tree_index);
+        unsigned int old_height_index = this->get_height_index(tree_index);
+        this->node_height_indices_.at(tree_index) = height_index;
+        this->trees_.at(tree_index).set_height_parameter(
+                this->get_height_parameter(height_index));
+        if (num_partners == 0) {
+            this->remove_height(old_height_index);
+        }
+    }
+    this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
+    this->trees_.at(tree_index).make_clean();
+}
+
+void ComparisonPopulationTreeCollection::map_tree_to_new_height(
+        unsigned int tree_index,
+        double height,
+        double log_likelihood) {
+    unsigned int num_partners = this->get_number_of_partners(tree_index);
+    unsigned int old_height_index = this->get_height_index(tree_index);
+    std::vector<unsigned int> mapped_tree_indices = {tree_index};
+    this->add_height(height, mapped_tree_indices);
+    if (num_partners == 0) {
+        this->remove_height(old_height_index);
+    }
+    this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
+    this->trees_.at(tree_index).make_clean();
+}
+
+void ComparisonPopulationTreeCollection::remove_height(
+        unsigned int height_index) {
+    ECOEVOLITY_ASSERT(this->get_number_of_trees_mapped_to_height(height_index) == 0);
+    ECOEVOLITY_ASSERT(this->node_heights_.at(height_index).use_count() < 2);
+    this->node_heights_.erase(height_index);
+    for (unsigned int i = 0; i < this->node_height_indices_.size(); ++i) {
+        ECOEVOLITY_ASSERT(this->node_height_indices_.at(i) != height_index);
+        if (this->node_height_indices_.at(i) > height_index) {
+            --this->node_height_indices_.at(i);
+        }
+    }
+}
+
+void ComparisonPopulationTreeCollection::add_height(
+        double height,
+        const std::vector<unsigned int>& mapped_tree_indices) {
+    std::shared_ptr<PositiveRealParameter> new_height = std::make_shared<PositiveRealParameter>(this->node_height_prior_, height);
+    this->node_heights_.push_back(new_height);
+    for (auto tree_idx : mapped_tree_indices) {
+        this->node_height_indices_.at(tree_idx) = this->node_heights_.size() - 1;
+        this->trees_.at(tree_idx).set_height_parameter(new_height);
+    }
+}
+
 void ComparisonPopulationTreeCollection::mcmc() {
     // TODO:  initialize state
     for (unsigned int gen = 0; gen < ngens; ++gen) {
@@ -208,4 +285,3 @@ void ComparisonPopulationTreeCollection::mcmc() {
         // TODO: check if its a logging generation
     }
 }
-
