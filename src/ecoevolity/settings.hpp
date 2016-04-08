@@ -133,6 +133,11 @@ class ContinuousDistributionSettings {
             return this->name_;
         }
 
+        void nullify() {
+            this->name_ = "none";
+            this->parameters_.clear();
+        }
+
         std::shared_ptr<ContinuousProbabilityDistribution> get_instance() const {
             if (this->name_ == "gamma_distribution") {
                 if (this->parameters_.count("offset") > 0) { 
@@ -209,31 +214,16 @@ class PositiveRealParameterSettings {
     friend class CollectionSettings;
 
     private:
-        std::string name_;
         double value_;
         bool is_fixed_;
         ContinuousDistributionSettings prior_settings_;
 
     public:
         PositiveRealParameterSettings(
-                const std::string& name,
                 double value,
                 bool fix,
                 const std::string& prior_name
                 const std::unordered_map<std::string, double>& prior_parameters) {
-            std::vector<std::string> valid_names = this->get_valid_names();
-            bool found = false;
-            for (auto const valid_name& : valid_names) {
-                if (name == valid_name) {
-                    found = true;
-                    break;
-                }
-            }
-            if (! found) {
-                std::string message = "unrecognized parameter: " + name;
-                throw PositiveRealParameterSettingError(message);
-            }
-            this->name_ = name;
             if (value < 0.0) {
                 throw PositiveRealParameterSettingError(
                         "positive real parameter cannot be less than 0"
@@ -241,37 +231,28 @@ class PositiveRealParameterSettings {
             }
             this->value_ = value;
             this->is_fixed_ = fix;
-            this->prior_settings_ = ContinuousDistributionSettings(prior_name,
-                    prior_parameters);
+            if (fix) {
+                this->prior_settings_ = ContinuousDistributionSettings("none",
+                        prior_parameters);
+            }
+            else {
+                this->prior_settings_ = ContinuousDistributionSettings(prior_name,
+                        prior_parameters);
+            }
         }
         virtual ~PositiveRealParameterSettings() { }
         PositiveRealParameterSettings& operator=(const PositiveRealParameterSettings& other) {
-            this->name_ = other.name_;
             this->value_ = other.value_;
             this->is_fixed_ = other.is_fixed_;
             this->prior_settings_ = other.prior_settings_;
             return * this;
         }
 
-        const std::string& get_name() const {
-            return this->name_;
-        }
         double get_value() const {
             return this->value_;
         }
         bool is_fixed() const {
             return this->is_fixed_;
-        }
-
-        std::vector<std::string> get_valid_names() const {
-            std::vector<std::string> names = {
-                "population_size",
-                "u_rate",
-                "v_rate",
-                "time",
-                "time_multiplier"
-            };
-            return names;
         }
 
         PositiveRealParameter get_instance() const {
@@ -290,20 +271,87 @@ class ComparisonSettings {
 
     private:
         std::string path_;
+        PositiveRealParameterSettings population_size_settings_;
+        PositiveRealParameterSettings u_settings_;
+        PositiveRealParameterSettings v_settings_;
+        PositiveRealParameterSettings time_multiplier_settings_;
 
-        bool markers_are_dominant_;
-        bool genotypes_are_diploid_;
         char population_name_delimiter_;
         bool population_name_is_prefix_;
+        bool genotypes_are_diploid_;
+        bool markers_are_dominant_;
         bool constant_sites_included_;
 
+        bool use_empirical_mutation_rate_starting_values_;
         bool constrain_population_sizes_;
         bool constrain_mutation_rates_;
 
-        PositiveRealParameterSettings population_size_;
-        PositiveRealParameterSettings u_;
-        PositiveRealParameterSettings v_;
-        PositiveRealParameterSettings time_multiplier_;
+        void make_consistent() {
+            if (this->constrain_mutation_rates_) {
+                this->use_empirical_mutation_rate_starting_values_ = false;
+                std::unordered_map<std::string, double> prior_parameters
+                this->u_settings_.prior_settings_.nullify();
+                this->v_settings_.prior_settings_.nullify();
+            }
+            if (this->constrain_population_sizes_) {
+                this->population_size_settings_.is_fixed_ = true;
+                this->population_size_settings_.prior_settings_.nullify();
+            }
+        }
+
+    public:
+        ComparisonSettings(
+                const std::string& path,
+                const PositiveRealParameterSettings& population_size_settings,
+                const PositiveRealParameterSettings& u_settings,
+                const PositiveRealParameterSettings& v_settings,
+                const PositiveRealParameterSettings& time_multiplier_settings,
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_included = false,
+                bool use_empirical_mutation_rate_starting_values = true;
+                bool constrain_population_sizes = false,
+                bool constrain_mutation_rates = true) {
+
+            this->path_ = path;
+            this->population_size_settings_ = population_size_settings;
+            this->u_settings_ = u_settings;
+            this->v_settings_ = v_settings;
+            this->time_multiplier_settings_ = time_multiplier_settings;
+            this->population_name_delimiter_ = population_name_delimiter;
+            this->population_name_is_prefix_ = population_name_is_prefix;
+            this->genotypes_are_diploid_ = genotypes_are_diploid;
+            this->markers_are_dominant_ = markers_are_dominant;
+            this->constant_sites_included_ = constant_sites_included;
+            this->use_empirical_mutation_rate_starting_values_ = use_empirical_mutation_rate_starting_values;
+            this->constrain_population_sizes_ = constrain_population_sizes;
+            this->constrain_mutation_rates_ = constrain_mutation_rates;
+            this->make_consistent();
+            // TODO: need to handle empirical mutation rates here.
+        }
+        virtual ~ComparisonSettings() { }
+        ComparisonSettings& operator=(const ComparisonSettings& other) {
+            this->path_                                         = other.path_;
+            this->population_size_settings_                     = other.population_size_settings_;
+            this->u_settings_                                   = other.u_settings_;
+            this->v_settings_                                   = other.v_settings_;
+            this->time_multiplier_settings_                     = other.time_multiplier_settings_;
+            this->population_name_delimiter_                    = other.population_name_delimiter_;
+            this->population_name_is_prefix_                    = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_                        = other.genotypes_are_diploid_;
+            this->markers_are_dominant_                         = other.markers_are_dominant_;
+            this->constant_sites_included_                      = other.constant_sites_included_;
+            this->use_empirical_mutation_rate_starting_values_  = other.use_empirical_mutation_rate_starting_values_;
+            this->constrain_population_sizes_                   = other.constrain_population_sizes_;
+            this->constrain_mutation_rates_                     = other.constrain_mutation_rates_;
+            return * this;
+        }
+
+        ComparisonPopulationTree get_instance() const {
+            // TODO:
+        }
 };
 
 class CollectionSettings {
@@ -317,6 +365,15 @@ class CollectionSettings {
         ContinuousDistributionSettings time_prior_settings_;
 
         ParameterSettings concentration_;
+
+        std::vector<ComparisonSettings> comparisons_;
+
+    public;
+
+        void add_comparison();
+
+        // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
+        static CollectionSettings init_from_config_file(const std::string& path);
 };
 
 #endif
