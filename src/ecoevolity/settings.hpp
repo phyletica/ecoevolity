@@ -365,6 +365,15 @@ class CollectionSettings {
         ContinuousDistributionSettings time_prior_settings_;
 
         ParameterSettings concentration_;
+
+        std::vector<ComparisonSettings> comparisons_;
+
+    public;
+
+        void add_comparison();
+
+        // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
+        static CollectionSettings init_from_config_file(const std::string& path);
 };
 
 #endif
