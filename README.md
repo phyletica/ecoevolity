@@ -12,8 +12,6 @@ Table of Contents
 Ecoevolity
 ==========
 
-***Ecoevolity: Estimating evolutionary coevality***
-
 Inferring shared evolutionary events using full-likelihood Bayesian inference.
 
 This is a work in progess...
