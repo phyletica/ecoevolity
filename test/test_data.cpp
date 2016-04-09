@@ -3083,13 +3083,22 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
     SECTION("Testing data/haploid-standard-constant.nex") {
         std::string nex_path = "data/haploid-standard-constant.nex";
         BiallelicData bd(nex_path, '_', true, false);
-        bd.remove_constant_patterns();
-        bd.remove_missing_population_patterns();
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(14.0/27.0));
         double u;
         double v;
+        // SNAPP: u = 0.90625 v = 1.1153846153846154
+        // SNAPP seems to be getting the proportion of zeros (green) by doing:
+        //     # of zeros / all cells except ?
+        // the denominator is the count of all cells in the alignement except
+        // "?"; this includes "-".
+        bd.get_empirical_mutation_rates(u, v);
+        REQUIRE(u == Approx(0.9642857142857143));
+        REQUIRE(v == Approx(1.0384615384615383));
+
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(11.0/19.0));
         bd.get_empirical_mutation_rates(u, v);
-        // SNAPP: u = 0.90625 v = 1.1153846153846154
         REQUIRE(u == Approx(0.8636364));
         REQUIRE(v == Approx(1.1875));
     }
@@ -3097,14 +3106,41 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
     SECTION("Testing data/haploid-standard-missing.nex") {
         std::string nex_path = "data/haploid-standard-missing.nex";
         BiallelicData bd(nex_path, '_', true, false);
-        bd.remove_constant_patterns();
-        bd.remove_missing_population_patterns();
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(0.6111111111111112));
         double u;
         double v;
+        // SNAPP: u = 0.8235294117647058 v = 1.2727272727272727
+        // SNAPP seems to be getting the proportion of zeros (green) by doing:
+        //     # of zeros / all cells except ?
+        // the denominator is the count of all cells in the alignement except
+        // "?"; this includes "-".
+        bd.get_empirical_mutation_rates(u, v);
+        REQUIRE(u == Approx(0.8181818181818181));
+        REQUIRE(v == Approx(1.2857142857142858));
+
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(7.0/13.0));
         bd.get_empirical_mutation_rates(u, v);
-        // SNAPP: u = 0.8235294117647058 v = 1.2727272727272727
         REQUIRE(u == Approx(0.9285714));
         REQUIRE(v == Approx(1.083333));
+    }
+
+    SECTION("Testing data/diploid-dna-constant-missing.nex") {
+        std::string nex_path = "data/diploid-dna-constant-missing.nex";
+        BiallelicData bd(nex_path);
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(0.3548387096774194));
+        double u;
+        double v;
+        bd.get_empirical_mutation_rates(u, v);
+        REQUIRE(u == Approx(1.409090909090909));
+        REQUIRE(v == Approx(0.775));
+
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(0.48863636363636365));
+        bd.get_empirical_mutation_rates(u, v);
+        REQUIRE(u == Approx(1.0232558139534884));
+        REQUIRE(v == Approx(0.9777777777777777));
     }
 }
