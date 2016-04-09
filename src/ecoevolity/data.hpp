@@ -102,6 +102,9 @@ class BiallelicData {
         const unsigned int& get_number_of_constant_green_sites_removed() const;
         const unsigned int& get_number_of_missing_sites_removed() const;
 
+        double get_proportion_of_red_alleles() const;
+        void get_empirical_mutation_rates(double& u, double& v) const;
+
         void validate() const;
 
     private:

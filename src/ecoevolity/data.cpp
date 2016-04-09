@@ -644,6 +644,28 @@ const unsigned int& BiallelicData::get_number_of_missing_sites_removed() const {
     return this->number_of_missing_sites_removed_;
 }
 
+double BiallelicData::get_proportion_of_red_alleles() const {
+    unsigned int red_count = 0;
+    unsigned int total_count = 0;
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int pop_idx = 0;
+                pop_idx < this->get_number_of_populations();
+                ++pop_idx) {
+            red_count += this->get_red_allele_count(pattern_idx, pop_idx) * this->get_pattern_weight(pattern_idx);
+            total_count += this->get_allele_count(pattern_idx, pop_idx) * this->get_pattern_weight(pattern_idx);
+        }
+    }
+    return (double) red_count / (double) total_count;
+}
+
+void BiallelicData::get_empirical_mutation_rates(double& u, double& v) const {
+    double p_red = this->get_proportion_of_red_alleles();
+    u = 1.0 / (2.0 * p_red);
+    v = 1.0 / (2.0 * (1.0 - p_red));
+}
+
 void BiallelicData::validate() const {
     if (this->allele_counts_.size() != this->pattern_weights_.size()) {
         throw EcoevolityBiallelicDataError(

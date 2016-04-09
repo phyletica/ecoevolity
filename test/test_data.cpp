@@ -3035,3 +3035,76 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
     }
 }
+
+
+TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
+    SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        BiallelicData bd(nex_path);
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
+        double u;
+        double v;
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(5.0/12.0));
+        bd.get_empirical_mutation_rates(u, v);
+        // Verified these values in SNAPP
+        REQUIRE(u == Approx(1.2));
+        REQUIRE(v == Approx(0.8571429));
+    }
+
+    SECTION("Testing data/haploid-standard.nex") {
+        std::string nex_path = "data/haploid-standard.nex";
+        BiallelicData bd(nex_path, '_', true, false);
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
+        double u;
+        double v;
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(12.0/23.0));
+        bd.get_empirical_mutation_rates(u, v);
+        // Verified these values in SNAPP
+        REQUIRE(u == Approx(0.9583333));
+        REQUIRE(v == Approx(1.045455));
+    }
+
+    SECTION("Testing data/haploid-standard.nex as dominant") {
+        std::string nex_path = "data/haploid-standard.nex";
+        BiallelicData bd(nex_path, '_', true, false, true);
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
+        double u;
+        double v;
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(12.0/23.0));
+        bd.get_empirical_mutation_rates(u, v);
+        // Verified these values in SNAPP
+        REQUIRE(u == Approx(0.9583333));
+        REQUIRE(v == Approx(1.045455));
+    }
+
+    SECTION("Testing data/haploid-standard-constant.nex") {
+        std::string nex_path = "data/haploid-standard-constant.nex";
+        BiallelicData bd(nex_path, '_', true, false);
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
+        double u;
+        double v;
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(11.0/19.0));
+        bd.get_empirical_mutation_rates(u, v);
+        // SNAPP: u = 0.90625 v = 1.1153846153846154
+        REQUIRE(u == Approx(0.8636364));
+        REQUIRE(v == Approx(1.1875));
+    }
+
+    SECTION("Testing data/haploid-standard-missing.nex") {
+        std::string nex_path = "data/haploid-standard-missing.nex";
+        BiallelicData bd(nex_path, '_', true, false);
+        bd.remove_constant_patterns();
+        bd.remove_missing_population_patterns();
+        double u;
+        double v;
+        REQUIRE(bd.get_proportion_of_red_alleles() == Approx(7.0/13.0));
+        bd.get_empirical_mutation_rates(u, v);
+        // SNAPP: u = 0.8235294117647058 v = 1.2727272727272727
+        REQUIRE(u == Approx(0.9285714));
+        REQUIRE(v == Approx(1.083333));
+    }
+}
