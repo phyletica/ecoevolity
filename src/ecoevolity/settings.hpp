@@ -329,8 +329,28 @@ class ComparisonSettings {
             this->constrain_population_sizes_ = constrain_population_sizes;
             this->constrain_mutation_rates_ = constrain_mutation_rates;
             this->make_consistent();
-            // TODO: need to handle empirical mutation rates here.
+
+            // TODO:
+            // Not very efficient to parse data just to get rates, but might be
+            // more awkward than it's worth to defer it
+            // Make a copy operator for BiallelicData and parse and store here, then
+            // can copy it in get_instance method
+            if (this->use_empirical_mutation_rate_starting_values_) {
+                BiallelicData d = BiallelicData(
+                        this->path_,
+                        this->population_name_delimiter_,
+                        this->population_name_is_prefix_,
+                        this->genotypes_are_diploid_,
+                        this->markers_are_dominant_,
+                        true);
+                double u;
+                double v;
+                d.get_empirical_mutation_rates(u, v);
+                this->u_settings_.value_ = u;
+                this->v_settings_.value_ = v;
+            }
         }
+
         virtual ~ComparisonSettings() { }
         ComparisonSettings& operator=(const ComparisonSettings& other) {
             this->path_                                         = other.path_;
@@ -350,7 +370,19 @@ class ComparisonSettings {
         }
 
         ComparisonPopulationTree get_instance() const {
-            // TODO:
+            // TODO: create tree constructor designed for ComparisonSettings
+            ComparisonPopulationTree t = ComparisonPopulationTree(
+                    this->path_,
+                    this->population_name_delimiter_,
+                    this->population_name_is_prefix_,
+                    this->genotypes_are_diploid_,
+                    this->markers_are_dominant_,
+                    true);
+            if (this->constrain_mutation_rates_) {
+                t.fold_patterns();
+            }
+            // TODO: update tree to match settings
+            return t;
         }
 };
 
