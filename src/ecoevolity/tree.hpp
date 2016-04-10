@@ -56,10 +56,10 @@ class PopulationTree {
         ProbabilityDensity all_green_pattern_likelihood_ = ProbabilityDensity(0.0);
         ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
         bool correct_for_full_likelihood_ = true;
-        bool correct_for_constant_patterns_ = true;
+        bool constant_sites_removed_ = true;
         int number_of_constant_red_sites_ = -1;
         int number_of_constant_green_sites_ = -1;
-        bool use_removed_constant_site_counts_ = false;
+        // bool use_removed_constant_site_counts_ = false;
         bool coalescence_rates_are_fixed_ = false;
         bool mutation_rates_are_fixed_ = false;
         bool coalescence_rates_are_constrained_ = false;
@@ -101,7 +101,9 @@ class PopulationTree {
                 const bool population_name_is_prefix = true,
                 const bool genotypes_are_diploid = true,
                 const bool markers_are_dominant = false,
-                const bool validate = true);
+                const bool constant_sites_removed = true,
+                const bool validate = true
+                );
         ~PopulationTree () { delete this->root_; }
 
         void init(
@@ -110,6 +112,7 @@ class PopulationTree {
                 const bool population_name_is_prefix = true,
                 const bool genotypes_are_diploid = true,
                 const bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
                 const bool validate = true);
 
         void fold_patterns();
@@ -305,7 +308,9 @@ class ComparisonPopulationTree: public PopulationTree {
                 const bool population_name_is_prefix = true,
                 const bool genotypes_are_diploid = true,
                 const bool markers_are_dominant = false,
+                const bool constant_sites_removed = true,
                 const bool validate = true);
+        /* ComparisonPopulationTree(const ComparisonSettings& settings); */
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
         void update_child_coalescence_rate(unsigned int child_index, double rate);

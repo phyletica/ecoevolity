@@ -25,12 +25,14 @@ PopulationTree::PopulationTree(
         const bool population_name_is_prefix,
         const bool genotypes_are_diploid,
         const bool markers_are_dominant,
+        const bool constant_sites_removed,
         const bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
                genotypes_are_diploid,
                markers_are_dominant,
+               constant_sites_removed,
                validate);
 }
 
@@ -40,6 +42,7 @@ void PopulationTree::init(
         const bool population_name_is_prefix,
         const bool genotypes_are_diploid,
         const bool markers_are_dominant,
+        const bool constant_sites_removed,
         const bool validate) {
     this->data_.init(
             path,
@@ -52,9 +55,12 @@ void PopulationTree::init(
         throw EcoevolityError("PopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
-    if (this->correct_for_constant_patterns_) {
+    this->constant_sites_removed_ = constant_sites_removed;
+    if (this->constant_sites_removed_) {
+        // Have to make sure there are no missing sites
         unsigned int number_of_constant_patterns_removed = this->data_.remove_constant_patterns();
     }
+    // TODO: If there are constant sites removed above, throw error or warning here!
 
     this->init_tree();
 
@@ -408,21 +414,27 @@ double PopulationTree::compute_log_likelihood() {
         log_likelihood += weight * std::log(pattern_likelihood);
     }
 
-    if (this->correct_for_constant_patterns_) {
+    if (this->constant_sites_removed_) {
         if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
                     ((double)this->number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_.get_value())) +
                     ((double)this->number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_.get_value()));
             log_likelihood += constant_log_likelihood;
         }
-        else if (this->use_removed_constant_site_counts_){
-            double constant_log_likelihood =
-                    ((double)this->data_.get_number_of_constant_green_sites_removed() *
-                    std::log(this->all_green_pattern_likelihood_.get_value())) +
-                    ((double)this->data_.get_number_of_constant_red_sites_removed() *
-                    std::log(this->all_red_pattern_likelihood_.get_value()));
-            log_likelihood += constant_log_likelihood;
-        }
+        //////////////////////////////////////////////////////////////////////
+        // No reason to use removed site counts. Simply leave constant sites in
+        // and calc likelihood without correction. This is better, because it
+        // doesn't treat all constant site patterns equally (i.e., it accounts
+        // for constant patterns with missing data).
+        // else if (this->use_removed_constant_site_counts_){
+        //     double constant_log_likelihood =
+        //             ((double)this->data_.get_number_of_constant_green_sites_removed() *
+        //             std::log(this->all_green_pattern_likelihood_.get_value())) +
+        //             ((double)this->data_.get_number_of_constant_red_sites_removed() *
+        //             std::log(this->all_red_pattern_likelihood_.get_value()));
+        //     log_likelihood += constant_log_likelihood;
+        // }
+        //////////////////////////////////////////////////////////////////////
         else {
             log_likelihood -= ((double)this->data_.get_number_of_sites() * 
                     std::log(1.0 - this->all_green_pattern_likelihood_.get_value() -
@@ -731,12 +743,14 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         const bool population_name_is_prefix,
         const bool genotypes_are_diploid,
         const bool markers_are_dominant,
+        const bool constant_sites_removed,
         const bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
                genotypes_are_diploid,
                markers_are_dominant,
+               constant_sites_removed,
                validate);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
