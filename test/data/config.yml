@@ -22,7 +22,7 @@ global_comparison_settings:
     markers_are_dominant: false
     population_name_delimiter: "_"
     population_name_is_prefix: true
-    constant_sites_included: false
+    constant_sites_removed: true
     use_empirical_mutation_rate_starting_values: true
     constrain_population_sizes: false
     constrain_mutation_rates: true
@@ -65,4 +65,4 @@ comparisons:
         
 - comparison:
     path: "data2.nex"
-    constant_sites_included: true
+    constant_sites_removed: false

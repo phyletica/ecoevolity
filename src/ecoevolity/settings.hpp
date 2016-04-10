@@ -280,7 +280,7 @@ class ComparisonSettings {
         bool population_name_is_prefix_;
         bool genotypes_are_diploid_;
         bool markers_are_dominant_;
-        bool constant_sites_included_;
+        bool constant_sites_removed_;
 
         bool use_empirical_mutation_rate_starting_values_;
         bool constrain_population_sizes_;
@@ -310,7 +310,7 @@ class ComparisonSettings {
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
-                bool constant_sites_included = false,
+                bool constant_sites_removed = false,
                 bool use_empirical_mutation_rate_starting_values = true;
                 bool constrain_population_sizes = false,
                 bool constrain_mutation_rates = true) {
@@ -324,7 +324,7 @@ class ComparisonSettings {
             this->population_name_is_prefix_ = population_name_is_prefix;
             this->genotypes_are_diploid_ = genotypes_are_diploid;
             this->markers_are_dominant_ = markers_are_dominant;
-            this->constant_sites_included_ = constant_sites_included;
+            this->constant_sites_removed_ = constant_sites_removed;
             this->use_empirical_mutation_rate_starting_values_ = use_empirical_mutation_rate_starting_values;
             this->constrain_population_sizes_ = constrain_population_sizes;
             this->constrain_mutation_rates_ = constrain_mutation_rates;
@@ -362,7 +362,7 @@ class ComparisonSettings {
             this->population_name_is_prefix_                    = other.population_name_is_prefix_;
             this->genotypes_are_diploid_                        = other.genotypes_are_diploid_;
             this->markers_are_dominant_                         = other.markers_are_dominant_;
-            this->constant_sites_included_                      = other.constant_sites_included_;
+            this->constant_sites_removed_                      = other.constant_sites_removed_;
             this->use_empirical_mutation_rate_starting_values_  = other.use_empirical_mutation_rate_starting_values_;
             this->constrain_population_sizes_                   = other.constrain_population_sizes_;
             this->constrain_mutation_rates_                     = other.constrain_mutation_rates_;
