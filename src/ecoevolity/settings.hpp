@@ -255,13 +255,12 @@ class PositiveRealParameterSettings {
             return this->is_fixed_;
         }
 
-        PositiveRealParameter get_instance() const {
-            PositiveRealParameter p = PositiveRealParameter(
+        std::shared_ptr<PositiveRealParameter> get_instance() const {
+            return std::make_shared<PositiveRealParameter>(
                     this->prior_settings_.get_instance();
                     this->value_;
                     this->is_fixed_;
                     );
-            return p;
         }
 };
 
@@ -370,18 +369,34 @@ class ComparisonSettings {
         }
 
         ComparisonPopulationTree get_instance() const {
-            // TODO: create tree constructor designed for ComparisonSettings
             ComparisonPopulationTree t = ComparisonPopulationTree(
                     this->path_,
                     this->population_name_delimiter_,
                     this->population_name_is_prefix_,
                     this->genotypes_are_diploid_,
                     this->markers_are_dominant_,
+                    this->constant_sites_removed_,
                     true);
             if (this->constrain_mutation_rates_) {
+                t.constrain_mutation_rates();
                 t.fold_patterns();
             }
-            // TODO: update tree to match settings
+
+            if (this->constrain_population_sizes_) {
+                t.constrain_coalescence_rates();
+            }
+            t.set_population_size_prior(this->population_size_settings_.prior_settings_.get_instance());
+            t.set_coalescence_rate(
+                    CoalescenceRateParameter::get_rate_from_population_size(
+                            this->population_size_settings_.get_value()));
+            if (this->population_size_settings_.is_fixed()) {
+                t.fix_coalescence_rates();
+            }
+
+            t.set_u_parameter(this->u_settings_.get_instance());
+            t.set_v_parameter(this->v_settings_.get_instance());
+            t.set_node_height_multiplier_parameter(this->time_multiplier_settings_.get_instance());
+
             return t;
         }
 };
