@@ -57,8 +57,8 @@ class PopulationTree {
         ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
         bool correct_for_full_likelihood_ = true;
         bool constant_sites_removed_ = true;
-        int number_of_constant_red_sites_ = -1;
-        int number_of_constant_green_sites_ = -1;
+        int provided_number_of_constant_red_sites_ = -1;
+        int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool coalescence_rates_are_fixed_ = false;
         bool mutation_rates_are_fixed_ = false;
@@ -154,6 +154,10 @@ class PopulationTree {
         void use_data() {
             this->ignore_data_ = false;
         }
+
+        void provide_number_of_constant_sites(
+                unsigned int number_all_red,
+                unsigned int number_all_green);
 
         void set_u_parameter(std::shared_ptr<PositiveRealParameter> u);
         void set_v_parameter(std::shared_ptr<PositiveRealParameter> v);

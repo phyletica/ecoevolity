@@ -381,6 +381,9 @@ double PopulationTree::get_likelihood_correction(bool force) {
 double PopulationTree::calculate_log_binomial(
         unsigned int red_allele_count,
         unsigned int allele_count) const {
+    if ((red_allele_count == 0) || (red_allele_count == allele_count)) {
+        return 0.0;
+    }
     double f = 0.0;
     for (unsigned int i = red_allele_count + 1; i <= allele_count; ++i) {
         f += std::log(i) - std::log(allele_count - i + 1);
@@ -389,7 +392,7 @@ double PopulationTree::calculate_log_binomial(
 }
 
 bool PopulationTree::constant_site_counts_were_provided() {
-    if ((this->number_of_constant_green_sites_ > -1) && (this->number_of_constant_red_sites_ > -1)) {
+    if ((this->provided_number_of_constant_green_sites_ > -1) && (this->provided_number_of_constant_red_sites_ > -1)) {
         return true;
     }
     return false;
@@ -417,8 +420,8 @@ double PopulationTree::compute_log_likelihood() {
     if (this->constant_sites_removed_) {
         if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
-                    ((double)this->number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_.get_value())) +
-                    ((double)this->number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_.get_value()));
+                    ((double)this->provided_number_of_constant_green_sites_ * std::log(this->all_green_pattern_likelihood_.get_value())) +
+                    ((double)this->provided_number_of_constant_red_sites_ * std::log(this->all_red_pattern_likelihood_.get_value()));
             log_likelihood += constant_log_likelihood;
         }
         //////////////////////////////////////////////////////////////////////
@@ -734,6 +737,17 @@ void PopulationTree::make_dirty() {
 void PopulationTree::make_clean() {
     this->is_dirty_ = false;
     this->root_->make_all_clean();
+}
+
+void PopulationTree::provide_number_of_constant_sites(
+                unsigned int number_all_red,
+                unsigned int number_all_green) {
+    if (! this->constant_sites_removed_) {
+        throw EcoevolityError(
+                "Trying to provide number of constant sites, but they haven't been removed");
+    }
+    this->provided_number_of_constant_red_sites_ = number_all_red;
+    this->provided_number_of_constant_green_sites_ = number_all_green;
 }
 
 
