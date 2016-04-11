@@ -22,16 +22,24 @@
 
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <unordered_map>
 
 #include "error.hpp"
+#include "assert.hpp"
+#include "util.hpp"
+#include "probability.hpp"
+#include "parameter.hpp"
+#include "tree.hpp"
 
 class ContinuousDistributionSettings {
 
     private:
-        std::string name_;
-        std::map<std::string, double> parameters_;
+        std::string name_ = "none";
+        std::unordered_map<std::string, double> parameters_;
 
     public:
+        ContinuousDistributionSettings() { };
         ContinuousDistributionSettings(
                 const std::string& name,
                 const std::unordered_map<std::string, double>& parameters) {
@@ -139,46 +147,49 @@ class ContinuousDistributionSettings {
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> get_instance() const {
+            std::shared_ptr<ContinuousProbabilityDistribution> p;
             if (this->name_ == "gamma_distribution") {
                 if (this->parameters_.count("offset") > 0) { 
-                    return std::make_shared<OffsetGammaDistribution>(
+                    p = std::make_shared<OffsetGammaDistribution>(
                             this->parameters_.at("shape"),
                             this->parameters_.at("scale"),
                             this->parameters_.at("offset"));
                 }
                 else {
-                    return std::make_shared<GammaDistribution>(
+                    p = std::make_shared<GammaDistribution>(
                             this->parameters_.at("shape"),
                             this->parameters_.at("scale"));
                 }
             }
             else if (this->name_ == "exponential_distribution") {
                 if (this->parameters_.count("offset") > 0) { 
-                    return std::make_shared<OffsetExponentialDistribution>(
+                    p = std::make_shared<OffsetExponentialDistribution>(
                             this->parameters_.at("rate"),
                             this->parameters_.at("offset"));
                 }
                 else {
-                    return std::make_shared<ExponentialDistribution>(
+                    p = std::make_shared<ExponentialDistribution>(
                             this->parameters_.at("rate"));
                 }
             }
             else if (this->name_ == "uniform_distribution") {
-                return std::make_shared<UniformDistribution>(
+                p = std::make_shared<UniformDistribution>(
                         this->parameters_.at("min"),
                         this->parameters_.at("max"));
             }
             else if (this->name_ == "none") {
-                return std::make_shared<ContinuousProbabilityDistribution>();
+                throw ContinuousDistributionSettingError(
+                        "asked for an instance of a null prior distribution");
             }
             else {
                 ECOEVOLITY_ASSERT(0 == 1);
             }
+            return p;
         }
 
         std::string to_string(unsigned int indent_level = 0) const {
             if (this->name_ == "none") {
-                return "\n";
+                return "";
             }
             std::ostringstream ss;
             std::string margin = get_indent(indent_level);
@@ -219,10 +230,11 @@ class PositiveRealParameterSettings {
         ContinuousDistributionSettings prior_settings_;
 
     public:
+        PositiveRealParameterSettings() { }
         PositiveRealParameterSettings(
                 double value,
                 bool fix,
-                const std::string& prior_name
+                const std::string& prior_name,
                 const std::unordered_map<std::string, double>& prior_parameters) {
             if (value < 0.0) {
                 throw PositiveRealParameterSettingError(
@@ -255,12 +267,32 @@ class PositiveRealParameterSettings {
             return this->is_fixed_;
         }
 
-        std::shared_ptr<PositiveRealParameter> get_instance() const {
+        virtual std::shared_ptr<PositiveRealParameter> get_instance() const {
+            if (this->prior_settings_.get_name() == "none") {
+                return std::make_shared<PositiveRealParameter>(
+                        this->value_,
+                        this->is_fixed_
+                        );
+            }
             return std::make_shared<PositiveRealParameter>(
-                    this->prior_settings_.get_instance();
-                    this->value_;
-                    this->is_fixed_;
+                    this->prior_settings_.get_instance(),
+                    this->value_,
+                    this->is_fixed_
                     );
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = get_indent(indent_level);
+            if (! std::isnan(this->get_value())) {
+                ss << margin << "value: " << this->get_value() << "\n";
+            }
+            ss << margin << "estimate: " << (! this->is_fixed()) << "\n";
+            if (! this->is_fixed()) {
+                ss << margin << "prior: " << (! this->is_fixed()) << "\n";
+                ss << this->prior_settings_.to_string(indent_level + 1);
+            }
+            return ss.str();
         }
 };
 
@@ -288,17 +320,17 @@ class ComparisonSettings {
         void make_consistent() {
             if (this->constrain_mutation_rates_) {
                 this->use_empirical_mutation_rate_starting_values_ = false;
-                std::unordered_map<std::string, double> prior_parameters
                 this->u_settings_.prior_settings_.nullify();
                 this->v_settings_.prior_settings_.nullify();
-            }
-            if (this->constrain_population_sizes_) {
-                this->population_size_settings_.is_fixed_ = true;
-                this->population_size_settings_.prior_settings_.nullify();
+                this->u_settings_.value_ = 1.0;
+                this->u_settings_.is_fixed_ = true;
+                this->v_settings_.value_ = 1.0;
+                this->v_settings_.is_fixed_ = true;
             }
         }
 
     public:
+        ComparisonSettings() { }
         ComparisonSettings(
                 const std::string& path,
                 const PositiveRealParameterSettings& population_size_settings,
@@ -310,7 +342,7 @@ class ComparisonSettings {
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = false,
-                bool use_empirical_mutation_rate_starting_values = true;
+                bool use_empirical_mutation_rate_starting_values = true,
                 bool constrain_population_sizes = false,
                 bool constrain_mutation_rates = true) {
 
@@ -361,7 +393,7 @@ class ComparisonSettings {
             this->population_name_is_prefix_                    = other.population_name_is_prefix_;
             this->genotypes_are_diploid_                        = other.genotypes_are_diploid_;
             this->markers_are_dominant_                         = other.markers_are_dominant_;
-            this->constant_sites_removed_                      = other.constant_sites_removed_;
+            this->constant_sites_removed_                       = other.constant_sites_removed_;
             this->use_empirical_mutation_rate_starting_values_  = other.use_empirical_mutation_rate_starting_values_;
             this->constrain_population_sizes_                   = other.constrain_population_sizes_;
             this->constrain_mutation_rates_                     = other.constrain_mutation_rates_;
@@ -399,6 +431,36 @@ class ComparisonSettings {
 
             return t;
         }
+
+        std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = get_indent(indent_level);
+            std::string indent = get_indent(1);
+            ss << margin << "path: " << this->path_ << "\n";
+            ss << margin << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
+            ss << margin << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
+            ss << margin << "population_name_delimiter: " << this->population_name_delimiter_ << "\n";
+            ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
+            ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
+            ss << margin << "use_empirical_mutation_rate_starting_values: " << this->use_empirical_mutation_rate_starting_values_ << "\n";
+            ss << margin << "constrain_population_sizes: " << this->constrain_population_sizes_ << "\n";
+            ss << margin << "constrain_mutation_rates: " << this->constrain_mutation_rates_ << "\n";
+            ss << margin << "parameters:\n";
+
+            ss << margin << indent << "population_size:\n";
+            ss << this->population_size_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "u_rate:\n";
+            ss << this->u_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "v_rate:\n";
+            ss << this->v_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "time_multiplier:\n";
+            ss << this->time_multiplier_settings_.to_string(indent_level + 2);
+
+            return ss.str();
+        }
 };
 
 class CollectionSettings {
@@ -411,11 +473,11 @@ class CollectionSettings {
 
         ContinuousDistributionSettings time_prior_settings_;
 
-        ParameterSettings concentration_;
+        PositiveRealParameterSettings concentration_;
 
         std::vector<ComparisonSettings> comparisons_;
 
-    public;
+    public:
 
         void add_comparison();
 
