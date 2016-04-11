@@ -338,13 +338,13 @@ class CoalescenceRateParameter: public PositiveRealParameter {
             return * this;
         }
 
-        double get_population_size_from_rate(double coalescence_rate) const {
+        static double get_population_size_from_rate(double coalescence_rate) {
             if (coalescence_rate == 0.0) {
                 return std::numeric_limits<double>::infinity();
             }
             return 2.0 / coalescence_rate;
         }
-        double get_rate_from_population_size(double population_size) const {
+        static double get_rate_from_population_size(double population_size) {
             if (population_size == 0.0) {
                 return std::numeric_limits<double>::infinity();
             }
