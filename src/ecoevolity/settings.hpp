@@ -280,7 +280,7 @@ class PositiveRealParameterSettings {
         }
 
         virtual std::shared_ptr<PositiveRealParameter> get_instance() const {
-            if (this->prior_settings_.get_name() == "none") {
+            if (this->is_fixed()) {
                 return std::make_shared<PositiveRealParameter>(
                         this->value_,
                         this->is_fixed_
@@ -295,13 +295,14 @@ class PositiveRealParameterSettings {
 
         virtual std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
+            ss << std::boolalpha;
             std::string margin = get_indent(indent_level);
             if (! std::isnan(this->get_value())) {
                 ss << margin << "value: " << this->get_value() << "\n";
             }
             ss << margin << "estimate: " << (! this->is_fixed()) << "\n";
             if (! this->is_fixed()) {
-                ss << margin << "prior: " << (! this->is_fixed()) << "\n";
+                ss << margin << "prior: " << "\n";
                 ss << this->prior_settings_.to_string(indent_level + 1);
             }
             return ss.str();
@@ -375,7 +376,7 @@ class ComparisonSettings {
 
             // TODO:
             // Not very efficient to parse data just to get rates, but might be
-            // more awkward than it's worth to defer it
+            // more awkward than it's worth to defer it.
             // Make a copy operator for BiallelicData and parse and store here, then
             // can copy it in get_instance method
             if (this->use_empirical_mutation_rate_starting_values_) {
@@ -446,6 +447,7 @@ class ComparisonSettings {
 
         std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
+            ss << std::boolalpha;
             std::string margin = get_indent(indent_level);
             std::string indent = get_indent(1);
             ss << margin << "path: " << this->path_ << "\n";

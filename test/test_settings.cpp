@@ -307,3 +307,23 @@ TEST_CASE("Testing missing uniform parameter settings", "[ContinuousDistribution
                 EcoevolityContinuousDistributionSettingError);
     }
 }
+
+TEST_CASE("Testing fixed parameter settings", "[PositiveRealParameterSettings]") {
+    SECTION("Testing fixed parameter") {
+        std::unordered_map<std::string, double> prior_parameters;
+        prior_parameters["shape"] = 1.0;
+        prior_parameters["scale"] = 1.0;
+
+        PositiveRealParameterSettings settings = PositiveRealParameterSettings(
+                0.001,
+                true,
+                "gamma_distribution",
+                prior_parameters);
+
+        REQUIRE(settings.get_value() == 0.001);
+        REQUIRE(settings.is_fixed() == true);
+        std::string s = settings.to_string();
+        std::string e = "value: 0.001\nestimate: false\n";
+        REQUIRE(s == e);
+    }
+}
