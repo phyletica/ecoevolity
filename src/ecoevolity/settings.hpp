@@ -31,6 +31,7 @@
 #include "probability.hpp"
 #include "parameter.hpp"
 #include "tree.hpp"
+#include "rng.hpp"
 
 class ContinuousDistributionSettings {
 
@@ -237,8 +238,8 @@ class PositiveRealParameterSettings {
     friend class CollectionSettings;
 
     private:
-        double value_;
-        bool is_fixed_;
+        double value_ = std::numeric_limits<double>::quiet_NaN();
+        bool is_fixed_ = false;
         ContinuousDistributionSettings prior_settings_;
 
     public:
@@ -263,6 +264,12 @@ class PositiveRealParameterSettings {
                 this->prior_settings_ = ContinuousDistributionSettings(prior_name,
                         prior_parameters);
             }
+
+            if ((this->is_fixed_) && (std::isnan(this->value_))) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "cannot fix parameter without a value"
+                        );
+            }
         }
         virtual ~PositiveRealParameterSettings() { }
         PositiveRealParameterSettings& operator=(const PositiveRealParameterSettings& other) {
@@ -279,18 +286,24 @@ class PositiveRealParameterSettings {
             return this->is_fixed_;
         }
 
-        virtual std::shared_ptr<PositiveRealParameter> get_instance() const {
+        virtual std::shared_ptr<PositiveRealParameter> get_instance(RandomNumberGenerator & rng) const {
+            std::shared_ptr<PositiveRealParameter> p;
+            double v = this->value_;
             if (this->is_fixed()) {
-                return std::make_shared<PositiveRealParameter>(
-                        this->value_,
+                p =  std::make_shared<PositiveRealParameter>(
+                        v,
                         this->is_fixed_
                         );
             }
-            return std::make_shared<PositiveRealParameter>(
-                    this->prior_settings_.get_instance(),
-                    this->value_,
-                    this->is_fixed_
-                    );
+            else {
+                p = std::make_shared<PositiveRealParameter>(
+                        this->prior_settings_.get_instance(),
+                        v,
+                        this->is_fixed_
+                        );
+            }
+            p->initialize_value(rng);
+            return p;
         }
 
         virtual std::string to_string(unsigned int indent_level = 0) const {
@@ -302,7 +315,7 @@ class PositiveRealParameterSettings {
             }
             ss << margin << "estimate: " << (! this->is_fixed()) << "\n";
             if (! this->is_fixed()) {
-                ss << margin << "prior: " << "\n";
+                ss << margin << "prior:\n";
                 ss << this->prior_settings_.to_string(indent_level + 1);
             }
             return ss.str();
@@ -413,7 +426,7 @@ class ComparisonSettings {
             return * this;
         }
 
-        ComparisonPopulationTree get_instance() const {
+        ComparisonPopulationTree get_instance(RandomNumberGenerator & rng) const {
             ComparisonPopulationTree t = ComparisonPopulationTree(
                     this->path_,
                     this->population_name_delimiter_,
@@ -438,9 +451,9 @@ class ComparisonSettings {
                 t.fix_coalescence_rates();
             }
 
-            t.set_u_parameter(this->u_settings_.get_instance());
-            t.set_v_parameter(this->v_settings_.get_instance());
-            t.set_node_height_multiplier_parameter(this->time_multiplier_settings_.get_instance());
+            t.set_u_parameter(this->u_settings_.get_instance(rng));
+            t.set_v_parameter(this->v_settings_.get_instance(rng));
+            t.set_node_height_multiplier_parameter(this->time_multiplier_settings_.get_instance(rng));
 
             return t;
         }

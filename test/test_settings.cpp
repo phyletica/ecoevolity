@@ -308,6 +308,21 @@ TEST_CASE("Testing missing uniform parameter settings", "[ContinuousDistribution
     }
 }
 
+TEST_CASE("Testing error parameter settings", "[PositiveRealParameterSettings]") {
+    SECTION("Testing negative parameter") {
+        std::unordered_map<std::string, double> prior_parameters;
+        prior_parameters["shape"] = 1.0;
+        prior_parameters["scale"] = 1.0;
+
+        REQUIRE_THROWS_AS(PositiveRealParameterSettings(
+                -0.001,
+                true,
+                "gamma_distribution",
+                prior_parameters),
+                EcoevolityPositiveRealParameterSettingError);
+    }
+}
+
 TEST_CASE("Testing fixed parameter settings", "[PositiveRealParameterSettings]") {
     SECTION("Testing fixed parameter") {
         std::unordered_map<std::string, double> prior_parameters;
@@ -325,5 +340,74 @@ TEST_CASE("Testing fixed parameter settings", "[PositiveRealParameterSettings]")
         std::string s = settings.to_string();
         std::string e = "value: 0.001\nestimate: false\n";
         REQUIRE(s == e);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<PositiveRealParameter> p;
+        p = settings.get_instance(rng);
+        REQUIRE_THROWS_AS(p->check_prior(), EcoevolityNullPointerError);
+        REQUIRE(p->get_value() == 0.001);
+        REQUIRE(p->is_fixed() == true);
+    }
+}
+
+TEST_CASE("Testing free parameter settings", "[PositiveRealParameterSettings]") {
+    SECTION("Testing free parameter") {
+        std::unordered_map<std::string, double> prior_parameters;
+        prior_parameters["shape"] = 1.0;
+        prior_parameters["scale"] = 1.0;
+
+        PositiveRealParameterSettings settings = PositiveRealParameterSettings(
+                0.001,
+                false,
+                "gamma_distribution",
+                prior_parameters);
+
+        REQUIRE(settings.get_value() == 0.001);
+        REQUIRE(settings.is_fixed() == false);
+        std::string s = settings.to_string();
+        std::string e = "value: 0.001\nestimate: true\nprior:\n    gamma_distribution:\n        shape: 1\n        scale: 1\n";
+        REQUIRE(s == e);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<PositiveRealParameter> p;
+        p = settings.get_instance(rng);
+        REQUIRE(p->get_value() == 0.001);
+        REQUIRE(p->is_fixed() == false);
+        REQUIRE(p->get_prior_min() == 0.0);
+        REQUIRE(p->get_prior_mean() == 1.0);
+        REQUIRE(p->get_prior_variance() == 1.0);
+        REQUIRE(p->get_prior_string() == "gamma(shape = 1, scale = 1)");
+    }
+}
+
+TEST_CASE("Testing nan parameter settings", "[PositiveRealParameterSettings]") {
+    SECTION("Testing nan parameter") {
+        std::unordered_map<std::string, double> prior_parameters;
+        prior_parameters["shape"] = 1.0;
+        prior_parameters["scale"] = 1.0;
+
+        PositiveRealParameterSettings settings = PositiveRealParameterSettings(
+                std::numeric_limits<double>::quiet_NaN(),
+                false,
+                "gamma_distribution",
+                prior_parameters);
+
+        REQUIRE(std::isnan(settings.get_value()));
+        REQUIRE(settings.is_fixed() == false);
+        std::string s = settings.to_string();
+        std::string e = "estimate: true\nprior:\n    gamma_distribution:\n        shape: 1\n        scale: 1\n";
+        REQUIRE(s == e);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        std::shared_ptr<PositiveRealParameter> p;
+        p = settings.get_instance(rng);
+        REQUIRE(p->is_fixed() == false);
+        REQUIRE(p->get_prior_min() == 0.0);
+        REQUIRE(p->get_prior_mean() == 1.0);
+        REQUIRE(p->get_prior_variance() == 1.0);
+        REQUIRE(p->get_prior_string() == "gamma(shape = 1, scale = 1)");
     }
 }
