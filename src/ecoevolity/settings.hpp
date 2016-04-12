@@ -47,28 +47,32 @@ class ContinuousDistributionSettings {
             // Gamma
             if (name == "gamma_distribution") {
                 if (parameters.count("shape") < 1) {
-                    throw ContinuousDistributionSettingError(
+                    throw EcoevolityContinuousDistributionSettingError(
                             "shape parameter missing for gamma_distribution"
                             );
                 }
                 if (parameters.count("scale") < 1) {
-                    throw ContinuousDistributionSettingError(
+                    throw EcoevolityContinuousDistributionSettingError(
                             "scale parameter missing for gamma_distribution"
                             );
                 }
                 if (parameters.count("offset") < 1) {
                     if (parameters.size() > 2) {
-                        throw ContinuousDistributionSettingError(
+                        throw EcoevolityContinuousDistributionSettingError(
                                 "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale, offset)"
                                 );
                     }
                 }
                 else {
                     if (parameters.size() > 3) {
-                        throw ContinuousDistributionSettingError(
+                        throw EcoevolityContinuousDistributionSettingError(
                                 "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale, offset)"
                                 );
                     }
+                }
+                if ((parameters.at("shape") <= 0.0) || (parameters.at("scale") <= 0.0)) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "Shape and scale must be greater than zero for gamma distribution");
                 }
                 this->parameters_["shape"] = parameters.at("shape");
                 this->parameters_["scale"] = parameters.at("scale");
@@ -79,23 +83,27 @@ class ContinuousDistributionSettings {
             // Exponential
             else if (name == "exponential_distribution") {
                 if (parameters.count("rate") < 1) {
-                    throw ContinuousDistributionSettingError(
+                    throw EcoevolityContinuousDistributionSettingError(
                             "rate parameter missing for exponential_distribution"
                             );
                 }
                 if (parameters.count("offset") < 1) {
                     if (parameters.size() > 1) {
-                        throw ContinuousDistributionSettingError(
+                        throw EcoevolityContinuousDistributionSettingError(
                                 "unrecognized parameters for exponential_distribution (recognized parameters: rate, offset)"
                                 );
                     }
                 }
                 else {
                     if (parameters.size() > 2) {
-                        throw ContinuousDistributionSettingError(
+                        throw EcoevolityContinuousDistributionSettingError(
                                 "unrecognized parameters for exponential_distribution (recognized parameters: rate, offset)"
                                 );
                     }
+                }
+                if (parameters.at("rate") <= 0.0) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "rate must be greater than 0 for exponential distribution");
                 }
                 this->parameters_["rate"] = parameters.at("rate");
                 if (parameters.count("offset") == 1) {
@@ -105,17 +113,17 @@ class ContinuousDistributionSettings {
             // Uniform
             else if (name == "uniform_distribution") {
                 if (parameters.count("min") < 1) {
-                    throw ContinuousDistributionSettingError(
+                    throw EcoevolityContinuousDistributionSettingError(
                             "min parameter missing for uniform_distribution"
                             );
                 }
                 if (parameters.count("max") < 1) {
-                    throw ContinuousDistributionSettingError(
+                    throw EcoevolityContinuousDistributionSettingError(
                             "max parameter missing for uniform_distribution"
                             );
                 }
                 if (parameters.size() > 2) {
-                    throw ContinuousDistributionSettingError(
+                    throw EcoevolityContinuousDistributionSettingError(
                             "unrecognized parameters for uniform_distribution (recognized parameters: min, max)"
                             );
                 }
@@ -127,7 +135,7 @@ class ContinuousDistributionSettings {
             }
             else {
                 std::string message = "unrecognized distribution: " + name;
-                throw ContinuousDistributionSettingError(message);
+                throw EcoevolityContinuousDistributionSettingError(message);
             }
         }
         virtual ~ContinuousDistributionSettings() { }
@@ -178,7 +186,7 @@ class ContinuousDistributionSettings {
                         this->parameters_.at("max"));
             }
             else if (this->name_ == "none") {
-                throw ContinuousDistributionSettingError(
+                throw EcoevolityContinuousDistributionSettingError(
                         "asked for an instance of a null prior distribution");
             }
             else {
@@ -237,7 +245,7 @@ class PositiveRealParameterSettings {
                 const std::string& prior_name,
                 const std::unordered_map<std::string, double>& prior_parameters) {
             if (value < 0.0) {
-                throw PositiveRealParameterSettingError(
+                throw EcoevolityPositiveRealParameterSettingError(
                         "positive real parameter cannot be less than 0"
                         );
             }
