@@ -2,6 +2,7 @@
 #include "ecoevolity/probability.hpp"
 
 #include <limits>
+#include <memory>
 
 TEST_CASE("Testing ImproperUniformDistribution", "[ImproperUniformDistribution]") {
 
@@ -596,6 +597,47 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
         
         REQUIRE(mean == Approx(f.get_mean()).epsilon(0.001));
         REQUIRE(variance == Approx(f.get_variance()).epsilon(0.01));
+        REQUIRE(mn >= 0.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+    }
+
+    SECTION("Testing ExponentialDistribution(5) with base pointer") {
+        std::shared_ptr<ContinuousProbabilityDistribution> f = std::make_shared<ExponentialDistribution>(5.0);
+
+        REQUIRE(f->to_string() == "exp(lambda = 5)");
+
+        REQUIRE(f->get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(f->get_min() == 0.0);
+
+        REQUIRE(f->get_mean() == Approx(0.2));
+        REQUIRE(f->get_variance() == Approx(1.0/25.0));
+
+        REQUIRE(f->ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f->ln_pdf(0.0) == Approx(1.6094379124341003));
+        REQUIRE(f->ln_pdf(0.01) == Approx(1.5594379124341002));
+        REQUIRE(f->ln_pdf(1.0) == Approx(-3.3905620875658995));
+        REQUIRE(f->ln_pdf(100.0) == Approx(-498.39056208756591));
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = f->draw(rng);
+            mn = std::min(mn, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(f->get_mean()).epsilon(0.001));
+        REQUIRE(variance == Approx(f->get_variance()).epsilon(0.01));
         REQUIRE(mn >= 0.0);
         REQUIRE(mn == Approx(0.0).epsilon(0.001));
     }
