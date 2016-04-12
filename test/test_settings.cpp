@@ -30,12 +30,46 @@ TEST_CASE("Testing invalid distribution in ContinuousDistributionSettings constr
     }
 }
 
-TEST_CASE("Testing gamma settings", "[ContinuousDistributionSettings]") {
+TEST_CASE("Testing missing gamma parameter settings", "[ContinuousDistributionSettings]") {
 
-    SECTION("Testing missing gamma parameters") {
+    SECTION("Testing no parameters") {
         std::string name = "gamma_distribution";
         std::unordered_map<std::string, double> parameters;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
                 ContinuousDistributionSettingError);
+    }
+
+    SECTION("Testing missing parameters") {
+        std::string name = "gamma_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["shape"] = 1.0;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                ContinuousDistributionSettingError);
+        parameters["offset"] = 0.01;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                ContinuousDistributionSettingError);
+
+        parameters.clear();
+        parameters["scale"] = 1.0;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                ContinuousDistributionSettingError);
+        parameters["offset"] = 0.01;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                ContinuousDistributionSettingError);
+    }
+}
+
+TEST_CASE("Testing gamma settings to string", "[ContinuousDistributionSettings]") {
+    SECTION("Testing gamma") {
+        std::string name = "gamma_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["shape"] = 10.0;
+        parameters["scale"] = 1.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "gamma_distribution");
+        std::string s = settings.to_string(0);
+        std::string e = "gamma_distribution:\n    shape: 10.0\n    scale: 1.0\n";
+        REQUIRE(s == e);
     }
 }
