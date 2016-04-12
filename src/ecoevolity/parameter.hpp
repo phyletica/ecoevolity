@@ -36,6 +36,7 @@ class Variable {
         VariableType max_;
         VariableType min_;
         bool is_fixed_ = false;
+        bool value_is_initialized_ = false;
         typedef Variable<VariableType> DerivedClass;
 
     public:
@@ -78,6 +79,10 @@ class Variable {
 
         bool is_fixed() const { return this->is_fixed_; }
         void fix() {
+            if (! this->value_is_initialized_) {
+                throw EcoevolityParameterValueError(
+                        "cannot fix parameter with uninitialized value");
+            }
             this->is_fixed_ = true;
         }
         void estimate() {
@@ -99,6 +104,7 @@ class Variable {
                 throw EcoevolityParameterValueError("value outside of parameter bounds");
             }
             this->value_ = value;
+            this->value_is_initialized_ = true;
         }
         void set_max(const VariableType& max) {
             this->max_ = max;
@@ -132,7 +138,9 @@ class RealVariable: public Variable<double> {
         typedef Variable<double> BaseClass;
 
     public:
-        RealVariable() : BaseClass() { }
+        RealVariable() : BaseClass() {
+            this->value_ = std::numeric_limits<double>::quiet_NaN();
+        }
         RealVariable(double value, bool fix = false) : BaseClass() {
             this->set_value(value);
             this->is_fixed_ = fix;
@@ -197,6 +205,11 @@ class RealParameter: public RealVariable {
                 return;
             }
             this->set_value(this->draw_from_prior(rng));
+        }
+        virtual void initialize_value(RandomNumberGenerator & rng) {
+            if (std::isnan(this->value_)) {
+                this->set_value_from_prior(rng);
+            }
         }
         virtual void update_value_from_prior(RandomNumberGenerator & rng) {
             if (this->is_fixed()) {
@@ -363,6 +376,11 @@ class CoalescenceRateParameter: public PositiveRealParameter {
                 return;
             }
             this->set_value(this->draw_from_prior(rng));
+        }
+        virtual void initialize_value(RandomNumberGenerator & rng) {
+            if (std::isnan(this->value_)) {
+                this->set_value_from_prior(rng);
+            }
         }
         virtual void update_value_from_prior(RandomNumberGenerator & rng) {
             if (this->is_fixed()) {
