@@ -30,6 +30,7 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         RealParameter p = RealParameter();
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
+        REQUIRE_THROWS_AS(p.fix(), EcoevolityParameterValueError);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
@@ -619,6 +620,7 @@ TEST_CASE("Testing PositiveRealVariable constructors", "[PositiveRealVariable]")
 
     SECTION("Testing bare") {
         PositiveRealVariable p = PositiveRealVariable();
+        REQUIRE(std::isnan(p.get_value()));
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
     }
@@ -637,6 +639,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
     SECTION("Testing bare") {
         PositiveRealParameter p = PositiveRealParameter();
+        REQUIRE(std::isnan(p.get_value()));
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
 
@@ -684,11 +687,32 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
     }
 
+    SECTION("Testing value and prior") {
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
+        PositiveRealParameter p = PositiveRealParameter(u, 1.1);
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == 0.0);
+        REQUIRE(p.get_value() == Approx(1.1));
+        p.store();
+        REQUIRE(p.get_stored_value() == Approx(1.1));
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        p.initialize_value(rng);
+        REQUIRE(p.get_value() == 1.1);
+    }
+
     SECTION("Testing prior") {
         std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         PositiveRealParameter p = PositiveRealParameter(u);
+        REQUIRE(std::isnan(p.get_value()));
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        p.initialize_value(rng);
+        REQUIRE(! std::isnan(p.get_value()));
 
         REQUIRE(p.get_prior_mean() == 15.0);
         REQUIRE(p.get_prior_variance() == Approx(25.0/3.0));
@@ -721,8 +745,6 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(p.prior_ln_pdf(20.1) == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf() == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(20.1) == -std::numeric_limits<double>::infinity());
-
-        RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         unsigned int n = 0;
         double mean = 0.0;
@@ -1411,6 +1433,8 @@ TEST_CASE("Testing CoalescenceRateParameter bare constructor", "[CoalescenceRate
 
         REQUIRE(p.is_fixed() == false);
 
+        REQUIRE_THROWS_AS(p.fix(), EcoevolityParameterValueError);
+        p.set_value(0.0);
         p.fix();
         REQUIRE(p.is_fixed() == true);
         REQUIRE(p.prior_ln_pdf() == 0.0);
