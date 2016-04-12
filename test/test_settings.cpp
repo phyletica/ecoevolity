@@ -95,6 +95,7 @@ TEST_CASE("Testing missing exponential parameter settings", "[ContinuousDistribu
 }
 
 TEST_CASE("Testing gamma parameter settings errors", "[ContinuousDistributionSettings]") {
+    SECTION("Testing gamma errors") {
         std::string name = "gamma_distribution";
         std::unordered_map<std::string, double> parameters;
         parameters["shape"] = 0.0;
@@ -107,14 +108,17 @@ TEST_CASE("Testing gamma parameter settings errors", "[ContinuousDistributionSet
         parameters["scale"] = 0.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
                 EcoevolityContinuousDistributionSettingError);
+    }
 }
 
 TEST_CASE("Testing exponential parameter settings errors", "[ContinuousDistributionSettings]") {
+    SECTION("Testing exponential errors") {
         std::string name = "exponential_distribution";
         std::unordered_map<std::string, double> parameters;
         parameters["rate"] = 0.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
                 EcoevolityContinuousDistributionSettingError);
+    }
 }
 
 TEST_CASE("Testing gamma settings to string", "[ContinuousDistributionSettings]") {
@@ -236,5 +240,70 @@ TEST_CASE("Testing exponential settings to instance", "[ContinuousDistributionSe
         g = settings.get_instance();
 
         REQUIRE(g->to_string() == "exp(lambda = 10, offset = 0.01)");
+    }
+}
+
+TEST_CASE("Testing uniform parameter settings errors", "[ContinuousDistributionSettings]") {
+    SECTION("Testing uniform errors") {
+        std::string name = "uniform_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["min"] = 1.0;
+        parameters["max"] = 0.0;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                EcoevolityContinuousDistributionSettingError);
+    }
+}
+
+TEST_CASE("Testing uniform settings to string", "[ContinuousDistributionSettings]") {
+    SECTION("Testing uniform to string") {
+        std::string name = "uniform_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["min"] = 1.0;
+        parameters["max"] = 2.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        REQUIRE(settings.get_name() == "uniform_distribution");
+        std::string s = settings.to_string(0);
+        std::string e = "uniform_distribution:\n    min: 1\n    max: 2\n";
+        REQUIRE(s == e);
+    }
+}
+
+TEST_CASE("Testing uniform settings to instance", "[ContinuousDistributionSettings]") {
+    SECTION("Testing uniform to instance") {
+        std::string name = "uniform_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["min"] = 1.0;
+        parameters["max"] = 2.0;
+        ContinuousDistributionSettings settings = ContinuousDistributionSettings(name, parameters);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> g;
+        g = settings.get_instance();
+
+        REQUIRE(g->get_min() == 1.0);
+        REQUIRE(g->to_string() == "uniform(1, 2)");
+    }
+}
+
+TEST_CASE("Testing missing uniform parameter settings", "[ContinuousDistributionSettings]") {
+
+    SECTION("Testing no parameters") {
+        std::string name = "uniform_distribution";
+        std::unordered_map<std::string, double> parameters;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                EcoevolityContinuousDistributionSettingError);
+    }
+
+    SECTION("Testing missing parameters") {
+        std::string name = "uniform_distribution";
+        std::unordered_map<std::string, double> parameters;
+        parameters["min"] = 0.01;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                EcoevolityContinuousDistributionSettingError);
+
+        parameters.clear();
+        parameters["max"] = 1.0;
+        REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
+                EcoevolityContinuousDistributionSettingError);
     }
 }

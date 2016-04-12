@@ -127,6 +127,10 @@ class ContinuousDistributionSettings {
                             "unrecognized parameters for uniform_distribution (recognized parameters: min, max)"
                             );
                 }
+                if (parameters.at("max") <= parameters.at("min")) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "The upper limit must be greater than lower limit for UniformDistribution");
+                }
                 this->parameters_["min"] = parameters.at("min");
                 this->parameters_["max"] = parameters.at("max");
             }
