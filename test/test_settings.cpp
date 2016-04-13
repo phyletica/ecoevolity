@@ -428,16 +428,16 @@ TEST_CASE("Testing fixed nan parameter settings", "[PositiveRealParameterSetting
 }
 
 TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
-    SECTION("Testing data/diploid-dna-constant-missing.nex") {
+    SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex") {
 
-        std::string nex_path = "data/diploid-dna-constant-missing.nex";
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
 
         std::unordered_map<std::string, double> no_prior_parameters;
         std::unordered_map<std::string, double> pop_prior_parameters;
         pop_prior_parameters["shape"] = 10.0;
         pop_prior_parameters["scale"] = 0.0001;
         PositiveRealParameterSettings pop_size = PositiveRealParameterSettings(
-                0.01,
+                std::numeric_limits<double>::quiet_NaN(),
                 false,
                 "gamma_distribution",
                 pop_prior_parameters);
@@ -474,7 +474,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
 
         std::string s = settings.to_string(0);
         std::string e =  "";
-        e += "path: data/diploid-dna-constant-missing.nex\n";
+        e += "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
         e += "population_name_delimiter: '_'\n";
@@ -485,21 +485,37 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "constrain_mutation_rates: false\n";
         e += "parameters:\n";
         e += "    population_size:\n";
-        e += "        value: 0.01\n";
         e += "        estimate: true\n";
         e += "        prior:\n";
         e += "            gamma_distribution:\n";
         e += "                shape: 10\n";
         e += "                scale: 0.0001\n";
         e += "    u_rate:\n";
-        e += "        value: 1.40909\n";
+        e += "        value: 1.2\n";
         e += "        estimate: false\n";
         e += "    v_rate:\n";
-        e += "        value: 0.775\n";
+        e += "        value: 0.857143\n";
         e += "        estimate: false\n";
         e += "    time_multiplier:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
         REQUIRE(s == e);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonPopulationTree t = settings.get_instance(rng);
+
+        REQUIRE(! std::isnan(t.get_root_coalescence_rate()));
+        REQUIRE(! std::isnan(t.get_child_coalescence_rate(0)));
+        REQUIRE(! std::isnan(t.get_child_coalescence_rate(1)));
+        REQUIRE(t.get_u() == Approx(1.2));
+        REQUIRE(t.get_v() == Approx(0.8571429));
+        REQUIRE(t.get_u_parameter()->is_fixed() == true);
+        REQUIRE(t.get_v_parameter()->is_fixed() == true);
+        REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
+        REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
+        REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
+        REQUIRE(t.get_node_height_multiplier_parameter()->is_fixed() == true);
+        REQUIRE(t.mutation_rates_are_fixed() == true);
     }
 }

@@ -444,15 +444,28 @@ class ComparisonSettings {
                 t.constrain_coalescence_rates();
             }
             t.set_population_size_prior(this->population_size_settings_.prior_settings_.get_instance());
+            std::shared_ptr<PositiveRealParameter> p = this->u_settings_.get_instance(rng);
             t.set_coalescence_rate(
                     CoalescenceRateParameter::get_rate_from_population_size(
-                            this->population_size_settings_.get_value()));
+                            p->get_value()));
             if (this->population_size_settings_.is_fixed()) {
                 t.fix_coalescence_rates();
             }
 
-            t.set_u_parameter(this->u_settings_.get_instance(rng));
-            t.set_v_parameter(this->v_settings_.get_instance(rng));
+            if (this->constrain_mutation_rates_) {
+                t.constrain_mutation_rates();
+            }
+            else {
+                std::shared_ptr<PositiveRealParameter> u = this->u_settings_.get_instance(rng);
+                t.set_u(u->get_value());
+                if (u->is_fixed()) {
+                    t.fix_mutation_rates();
+                }
+                else {
+                    t.set_u_prior(this->u_settings_.prior_settings_.get_instance());
+                    t.set_v_prior(this->v_settings_.prior_settings_.get_instance());
+                }
+            }
             t.set_node_height_multiplier_parameter(this->time_multiplier_settings_.get_instance(rng));
 
             return t;
