@@ -499,31 +499,25 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter
 }
 
 void PopulationTree::set_u(double u) {
-    if (this->mutation_rates_are_fixed_) {
+    if (this->mutation_rates_are_fixed()) {
         return;
     }
+    ECOEVOLITY_ASSERT(u >= 0.5);
+    double v = u / ((2.0 * u) - 1.0);
     this->u_->set_value(u);
+    this->v_->set_value(v);
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
 void PopulationTree::update_u(double u) {
-    if (this->mutation_rates_are_fixed_) {
+    if (this->mutation_rates_are_fixed()) {
         return;
     }
+    ECOEVOLITY_ASSERT(u >= 0.5);
+    double v = u / ((2.0 * u) - 1.0);
     this->u_->update_value(u);
-    this->make_dirty();
-}
-void PopulationTree::set_v(double v) {
-    if (this->mutation_rates_are_fixed_) {
-        return;
-    }
-    this->v_->set_value(v);
-    this->make_dirty();
-}
-void PopulationTree::update_v(double v) {
-    if (this->mutation_rates_are_fixed_) {
-        return;
-    }
     this->v_->update_value(v);
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
 const double& PopulationTree::get_u() const {
@@ -534,28 +528,23 @@ const double& PopulationTree::get_v() const {
 }
 void PopulationTree::store_u() {
     this->u_->store();
-}
-void PopulationTree::store_v() {
     this->v_->store();
 }
 void PopulationTree::restore_u() {
     this->u_->restore();
-    this->make_dirty();
-}
-void PopulationTree::restore_v() {
     this->v_->restore();
     this->make_dirty();
 }
 
 void PopulationTree::set_node_height_multiplier(double m) {
-    if (this->node_height_multiplier_is_fixed_) {
+    if (this->node_height_multiplier_is_fixed()) {
         return;
     }
     this->node_height_multiplier_->set_value(m);
     this->make_dirty();
 }
 void PopulationTree::update_node_height_multiplier(double m) {
-    if (this->node_height_multiplier_is_fixed_) {
+    if (this->node_height_multiplier_is_fixed()) {
         return;
     }
     this->node_height_multiplier_->update_value(m);
@@ -572,14 +561,6 @@ void PopulationTree::restore_node_height_multiplier() {
     this->make_dirty();
 }
 
-void PopulationTree::set_u_parameter(std::shared_ptr<PositiveRealParameter> u) {
-    this->u_ = u;
-    this->make_dirty();
-}
-void PopulationTree::set_v_parameter(std::shared_ptr<PositiveRealParameter> v) {
-    this->v_ = v;
-    this->make_dirty();
-}
 std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
 }
@@ -596,19 +577,22 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_node_height_multiplie
 }
 
 void PopulationTree::set_root_coalescence_rate(double rate) {
-    if (this->coalescence_rates_are_fixed_) {
+    if (this->coalescence_rates_are_fixed()) {
         return;
     }
     this->root_->set_coalescence_rate(rate);
 }
 void PopulationTree::set_coalescence_rate(double rate) {
-    if (this->coalescence_rates_are_fixed_) {
+    if (this->coalescence_rates_are_fixed()) {
         return;
     }
     this->root_->set_all_coalescence_rates(rate);
 }
 double PopulationTree::get_root_coalescence_rate() const {
     return this->root_->get_coalescence_rate();
+}
+std::shared_ptr<CoalescenceRateParameter> PopulationTree::get_root_coalescence_rate_parameter() const {
+    return this->root_->get_coalescence_rate_parameter();
 }
 
 void PopulationTree::store_state() {
@@ -626,7 +610,6 @@ void PopulationTree::store_prior_density() {
 }
 void PopulationTree::store_parameters() {
     this->store_u();
-    this->store_v();
     this->store_node_height_multiplier();
     this->store_all_coalescence_rates();
     this->store_all_heights();
@@ -653,7 +636,6 @@ void PopulationTree::restore_prior_density() {
 }
 void PopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_v();
     this->restore_node_height_multiplier();
     this->restore_all_coalescence_rates();
     this->restore_all_heights();
@@ -775,7 +757,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
 void ComparisonPopulationTree::set_child_coalescence_rate(
         unsigned int child_index,
         double rate) {
-    if (this->coalescence_rates_are_fixed_) {
+    if (this->coalescence_rates_are_fixed()) {
         return;
     }
     this->root_->get_child(child_index)->set_coalescence_rate(rate);
@@ -783,7 +765,7 @@ void ComparisonPopulationTree::set_child_coalescence_rate(
 void ComparisonPopulationTree::update_child_coalescence_rate(
         unsigned int child_index,
         double rate) {
-    if (this->coalescence_rates_are_fixed_) {
+    if (this->coalescence_rates_are_fixed()) {
         return;
     }
     this->root_->get_child(child_index)->update_coalescence_rate(rate);

@@ -275,7 +275,6 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, true, false);
         tree.set_root_height(0.03);
         tree.set_u(10.0);
-        tree.set_v(10.0/19.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
@@ -304,7 +303,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, false, false);
         tree.set_root_height(0.03);
         tree.set_u(10.0);
-        tree.set_v(10.0/19.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -334,7 +332,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant
         PopulationTree tree(nex_path, '_', true, false, true);
         tree.set_root_height(0.03);
         tree.set_u(10.0);
-        tree.set_v(10.0/19.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-6494.774924871097));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -360,7 +357,6 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, true, false);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
@@ -389,7 +385,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, false, false);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -419,7 +414,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant
         PopulationTree tree(nex_path, '_', true, false, true);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-10999.288193543642));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -446,7 +440,6 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         PopulationTree tree(nex_path, '_', true, true, false);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         tree.set_coalescence_rate(111.1);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-224.40177558289847));
@@ -470,7 +463,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         PopulationTree tree(nex_path, '_', true, false, false);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         tree.set_coalescence_rate(111.1);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-8158.88094671241));
@@ -495,7 +487,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominan
         PopulationTree tree(nex_path, '_', true, false, true);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         tree.set_coalescence_rate(111.1);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-8034.250341980543));
@@ -536,7 +527,6 @@ TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
         tree.set_root_height(0.1);
         tree.set_coalescence_rate(100.0);
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
 
         tree.set_node_height_prior(std::make_shared<ExponentialDistribution>(100.0));
         tree.set_population_size_prior(std::make_shared<GammaDistribution>(10.0, 0.0001));
@@ -652,11 +642,6 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.set_u(1.0);
         REQUIRE(tree.is_dirty());
-        tree.make_clean();
-        REQUIRE(! tree.is_dirty());
-
-        tree.set_v(1.0);
-        REQUIRE(tree.is_dirty());
 
         REQUIRE(tree.get_number_of_likelihood_calculations() == 0);
 
@@ -718,7 +703,6 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.store_state();
         tree.set_height(0.03);
         tree.set_u(10.0);
-        tree.set_v(10.0/19.0);
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_u() == 10.0);
         REQUIRE(tree.get_v() == Approx(10.0/19.0));
@@ -737,9 +721,8 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.store_state();
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         REQUIRE(tree.get_height() == 0.03);
-        REQUIRE(tree.get_v() == 10.0);
+        REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
@@ -754,7 +737,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.store_state();
         tree.set_coalescence_rate(111.1);
         REQUIRE(tree.get_height() == 0.03);
-        REQUIRE(tree.get_v() == 10.0);
+        REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.get_root_coalescence_rate() == 111.1);
         REQUIRE(tree.get_child_coalescence_rate(0) == 111.1);
@@ -931,11 +914,6 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 
         tree.set_u(1.0);
         REQUIRE(tree.is_dirty());
-        tree.make_clean();
-        REQUIRE(! tree.is_dirty());
-
-        tree.set_v(1.0);
-        REQUIRE(tree.is_dirty());
 
         REQUIRE(tree.get_number_of_likelihood_calculations() == 0);
 
@@ -997,7 +975,6 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         tree.store_state();
         tree.set_root_height(0.03);
         tree.set_u(10.0);
-        tree.set_v(10.0/19.0);
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_u() == 10.0);
         REQUIRE(tree.get_v() == Approx(10.0/19.0));
@@ -1014,9 +991,8 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 
         tree.store_state();
         tree.set_u(10.0/19.0);
-        tree.set_v(10.0);
         REQUIRE(tree.get_root_height() == 0.03);
-        REQUIRE(tree.get_v() == 10.0);
+        REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
@@ -1031,7 +1007,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         tree.store_state();
         tree.set_coalescence_rate(111.1);
         REQUIRE(tree.get_root_height() == 0.03);
-        REQUIRE(tree.get_v() == 10.0);
+        REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.get_root_coalescence_rate() == 111.1);
         REQUIRE(tree.is_dirty());
@@ -1192,15 +1168,12 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
 
         t.set_root_height(0.03);
         t.set_u(10.0);
-        t.set_v(10.0/19.0);
 
         t_included.set_root_height(0.03);
         t_included.set_u(10.0);
-        t_included.set_v(10.0/19.0);
 
         t_removed.set_root_height(0.03);
         t_removed.set_u(10.0);
-        t_removed.set_v(10.0/19.0);
 
         t_removed.provide_number_of_constant_sites(3, 6);
 
@@ -1228,7 +1201,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
 
         t_mistake.set_root_height(0.03);
         t_mistake.set_u(10.0);
-        t_mistake.set_v(10.0/19.0);
 
         // Oops, mixing up red/green here to make sure it counts!
         t_mistake.provide_number_of_constant_sites(6, 3);
