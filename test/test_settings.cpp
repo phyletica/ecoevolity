@@ -8,14 +8,14 @@ TEST_CASE("Testing bare constructor of ContinuousDistributionSettings",
         ContinuousDistributionSettings cds;
         REQUIRE(cds.get_name() == "none");
         REQUIRE(cds.to_string() == "");
-        REQUIRE_THROWS_AS(cds.get_instance(),
-                EcoevolityContinuousDistributionSettingError);
+        std::shared_ptr<ContinuousProbabilityDistribution> p = cds.get_instance();
+        REQUIRE(! p);
 
         cds = ContinuousDistributionSettings();
         REQUIRE(cds.get_name() == "none");
         REQUIRE(cds.to_string() == "");
-        REQUIRE_THROWS_AS(cds.get_instance(),
-                EcoevolityContinuousDistributionSettingError);
+        std::shared_ptr<ContinuousProbabilityDistribution> p2 = cds.get_instance();
+        REQUIRE(! p2);
     }
 }
 
@@ -467,7 +467,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 true,
                 true,
                 false,
-                false,
+                true,
                 true,
                 false,
                 false);
@@ -479,7 +479,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "markers_are_dominant: false\n";
         e += "population_name_delimiter: '_'\n";
         e += "population_name_is_prefix: true\n";
-        e += "constant_sites_removed: false\n";
+        e += "constant_sites_removed: true\n";
         e += "use_empirical_mutation_rate_starting_values: true\n";
         e += "constrain_population_sizes: false\n";
         e += "constrain_mutation_rates: false\n";
@@ -515,7 +515,244 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
         REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
+        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(0));
+        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_child_coalescence_rate_parameter(0) != t.get_child_coalescence_rate_parameter(1));
         REQUIRE(t.get_node_height_multiplier_parameter()->is_fixed() == true);
         REQUIRE(t.mutation_rates_are_fixed() == true);
+        REQUIRE(t.coalescence_rates_are_fixed() == false);
+        REQUIRE(t.node_height_multiplier_is_fixed() == true);
+
+        REQUIRE(! t.get_u_prior());
+        REQUIRE(! t.get_v_prior());
+        REQUIRE(t.get_population_size_prior()->to_string() == "gamma(shape = 10, scale = 0.0001)");
+        REQUIRE(! t.get_node_height_multiplier_prior());
+    }
+
+    SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex likelihood") {
+
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+
+        std::unordered_map<std::string, double> no_prior_parameters;
+        std::unordered_map<std::string, double> u_prior_parameters;
+        u_prior_parameters["shape"] = 10.0;
+        u_prior_parameters["scale"] = 0.1;
+        PositiveRealParameterSettings pop_size = PositiveRealParameterSettings(
+                2.0 / 10.0,
+                true,
+                "gamma_distribution",
+                u_prior_parameters);
+        PositiveRealParameterSettings u = PositiveRealParameterSettings(
+                1.0,
+                false,
+                "gamma_distribution",
+                u_prior_parameters);
+        PositiveRealParameterSettings v = PositiveRealParameterSettings(
+                1.0,
+                false,
+                "gamma_distribution",
+                u_prior_parameters);
+        PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
+                1.0,
+                true,
+                "none",
+                no_prior_parameters);
+
+        ComparisonSettings settings = ComparisonSettings(
+                nex_path,
+                pop_size,
+                u,
+                v,
+                multiplier,
+                '_',
+                true,
+                true,
+                false,
+                true,
+                true,
+                false,
+                true);
+
+        std::string s = settings.to_string(0);
+        std::string e =  "";
+        e += "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        e += "genotypes_are_diploid: true\n";
+        e += "markers_are_dominant: false\n";
+        e += "population_name_delimiter: '_'\n";
+        e += "population_name_is_prefix: true\n";
+        e += "constant_sites_removed: true\n";
+        e += "use_empirical_mutation_rate_starting_values: false\n";
+        e += "constrain_population_sizes: false\n";
+        e += "constrain_mutation_rates: true\n";
+        e += "parameters:\n";
+        e += "    population_size:\n";
+        e += "        value: 0.2\n";
+        e += "        estimate: false\n";
+        e += "    u_rate:\n";
+        e += "        value: 1\n";
+        e += "        estimate: false\n";
+        e += "    v_rate:\n";
+        e += "        value: 1\n";
+        e += "        estimate: false\n";
+        e += "    time_multiplier:\n";
+        e += "        value: 1\n";
+        e += "        estimate: false\n";
+        REQUIRE(s == e);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonPopulationTree t = settings.get_instance(rng);
+
+        REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
+        REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
+        REQUIRE(t.get_child_coalescence_rate(1) == Approx(10.0));
+        REQUIRE(t.get_u() == 1.0);
+        REQUIRE(t.get_v() == 1.0);
+        REQUIRE(t.get_u_parameter()->is_fixed() == true);
+        REQUIRE(t.get_v_parameter()->is_fixed() == true);
+        REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == true);
+        REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == true);
+        REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == true);
+        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(0));
+        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_child_coalescence_rate_parameter(0) != t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_node_height_multiplier_parameter()->is_fixed() == true);
+        REQUIRE(t.mutation_rates_are_fixed() == true);
+        REQUIRE(t.coalescence_rates_are_fixed() == true);
+        REQUIRE(t.node_height_multiplier_is_fixed() == true);
+
+        REQUIRE(! t.get_u_prior());
+        REQUIRE(! t.get_v_prior());
+        REQUIRE(! t.get_population_size_prior());
+        REQUIRE(! t.get_node_height_multiplier_prior());
+
+        t.set_root_height(0.01);
+        double l = t.compute_log_likelihood();
+        REQUIRE(l == Approx(-31.77866581319647));
+    }
+
+    SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex likelihood with constrained sizes") {
+
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+
+        std::unordered_map<std::string, double> no_prior_parameters;
+        std::unordered_map<std::string, double> pop_prior_parameters;
+        pop_prior_parameters["rate"] = 1.0;
+        std::unordered_map<std::string, double> u_prior_parameters;
+        u_prior_parameters["shape"] = 10.0;
+        u_prior_parameters["scale"] = 0.1;
+        std::unordered_map<std::string, double> v_prior_parameters;
+        v_prior_parameters["shape"] = 100.0;
+        v_prior_parameters["scale"] = 0.01;
+        std::unordered_map<std::string, double> m_prior_parameters;
+        m_prior_parameters["min"] = 0.9;
+        m_prior_parameters["max"] = 1.1;
+        PositiveRealParameterSettings pop_size = PositiveRealParameterSettings(
+                2.0 / 10.0,
+                false,
+                "exponential_distribution",
+                pop_prior_parameters);
+        PositiveRealParameterSettings u = PositiveRealParameterSettings(
+                1.0,
+                false,
+                "gamma_distribution",
+                u_prior_parameters);
+        PositiveRealParameterSettings v = PositiveRealParameterSettings(
+                1.0,
+                false,
+                "gamma_distribution",
+                v_prior_parameters);
+        PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
+                1.0,
+                false,
+                "uniform_distribution",
+                m_prior_parameters);
+
+        ComparisonSettings settings = ComparisonSettings(
+                nex_path,
+                pop_size,
+                u,
+                v,
+                multiplier,
+                '_',
+                true,
+                true,
+                false,
+                true,
+                false,
+                true,
+                false);
+
+        std::string s = settings.to_string(0);
+        std::string e =  "";
+        e += "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        e += "genotypes_are_diploid: true\n";
+        e += "markers_are_dominant: false\n";
+        e += "population_name_delimiter: '_'\n";
+        e += "population_name_is_prefix: true\n";
+        e += "constant_sites_removed: true\n";
+        e += "use_empirical_mutation_rate_starting_values: false\n";
+        e += "constrain_population_sizes: true\n";
+        e += "constrain_mutation_rates: false\n";
+        e += "parameters:\n";
+        e += "    population_size:\n";
+        e += "        value: 0.2\n";
+        e += "        estimate: true\n";
+        e += "        prior:\n";
+        e += "            exponential_distribution:\n";
+        e += "                rate: 1\n";
+        e += "    u_rate:\n";
+        e += "        value: 1\n";
+        e += "        estimate: true\n";
+        e += "        prior:\n";
+        e += "            gamma_distribution:\n";
+        e += "                shape: 10\n";
+        e += "                scale: 0.1\n";
+        e += "    v_rate:\n";
+        e += "        value: 1\n";
+        e += "        estimate: true\n";
+        e += "        prior:\n";
+        e += "            gamma_distribution:\n";
+        e += "                shape: 100\n";
+        e += "                scale: 0.01\n";
+        e += "    time_multiplier:\n";
+        e += "        value: 1\n";
+        e += "        estimate: true\n";
+        e += "        prior:\n";
+        e += "            uniform_distribution:\n";
+        e += "                min: 0.9\n";
+        e += "                max: 1.1\n";
+        REQUIRE(s == e);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonPopulationTree t = settings.get_instance(rng);
+
+        REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
+        REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
+        REQUIRE(t.get_child_coalescence_rate(1) == Approx(10.0));
+        REQUIRE(t.get_u() == 1.0);
+        REQUIRE(t.get_v() == 1.0);
+        REQUIRE(t.get_u_parameter()->is_fixed() == false);
+        REQUIRE(t.get_v_parameter()->is_fixed() == false);
+        REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
+        REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
+        REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
+        REQUIRE(t.get_root_coalescence_rate_parameter() == t.get_child_coalescence_rate_parameter(0));
+        REQUIRE(t.get_root_coalescence_rate_parameter() == t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_child_coalescence_rate_parameter(0) == t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_node_height_multiplier_parameter()->is_fixed() == false);
+        REQUIRE(t.mutation_rates_are_fixed() == false);
+        REQUIRE(t.coalescence_rates_are_fixed() == false);
+        REQUIRE(t.node_height_multiplier_is_fixed() == false);
+
+        REQUIRE(t.get_u_prior()->to_string() == "gamma(shape = 10, scale = 0.1)");
+        REQUIRE(t.get_v_prior()->to_string() == "gamma(shape = 100, scale = 0.01)");
+        REQUIRE(t.get_population_size_prior()->to_string() == "exp(lambda = 1)");
+        REQUIRE(t.get_node_height_multiplier_prior()->to_string() == "uniform(0.9, 1.1)");
+
+        t.set_root_height(0.01);
+        double l = t.compute_log_likelihood();
+        REQUIRE(l == Approx(-31.77866581319647));
     }
 }

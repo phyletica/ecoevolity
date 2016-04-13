@@ -191,8 +191,7 @@ class ContinuousDistributionSettings {
                         this->parameters_.at("max"));
             }
             else if (this->name_ == "none") {
-                throw EcoevolityContinuousDistributionSettingError(
-                        "asked for an instance of a null prior distribution");
+                return p;
             }
             else {
                 ECOEVOLITY_ASSERT(0 == 1);
@@ -440,11 +439,11 @@ class ComparisonSettings {
                 t.fold_patterns();
             }
 
+            t.set_population_size_prior(this->population_size_settings_.prior_settings_.get_instance());
             if (this->constrain_population_sizes_) {
                 t.constrain_coalescence_rates();
             }
-            t.set_population_size_prior(this->population_size_settings_.prior_settings_.get_instance());
-            std::shared_ptr<PositiveRealParameter> p = this->u_settings_.get_instance(rng);
+            std::shared_ptr<PositiveRealParameter> p = this->population_size_settings_.get_instance(rng);
             t.set_coalescence_rate(
                     CoalescenceRateParameter::get_rate_from_population_size(
                             p->get_value()));
@@ -452,6 +451,8 @@ class ComparisonSettings {
                 t.fix_coalescence_rates();
             }
 
+            t.set_u_prior(this->u_settings_.prior_settings_.get_instance());
+            t.set_v_prior(this->v_settings_.prior_settings_.get_instance());
             if (this->constrain_mutation_rates_) {
                 t.constrain_mutation_rates();
             }
@@ -460,10 +461,6 @@ class ComparisonSettings {
                 t.set_u(u->get_value());
                 if (u->is_fixed()) {
                     t.fix_mutation_rates();
-                }
-                else {
-                    t.set_u_prior(this->u_settings_.prior_settings_.get_instance());
-                    t.set_v_prior(this->v_settings_.prior_settings_.get_instance());
                 }
             }
             t.set_node_height_multiplier_parameter(this->time_multiplier_settings_.get_instance(rng));
