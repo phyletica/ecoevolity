@@ -416,8 +416,8 @@ class MutationRateMover : public MutationRateOperator {
             double x = this->window_size_ * ((2.0 * rng.uniform_real()) - 1.0);
             if ((red_freq + x >= 0.0) && (red_freq + x <= 1.0)) {
                 red_freq += x;
+                // v is also set here
                 this->set_u(1.0 / (2.0 * red_freq));
-                this->set_v(1.0 / (2.0 * (1.0 - red_freq)));
                 return 0.0;
             }
             return -std::numeric_limits<double>::infinity();
