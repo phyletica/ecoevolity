@@ -367,7 +367,7 @@ class ComparisonSettings {
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
-                bool constant_sites_removed = false,
+                bool constant_sites_removed = true,
                 bool use_empirical_mutation_rate_starting_values = true,
                 bool constrain_population_sizes = false,
                 bool constrain_mutation_rates = true) {
@@ -466,7 +466,7 @@ class ComparisonSettings {
             ss << margin << "path: " << this->path_ << "\n";
             ss << margin << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
             ss << margin << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
-            ss << margin << "population_name_delimiter: " << this->population_name_delimiter_ << "\n";
+            ss << margin << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
             ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
             ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
             ss << margin << "use_empirical_mutation_rate_starting_values: " << this->use_empirical_mutation_rate_starting_values_ << "\n";

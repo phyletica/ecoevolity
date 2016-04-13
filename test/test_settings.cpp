@@ -411,3 +411,95 @@ TEST_CASE("Testing nan parameter settings", "[PositiveRealParameterSettings]") {
         REQUIRE(p->get_prior_string() == "gamma(shape = 1, scale = 1)");
     }
 }
+
+TEST_CASE("Testing fixed nan parameter settings", "[PositiveRealParameterSettings]") {
+    SECTION("Testing fixed nan parameter") {
+        std::unordered_map<std::string, double> prior_parameters;
+        prior_parameters["shape"] = 1.0;
+        prior_parameters["scale"] = 1.0;
+
+        REQUIRE_THROWS_AS(PositiveRealParameterSettings(
+                std::numeric_limits<double>::quiet_NaN(),
+                true,
+                "gamma_distribution",
+                prior_parameters),
+                EcoevolityPositiveRealParameterSettingError);
+    }
+}
+
+TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
+    SECTION("Testing data/diploid-dna-constant-missing.nex") {
+
+        std::string nex_path = "data/diploid-dna-constant-missing.nex";
+
+        std::unordered_map<std::string, double> no_prior_parameters;
+        std::unordered_map<std::string, double> pop_prior_parameters;
+        pop_prior_parameters["shape"] = 10.0;
+        pop_prior_parameters["scale"] = 0.0001;
+        PositiveRealParameterSettings pop_size = PositiveRealParameterSettings(
+                0.01,
+                false,
+                "gamma_distribution",
+                pop_prior_parameters);
+        PositiveRealParameterSettings u = PositiveRealParameterSettings(
+                1.0,
+                true,
+                "none",
+                no_prior_parameters);
+        PositiveRealParameterSettings v = PositiveRealParameterSettings(
+                1.0,
+                true,
+                "none",
+                no_prior_parameters);
+        PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
+                1.0,
+                true,
+                "none",
+                no_prior_parameters);
+
+        ComparisonSettings settings = ComparisonSettings(
+                nex_path,
+                pop_size,
+                u,
+                v,
+                multiplier,
+                '_',
+                true,
+                true,
+                false,
+                false,
+                true,
+                false,
+                false);
+
+        std::string s = settings.to_string(0);
+        std::string e =  "";
+        e += "path: data/diploid-dna-constant-missing.nex\n";
+        e += "genotypes_are_diploid: true\n";
+        e += "markers_are_dominant: false\n";
+        e += "population_name_delimiter: '_'\n";
+        e += "population_name_is_prefix: true\n";
+        e += "constant_sites_removed: false\n";
+        e += "use_empirical_mutation_rate_starting_values: true\n";
+        e += "constrain_population_sizes: false\n";
+        e += "constrain_mutation_rates: false\n";
+        e += "parameters:\n";
+        e += "    population_size:\n";
+        e += "        value: 0.01\n";
+        e += "        estimate: true\n";
+        e += "        prior:\n";
+        e += "            gamma_distribution:\n";
+        e += "                shape: 10\n";
+        e += "                scale: 0.0001\n";
+        e += "    u_rate:\n";
+        e += "        value: 1.40909\n";
+        e += "        estimate: false\n";
+        e += "    v_rate:\n";
+        e += "        value: 0.775\n";
+        e += "        estimate: false\n";
+        e += "    time_multiplier:\n";
+        e += "        value: 1\n";
+        e += "        estimate: false\n";
+        REQUIRE(s == e);
+    }
+}
