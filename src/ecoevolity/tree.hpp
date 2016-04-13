@@ -36,15 +36,15 @@ class PopulationTree {
         BiallelicData data_;
         PopulationNode * root_;
         MatrixExponentiator matrix_exponentiator;
-        std::shared_ptr<ContinuousProbabilityDistribution> u_prior_ = std::make_shared<ExponentialDistribution>(1.0);
-        std::shared_ptr<ContinuousProbabilityDistribution> v_prior_ = std::make_shared<ExponentialDistribution>(1.0);
-        std::shared_ptr<ContinuousProbabilityDistribution> node_height_multiplier_prior_ = std::make_shared<GammaDistribution>(100.0, 0.01);
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
-        std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(this->u_prior_, 1.0);
-        std::shared_ptr<PositiveRealParameter> v_ = std::make_shared<PositiveRealParameter>(this->v_prior_, 1.0);
+        std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(
+                std::make_shared<ExponentialDistribution>(1.0),
+                1.0);
+        std::shared_ptr<PositiveRealParameter> v_ = std::make_shared<PositiveRealParameter>(
+                std::make_shared<ExponentialDistribution>(1.0),
+                1.0);
         std::shared_ptr<PositiveRealParameter> node_height_multiplier_ = std::make_shared<PositiveRealParameter>(
-                this->node_height_multiplier_prior_,
                 1.0,
                 true);
         std::vector<double> pattern_likelihoods_;
@@ -213,15 +213,15 @@ class PopulationTree {
         void set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         void set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         std::shared_ptr<ContinuousProbabilityDistribution> get_u_prior() const {
-            return this->u_prior_;
+            return this->u_->prior;
         }
         std::shared_ptr<ContinuousProbabilityDistribution> get_v_prior() const {
-            return this->v_prior_;
+            return this->v_->prior;
         }
 
         void set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_multiplier_prior() const {
-            return this->node_height_multiplier_prior_;
+            return this->node_height_multiplier_->prior;
         }
 
         void fix_coalescence_rates() {

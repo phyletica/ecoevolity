@@ -658,17 +658,14 @@ void PopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabi
 }
 
 void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->u_prior_ = prior;
     this->u_->set_prior(prior);
     this->make_dirty();
 }
 void PopulationTree::set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->v_prior_ = prior;
     this->v_->set_prior(prior);
     this->make_dirty();
 }
 void PopulationTree::set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->node_height_multiplier_prior_ = prior;
     this->node_height_multiplier_->set_prior(prior);
     this->make_dirty();
 }
