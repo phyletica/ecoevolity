@@ -506,17 +506,47 @@ class CollectionSettings {
 
         bool use_dpp_ = true;
         unsigned int chain_length_;
-        unsigned int sample_every_;
+        unsigned int sample_frequency_;
 
         ContinuousDistributionSettings time_prior_settings_;
 
-        PositiveRealParameterSettings concentration_;
+        PositiveRealParameterSettings concentration_settings_;
 
         std::vector<ComparisonSettings> comparisons_;
 
     public:
 
-        void add_comparison();
+        CollectionSettings() { }
+        CollectionSettings(
+                const ContinuousDistributionSettings& time_prior,
+                unsigned int chain_length,
+                unsigned int sample_frequency,
+                const PositiveRealParameterSettings& concentration_settings,
+                bool use_dpp) {
+            this->time_prior_settings_ = time_prior;
+            this->chain_length_ = chain_length;
+            this->sample_frequency_ = sample_frequency;
+            this->concentration_settings_ = concentration_settings;
+            this->use_dpp_ = use_dpp;
+        }
+        virtual ~CollectionSettings() { }
+        CollectionSettings& operator=(const CollectionSettings& other) {
+            this->time_prior_settings_ = other.time_prior_settings_;
+            this->chain_length_ = other.chain_length_;
+            this->sample_frequency_ = other.sample_frequency_;
+            this->concentration_settings_ = other.concentration_settings_;
+            this->use_dpp_ = other.use_dpp_;
+            this->comparisons_ = other.comparisons_;
+            return * this;
+        }
+
+        void add_comparison(ComparisonSettings comparison_settings) {
+            this->comparisons_.push_back(comparison_settings);
+        }
+
+        std::string to_string() const;
+
+        ComparisonPopulationTreeCollection get_instance(RandomNumberGenerator & rng) const;
 
         // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
         static CollectionSettings init_from_config_file(const std::string& path);
