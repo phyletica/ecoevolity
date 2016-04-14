@@ -492,6 +492,7 @@ void PopulationTree::restore_root_height() {
     this->root_->restore_height();
 }
 void PopulationTree::set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
+    ECOEVOLITY_ASSERT(h->prior == this->node_height_prior_);
     this->root_->set_height_parameter(h);
 }
 std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter() const {
@@ -778,11 +779,6 @@ void ComparisonPopulationTree::store_child_coalescence_rate(
 void ComparisonPopulationTree::restore_child_coalescence_rate(
         unsigned int child_index) {
     this->root_->get_child(child_index)->restore_coalescence_rate();
-}
-void ComparisonPopulationTree::set_child_coalescence_rate_parameter(
-        unsigned int child_index,
-        std::shared_ptr<CoalescenceRateParameter> r) {
-    this->root_->get_child(child_index)->set_coalescence_rate_parameter(r);
 }
 std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_coalescence_rate_parameter(
         unsigned int child_index) const {

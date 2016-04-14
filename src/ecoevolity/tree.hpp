@@ -309,8 +309,6 @@ class ComparisonPopulationTree: public PopulationTree {
         const double& get_child_coalescence_rate(unsigned int child_index) const;
         void store_child_coalescence_rate(unsigned int child_index);
         void restore_child_coalescence_rate(unsigned int child_index);
-        void set_child_coalescence_rate_parameter(unsigned int child_index,
-                std::shared_ptr<CoalescenceRateParameter> r);
         std::shared_ptr<CoalescenceRateParameter> get_child_coalescence_rate_parameter(
                 unsigned int child_index) const;
 
