@@ -558,14 +558,14 @@ class CollectionSettings {
                 ss << this->concentration_settings_.to_string(4);
             }
             else {
-                ss << indent << "uniform:\n"
+                ss << indent << "uniform:\n";
             }
 
             ss << "event_time_prior:\n";
             ss << this->time_prior_settings_.to_string(1);
 
             ss << "mcmc_settings:\n"
-               << indent << "chain_length: " << this->chain_length_ << "\n";
+               << indent << "chain_length: " << this->chain_length_ << "\n"
                << indent << "sample_frequency: " << this->sample_frequency_ << "\n";
 
             ss << "comparisons:\n";
@@ -573,6 +573,7 @@ class CollectionSettings {
                 ss << "- comparison:\n";
                 ss << comp.to_string(1);
             }
+            return ss.str();
         }
 
         // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
