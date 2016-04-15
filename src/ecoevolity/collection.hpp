@@ -37,9 +37,9 @@ class ComparisonPopulationTreeCollection {
         std::vector<unsigned int> node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
-        std::shared_ptr<ContinuousProbabilityDistribution> concentration_prior_ = std::make_shared<GammaDistribution>(1.0, 1.0);
-        std::shared_ptr<PositiveRealParameter> concentration_ = std::make_shared<PositiveRealParameter>(this->concentration_prior_, 1.0);
-        std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<PositiveRealParameter> concentration_;
+        std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
+        OperatorSchedule operator_schedule_;
         bool use_multithreading_ = false;
 
         void compute_tree_partials();
@@ -62,6 +62,12 @@ class ComparisonPopulationTreeCollection {
         void remove_height(unsigned int height_index);
 
     public:
+        ComparisonPopulationTreeCollection() { }
+        ComparisonPopulationTreeCollection(
+                const CollectionSettings & settings,
+                RandomNumberGenerator & rng
+                );
+        virtual ~ComparisonPopulationTreeCollection() { }
         void store_state();
         void restore_state();
         void compute_log_likelihood_and_prior();
