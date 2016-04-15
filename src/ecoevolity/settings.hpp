@@ -544,9 +544,36 @@ class CollectionSettings {
             this->comparisons_.push_back(comparison_settings);
         }
 
-        std::string to_string() const;
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string indent = get_indent(1);
 
-        ComparisonPopulationTreeCollection get_instance(RandomNumberGenerator & rng) const;
+            ss << "---\n"
+               << "event_model_prior:\n";
+            if (this->use_dpp_) {
+                ss << indent << "dirichlet_process:\n"
+                   << indent << indent << "parameters:\n"
+                   << indent << indent << "concentration:\n";
+                ss << this->concentration_settings_.to_string(4);
+            }
+            else {
+                ss << indent << "uniform:\n"
+            }
+
+            ss << "event_time_prior:\n";
+            ss << this->time_prior_settings_.to_string(1);
+
+            ss << "mcmc_settings:\n"
+               << indent << "chain_length: " << this->chain_length_ << "\n";
+               << indent << "sample_frequency: " << this->sample_frequency_ << "\n";
+
+            ss << "comparisons:\n";
+            for (auto comp : this->comparisons_) {
+                ss << "- comparison:\n";
+                ss << comp.to_string(1);
+            }
+        }
 
         // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
         static CollectionSettings init_from_config_file(const std::string& path);
