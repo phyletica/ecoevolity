@@ -52,6 +52,19 @@ inline void normalize_log_likelihoods(std::vector<double>& v) {
     ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
 }
 
+/**
+ * Calculate the expected number of categories under a Dirichlet process.
+ *
+ * Calculates and returns the expected number of categories for
+ * 'number_of_elements' elements under a Dirichlet process controlled by
+ * 'concentration' parameter.
+ *
+ * @note    Modified from `expNumTables` function of `util.h` from
+ *          [`DPPDiv`](http://phylo.bio.ku.edu/content/tracy-heath-dppdiv)
+ *          version 1.0b (Copyright Tracy Heath, Mark Holder, and John
+ *          Huelsenback; licensed under GPL v3;
+ *          <http://phylo.bio.ku.edu/content/tracy-heath-dppdiv>).
+ */
 inline double get_dpp_expected_number_of_categories(
         double concentration,
         unsigned int number_of_elements) {
@@ -62,6 +75,19 @@ inline double get_dpp_expected_number_of_categories(
     return expected_ncats * concentration;
 }
 
+/**
+ * Calculate the Dirichlet-process concentration parameter.
+ *
+ * Calculates and returns the Dirichlet-process concentration parameter that
+ * has an expected number of categories equal to
+ * 'expected_number_of_categories' for 'number_of_elements' elements.
+ *
+ * @note    Modified from `calculateFromPriorMean` function of `util.h` from
+ *          [`DPPDiv`](http://phylo.bio.ku.edu/content/tracy-heath-dppdiv)
+ *          version 1.0b (Copyright Tracy Heath, Mark Holder, and John
+ *          Huelsenback; licensed under GPL v3;
+ *          <http://phylo.bio.ku.edu/content/tracy-heath-dppdiv>).
+ */
 inline double get_dpp_concentration(
         double expected_number_of_categories,
         unsigned int number_of_elements,
@@ -106,6 +132,10 @@ inline double get_dpp_concentration(
     return c;
 }
 
+/**
+ * Calculate the scale parameter of a gamma hyper prior on the concentration
+ * parameter of the Dirichlet process.
+ */
 inline double get_dpp_gamma_scale(
         double expected_number_of_categories,
         unsigned int number_of_elements,
