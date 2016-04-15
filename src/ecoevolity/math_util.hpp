@@ -17,33 +17,38 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "util.hpp"
+#ifndef ECOEVOLITY_MATH_UTIL_HPP
+#define ECOEVOLITY_MATH_UTIL_HPP
 
-std::vector<std::string> & split(
-        const std::string &s,
-        char delimiter,
-        std::vector<std::string> & elements) {
-    std::stringstream str_stream(s);
-    std::string item;
-    while (std::getline(str_stream, item, delimiter)) {
-        elements.push_back(item);
+#include <vector>
+#include <cmath>
+
+#include "assert.hpp"
+
+inline void normalize_log_likelihoods(std::vector<double>& v) {
+    double mx = v.at(0);
+    for (auto v_iter : v) {
+        if (v_iter > mx) {
+            mx = v_iter;
+        }
     }
-    return elements;
+
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        v.at(i) -= mx;
+    }
+
+    double sum = 0.0;
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        v.at(i) = std::exp(v.at(i));
+        sum += v.at(i);
+    }
+
+    double t = 0.0;
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        v.at(i) /= sum;
+        t += v.at(i);
+    }
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
 }
 
-std::vector<std::string> split(
-        const std::string &s,
-        char delimiter) {
-    std::vector<std::string> elements;
-    split(s, delimiter, elements);
-    return elements;
-}
-
-std::string get_indent(unsigned int level) {
-    return std::string(4 * level, ' ');
-    /* std::string s = ""; */
-    /* for (unsigned int i = 0; i < 4 * level; ++i) { */
-    /*     s += " "; */
-    /* } */
-    /* return s; */
-}
+#endif

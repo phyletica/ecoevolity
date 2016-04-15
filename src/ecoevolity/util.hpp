@@ -25,7 +25,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <cmath>
 
 #include "assert.hpp"
 
@@ -48,7 +47,6 @@ const typename T::value_type::second_type& map_at(
     return it->second;
 }
 
-
 std::vector<std::string> & split(
         const std::string &s,
         char delimiter,
@@ -59,32 +57,5 @@ std::vector<std::string> split(
         char delimiter);
 
 std::string get_indent(unsigned int level = 1);
-
-
-inline void normalize_log_likelihoods(std::vector<double>& v) {
-    double mx = v.at(0);
-    for (auto v_iter : v) {
-        if (v_iter > mx) {
-            mx = v_iter;
-        }
-    }
-
-    for (unsigned int i = 0; i < v.size(); ++i) {
-        v.at(i) -= mx;
-    }
-
-    double sum = 0.0;
-    for (unsigned int i = 0; i < v.size(); ++i) {
-        v.at(i) = std::exp(v.at(i));
-        sum += v.at(i);
-    }
-
-    double t = 0.0;
-    for (unsigned int i = 0; i < v.size(); ++i) {
-        v.at(i) /= sum;
-        t += v.at(i);
-    }
-    ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
-}
 
 #endif

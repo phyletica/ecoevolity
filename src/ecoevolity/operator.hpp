@@ -29,7 +29,7 @@
 
 #include "rng.hpp"
 #include "assert.hpp"
-#include "util.hpp"
+#include "math_util.hpp"
 
 class OperatorSchedule {
     protected:
