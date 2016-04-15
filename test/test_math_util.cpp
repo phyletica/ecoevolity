@@ -51,3 +51,51 @@ TEST_CASE("Testing normalize_log_likelihoods of copy", "[math_util]") {
         REQUIRE(v.at(3) == -45.12);
     }
 }
+
+TEST_CASE("Testing get_dpp_expected_number_of_categories 0.218 7282", "[math_util]") {
+    double e = get_dpp_expected_number_of_categories(0.218, 7282);
+    REQUIRE(e == Approx(3.0).epsilon(0.001));
+}
+
+TEST_CASE("Testing get_dpp_expected_number_of_categories 0.449 7282", "[math_util]") {
+    double e = get_dpp_expected_number_of_categories(0.449, 7282);
+    REQUIRE(e == Approx(5.0).epsilon(0.001));
+}
+
+TEST_CASE("Testing get_dpp_expected_number_of_categories 0.814 7282", "[math_util]") {
+    double e = get_dpp_expected_number_of_categories(0.814, 7282);
+    REQUIRE(e == Approx(8.0).epsilon(0.001));
+}
+
+TEST_CASE("Testing get_dpp_expected_number_of_categories 1.068 7282", "[math_util]") {
+    double e = get_dpp_expected_number_of_categories(1.068, 7282);
+    REQUIRE(e == Approx(10.0).epsilon(0.0001));
+}
+
+TEST_CASE("Testing get_dpp_concentration 3.0 7282", "[math_util]") {
+    double e = get_dpp_concentration(3.0, 7282);
+    REQUIRE(e == Approx(0.218).epsilon(0.001));
+}
+TEST_CASE("Testing get_dpp_concentration 5.0 7282", "[math_util]") {
+    double e = get_dpp_concentration(5.0, 7282);
+    REQUIRE(e == Approx(0.449).epsilon(0.001));
+}
+TEST_CASE("Testing get_dpp_concentration 8.0 7282", "[math_util]") {
+    double e = get_dpp_concentration(8.0, 7282);
+    REQUIRE(e == Approx(0.814).epsilon(0.0001));
+}
+TEST_CASE("Testing get_dpp_concentration 10.0 7282", "[math_util]") {
+    double e = get_dpp_concentration(10.0, 7282);
+    REQUIRE(e == Approx(1.068).epsilon(0.0001));
+}
+
+TEST_CASE("Testing get_dpp_gamma_scale", "[math_util]") {
+    unsigned int n = 7282;
+    double ncats = 10.0;
+    double concentration = 1.068;
+    std::vector<double> shapes {0.001, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 100.0, 10000.0};
+    for (auto shape : shapes) {
+        double scale = get_dpp_gamma_scale(ncats, n, shape);
+        REQUIRE(concentration == Approx(shape * scale).epsilon(0.001));
+    }
+}

@@ -578,6 +578,9 @@ class CollectionSettings {
 
         // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
         static CollectionSettings init_from_config_file(const std::string& path);
+        // TODO: Simply parse and handle 'prior_mean_number_of_events' setting
+        // here and keep the concentration hyper prior a 'straight-up' gamma
+        // prior internally in 'to_string'.
 };
 
 #endif

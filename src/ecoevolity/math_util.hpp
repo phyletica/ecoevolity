@@ -24,6 +24,7 @@
 #include <cmath>
 
 #include "assert.hpp"
+#include "error.hpp"
 
 inline void normalize_log_likelihoods(std::vector<double>& v) {
     double mx = v.at(0);
@@ -49,6 +50,76 @@ inline void normalize_log_likelihoods(std::vector<double>& v) {
         t += v.at(i);
     }
     ECOEVOLITY_ASSERT_APPROX_EQUAL(t, 1.0);
+}
+
+inline double get_dpp_expected_number_of_categories(
+        double concentration,
+        unsigned int number_of_elements) {
+    double expected_ncats =  0.0;
+    for (unsigned int i = 1; i <= number_of_elements; ++i) {
+        expected_ncats += (1.0 / (((double) i) - 1.0 + concentration));
+    }
+    return expected_ncats * concentration;
+}
+
+inline double get_dpp_concentration(
+        double expected_number_of_categories,
+        unsigned int number_of_elements,
+        double increment = 0.1,
+        double precision = 0.000001,
+        double buffer = 0.001) {
+    double c = precision;
+    double n = (double) number_of_elements;
+    double e = expected_number_of_categories;
+    double current_e = get_dpp_expected_number_of_categories(c, n);
+
+    ECOEVOLITY_ASSERT(e <= n);
+    if (e > (n - buffer)) {
+        e = n - buffer;
+    }
+    else if (e < (1.0 + buffer)) {
+        e = 1.0 + buffer;
+    }
+    bool increase = false;
+    if (current_e < e) {
+        increase = true;
+    }
+    while (fabs(current_e - e) > precision) {
+        if ((current_e < e) && increase) {
+            c += increment;
+        }
+        else if ((current_e > e) && (! increase)) {
+            c -= increment;
+        }
+        else if ((current_e < e) && (! increase)) {
+            increment /= 2.0;
+            increase = true;
+            c += increment;
+        }
+        else {
+            increment /= 2.0;
+            increase = false;
+            c -= increment;
+        }
+        current_e = get_dpp_expected_number_of_categories(c, n);
+    }
+    return c;
+}
+
+inline double get_dpp_gamma_scale(
+        double expected_number_of_categories,
+        unsigned int number_of_elements,
+        double shape,
+        double increment = 0.1,
+        double precision = 0.000001,
+        double buffer = 0.001) {
+    double concentration = get_dpp_concentration(
+            expected_number_of_categories,
+            number_of_elements,
+            increment,
+            precision,
+            buffer);
+    return concentration / shape;
 }
 
 #endif
