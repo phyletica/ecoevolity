@@ -182,8 +182,6 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -251,8 +249,6 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -524,8 +520,6 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -593,8 +587,6 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -810,8 +802,6 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -877,8 +867,6 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -1077,8 +1065,6 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -1144,8 +1130,6 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -1600,8 +1584,6 @@ TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]"
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
@@ -1667,8 +1649,6 @@ TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]"
         n = 0;
         mean = 0.0;
         sum_devs = 0.0;
-        d;
-        d_n;
         mn = std::numeric_limits<double>::max();
         mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {

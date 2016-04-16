@@ -32,7 +32,7 @@ NCL_DIR="${NCL_TAR_BALL_PATH%.tar.gz}"
 tar -xzf "$NCL_TAR_BALL_PATH" -C "$NCL_BUILD_DIR"
 
 # number of cpus to use during compile
-COMPILETHREADS=2
+COMPILETHREADS=4
  
 cd "${NCL_BUILD_DIR}/build"
 $NCL_DIR/configure --prefix="$INSTALL_DIR"
@@ -49,9 +49,9 @@ echo "    $INSTALL_DIR"
 
 env_path="${NCL_BUILD_DIR}/ncl-env.sh"
 echo "#!/bin/sh" > "$env_path"
-echo export PATH="${INSTALL_DIR}/bin:${PATH}" >> "$env_path"
-echo export LD_LIBRARY_PATH="${INSTALL_DIR}/lib:${LD_LIBRARY_PATH}" >> "$env_path"
-echo export PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}" >> "$env_path"
+echo export PATH="${INSTALL_DIR}/bin:\${PATH}" >> "$env_path"
+echo export LD_LIBRARY_PATH="${INSTALL_DIR}/lib:\${LD_LIBRARY_PATH}" >> "$env_path"
+echo export PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig:\${PKG_CONFIG_PATH}" >> "$env_path"
 echo export NCL_PREFIX="${INSTALL_DIR}" >> "$env_path"
 
 rm "$NCL_TAR_BALL_PATH"

@@ -2,4 +2,5 @@
 .DS_Store
 build/
 ncl-build/
+yaml-cpp-build/
 test-suite-build/

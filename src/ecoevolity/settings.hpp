@@ -25,6 +25,8 @@
 #include <map>
 #include <unordered_map>
 
+#include "yaml-cpp/yaml.h"
+
 #include "error.hpp"
 #include "assert.hpp"
 #include "util.hpp"
@@ -577,7 +579,11 @@ class CollectionSettings {
         }
 
         // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
-        static CollectionSettings init_from_config_file(const std::string& path);
+        static CollectionSettings init_from_config_file(const std::string& path) {
+            CollectionSettings settings;
+            YAML::Node config = YAML::LoadFile(path);
+            return settings;
+        }
         // TODO: Simply parse and handle 'prior_mean_number_of_events' setting
         // here and keep the concentration hyper prior a 'straight-up' gamma
         // prior internally in 'to_string'.

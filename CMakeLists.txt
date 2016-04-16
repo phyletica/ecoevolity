@@ -6,6 +6,7 @@ project("ecoevolity" CXX)
 # Get local cmake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 include(PreventInSourceBuild)
+include(FinalFile)
 
 
 #######################################################################
@@ -29,20 +30,39 @@ set(SOURCE_DIR "${BASE_DIR}/src")
 set(ECOEVOLITY_SOURCE_DIR "${SOURCE_DIR}/ecoevolity")
 set(EXTERNAL_PROJECT_DIR "${SOURCE_DIR}/external")
 set(NCL_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/ncl")
+set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-release-0.5.3")
 set(TEST_DIR "${BASE_DIR}/test")
 set(TEST_DATA_DIR "${TEST_DIR}/data")
 
 
 #######################################################################
 # Find and set up NCL variables
+option (FORCE_BUNDLED_NCL "Use included NCL library" OFF)
 include(FindNCL)
 include_directories("${NCL_INCLUDE_DIRS}")
 
 
 #######################################################################
+# Find and set up yaml-cpp variables
+option (FORCE_BUNDLED_YAML_CPP "Use included yaml-cpp library" OFF)
+if (NOT FORCE_BUNDLED_YAML_CPP)
+    include(FindYamlCpp)
+    include_directories("${NCL_INCLUDE_DIRS}")
+else()
+    set(YAML_CPP_FOUND OFF)
+endif()
+
+set(USING_BUNDLED_YAML_CPP OFF)
+if (NOT YAML_CPP_FOUND)
+    set(YAML_CPP_LIBRARY yaml)
+    set(YAML_CPP_INCLUDE_DIR "${YAML_CPP_SOURCE_DIR}/include")
+    set(USING_BUNDLED_YAML_CPP ON)
+endif()
+
+
+#######################################################################
 # Compiler settings 
 option (STATIC_LINKING "Build with static links" OFF)
-option (FORCE_BUNDLED_NCL "Use included NCL library" OFF)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -50,8 +70,10 @@ endif()
 MESSAGE(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wswitch-default -Wundef -Werror -Wno-unused -Wstrict-overflow=5") # NCL errors: -Wold-style-cast -Wsign-conversion
-    if (${USING_BUNDLED_NCL})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wswitch-default -Wundef -Werror -Wno-unused -Wstrict-overflow=5")
+    # NCL errors: -Wold-style-cast -Wsign-conversion 
+    # yaml-cpp errors: -Wshadow
+    if (${USING_BUNDLED_NCL} OR ${USING_BUNDLED_YAML_CPP})
         set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall")
     endif()
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

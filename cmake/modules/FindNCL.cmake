@@ -29,7 +29,7 @@ include (FindPkgConfig)
 
 if (PKG_CONFIG_FOUND)
     if (NCL_FIND_VERSION)
-        set (_PACKAGE_ARGS "nclv2.1>=${GSL_FIND_VERSION}")
+        set (_PACKAGE_ARGS "nclv2.1>=${NCL_FIND_VERSION}")
     else ()
         set (_PACKAGE_ARGS "nclv2.1")
     endif ()
