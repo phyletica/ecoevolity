@@ -583,6 +583,25 @@ class CollectionSettings {
         static CollectionSettings init_from_stream(std::istream& stream) {
             CollectionSettings settings;
             YAML::Node config = YAML::Load(stream);
+            settings.chain_length_ = 100000;
+            settings.sample_frequency_ = 100;
+            switch (config.Type()) {
+                case YAML::NodeType::Null:
+                    std::cout << "config.Type() == Null" << "\n";
+                case YAML::NodeType::Scalar:
+                    std::cout << "config.Type() == Scalar" << "\n";
+                case YAML::NodeType::Sequence:
+                    std::cout << "config.Type() == Sequence" << "\n";
+                case YAML::NodeType::Map:
+                    std::cout << "config.Type() == Map" << "\n";
+                case YAML::NodeType::Undefined:
+                    std::cout << "config.Type() == Undefined" << "\n";
+                default:
+                    std::cout << "Problem!" << "\n";
+            }
+            /* for (YAML::const_iterator it = config.begin(); it != config.end(); ++ it) { */
+            /*     std::cout << it->first.as<std::string>() << "\n"; */
+            /* } */
             return settings;
         }
         static CollectionSettings init_from_config_file(const std::string& path) {

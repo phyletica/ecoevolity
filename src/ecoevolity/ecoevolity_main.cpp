@@ -17,9 +17,9 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "data.hpp"
+#include "settings.hpp"
 
 int main(int argc, char *argv[]) {
-    BiallelicData bd(argv[1]);
+    CollectionSettings settings = CollectionSettings::init_from_config_file(argv[1]);
     return 0;
 }
