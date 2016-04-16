@@ -313,7 +313,9 @@ class QMatrix : public AbstractMatrix {
                 double Mrr = K + n*(v-u);
                 this->check_mrr(Mrr);
                 x.at(n) = y.at(n) / Mrr;
-                for (int r = n-1; r >= 0; --r) {
+                // for (int r = n-1; r >= 0; --r) {
+                for (unsigned int xr = n; xr >= 1; --xr) {
+                    unsigned int r = xr - 1;
                     Mrr = (K+r*(v-u));
                     x.at(r) = (y.at(r) - ((r+1.0)*u)*x.at(r+1))/Mrr;
                 }
@@ -346,7 +348,9 @@ class QMatrix : public AbstractMatrix {
                 
                 //now solve the upper biadiagonal. diagonal is d, upper is same as M
                 x.at(n) = e.at(n)/d.at(n);
-                for (int r = n-1; r >= 0 ; --r) {
+                // for (int r = n-1; r >= 0 ; --r) {
+                for (unsigned int xr = n; xr >= 1; --xr) {
+                    unsigned int r = xr - 1;
                     this->check_mrr(d.at(r));
                     x.at(r) = (e.at(r) - (r+1.0)*u*x.at(r+1))/d.at(r);
                 }
@@ -608,7 +612,9 @@ class QMatrix : public AbstractMatrix {
                 Mrr.im_ = K.im_;
                 this->check_mrr(Mrr);
                 x.at(n).divide(y.at(n), Mrr);
-                for (int r = n-1; r >= 0; --r) {
+                // for (int r = n-1; r >= 0; --r) {
+                for (unsigned int xr = n; xr >= 1; --xr) {
+                    unsigned int r = xr - 1;
                     Mrr.re_ = K.re_ + (double)r*(v-u);
                     Mrr.im_ = K.im_;
                     tmp.re_ = y.at(r).re_ - ((double)(n-r)*v*x.at(r+1).re_);
@@ -645,7 +651,9 @@ class QMatrix : public AbstractMatrix {
                 
                 //now solve the upper biadiagonal. diagonal is d, upper is same as M
                 x.at(n).divide(e.at(n), d.at(n));
-                for (int r = n-1; r >= 0; --r) {
+                // for (int r = n-1; r >= 0; --r) {
+                for (unsigned int xr = n; xr >= 1; --xr) {
+                    unsigned int r = xr - 1;
                     this->check_mrr(d.at(r));
                     tmp.re_ = (e.at(r).re_ - (double)(n-r)*v*x.at(r+1).re_);
                     tmp.im_ = (e.at(r).im_ - (double)(n-r)*v*x.at(r+1).im_);
@@ -722,7 +730,9 @@ class QMatrix : public AbstractMatrix {
                 double f = Mrr_r * Mrr_r + Mrr_i * Mrr_i; 
                 x_r.at(n) = (y_r.at(n) * Mrr_r + y_i.at(n) * Mrr_i) / f;
                 x_i.at(n) = (y_i.at(n) * Mrr_r - y_r.at(n) * Mrr_i) / f;
-                for (int r = n-1; r >= 0; --r) {
+                // for (int r = n-1; r >= 0; --r) {
+                for (unsigned int xr = n; xr >= 1; --xr) {
+                    unsigned int r = xr - 1;
                     Mrr_r = K_r + (double)r*(v-u);
                     Mrr_i = K_i;
                     tmp_r = y_r.at(r) - ((double)(n-r)*v*x_r.at(r+1));
@@ -760,7 +770,9 @@ class QMatrix : public AbstractMatrix {
                 double f = d_r.at(n) * d_r.at(n) + d_i.at(n) * d_i.at(n); 
                 x_r.at(n) = (e_r.at(n) * d_r.at(n) + e_i.at(n) * d_i.at(n)) / f;
                 x_i.at(n) = (e_i.at(n) * d_r.at(n) - e_r.at(n) * d_i.at(n)) / f;
-                for (int r = n-1; r >= 0; --r) {
+                // for (int r = n-1; r >= 0; --r) {
+                for (unsigned int xr = n; xr >= 1; --xr) {
+                    unsigned int r = xr - 1;
                     this->check_mrr(d_r.at(r), d_i.at(r));
                     tmp_r = (e_r.at(r) - (double)(n-r)*v*x_r.at(r+1));
                     tmp_i = (e_i.at(r) - (double)(n-r)*v*x_i.at(r+1));
