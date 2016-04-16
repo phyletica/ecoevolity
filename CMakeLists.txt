@@ -47,7 +47,6 @@ include_directories("${NCL_INCLUDE_DIRS}")
 option (FORCE_BUNDLED_YAML_CPP "Use included yaml-cpp library" OFF)
 if (NOT FORCE_BUNDLED_YAML_CPP)
     include(FindYamlCpp)
-    include_directories("${NCL_INCLUDE_DIRS}")
 else()
     set(YAML_CPP_FOUND OFF)
 endif()
@@ -58,6 +57,7 @@ if (NOT YAML_CPP_FOUND)
     set(YAML_CPP_INCLUDE_DIR "${YAML_CPP_SOURCE_DIR}/include")
     set(USING_BUNDLED_YAML_CPP ON)
 endif()
+MESSAGE(STATUS "USING_BUNDLED_YAML_CPP: ${USING_BUNDLED_YAML_CPP}")
 
 
 #######################################################################
