@@ -27,7 +27,7 @@ fi
 NCL_TAR_BALL="ncl-2.1.18.tar.gz"
 NCL_TAR_BALL_PATH="${NCL_BUILD_DIR}/${NCL_TAR_BALL}"
 
-curl -o "$NCL_TAR_BALL_PATH" "http://tcpdiag.dl.sourceforge.net/project/ncl/NCL/ncl-2.1.18/${NCL_TAR_BALL}"
+curl -L -o "$NCL_TAR_BALL_PATH" "https://sourceforge.net/projects/ncl/files/NCL/ncl-2.1.18/${NCL_TAR_BALL}"
 NCL_DIR="${NCL_TAR_BALL_PATH%.tar.gz}"
 tar -xzf "$NCL_TAR_BALL_PATH" -C "$NCL_BUILD_DIR"
 
