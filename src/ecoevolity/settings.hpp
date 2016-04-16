@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <map>
 #include <unordered_map>
 
@@ -579,9 +580,16 @@ class CollectionSettings {
         }
 
         // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
-        static CollectionSettings init_from_config_file(const std::string& path) {
+        static CollectionSettings init_from_stream(std::istream& stream) {
             CollectionSettings settings;
-            YAML::Node config = YAML::LoadFile(path);
+            YAML::Node config = YAML::Load(stream);
+            return settings;
+        }
+        static CollectionSettings init_from_config_file(const std::string& path) {
+            std::ifstream in_stream;
+            in_stream.open(path);
+            CollectionSettings settings = CollectionSettings::init_from_stream(in_stream);
+            in_stream.close();
             return settings;
         }
         // TODO: Simply parse and handle 'prior_mean_number_of_events' setting
