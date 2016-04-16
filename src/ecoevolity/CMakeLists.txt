@@ -1,3 +1,5 @@
+include_directories("${YAML_CPP_INCLUDE_DIR}")
+
 set(ECOEVOLITY_MAIN_SOURCES
     ecoevolity_main.cpp)
 
@@ -17,7 +19,7 @@ foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})
             ${main_source}
             ${ECOEVOLITY_SOURCES}
             )
-    TARGET_LINK_LIBRARIES(${exe_name} ${NCL_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${exe_name} ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY})
     INSTALL(TARGETS ${exe_name}
             DESTINATION bin
             )
