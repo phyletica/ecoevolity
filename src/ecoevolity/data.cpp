@@ -139,6 +139,8 @@ void BiallelicData::init(
     if (this->genotypes_are_diploid_) {
         ploidy_multiplier = 2;
     }
+    unsigned int found_pattern_idx = 0;
+    bool pattern_was_found = false;
     if (data_type == NxsCharactersBlock::DataTypesEnum::standard) {
         const NxsDiscreteStateCell highest_state_code = data_type_mapper->GetHighestStateCode();
         if (highest_state_code == 1) {
@@ -185,14 +187,16 @@ void BiallelicData::init(
                     allele_cts[population_idx] += 1 * ploidy_multiplier;
                 }
             }
-            int pattern_index = this->get_pattern_index(red_allele_cts, allele_cts);
-            if (pattern_index < 0) {
+            this->get_pattern_index(pattern_was_found, found_pattern_idx,
+                    red_allele_cts,
+                    allele_cts);
+            if (pattern_was_found) {
+                this->pattern_weights_[found_pattern_idx] += 1;
+            }
+            else {
                 this->red_allele_counts_.push_back(red_allele_cts);
                 this->allele_counts_.push_back(allele_cts);
                 this->pattern_weights_.push_back(1);
-            }
-            else {
-                this->pattern_weights_[pattern_index] += 1;
             }
         }
     }
@@ -269,14 +273,16 @@ void BiallelicData::init(
                     }
                 }
             }
-            int pattern_index = this->get_pattern_index(red_allele_cts, allele_cts);
-            if (pattern_index < 0) {
+            this->get_pattern_index(pattern_was_found, found_pattern_idx,
+                    red_allele_cts,
+                    allele_cts);
+            if (pattern_was_found) {
+                this->pattern_weights_[found_pattern_idx] += 1;
+            }
+            else {
                 this->red_allele_counts_.push_back(red_allele_cts);
                 this->allele_counts_.push_back(allele_cts);
                 this->pattern_weights_.push_back(1);
-            }
-            else {
-                this->pattern_weights_[pattern_index] += 1;
             }
         }
     }
@@ -422,11 +428,15 @@ void BiallelicData::update_has_missing_population_patterns() {
 
 void BiallelicData::update_has_mirrored_patterns() {
     this->has_mirrored_patterns_ = false;
+    unsigned int mirrored_idx = 0;
+    bool was_found = false;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         const std::vector< std::vector<unsigned int> > mirrored_pattern = this->get_mirrored_pattern(pattern_idx);
-        int mirrored_idx = this->get_pattern_index(mirrored_pattern.at(0), mirrored_pattern.at(1));
-        if ((mirrored_idx > -1) && ((unsigned int)mirrored_idx != pattern_idx)) {
-            ECOEVOLITY_ASSERT((unsigned int)mirrored_idx > pattern_idx);
+        this->get_pattern_index(was_found, mirrored_idx,
+                mirrored_pattern.at(0),
+                mirrored_pattern.at(1));
+        if ((was_found) && (mirrored_idx != pattern_idx)) {
+            ECOEVOLITY_ASSERT(mirrored_idx > pattern_idx);
             this->has_mirrored_patterns_ = true;
             return;
         }
@@ -467,19 +477,29 @@ void BiallelicData::update_pattern_booleans() {
     this->update_patterns_are_folded();
 }
 
-int BiallelicData::get_pattern_index(
+void BiallelicData::get_pattern_index(
+        bool& was_found,
+        unsigned int& pattern_index,
         std::vector<unsigned int> red_allele_counts,
         std::vector<unsigned int> allele_counts) const {
     ECOEVOLITY_ASSERT(this->allele_counts_.size() == this->red_allele_counts_.size());
+    was_found = false;
+    pattern_index = 0;
     for (unsigned int pattern_idx = 0; pattern_idx < this->allele_counts_.size(); ++pattern_idx) {
         if ((this->red_allele_counts_[pattern_idx] == red_allele_counts) &&
             (this->allele_counts_[pattern_idx] == allele_counts)) {
-            return pattern_idx;
+            pattern_index = pattern_idx;
+            was_found = true;
+            return;
         }
     }
-    return -1;
 }
 
+// TODO: This method is causing the following error from compiler when using
+// flag '-Wstrict-overflow=5':
+//   error: assuming signed overflow does not occur when changing X +- C1 cmp C2 to X cmp C2 -+ C1
+// This seems to be triggered by the 'erase' method calls and I have no idea
+// why. Hacky fix for now is to use -Wstrict-overflow=2.
 void BiallelicData::remove_pattern(unsigned int pattern_index) {
     ECOEVOLITY_ASSERT(pattern_index < this->pattern_weights_.size());
     this->pattern_weights_.erase(this->pattern_weights_.begin() + pattern_index);
@@ -493,34 +513,46 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
     return;
 }
 
-int BiallelicData::remove_first_constant_pattern() {
+void BiallelicData::remove_first_constant_pattern(
+        bool& was_removed,
+        unsigned int& removed_index) {
     std::vector<unsigned int> no_red_pattern (this->get_number_of_populations(), 0);
+    removed_index = 0;
+    was_removed = false;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         if (this->get_red_allele_counts(pattern_idx) == no_red_pattern) {
             this->number_of_constant_green_sites_removed_ += this->get_pattern_weight(pattern_idx);
             this->remove_pattern(pattern_idx);
-            return pattern_idx;
+            removed_index = pattern_idx;
+            was_removed = true;
+            return;
         }
         if (this->get_red_allele_counts(pattern_idx) == this->get_allele_counts(pattern_idx)) {
             this->number_of_constant_red_sites_removed_ += this->get_pattern_weight(pattern_idx);
             this->remove_pattern(pattern_idx);
-            return pattern_idx;
+            removed_index = pattern_idx;
+            was_removed = true;
+            return;
         }
     }
-    return -1;
 }
 
-int BiallelicData::remove_first_missing_population_pattern() {
+void BiallelicData::remove_first_missing_population_pattern(
+        bool& was_removed,
+        unsigned int& removed_index) {
+    removed_index = 0;
+    was_removed = false;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
-        for (auto count_iter: this->get_allele_counts(pattern_idx)) {
-            if (count_iter == 0) {
+        for (unsigned int pop_idx = 0; pop_idx < this->get_number_of_populations(); ++pop_idx) {
+            if (this->get_allele_count(pattern_idx, pop_idx) == 0) {
                 this->number_of_missing_sites_removed_ += this->get_pattern_weight(pattern_idx);
                 this->remove_pattern(pattern_idx);
-                return pattern_idx;
+                removed_index = pattern_idx;
+                was_removed = true;
+                return;
             }
         }
     }
-    return -1;
 }
 
 const std::vector< std::vector<unsigned int> > BiallelicData::get_mirrored_pattern(unsigned int pattern_index) const {
@@ -536,30 +568,39 @@ const std::vector< std::vector<unsigned int> > BiallelicData::get_mirrored_patte
     return mirrored_counts;
 }
 
-int BiallelicData::fold_first_mirrored_pattern() {
+void BiallelicData::fold_first_mirrored_pattern(
+        bool& was_folded,
+        unsigned int& folded_index) {
+    was_folded = false;
+    folded_index = 0;
+    unsigned int mirrored_idx = 0;
+    bool was_found = false;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
         const std::vector< std::vector<unsigned int> > mirrored_pattern = this->get_mirrored_pattern(pattern_idx);
-        int mirrored_idx = this->get_pattern_index(mirrored_pattern.at(0), mirrored_pattern.at(1));
-        if (mirrored_idx < 0) {
+        this->get_pattern_index(was_found, mirrored_idx, mirrored_pattern.at(0),
+                mirrored_pattern.at(1));
+        if (! was_found) {
             continue;
         }
-        if ((unsigned int)mirrored_idx == pattern_idx) {
+        if (mirrored_idx == pattern_idx) {
             continue;
         }
-        ECOEVOLITY_ASSERT((unsigned int)mirrored_idx > pattern_idx);
+        ECOEVOLITY_ASSERT(mirrored_idx > pattern_idx);
         this->pattern_weights_.at(pattern_idx) += this->pattern_weights_.at(mirrored_idx);
         this->remove_pattern(mirrored_idx);
-        return mirrored_idx;
+        folded_index = mirrored_idx;
+        was_folded = true;
+        return;
     }
-    return -1;
 }
 
 unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
     unsigned int number_removed = 0;
-    int return_idx = 0;
+    unsigned int return_idx = 0;
+    bool was_found = false;
     while (true) {
-        return_idx = this->remove_first_constant_pattern();
-        if (return_idx < 0) {
+        this->remove_first_constant_pattern(was_found, return_idx);
+        if (! was_found) {
             break;
         }
         number_removed += 1;
@@ -574,10 +615,11 @@ unsigned int BiallelicData::remove_constant_patterns(const bool validate) {
 
 unsigned int BiallelicData::remove_missing_population_patterns(const bool validate) {
     unsigned int number_removed = 0;
-    int return_idx = 0;
+    unsigned int return_idx = 0;
+    bool was_found = false;
     while (true) {
-        return_idx = this->remove_first_missing_population_pattern();
-        if (return_idx < 0) {
+        this->remove_first_missing_population_pattern(was_found, return_idx);
+        if (! was_found) {
             break;
         }
         number_removed += 1;
@@ -597,10 +639,11 @@ unsigned int BiallelicData::fold_patterns(const bool validate) {
                 this->path_);
     }
     unsigned int number_removed = 0;
-    int return_idx = 0;
+    unsigned int return_idx = 0;
+    bool was_found = false;
     while (true) {
-        return_idx = this->fold_first_mirrored_pattern();
-        if (return_idx < 0) {
+        this->fold_first_mirrored_pattern(was_found, return_idx);
+        if (! was_found) {
             break;
         }
         number_removed += 1;

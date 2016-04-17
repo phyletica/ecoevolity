@@ -87,7 +87,9 @@ class BiallelicData {
         const bool& has_mirrored_patterns() const;
         const bool& patterns_are_folded() const;
 
-        int get_pattern_index(
+        void get_pattern_index(
+                bool& was_found,
+                unsigned int& pattern_index,
                 const std::vector<unsigned int> red_allele_counts,
                 const std::vector<unsigned int> allele_counts) const;
 
@@ -134,11 +136,16 @@ class BiallelicData {
         void update_has_mirrored_patterns();
         void update_patterns_are_folded();
         void update_pattern_booleans();
-        int remove_first_constant_pattern();
-        int remove_first_missing_population_pattern();
-        int fold_first_mirrored_pattern();
+        void remove_first_constant_pattern(
+                bool& was_removed,
+                unsigned int& removed_index);
+        void remove_first_missing_population_pattern(
+                bool& was_removed,
+                unsigned int& removed_index);
+        void fold_first_mirrored_pattern(
+                bool& was_folded,
+                unsigned int& folded_index);
         void update_max_allele_counts();
 };
 
 #endif
-
