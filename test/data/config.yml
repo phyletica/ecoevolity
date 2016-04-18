@@ -9,7 +9,6 @@ event_model_prior:
                     gamma_distribution:
                         shape:      2.0
                         prior_mean_number_of_events: 10
-                        scale:      2.0
 
 event_time_prior:
     gamma_distribution:
