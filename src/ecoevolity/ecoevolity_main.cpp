@@ -20,6 +20,6 @@
 #include "settings.hpp"
 
 int main(int argc, char *argv[]) {
-    CollectionSettings settings = CollectionSettings::init_from_config_file(argv[1]);
+    CollectionSettings settings = CollectionSettings(argv[1]);
     return 0;
 }
