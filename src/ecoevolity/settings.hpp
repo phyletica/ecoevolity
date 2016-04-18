@@ -146,6 +146,117 @@ class ContinuousDistributionSettings {
                 throw EcoevolityContinuousDistributionSettingError(message);
             }
         }
+        ContinuousDistributionSettings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "continuous distribution node should be a map, but found: " +
+                        this->get_node_type(node));
+            }
+            if (node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "continuous distribution node should only have a single key");
+            }
+            // Gamma
+            if (node["gamma_distribution"]) {
+                this->name_ = "gamma_distribution";
+                YAML::Node parameters = node["gamma_distribution"]
+                if (! parameters["shape"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "shape parameter missing for gamma_distribution"
+                            );
+                }
+                if (! parameters["scale"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "scale parameter missing for gamma_distribution"
+                            );
+                }
+                if (! parameters["offset"]) {
+                    if (parameters.size() > 2) {
+                        throw EcoevolityContinuousDistributionSettingError(
+                                "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale, offset)"
+                                );
+                    }
+                }
+                else {
+                    if (parameters.size() > 3) {
+                        throw EcoevolityContinuousDistributionSettingError(
+                                "unrecognized parameters for gamma_distribution (recognized parameters: shape, scale, offset)"
+                                );
+                    }
+                }
+                this->parameters_["shape"] = parameters["shape"].as<double>();
+                this->parameters_["scale"] = parameters["scale"].as<double>();
+                if ((this->parameters_.at("shape") <= 0.0) || (this->parameters_.at("scale") <= 0.0)) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "Shape and scale must be greater than zero for gamma distribution");
+                }
+                if (parameters["offset"]) {
+                    this->parameters_["offset"] = parameters["offset"].as<double>();
+                }
+            }
+            // Exponential
+            else if (node["exponential_distribution"]) {
+                this->name_ = "exponential_distribution";
+                YAML::Node parameters = node["exponential_distribution"]
+                if (! parameters["rate"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "rate parameter missing for exponential_distribution"
+                            );
+                }
+                if (! parameters["offset"]) {
+                    if (parameters.size() > 1) {
+                        throw EcoevolityContinuousDistributionSettingError(
+                                "unrecognized parameters for exponential_distribution (recognized parameters: rate, offset)"
+                                );
+                    }
+                }
+                else {
+                    if (parameters.size() > 2) {
+                        throw EcoevolityContinuousDistributionSettingError(
+                                "unrecognized parameters for exponential_distribution (recognized parameters: rate, offset)"
+                                );
+                    }
+                }
+                this->parameters_["rate"] = parameters["rate"].as<double>();
+                if (this->parameters_.at("rate") <= 0.0) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "rate must be greater than 0 for exponential distribution");
+                }
+                if (parameters["offset"]) {
+                    this->parameters_["offset"] = parameters["offset"].as<double>();
+                }
+            }
+            // Uniform
+            else if (node["uniform_distribution"]) {
+                this->name_ = "uniform_distribution";
+                YAML::Node parameters = node["uniform_distribution"]
+                if (! parameters["min"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "min parameter missing for uniform_distribution"
+                            );
+                }
+                if (! parameters["max"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "max parameter missing for uniform_distribution"
+                            );
+                }
+                if (parameters.size() > 2) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "unrecognized parameters for uniform_distribution (recognized parameters: min, max)"
+                            );
+                }
+                this->parameters_["min"] = parameters["min"].as<double>();
+                this->parameters_["max"] = parameters["max"].as<double>();
+                if (this->parameters_.at("max") <= this->parameters_.at("min")) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "The upper limit must be greater than lower limit for UniformDistribution");
+                }
+            }
+            else {
+                std::string message = "unrecognized distribution: " + node.begin()->first.as<std::string>();
+                throw EcoevolityContinuousDistributionSettingError(message);
+            }
+        }
         virtual ~ContinuousDistributionSettings() { }
         ContinuousDistributionSettings& operator=(const ContinuousDistributionSettings& other) {
             this->name_ = other.name_;
@@ -273,6 +384,54 @@ class PositiveRealParameterSettings {
                         );
             }
         }
+        PositiveRealParameterSettings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "parameter node should be a map, but found: " +
+                        this->get_node_type(node));
+            }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty parameter node");
+            }
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (arg->first.as<std::string>() == "value") {
+                    double v = arg->second.as<double>();
+                        if (v < 0.0) {
+                            throw EcoevolityPositiveRealParameterSettingError(
+                                    "positive real parameter cannot be less than 0"
+                                    );
+                        }
+                    this->value_ = v;
+                }
+                else if (arg->first.as<std::string>() == "estimate") {
+                    bool f = arg->second.as<bool>();
+                    this->is_fixed_ = f;
+                }
+                else if (arg->first.as<std::string>() == "prior") {
+                    this->prior_settings_ = ContinuousDistributionSettings(
+                            arg->second);
+                }
+                else {
+                    std::string message = "unrecognized parameter key: " +
+                            arg->first.as<std::string>();
+                    throw EcoevolityContinuousDistributionSettingError(message);
+                }
+            }
+
+            if (this->is_fixed_) {
+                std::unordered_map<std::string, double> prior_parameters;
+                this->prior_settings_ = ContinuousDistributionSettings("none",
+                        prior_parameters);
+            }
+            if ((this->is_fixed_) && (std::isnan(this->value_))) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "cannot fix parameter without a value"
+                        );
+            }
+        }
         virtual ~PositiveRealParameterSettings() { }
         PositiveRealParameterSettings& operator=(const PositiveRealParameterSettings& other) {
             this->value_ = other.value_;
@@ -357,6 +516,55 @@ class ComparisonSettings {
             }
         }
 
+        void init_empirical_mutation_rate_starting_values() {
+            if (this->use_empirical_mutation_rate_starting_values_) {
+                BiallelicData d = BiallelicData(
+                        this->path_,
+                        this->population_name_delimiter_,
+                        this->population_name_is_prefix_,
+                        this->genotypes_are_diploid_,
+                        this->markers_are_dominant_,
+                        true);
+                double u;
+                double v;
+                d.get_empirical_mutation_rates(u, v);
+                this->u_settings_.value_ = u;
+                this->v_settings_.value_ = v;
+            }
+        }
+        void parse_parameter_settings(const YAML::Node node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "comparison parameters node should be a map, but found: " +
+                        this->get_node_type(node));
+            }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty comparison parameters node");
+            }
+            for (YAML::const_iterator parameter = node.begin();
+                    parameter != node.end();
+                    ++parameter) {
+                if (parameter->first.as<std::string>() == "population_size") {
+                    this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "u_rate") {
+                    this->u_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "v_rate") {
+                    this->v_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "time_multiplier") {
+                    this->time_multiplier_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else {
+                    std::string message = "Unrecognized comparison parameter: " +
+                            parameter->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
     public:
         ComparisonSettings() { }
         ComparisonSettings(
@@ -394,19 +602,62 @@ class ComparisonSettings {
             // more awkward than it's worth to defer it.
             // Make a copy operator for BiallelicData and parse and store here, then
             // can copy it in get_instance method
-            if (this->use_empirical_mutation_rate_starting_values_) {
-                BiallelicData d = BiallelicData(
-                        this->path_,
-                        this->population_name_delimiter_,
-                        this->population_name_is_prefix_,
-                        this->genotypes_are_diploid_,
-                        this->markers_are_dominant_,
-                        true);
-                double u;
-                double v;
-                d.get_empirical_mutation_rates(u, v);
-                this->u_settings_.value_ = u;
-                this->v_settings_.value_ = v;
+            this->init_empirical_mutation_rate_starting_values();
+        }
+        ComparisonSettings(
+                const YAML::Node& comparison_node,
+                bool global_defaults = false) {
+            if (! comparison_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "comparison node should be a map, but found: " +
+                        this->get_node_type(comparison_node));
+            }
+            if (comparison_node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty comparison node");
+            }
+            this->path_ = "";
+            for (YAML::const_iterator arg = comparison_node.begin();
+                    arg != comparison_node.end();
+                    ++arg) {
+                if (arg->first.as<std::string>() == "path") {
+                    this->path_ = arg->second.as<std::string>();
+                }
+                else if (arg->first.as<std::string>() == "genotypes_are_diploid") {
+                    this->genotypes_are_diploid_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "markers_are_dominant") {
+                    this->markers_are_dominant_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_delimiter") {
+                    this->population_name_delimiter_ = arg->second.as<char>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_is_prefix") {
+                    this->population_name_is_prefix_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "constant_sites_removed") {
+                    this->constant_sites_removed_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "use_empirical_mutation_rate_starting_values") {
+                    this->use_empirical_mutation_rate_starting_values_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "constrain_population_sizes") {
+                    this->constrain_population_sizes_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "constrain_mutation_rates") {
+                    this->constrain_mutation_rates_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "parameters") {
+                    this->parse_parameter_settings(arg->second);
+                }
+                else {
+                    std::string message = "Unrecognized comparison key: " +
+                            arg->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+            if ((this->path_ == "") && (! global_defaults)) {
+                throw EcoevolityYamlConfigError("Every comparison must include a path");
             }
         }
 
@@ -505,18 +756,6 @@ class ComparisonSettings {
 
 class CollectionSettings {
 
-    private:
-
-        bool use_dpp_ = true;
-        unsigned int chain_length_;
-        unsigned int sample_frequency_;
-
-        ContinuousDistributionSettings time_prior_settings_;
-
-        PositiveRealParameterSettings concentration_settings_;
-
-        std::vector<ComparisonSettings> comparisons_;
-
     public:
 
         CollectionSettings() { }
@@ -531,6 +770,12 @@ class CollectionSettings {
             this->sample_frequency_ = sample_frequency;
             this->concentration_settings_ = concentration_settings;
             this->use_dpp_ = use_dpp;
+        }
+        CollectionSettings(const std::string & yaml_config_path) {
+            this->init_from_config_file(yaml_config_path);
+        }
+        CollectionSettings(std::istream& yaml_config_stream) {
+            this->init_from_config_stream(yaml_config_stream);
         }
         virtual ~CollectionSettings() { }
         CollectionSettings& operator=(const CollectionSettings& other) {
@@ -579,41 +824,277 @@ class CollectionSettings {
             return ss.str();
         }
 
-        // TODO: CollectionSettings cs = CollectionSettings::init_from_config_file(path);
-        static CollectionSettings init_from_stream(std::istream& stream) {
-            CollectionSettings settings;
-            YAML::Node config = YAML::Load(stream);
-            settings.chain_length_ = 100000;
-            settings.sample_frequency_ = 100;
-            switch (config.Type()) {
-                case YAML::NodeType::Null:
-                    std::cout << "config.Type() == Null" << "\n";
-                case YAML::NodeType::Scalar:
-                    std::cout << "config.Type() == Scalar" << "\n";
-                case YAML::NodeType::Sequence:
-                    std::cout << "config.Type() == Sequence" << "\n";
-                case YAML::NodeType::Map:
-                    std::cout << "config.Type() == Map" << "\n";
-                case YAML::NodeType::Undefined:
-                    std::cout << "config.Type() == Undefined" << "\n";
-                default:
-                    std::cout << "Problem!" << "\n";
-            }
-            /* for (YAML::const_iterator it = config.begin(); it != config.end(); ++ it) { */
-            /*     std::cout << it->first.as<std::string>() << "\n"; */
-            /* } */
-            return settings;
+
+    private:
+
+        bool use_dpp_ = true;
+        unsigned int chain_length_;
+        unsigned int sample_frequency_;
+
+        ContinuousDistributionSettings time_prior_settings_;
+
+        PositiveRealParameterSettings concentration_settings_;
+
+        ComparisonSettings global_comparison_settings_;
+
+        std::vector<ComparisonSettings> comparisons_;
+
+        void init_from_config_stream(std::istream& stream) {
+            // TODO: handle defaults here
+            this->chain_length_ = 100000;
+            this->sample_frequency_ = 100;
+            this->parse_yaml_config(stream);
         }
-        static CollectionSettings init_from_config_file(const std::string& path) {
+        void init_from_config_file(const std::string& path) {
             std::ifstream in_stream;
             in_stream.open(path);
-            CollectionSettings settings = CollectionSettings::init_from_stream(in_stream);
+            this->init_from_config_stream(in_stream);
             in_stream.close();
-            return settings;
         }
-        // TODO: Simply parse and handle 'prior_mean_number_of_events' setting
-        // here and keep the concentration hyper prior a 'straight-up' gamma
-        // prior internally in 'to_string'.
+
+        void parse_yaml_config(std::istream& config_stream) {
+            YAML::Node config = YAML::Load(config_stream);
+            this->parse_top_level(config);
+        }
+
+        void parse_top_level(const YAML::Node& top_level_node) {
+            if (! top_level_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting top-level of config to be a map, but found: " +
+                        this->get_node_type(top_level_node));
+            }
+
+            if (! top_level_node["comparisons"]) {
+                throw EcoevolityYamlConfigError("No comparisons");
+            }
+            this->parse_comparisons(top_level_node["comparisons"]);
+
+            for (YAML::const_iterator top = top_level_node.begin();
+                    top != top_level_node.end();
+                    ++top) {
+                // parse mcmc settings
+                if (top->first.as<std::string>() == "mcmc_settings") {
+                    this->parse_mcmc_settings(top->second);
+                }
+                // parse model prior
+                else if (top->first.as<std::string>() == "event_model_prior") {
+                    this->parse_model_prior(top->second);
+                }
+                //parse time prior
+                else if (top->first.as<std::string>() == "event_time_prior") {
+                    this->parse_time_prior(top->second);
+                }
+                // parse comparison defaults
+                else if (top->first.as<std::string>() == "global_comparison_settings") {
+                    this->parse_global_comparison_settings(top->second);
+                }
+                // parse comparisons
+                else if (top->first.as<std::string>() == "comparisons") {
+                    // Already parsed, nothing to do here
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized top level key: '" +
+                            top->first.as<std::string>() + "'");
+                }
+            }
+        }
+
+        void parse_mcmc_settings(const YAML::Node& mcmc_node) {
+            if (! mcmc_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting mcmc_settings to be a map, but found: " +
+                        this->get_node_type(mcmc_node));
+            }
+            for (YAML::const_iterator mcmc = mcmc_node.begin(); mcmc != mcmc_node.end(); ++mcmc) {
+                if (mcmc->first.as<std::string>() == "chain_length") {
+                    std::cout << "chain length: " << mcmc->second.as<std::string>() << "\n";
+                    this->chain_length_ = mcmc->second.as<unsigned int>();
+
+                }
+                else if (mcmc->first.as<std::string>() == "sample_frequency") {
+                    std::cout << "sample freq: " << mcmc->second.as<std::string>() << "\n";
+                    this->sample_frequency_ = mcmc->second.as<unsigned int>();
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized mcmc_settings key: " +
+                            mcmc->first.as<std::string>());
+                }
+            }
+        }
+
+        void parse_model_prior(const YAML::Node& model_prior_node) {
+            if (! model_prior_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting event_model_prior to be a map, but found: " +
+                        this->get_node_type(model_prior_node));
+            }
+
+            if (model_prior_node.size() > 1) {
+                throw EcoevolityYamlConfigError(
+                        "event_model_prior node should only have a single key");
+            }
+            if (model_prior_node["dirichlet_process"]) {
+                this->use_dpp_ = true;
+                this->parse_dirichlet_process_prior(model_prior_node["dirichlet_process"]);
+            }
+            else if (model_prior_node["uniform"]) {
+                this->use_dpp_ = false;
+            }
+            else {
+                throw EcoevolityYamlConfigError(
+                        "Unrecognized event_model_prior key: " +
+                        model_prior_node.begin()->first.as<std::string>());
+            }
+        }
+
+        void parse_time_prior(const YAML::Node& time_prior_node) {
+            this->time_prior_settings_ = ContinuousDistributionSettings(node);
+        }
+
+        void parse_global_comparison_settings(const YAML::Node& global_node) {
+            this->global_comparison_settings_ = ComparisonSettings(global_node, true);
+        }
+
+        // TODO: Need to parse comparisons, and make sure the global settings
+        // are used as defaults.
+        void parse_comparisons(const YAML::Node& comparisons_node) {
+        }
+
+        void parse_dirichlet_process_prior(const YAML::Node& dpp_node) {
+            if (! dpp_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting event_model_prior to be a map, but found: " +
+                        this->get_node_type(dpp_node));
+            }
+
+            if (dpp_node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "dirichlet_process node must have a single key");
+            }
+            if (! dpp_node["parameters"]) {
+                throw EcoevolityYamlConfigError(
+                        "dirichlet_process must have a parameters key");
+            }
+            if (! dpp_node["parameters"]["concentration"]) {
+                throw EcoevolityYamlConfigError(
+                        "dirichlet_process must specify concentration parameter settings");
+            }
+            this->parse_concentration_parameter(dpp_node["parameters"]["concentration"]);
+        }
+
+        void parse_concentration_parameter(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting concentration node to be a map, but found: " +
+                        this->get_node_type(node));
+            }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty concentration parameter node");
+            }
+
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (arg->first.as<std::string>() == "value") {
+                    double v = arg->second.as<double>();
+                        if (v < 0.0) {
+                            throw EcoevolityPositiveRealParameterSettingError(
+                                    "concentration parameter cannot be less than 0"
+                                    );
+                        }
+                    this->concentration_settings_->value_ = v;
+                }
+                else if (arg->first.as<std::string>() == "estimate") {
+                    bool f = arg->second.as<bool>();
+                    this->concentration_settings_->is_fixed_ = f;
+                }
+                else if (arg->first.as<std::string>() == "prior") {
+                    this->concentration_settings_->prior_settings_ = this->parse_dpp_gamma_hyper_prior(
+                            arg->second);
+                }
+                else {
+                    std::string message = "Unrecognized concentration key: " +
+                            arg->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        ContinuousDistributionSettings parse_dpp_gamma_hyper_prior(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting concentration prior node to be a map, but found: " +
+                        this->get_node_type(node));
+            }
+            if (node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "concentration prior node should only have a single key");
+            }
+            if (! node["gamma_distribution"]) {
+                std::string message = "concentration prior must be a gamma_distribution; found: " +
+                        node.begin()->first.as<std::string>();
+                throw EcoevolityContinuousDistributionSettingError(message);
+            }
+            YAML::Node parameters = node["gamma_distribution"]
+            if (! parameters["shape"]) {
+                throw EcoevolityContinuousDistributionSettingError(
+                        "shape parameter missing for gamma prior on concentration"
+                        );
+            }
+            if ((! parameters["scale"]) && (! parameters["prior_mean_number_of_events"])) {
+                throw EcoevolityContinuousDistributionSettingError(
+                        "gamma prior on concentration requires scale or prior_mean_number_of_events parameter"
+                        );
+            }
+            if (parameters.size() > 2) {
+                throw EcoevolityContinuousDistributionSettingError(
+                        "unrecognized parameters for gamma prior on concentration (should be shape and scale OR shape and prior_mean_number_of_events)"
+                        );
+            }
+            double shape = parameters["shape"].as<double>();
+            double scale = -1.0;
+            if (parameters["scale"]) {
+                scale = parameters["scale"].as<double>();
+            }
+            else if (parameters["prior_mean_number_of_events"]) {
+                scale = get_dpp_gamma_scale(
+                        parameters["prior_mean_number_of_events"].as<double>(),
+                        this->comparisons_.size(),
+                        shape);
+            }
+            else {
+                throw EcoevolityContinuousDistributionSettingError(
+                        "invalid parameter for gamma prior on concentration");
+            }
+            if ((shape <= 0.0) || (scale <= 0.0)) {
+                throw EcoevolityContinuousDistributionSettingError(
+                        "Shape and scale must be greater than zero for gamma distribution");
+            }
+            std::unordered_map<std::string, double> p;
+            p["shape"] = shape;
+            p["scale"] = scale;
+            return ContinuousDistributionSettings("gamma_distribution", p);
+        }
+
+        std::string get_node_type(const YAML::Node& node) {
+            switch(node.Type()) {
+                case YAML::NodeType::Null:
+                    return "Null";
+                case YAML::NodeType::Scalar:
+                    return "Scalar";
+                case YAML::NodeType::Sequence:
+                    return "Sequence";
+                case YAML::NodeType::Map:
+                    return "Map";
+                case YAML::NodeType::Undefined:
+                    return "Undefined";
+                default:
+                    return "Not recognized";
+            }
+        }
 };
 
 #endif
