@@ -143,4 +143,11 @@ class EcoevolityCollectionSettingError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityCollectionSettingError", message) { }
 };
 
+class EcoevolityYamlConfigError: public EcoevolityBaseError {
+    public:
+        EcoevolityYamlConfigError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityYamlConfigError", message) { }
+};
+
 #endif
