@@ -100,6 +100,7 @@ inline double get_dpp_concentration(
     double current_e = get_dpp_expected_number_of_categories(c, n);
 
     ECOEVOLITY_ASSERT(e <= n);
+    ECOEVOLITY_ASSERT(e >= 1.0);
     if (e > (n - buffer)) {
         e = n - buffer;
     }
