@@ -8,7 +8,7 @@ event_model_prior:
                 prior:
                     gamma_distribution:
                         shape:      2.0
-                        prior_mean_number_of_events: 10
+                        prior_mean_number_of_events: 2.0
 
 event_time_prior:
     gamma_distribution:
@@ -26,9 +26,9 @@ global_comparison_settings:
     population_name_delimiter: "_"
     population_name_is_prefix: true
     constant_sites_removed: true
-    use_empirical_mutation_rate_starting_values: true
+    use_empirical_mutation_rate_starting_values: false
     constrain_population_sizes: false
-    constrain_mutation_rates: true
+    constrain_mutation_rates: false
     parameters:
         population_size:
             value: 0.001
