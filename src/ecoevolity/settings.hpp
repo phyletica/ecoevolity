@@ -17,6 +17,11 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+// TODO: Need to decide what settings must be specified, and if not, what is
+// the default.
+// TODO: Need to handle nexus paths that are relative to the config file.
+// TODO: Error messages could be a lot more informative.
+
 #ifndef ECOEVOLITY_SETTINGS_HPP
 #define ECOEVOLITY_SETTINGS_HPP
 
@@ -31,10 +36,34 @@
 #include "error.hpp"
 #include "assert.hpp"
 #include "util.hpp"
+#include "math_util.hpp"
 #include "probability.hpp"
 #include "parameter.hpp"
 #include "tree.hpp"
 #include "rng.hpp"
+
+
+class YamlCppUtils {
+
+    public:
+
+        static std::string get_node_type(const YAML::Node& node) {
+            switch(node.Type()) {
+                case YAML::NodeType::Null:
+                    return "Null";
+                case YAML::NodeType::Scalar:
+                    return "Scalar";
+                case YAML::NodeType::Sequence:
+                    return "Sequence";
+                case YAML::NodeType::Map:
+                    return "Map";
+                case YAML::NodeType::Undefined:
+                    return "Undefined";
+                default:
+                    return "Not recognized";
+            }
+        }
+};
 
 class ContinuousDistributionSettings {
 
@@ -150,7 +179,7 @@ class ContinuousDistributionSettings {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "continuous distribution node should be a map, but found: " +
-                        this->get_node_type(node));
+                        YamlCppUtils::get_node_type(node));
             }
             if (node.size() != 1) {
                 throw EcoevolityYamlConfigError(
@@ -159,7 +188,7 @@ class ContinuousDistributionSettings {
             // Gamma
             if (node["gamma_distribution"]) {
                 this->name_ = "gamma_distribution";
-                YAML::Node parameters = node["gamma_distribution"]
+                YAML::Node parameters = node["gamma_distribution"];
                 if (! parameters["shape"]) {
                     throw EcoevolityContinuousDistributionSettingError(
                             "shape parameter missing for gamma_distribution"
@@ -197,7 +226,7 @@ class ContinuousDistributionSettings {
             // Exponential
             else if (node["exponential_distribution"]) {
                 this->name_ = "exponential_distribution";
-                YAML::Node parameters = node["exponential_distribution"]
+                YAML::Node parameters = node["exponential_distribution"];
                 if (! parameters["rate"]) {
                     throw EcoevolityContinuousDistributionSettingError(
                             "rate parameter missing for exponential_distribution"
@@ -229,7 +258,7 @@ class ContinuousDistributionSettings {
             // Uniform
             else if (node["uniform_distribution"]) {
                 this->name_ = "uniform_distribution";
-                YAML::Node parameters = node["uniform_distribution"]
+                YAML::Node parameters = node["uniform_distribution"];
                 if (! parameters["min"]) {
                     throw EcoevolityContinuousDistributionSettingError(
                             "min parameter missing for uniform_distribution"
@@ -388,7 +417,7 @@ class PositiveRealParameterSettings {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "parameter node should be a map, but found: " +
-                        this->get_node_type(node));
+                        YamlCppUtils::get_node_type(node));
             }
             if (node.size() < 1) {
                 throw EcoevolityYamlConfigError(
@@ -408,7 +437,7 @@ class PositiveRealParameterSettings {
                 }
                 else if (arg->first.as<std::string>() == "estimate") {
                     bool f = arg->second.as<bool>();
-                    this->is_fixed_ = f;
+                    this->is_fixed_ = (! f);
                 }
                 else if (arg->first.as<std::string>() == "prior") {
                     this->prior_settings_ = ContinuousDistributionSettings(
@@ -532,11 +561,12 @@ class ComparisonSettings {
                 this->v_settings_.value_ = v;
             }
         }
-        void parse_parameter_settings(const YAML::Node node) {
+
+        void parse_parameter_settings(const YAML::Node& node) {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison parameters node should be a map, but found: " +
-                        this->get_node_type(node));
+                        YamlCppUtils::get_node_type(node));
             }
             if (node.size() < 1) {
                 throw EcoevolityYamlConfigError(
@@ -565,52 +595,13 @@ class ComparisonSettings {
             }
         }
 
-    public:
-        ComparisonSettings() { }
-        ComparisonSettings(
-                const std::string& path,
-                const PositiveRealParameterSettings& population_size_settings,
-                const PositiveRealParameterSettings& u_settings,
-                const PositiveRealParameterSettings& v_settings,
-                const PositiveRealParameterSettings& time_multiplier_settings,
-                char population_name_delimiter = '_',
-                bool population_name_is_prefix = true,
-                bool genotypes_are_diploid = true,
-                bool markers_are_dominant = false,
-                bool constant_sites_removed = true,
-                bool use_empirical_mutation_rate_starting_values = true,
-                bool constrain_population_sizes = false,
-                bool constrain_mutation_rates = true) {
-
-            this->path_ = path;
-            this->population_size_settings_ = population_size_settings;
-            this->u_settings_ = u_settings;
-            this->v_settings_ = v_settings;
-            this->time_multiplier_settings_ = time_multiplier_settings;
-            this->population_name_delimiter_ = population_name_delimiter;
-            this->population_name_is_prefix_ = population_name_is_prefix;
-            this->genotypes_are_diploid_ = genotypes_are_diploid;
-            this->markers_are_dominant_ = markers_are_dominant;
-            this->constant_sites_removed_ = constant_sites_removed;
-            this->use_empirical_mutation_rate_starting_values_ = use_empirical_mutation_rate_starting_values;
-            this->constrain_population_sizes_ = constrain_population_sizes;
-            this->constrain_mutation_rates_ = constrain_mutation_rates;
-            this->make_consistent();
-
-            // TODO:
-            // Not very efficient to parse data just to get rates, but might be
-            // more awkward than it's worth to defer it.
-            // Make a copy operator for BiallelicData and parse and store here, then
-            // can copy it in get_instance method
-            this->init_empirical_mutation_rate_starting_values();
-        }
-        ComparisonSettings(
+        void update_from_config(
                 const YAML::Node& comparison_node,
                 bool global_defaults = false) {
             if (! comparison_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison node should be a map, but found: " +
-                        this->get_node_type(comparison_node));
+                        YamlCppUtils::get_node_type(comparison_node));
             }
             if (comparison_node.size() < 1) {
                 throw EcoevolityYamlConfigError(
@@ -659,6 +650,55 @@ class ComparisonSettings {
             if ((this->path_ == "") && (! global_defaults)) {
                 throw EcoevolityYamlConfigError("Every comparison must include a path");
             }
+            this->make_consistent();
+            if (! global_defaults) {
+                this->init_empirical_mutation_rate_starting_values();
+            }
+        }
+
+    public:
+        ComparisonSettings() { }
+        ComparisonSettings(
+                const std::string& path,
+                const PositiveRealParameterSettings& population_size_settings,
+                const PositiveRealParameterSettings& u_settings,
+                const PositiveRealParameterSettings& v_settings,
+                const PositiveRealParameterSettings& time_multiplier_settings,
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool use_empirical_mutation_rate_starting_values = true,
+                bool constrain_population_sizes = false,
+                bool constrain_mutation_rates = true) {
+
+            this->path_ = path;
+            this->population_size_settings_ = population_size_settings;
+            this->u_settings_ = u_settings;
+            this->v_settings_ = v_settings;
+            this->time_multiplier_settings_ = time_multiplier_settings;
+            this->population_name_delimiter_ = population_name_delimiter;
+            this->population_name_is_prefix_ = population_name_is_prefix;
+            this->genotypes_are_diploid_ = genotypes_are_diploid;
+            this->markers_are_dominant_ = markers_are_dominant;
+            this->constant_sites_removed_ = constant_sites_removed;
+            this->use_empirical_mutation_rate_starting_values_ = use_empirical_mutation_rate_starting_values;
+            this->constrain_population_sizes_ = constrain_population_sizes;
+            this->constrain_mutation_rates_ = constrain_mutation_rates;
+            this->make_consistent();
+
+            // TODO:
+            // Not very efficient to parse data just to get rates, but might be
+            // more awkward than it's worth to defer it.
+            // Make a copy operator for BiallelicData and parse and store here, then
+            // can copy it in get_instance method
+            this->init_empirical_mutation_rate_starting_values();
+        }
+        ComparisonSettings(
+                const YAML::Node& comparison_node,
+                bool global_defaults = false) {
+            this->update_from_config(comparison_node, global_defaults);
         }
 
         virtual ~ComparisonSettings() { }
@@ -861,11 +901,17 @@ class CollectionSettings {
             if (! top_level_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting top-level of config to be a map, but found: " +
-                        this->get_node_type(top_level_node));
+                        YamlCppUtils::get_node_type(top_level_node));
             }
 
             if (! top_level_node["comparisons"]) {
                 throw EcoevolityYamlConfigError("No comparisons");
+            }
+            // Need to parse comparisons first, because other setting rely on
+            // the knowing the number of comparisons.
+            if (top_level_node["global_comparison_settings"]) {
+                this->parse_global_comparison_settings(
+                        top_level_node["global_comparison_settings"]);
             }
             this->parse_comparisons(top_level_node["comparisons"]);
 
@@ -886,11 +932,13 @@ class CollectionSettings {
                 }
                 // parse comparison defaults
                 else if (top->first.as<std::string>() == "global_comparison_settings") {
-                    this->parse_global_comparison_settings(top->second);
+                    // Already parsed, nothing to do here
+                    continue;
                 }
                 // parse comparisons
                 else if (top->first.as<std::string>() == "comparisons") {
                     // Already parsed, nothing to do here
+                    continue;
                 }
                 else {
                     throw EcoevolityYamlConfigError(
@@ -904,16 +952,14 @@ class CollectionSettings {
             if (! mcmc_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting mcmc_settings to be a map, but found: " +
-                        this->get_node_type(mcmc_node));
+                        YamlCppUtils::get_node_type(mcmc_node));
             }
             for (YAML::const_iterator mcmc = mcmc_node.begin(); mcmc != mcmc_node.end(); ++mcmc) {
                 if (mcmc->first.as<std::string>() == "chain_length") {
-                    std::cout << "chain length: " << mcmc->second.as<std::string>() << "\n";
                     this->chain_length_ = mcmc->second.as<unsigned int>();
 
                 }
                 else if (mcmc->first.as<std::string>() == "sample_frequency") {
-                    std::cout << "sample freq: " << mcmc->second.as<std::string>() << "\n";
                     this->sample_frequency_ = mcmc->second.as<unsigned int>();
                 }
                 else {
@@ -928,7 +974,7 @@ class CollectionSettings {
             if (! model_prior_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting event_model_prior to be a map, but found: " +
-                        this->get_node_type(model_prior_node));
+                        YamlCppUtils::get_node_type(model_prior_node));
             }
 
             if (model_prior_node.size() > 1) {
@@ -950,23 +996,47 @@ class CollectionSettings {
         }
 
         void parse_time_prior(const YAML::Node& time_prior_node) {
-            this->time_prior_settings_ = ContinuousDistributionSettings(node);
+            this->time_prior_settings_ = ContinuousDistributionSettings(time_prior_node);
         }
 
         void parse_global_comparison_settings(const YAML::Node& global_node) {
             this->global_comparison_settings_ = ComparisonSettings(global_node, true);
         }
 
-        // TODO: Need to parse comparisons, and make sure the global settings
-        // are used as defaults.
         void parse_comparisons(const YAML::Node& comparisons_node) {
+            if (! comparisons_node.IsSequence()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting comparisons to be a sequence, but found: " +
+                        YamlCppUtils::get_node_type(comparisons_node));
+            }
+            for (unsigned int comp_idx = 0;
+                    comp_idx < comparisons_node.size();
+                    ++comp_idx) {
+                YAML::Node comp = comparisons_node[comp_idx];
+                if (! comp.IsMap()) {
+                    throw EcoevolityYamlConfigError(
+                            "Expecting each comparison to be a map, but found: " +
+                            YamlCppUtils::get_node_type(comp));
+                }
+                if (comp.size() != 1) {
+                    throw EcoevolityYamlConfigError(
+                            "Each comparison should only have one key");
+                }
+                if (! comp["comparison"]) {
+                    throw EcoevolityYamlConfigError(
+                            "Each comparison should have a comparison key");
+                }
+                ComparisonSettings c = this->global_comparison_settings_;
+                c.update_from_config(comp["comparison"]);
+                this->comparisons_.push_back(c);
+            }
         }
 
         void parse_dirichlet_process_prior(const YAML::Node& dpp_node) {
             if (! dpp_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting event_model_prior to be a map, but found: " +
-                        this->get_node_type(dpp_node));
+                        YamlCppUtils::get_node_type(dpp_node));
             }
 
             if (dpp_node.size() != 1) {
@@ -988,7 +1058,7 @@ class CollectionSettings {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting concentration node to be a map, but found: " +
-                        this->get_node_type(node));
+                        YamlCppUtils::get_node_type(node));
             }
             if (node.size() < 1) {
                 throw EcoevolityYamlConfigError(
@@ -1005,14 +1075,14 @@ class CollectionSettings {
                                     "concentration parameter cannot be less than 0"
                                     );
                         }
-                    this->concentration_settings_->value_ = v;
+                    this->concentration_settings_.value_ = v;
                 }
                 else if (arg->first.as<std::string>() == "estimate") {
                     bool f = arg->second.as<bool>();
-                    this->concentration_settings_->is_fixed_ = f;
+                    this->concentration_settings_.is_fixed_ = (! f);
                 }
                 else if (arg->first.as<std::string>() == "prior") {
-                    this->concentration_settings_->prior_settings_ = this->parse_dpp_gamma_hyper_prior(
+                    this->concentration_settings_.prior_settings_ = this->parse_dpp_gamma_hyper_prior(
                             arg->second);
                 }
                 else {
@@ -1027,7 +1097,7 @@ class CollectionSettings {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting concentration prior node to be a map, but found: " +
-                        this->get_node_type(node));
+                        YamlCppUtils::get_node_type(node));
             }
             if (node.size() != 1) {
                 throw EcoevolityYamlConfigError(
@@ -1038,7 +1108,7 @@ class CollectionSettings {
                         node.begin()->first.as<std::string>();
                 throw EcoevolityContinuousDistributionSettingError(message);
             }
-            YAML::Node parameters = node["gamma_distribution"]
+            YAML::Node parameters = node["gamma_distribution"];
             if (! parameters["shape"]) {
                 throw EcoevolityContinuousDistributionSettingError(
                         "shape parameter missing for gamma prior on concentration"
@@ -1060,8 +1130,16 @@ class CollectionSettings {
                 scale = parameters["scale"].as<double>();
             }
             else if (parameters["prior_mean_number_of_events"]) {
+                double prior_mean_num_events = parameters["prior_mean_number_of_events"].as<double>();
+                if (prior_mean_num_events < 1.0) {
+                    throw EcoevolityYamlConfigError("prior_mean_number_of_events must be at least 1.0");
+                }
+                else if (prior_mean_num_events > (double) this->comparisons_.size()) {
+                    throw EcoevolityYamlConfigError(
+                            "prior_mean_number_of_events cannot be greater than the number of comparisons");
+                }
                 scale = get_dpp_gamma_scale(
-                        parameters["prior_mean_number_of_events"].as<double>(),
+                        prior_mean_num_events,
                         this->comparisons_.size(),
                         shape);
             }
@@ -1077,23 +1155,6 @@ class CollectionSettings {
             p["shape"] = shape;
             p["scale"] = scale;
             return ContinuousDistributionSettings("gamma_distribution", p);
-        }
-
-        std::string get_node_type(const YAML::Node& node) {
-            switch(node.Type()) {
-                case YAML::NodeType::Null:
-                    return "Null";
-                case YAML::NodeType::Scalar:
-                    return "Scalar";
-                case YAML::NodeType::Sequence:
-                    return "Sequence";
-                case YAML::NodeType::Map:
-                    return "Map";
-                case YAML::NodeType::Undefined:
-                    return "Undefined";
-                default:
-                    return "Not recognized";
-            }
         }
 };
 

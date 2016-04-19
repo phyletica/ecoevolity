@@ -21,5 +21,6 @@
 
 int main(int argc, char *argv[]) {
     CollectionSettings settings = CollectionSettings(argv[1]);
+    std::cout << settings.to_string();
     return 0;
 }
