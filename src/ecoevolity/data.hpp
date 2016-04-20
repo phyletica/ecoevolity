@@ -28,7 +28,7 @@
 #include <vector>
 #include <ncl/nxsmultiformat.h>
 
-#include "util.hpp"
+#include "string_util.hpp"
 #include "debug.hpp"
 #include "assert.hpp"
 #include "error.hpp"

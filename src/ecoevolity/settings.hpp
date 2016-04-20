@@ -35,7 +35,7 @@
 
 #include "error.hpp"
 #include "assert.hpp"
-#include "util.hpp"
+#include "string_util.hpp"
 #include "math_util.hpp"
 #include "probability.hpp"
 #include "parameter.hpp"
@@ -347,8 +347,8 @@ class ContinuousDistributionSettings {
                 return "";
             }
             std::ostringstream ss;
-            std::string margin = get_indent(indent_level);
-            std::string indent = get_indent(1);
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
             ss << margin << this->name_ << ":\n";
             if (this->name_ == "gamma_distribution") {
                 ss << margin << indent << "shape: " << this->parameters_.at("shape") << "\n";
@@ -499,7 +499,7 @@ class PositiveRealParameterSettings {
         virtual std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
             ss << std::boolalpha;
-            std::string margin = get_indent(indent_level);
+            std::string margin = string_util::get_indent(indent_level);
             if (! std::isnan(this->get_value())) {
                 ss << margin << "value: " << this->get_value() << "\n";
             }
@@ -765,8 +765,8 @@ class ComparisonSettings {
         std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
             ss << std::boolalpha;
-            std::string margin = get_indent(indent_level);
-            std::string indent = get_indent(1);
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
             ss << margin << "path: " << this->path_ << "\n";
             ss << margin << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
             ss << margin << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
@@ -835,7 +835,7 @@ class CollectionSettings {
         std::string to_string() const {
             std::ostringstream ss;
             ss << std::boolalpha;
-            std::string indent = get_indent(1);
+            std::string indent = string_util::get_indent(1);
 
             ss << "---\n"
                << "event_model_prior:\n";

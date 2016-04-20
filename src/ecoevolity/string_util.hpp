@@ -17,34 +17,46 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#ifndef ECOEVOLITY_UTIL_HPP
-#define ECOEVOLITY_UTIL_HPP
+#ifndef ECOEVOLITY_STRING_UTIL_HPP
+#define ECOEVOLITY_STRING_UTIL_HPP
 
-#include <iostream>
-#include <map>
 #include <string>
 #include <sstream>
 #include <vector>
 
 #include "assert.hpp"
 
-/**
- * Function for accessing map elements.
- *
- * If the key does not exist, an out_of_range error is thrown.
- * From:
- *      <http://jeetworks.org/safe-and-const-correct-stdmap-access-in-c-stl/>
- *      2015 Jeet Sukumaran <http://jeetworks.org>
- */
-template <typename T>
-const typename T::value_type::second_type& map_at(
-        const T& container,
-        const typename T::value_type::first_type key) {
-    typename T::const_iterator it = container.find(key);
-    if (it == container.end()) {
-        throw std::out_of_range("Key not found");
+namespace string_util {
+
+inline std::vector<std::string> & split(
+        const std::string &s,
+        char delimiter,
+        std::vector<std::string> & elements) {
+    std::stringstream str_stream(s);
+    std::string item;
+    while (std::getline(str_stream, item, delimiter)) {
+        elements.push_back(item);
     }
-    return it->second;
+    return elements;
 }
+
+inline std::vector<std::string> split(
+        const std::string &s,
+        char delimiter) {
+    std::vector<std::string> elements;
+    split(s, delimiter, elements);
+    return elements;
+}
+
+inline std::string get_indent(unsigned int level = 1) {
+    return std::string(4 * level, ' ');
+    /* std::string s = ""; */
+    /* for (unsigned int i = 0; i < 4 * level; ++i) { */
+    /*     s += " "; */
+    /* } */
+    /* return s; */
+}
+
+} // namespace string_util
 
 #endif

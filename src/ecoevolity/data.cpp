@@ -91,7 +91,9 @@ void BiallelicData::init(
 
     for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
         NxsString seq_label = char_block->GetTaxonLabel(taxon_idx);
-        std::vector<std::string> seq_label_elements = split(seq_label, pop_name_delimiter);
+        std::vector<std::string> seq_label_elements = string_util::split(
+                seq_label,
+                pop_name_delimiter);
         ECOEVOLITY_ASSERT(! seq_label_elements.empty());
         std::string pop_label = seq_label_elements.front();
         if (! population_name_is_prefix) {
