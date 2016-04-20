@@ -50,11 +50,32 @@ inline std::vector<std::string> split(
 
 inline std::string get_indent(unsigned int level = 1) {
     return std::string(4 * level, ' ');
-    /* std::string s = ""; */
-    /* for (unsigned int i = 0; i < 4 * level; ++i) { */
-    /*     s += " "; */
-    /* } */
-    /* return s; */
+}
+
+inline std::string rstrip(
+        const std::string& s,
+        const std::string& delimiters = " \f\n\r\t\v" ) {
+    std::string::size_type last_nws = s.find_last_not_of(delimiters);
+    if (last_nws >= s.size()) {
+        return std::string("");
+    }
+    return s.substr(0, last_nws + 1);
+}
+
+inline std::string lstrip(
+        const std::string& s,
+        const std::string& delimiters = " \f\n\r\t\v" ) {
+    std::string::size_type first_nws = s.find_first_not_of(delimiters);
+    if (first_nws >= s.size()) {
+        return std::string("");
+    }
+    return s.substr(first_nws);
+}
+
+inline std::string strip(
+        const std::string& s,
+        const std::string& delimiters = " \f\n\r\t\v" ) {
+    return lstrip(rstrip(s, delimiters), delimiters);
 }
 
 } // namespace string_util

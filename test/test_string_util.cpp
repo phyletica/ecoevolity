@@ -27,12 +27,108 @@ SCENARIO("split provides Python-like splitting of strings", "[string_util]") {
     }
 }
 
-TEST_CASE("Testing get_indent", "[util]") {
+TEST_CASE("Testing get_indent", "[string_util]") {
     SECTION("Testing get_indent") {
         REQUIRE(string_util::get_indent() == "    ");
         REQUIRE(string_util::get_indent(0) == "");
         REQUIRE(string_util::get_indent(1) == "    ");
         REQUIRE(string_util::get_indent(2) == "        ");
         REQUIRE(string_util::get_indent(3) == "            ");
+    }
+}
+
+TEST_CASE("Testing lstrip", "[string_util]") {
+    SECTION("Testing all white space") {
+        std::string s = "\n\t   \t\n";
+        std::string t = string_util::lstrip(s);
+        REQUIRE(s == "\n\t   \t\n");
+        REQUIRE(t == "");
+    }
+
+    SECTION("Testing internal white space") {
+        std::string s = "hello \t\n world";
+        std::string t = string_util::lstrip(s);
+        REQUIRE(s == t);
+    }
+    
+    SECTION("Testing left white space") {
+        std::string s = " \t \nhello";
+        std::string t = string_util::lstrip(s);
+        REQUIRE(s == " \t \nhello");
+        REQUIRE(t == "hello");
+    }
+
+    SECTION("Testing right white space") {
+        std::string s = "hello \t \n";
+        std::string t = string_util::lstrip(s);
+        REQUIRE(s == t);
+    }
+
+    SECTION("Testing empty string") {
+        std::string s = "";
+        std::string t = string_util::lstrip(s);
+        REQUIRE(s == t);
+    }
+}
+
+TEST_CASE("Testing rstrip", "[string_util]") {
+    SECTION("Testing all white space") {
+        std::string s = "\n\t   \t\n";
+        std::string t = string_util::rstrip(s);
+        REQUIRE(s == "\n\t   \t\n");
+        REQUIRE(t == "");
+    }
+
+    SECTION("Testing internal white space") {
+        std::string s = "hello \t\n world";
+        std::string t = string_util::rstrip(s);
+        REQUIRE(s == t);
+    }
+    
+    SECTION("Testing left white space") {
+        std::string s = " \t \nhello";
+        std::string t = string_util::rstrip(s);
+        REQUIRE(s == t);
+    }
+
+    SECTION("Testing right white space") {
+        std::string s = "hello \t \n";
+        std::string t = string_util::rstrip(s);
+        REQUIRE(s == "hello \t \n");
+        REQUIRE(t == "hello");
+    }
+
+    SECTION("Testing empty string") {
+        std::string s = "";
+        std::string t = string_util::rstrip(s);
+        REQUIRE(s == t);
+    }
+}
+
+TEST_CASE("Testing strip", "[string_util]") {
+    SECTION("Testing all white space") {
+        std::string s = "\n\t   \t\n";
+        std::string t = string_util::strip(s);
+        REQUIRE(s == "\n\t   \t\n");
+        REQUIRE(t == "");
+    }
+
+    SECTION("Testing internal white space") {
+        std::string s = "hello \t\n world";
+        std::string t = string_util::strip(s);
+        REQUIRE(s == t);
+    }
+
+    SECTION("Testing left and right white space") {
+        std::string s = "\n  \t \t hello \t \n";
+        std::string t = string_util::strip(s);
+        REQUIRE(s == "\n  \t \t hello \t \n");
+        REQUIRE(t == "hello");
+    }
+
+    SECTION("Testing empty string") {
+        std::string s = "";
+        std::string t = string_util::strip(s);
+        REQUIRE(s == t);
     }
 }
