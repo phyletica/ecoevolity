@@ -6,7 +6,6 @@ set(ECOEVOLITY_MAIN_SOURCES
 set(ECOEVOLITY_SOURCES
     error.cpp
     matrix.cpp
-    node.cpp
     tree.cpp
     data.cpp)
 
