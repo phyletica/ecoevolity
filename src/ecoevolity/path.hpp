@@ -20,6 +20,10 @@
 #ifndef ECOEVOLITY_PATH_HPP
 #define ECOEVOLITY_PATH_HPP
 
+#include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #ifdef WINDOWS
     static const std::string PATH_SEP = "\\";
 #else
@@ -76,12 +80,30 @@ inline bool isabs(const std::string& path) {
 }
 
 inline bool exists(const std::string& path) {
-    if (FILE *file = fopen(path.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
+    struct stat info;
+    return (stat(path.c_str(), &info) == 0);
+}
+
+inline bool isdir(const std::string& path) {
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0) {
         return false;
-    }   
+    }
+    if (! (info.st_mode & S_IFDIR)) {
+        return false;
+    }
+    return true;
+}
+
+inline bool isfile(const std::string& path) {
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0) {
+        return false;
+    }
+    if (! (info.st_mode & S_IFREG)) {
+        return false;
+    }
+    return true;
 }
 
 } // namespace path
