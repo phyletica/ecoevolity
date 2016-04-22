@@ -19,7 +19,6 @@
 
 // TODO: Need to decide what settings must be specified, and if not, what is
 // the default.
-// TODO: Need to handle nexus paths that are relative to the config file.
 // TODO: Error messages could be a lot more informative.
 
 #ifndef ECOEVOLITY_SETTINGS_HPP
@@ -36,6 +35,7 @@
 #include "error.hpp"
 #include "assert.hpp"
 #include "string_util.hpp"
+#include "path.hpp"
 #include "math_util.hpp"
 #include "probability.hpp"
 #include "parameter.hpp"
@@ -597,6 +597,7 @@ class ComparisonSettings {
 
         void update_from_config(
                 const YAML::Node& comparison_node,
+                const std::string& config_path,
                 bool global_defaults = false) {
             if (! comparison_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
@@ -612,7 +613,8 @@ class ComparisonSettings {
                     arg != comparison_node.end();
                     ++arg) {
                 if (arg->first.as<std::string>() == "path") {
-                    this->path_ = arg->second.as<std::string>();
+                    std::string p = string_util::strip(arg->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), p);
                 }
                 else if (arg->first.as<std::string>() == "genotypes_are_diploid") {
                     this->genotypes_are_diploid_ = arg->second.as<bool>();
@@ -697,8 +699,9 @@ class ComparisonSettings {
         }
         ComparisonSettings(
                 const YAML::Node& comparison_node,
+                const std::string& config_path,
                 bool global_defaults = false) {
-            this->update_from_config(comparison_node, global_defaults);
+            this->update_from_config(comparison_node, config_path, global_defaults);
         }
 
         virtual ~ComparisonSettings() { }
@@ -814,8 +817,9 @@ class CollectionSettings {
         CollectionSettings(const std::string & yaml_config_path) {
             this->init_from_config_file(yaml_config_path);
         }
-        CollectionSettings(std::istream& yaml_config_stream) {
-            this->init_from_config_stream(yaml_config_stream);
+        CollectionSettings(std::istream& yaml_config_stream,
+                const std::string& yaml_config_path) {
+            this->init_from_config_stream(yaml_config_stream, yaml_config_path);
         }
         virtual ~CollectionSettings() { }
         CollectionSettings& operator=(const CollectionSettings& other) {
@@ -867,6 +871,7 @@ class CollectionSettings {
 
     private:
 
+        std::string path_ = "";
         bool use_dpp_ = true;
         unsigned int chain_length_;
         unsigned int sample_frequency_;
@@ -879,8 +884,9 @@ class CollectionSettings {
 
         std::vector<ComparisonSettings> comparisons_;
 
-        void init_from_config_stream(std::istream& stream) {
+        void init_from_config_stream(std::istream& stream, const std::string& path) {
             // TODO: handle defaults here
+            this->path_ = path;
             this->chain_length_ = 100000;
             this->sample_frequency_ = 100;
             this->parse_yaml_config(stream);
@@ -888,7 +894,7 @@ class CollectionSettings {
         void init_from_config_file(const std::string& path) {
             std::ifstream in_stream;
             in_stream.open(path);
-            this->init_from_config_stream(in_stream);
+            this->init_from_config_stream(in_stream, path);
             in_stream.close();
         }
 
@@ -1000,7 +1006,8 @@ class CollectionSettings {
         }
 
         void parse_global_comparison_settings(const YAML::Node& global_node) {
-            this->global_comparison_settings_ = ComparisonSettings(global_node, true);
+            this->global_comparison_settings_ = ComparisonSettings(global_node,
+                    this->path_, true);
         }
 
         void parse_comparisons(const YAML::Node& comparisons_node) {
@@ -1027,7 +1034,7 @@ class CollectionSettings {
                             "Each comparison should have a comparison key");
                 }
                 ComparisonSettings c = this->global_comparison_settings_;
-                c.update_from_config(comp["comparison"]);
+                c.update_from_config(comp["comparison"], this->path_);
                 this->comparisons_.push_back(c);
             }
         }
