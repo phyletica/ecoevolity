@@ -450,3 +450,71 @@ SCENARIO("isfile tests whether a path is a regular file", "[path]") {
         }
     }
 }
+
+SCENARIO("join is a dumb path merger", "[path]") {
+
+    GIVEN("given a parent and child path") {
+        std::string parent = "/home/jamie";
+        std::string child = "Desktop/file.txt";
+
+        WHEN("join is called") {
+            std::string p = path::join(parent, child);
+            
+            THEN("returns a path with parent and child separated by one separator") {
+                REQUIRE(p == "/home/jamie/Desktop/file.txt");
+            }
+        }
+    }
+
+    GIVEN("given a seperator-ending parent and child path") {
+        std::string parent = "/home/jamie/";
+        std::string child = "Desktop/file.txt";
+
+        WHEN("join is called") {
+            std::string p = path::join(parent, child);
+            
+            THEN("returns a path with parent and child separated by one separator") {
+                REQUIRE(p == "/home/jamie/Desktop/file.txt");
+            }
+        }
+    }
+
+    GIVEN("given a parent and separator-beginning child path") {
+        std::string parent = "/home/jamie";
+        std::string child = "/Desktop/file.txt";
+
+        WHEN("join is called") {
+            std::string p = path::join(parent, child);
+            
+            THEN("returns the child path") {
+                REQUIRE(p == "/Desktop/file.txt");
+            }
+        }
+    }
+
+    GIVEN("given a separator-ending parent and separator-beginning child path") {
+        std::string parent = "/home/jamie/";
+        std::string child = "/Desktop/file.txt";
+
+        WHEN("join is called") {
+            std::string p = path::join(parent, child);
+            
+            THEN("returns the child path") {
+                REQUIRE(p == "/Desktop/file.txt");
+            }
+        }
+    }
+
+    GIVEN("given a parent and child path beginning with move-up calls") {
+        std::string parent = "/home/jamie/Desktop";
+        std::string child = "../file.txt";
+
+        WHEN("join is called") {
+            std::string p = path::join(parent, child);
+            
+            THEN("joins and returns with move-up calls in place") {
+                REQUIRE(p == "/home/jamie/Desktop/../file.txt");
+            }
+        }
+    }
+}

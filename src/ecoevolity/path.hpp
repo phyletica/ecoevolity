@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "string_util.hpp"
+
 #ifdef WINDOWS
     static const std::string PATH_SEP = "\\";
 #else
@@ -54,20 +56,6 @@ inline std::string basename(const std::string& path) {
     return path.substr(last_sep + 1);
 }
 
-inline std::string join(const std::string& parent, const std::string& child) {
-    std::string p = parent;
-    std::string::size_type last_sep = p.find_last_of(PATH_SEP);
-    if (last_sep == parent.size() - 1) {
-        p = parent.substr(0, parent.size() - 1);
-    }
-    std::string c = child;
-    std::string::size_type first_sep = c.find_first_of(PATH_SEP);
-    if (first_sep == 0) {
-        c = child.substr(1);
-    }
-    return p + PATH_SEP + c;
-}
-
 inline bool isabs(const std::string& path) {
     if (path.size() < 1) {
         return false;
@@ -77,6 +65,14 @@ inline bool isabs(const std::string& path) {
         return true;
     }
     return false;
+}
+
+inline std::string join(const std::string& parent, const std::string& child) {
+    if (isabs(child)) {
+        return child;
+    }
+    std::string p = string_util::rstrip(parent, PATH_SEP);
+    return p + PATH_SEP + child;
 }
 
 inline bool exists(const std::string& path) {
