@@ -132,3 +132,21 @@ TEST_CASE("Testing strip", "[string_util]") {
         REQUIRE(s == t);
     }
 }
+
+TEST_CASE("Testing join", "[string_util]") {
+    std::vector<std::string> strings {"1", "2", "3"};
+    std::string s = string_util::join(strings, "---");
+    REQUIRE(s == "1---2---3");
+}
+
+TEST_CASE("Testing join on empty vector", "[string_util]") {
+    std::vector<std::string> strings;
+    std::string s = string_util::join(strings, "---");
+    REQUIRE(s == "");
+}
+
+TEST_CASE("Testing join on singleton vector", "[string_util]") {
+    std::vector<std::string> strings {"1"};
+    std::string s = string_util::join(strings, "---");
+    REQUIRE(s == "1");
+}

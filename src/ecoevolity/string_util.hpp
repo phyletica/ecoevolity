@@ -48,6 +48,20 @@ inline std::vector<std::string> split(
     return elements;
 }
 
+inline std::string join(const std::vector<std::string>& components,
+                        const std::string delimiter = "") {
+    std::ostringstream ss;
+    for (unsigned int i = 0; i < components.size(); ++i) {
+        if (i == 0) {
+            ss << components.at(i);
+        }
+        else {
+            ss << delimiter << components.at(i);
+        }
+    }
+    return ss.str();
+}
+
 inline std::string get_indent(unsigned int level = 1) {
     return std::string(4 * level, ' ');
 }
