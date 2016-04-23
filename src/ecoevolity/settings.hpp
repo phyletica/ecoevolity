@@ -19,6 +19,11 @@
 
 // TODO: Need to decide what settings must be specified, and if not, what is
 // the default.
+// Defaults:
+// DPP shape 2.0, prior mean = 0.75*ncomparisons REQUIRE?
+// time prior = exp(0.01) REQUIRE?
+// pop size = exp(0.001)
+//
 // TODO: Error messages could be a lot more informative.
 
 #ifndef ECOEVOLITY_SETTINGS_HPP
