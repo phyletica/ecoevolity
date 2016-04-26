@@ -756,3 +756,48 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(l == Approx(-31.77866581319647));
     }
 }
+
+TEST_CASE("Testing collection settings from minimal config", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/minimal-config.yml";
+        CollectionSettings settings = CollectionSettings(cfg_path);
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    uniform:\n";
+        e += "event_time_prior:\n";
+        e += "    exponential_distribution:\n";
+        e += "        rate: 100\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/hemi129.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+
+        REQUIRE(settings.to_string() == e);
+    }
+}

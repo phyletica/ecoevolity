@@ -528,15 +528,15 @@ class ComparisonSettings {
         PositiveRealParameterSettings v_settings_;
         PositiveRealParameterSettings time_multiplier_settings_;
 
-        char population_name_delimiter_;
-        bool population_name_is_prefix_;
-        bool genotypes_are_diploid_;
-        bool markers_are_dominant_;
-        bool constant_sites_removed_;
+        char population_name_delimiter_ = '_';
+        bool population_name_is_prefix_ = true;
+        bool genotypes_are_diploid_ = true;
+        bool markers_are_dominant_ = false;
+        bool constant_sites_removed_ = true;
 
-        bool use_empirical_mutation_rate_starting_values_;
-        bool constrain_population_sizes_;
-        bool constrain_mutation_rates_;
+        bool use_empirical_mutation_rate_starting_values_ = false;
+        bool constrain_population_sizes_ = false;
+        bool constrain_mutation_rates_ = true;
 
         void make_consistent() {
             if (this->constrain_mutation_rates_) {
@@ -676,7 +676,7 @@ class ComparisonSettings {
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool use_empirical_mutation_rate_starting_values = true,
+                bool use_empirical_mutation_rate_starting_values = false,
                 bool constrain_population_sizes = false,
                 bool constrain_mutation_rates = true) {
 
@@ -878,8 +878,8 @@ class CollectionSettings {
 
         std::string path_ = "";
         bool use_dpp_ = true;
-        unsigned int chain_length_;
-        unsigned int sample_frequency_;
+        unsigned int chain_length_ = 100000;
+        unsigned int sample_frequency_ = 100;
 
         ContinuousDistributionSettings time_prior_settings_;
 
@@ -889,11 +889,24 @@ class CollectionSettings {
 
         std::vector<ComparisonSettings> comparisons_;
 
+        const std::string& get_path() const {
+            return this->path_;
+        }
+        bool using_dpp() const {
+            return this->use_dpp_;
+        }
+        double get_chain_length() const {
+            return this->chain_length_;
+        }
+        double get_sample_frequency() const {
+            return this->sample_frequency_;
+        }
+        unsigned int get_number_of_comparisons() const {
+            return this->comparisons_.size();
+        }
+
         void init_from_config_stream(std::istream& stream, const std::string& path) {
-            // TODO: handle defaults here
             this->path_ = path;
-            this->chain_length_ = 100000;
-            this->sample_frequency_ = 100;
             this->parse_yaml_config(stream);
         }
         void init_from_config_file(const std::string& path) {
@@ -915,6 +928,25 @@ class CollectionSettings {
                         YamlCppUtils::get_node_type(top_level_node));
             }
 
+            ///////////////////////////////////////////////////////////////////
+            // Set up defaults to be overridden by config settings:
+            // Set default time prior
+            std::unordered_map<std::string, double> default_time_prior_parameters;
+            default_time_prior_parameters["rate"] = 100.0;
+            this->time_prior_settings_ = ContinuousDistributionSettings(
+                    "exponential_distribution",
+                    default_time_prior_parameters);
+            // Set default pop size
+            std::unordered_map<std::string, double> default_pop_size_parameters;
+            default_pop_size_parameters["rate"] = 1000.0;
+            this->global_comparison_settings_.population_size_settings_.prior_settings_ = ContinuousDistributionSettings(
+                    "exponential_distribution",
+                    default_pop_size_parameters);
+            // Set default time multiplier
+            this->global_comparison_settings_.time_multiplier_settings_.value_ = 1.0;
+            this->global_comparison_settings_.time_multiplier_settings_.is_fixed_ = true;
+            ///////////////////////////////////////////////////////////////////
+
             if (! top_level_node["comparisons"]) {
                 throw EcoevolityYamlConfigError("No comparisons");
             }
@@ -925,6 +957,27 @@ class CollectionSettings {
                         top_level_node["global_comparison_settings"]);
             }
             this->parse_comparisons(top_level_node["comparisons"]);
+
+            ///////////////////////////////////////////////////////////////////
+            // Set default concentration prior to be overriden by config
+            if (this->comparisons_.size() > 1) {
+                double default_shape = 2.0;
+                double default_prior_mean_num_events = (double)this->comparisons_.size() * 0.75;
+                double default_scale = get_dpp_gamma_scale(
+                        default_prior_mean_num_events,
+                        this->comparisons_.size(),
+                        default_shape);
+                std::unordered_map<std::string, double> default_parameters;
+                default_parameters["shape"] = default_shape;
+                default_parameters["scale"] = default_scale;
+                this->concentration_settings_.prior_settings_ = ContinuousDistributionSettings(
+                        "gamma_distribution",
+                        default_parameters);
+            }
+            else {
+                this->use_dpp_ = false;
+            }
+            ///////////////////////////////////////////////////////////////////
 
             for (YAML::const_iterator top = top_level_node.begin();
                     top != top_level_node.end();
@@ -956,6 +1009,11 @@ class CollectionSettings {
                             "Unrecognized top level key: '" +
                             top->first.as<std::string>() + "'");
                 }
+            }
+
+            // Override DPP settings if only one comparison
+            if (this->comparisons_.size() < 2) {
+                this->use_dpp_ = false;
             }
         }
 
@@ -1011,7 +1069,7 @@ class CollectionSettings {
         }
 
         void parse_global_comparison_settings(const YAML::Node& global_node) {
-            this->global_comparison_settings_ = ComparisonSettings(global_node,
+            this->global_comparison_settings_.update_from_config(global_node,
                     this->path_, true);
         }
 
@@ -1020,6 +1078,9 @@ class CollectionSettings {
                 throw EcoevolityYamlConfigError(
                         "Expecting comparisons to be a sequence, but found: " +
                         YamlCppUtils::get_node_type(comparisons_node));
+            }
+            if (comparisons_node.size() < 1) {
+                throw EcoevolityYamlConfigError("No comparsions found");
             }
             for (unsigned int comp_idx = 0;
                     comp_idx < comparisons_node.size();
@@ -1042,6 +1103,7 @@ class CollectionSettings {
                 c.update_from_config(comp["comparison"], this->path_);
                 this->comparisons_.push_back(c);
             }
+            ECOEVOLITY_ASSERT(comparisons_node.size() == this->comparisons_.size());
         }
 
         void parse_dirichlet_process_prior(const YAML::Node& dpp_node) {
