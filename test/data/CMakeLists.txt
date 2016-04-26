@@ -1,4 +1,5 @@
 file (GLOB test_data_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.yml"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.nex")
 
 foreach (test_data_file ${test_data_files})
