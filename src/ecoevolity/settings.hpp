@@ -802,6 +802,354 @@ class ComparisonSettings {
         }
 };
 
+
+class OperatorSettings {
+    protected:
+        double weight_;
+
+    public:
+        OperatorSettings() { }
+        OperatorSettings(double weight) {
+            this->weight_ = weight;
+        }
+        virtual ~OperatorSettings() { }
+        OperatorSettings& operator=(const OperatorSettings& other) {
+            this->weight_ = other.weight_;
+            return * this;
+        }
+        double get_weight() const {
+            return this->weight_;
+        }
+        void set_weight(double weight) {
+            this->weight_ = weight;
+        }
+        virtual void update_from_config(const YAML::Node& operator_node) {
+            if (! operator_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting operator node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(operator_node));
+            }
+            if (operator_node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "Operator node should only have one key");
+            }
+            std::string name;
+            YAML::Node parameters;
+            for (YAML::const_iterator op = operator_node.begin();
+                    op != operator_node.end();
+                    ++op) {
+                name = op->first.as<std::string>();
+                parameters = op->second;
+            }
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator " + name +
+                        " parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator " + name +
+                            " parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "weight: " << this->weight_ << "\n";
+            return ss.str();
+        }
+};
+
+class ScaleOperatorSettings : public OperatorSettings {
+    protected:
+        double scale_;
+
+    public:
+        ScaleOperatorSettings() { }
+        ScaleOperatorSettings(double weight, double scale) : OperatorSettings(weight) {
+            this->scale_ = scale;
+        }
+        virtual ~ScaleOperatorSettings() { }
+        ScaleOperatorSettings& operator=(const ScaleOperatorSettings& other) {
+            this->weight_ = other.weight_;
+            this->scale_ = other.scale_;
+            return * this;
+        }
+        double get_scale() const {
+            return this->scale_;
+        }
+        void set_scale(double scale) {
+            this->scale_ = scale;
+        }
+        virtual void update_from_config(const YAML::Node& operator_node) {
+            if (! operator_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting operator node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(operator_node));
+            }
+            if (operator_node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "Operator node should only have one key");
+            }
+            std::string name;
+            YAML::Node parameters;
+            for (YAML::const_iterator op = operator_node.begin();
+                    op != operator_node.end();
+                    ++op) {
+                name = op->first.as<std::string>();
+                parameters = op->second;
+            }
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator " + name +
+                        " parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "scale") {
+                    this->set_scale(p->second.as<double>());
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator " + name +
+                            " parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "weight: " << this->weight_ << "\n";
+            ss << margin << "scale: " << this->scale_ << "\n";
+            return ss.str();
+        }
+};
+
+class WindowOperatorSettings : public OperatorSettings {
+    protected:
+        double window_;
+
+    public:
+        WindowOperatorSettings() { }
+        WindowOperatorSettings(double weight, double window) : OperatorSettings(weight) {
+            this->window_ = window;
+        }
+        virtual ~WindowOperatorSettings() { }
+        WindowOperatorSettings& operator=(const WindowOperatorSettings& other) {
+            this->weight_ = other.weight_;
+            this->window_ = other.window_;
+            return * this;
+        }
+        double get_window() const {
+            return this->window_;
+        }
+        void set_window(double window) {
+            this->window_ = window;
+        }
+        virtual void update_from_config(const YAML::Node& operator_node) {
+            if (! operator_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting operator node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(operator_node));
+            }
+            if (operator_node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "Operator node should only have one key");
+            }
+            std::string name;
+            YAML::Node parameters;
+            for (YAML::const_iterator op = operator_node.begin();
+                    op != operator_node.end();
+                    ++op) {
+                name = op->first.as<std::string>();
+                parameters = op->second;
+            }
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator " + name +
+                        " parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "window") {
+                    this->set_window(p->second.as<double>());
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator " + name +
+                            " parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "weight: " << this->weight_ << "\n";
+            ss << margin << "window: " << this->window_ << "\n";
+            return ss.str();
+        }
+};
+
+class OperatorScheduleSettings {
+
+    friend class CollectionSettings;
+
+    private:
+        bool auto_optimize_ = true;
+        OperatorSettings ModelOperator_ = OperatorSettings(3.0);
+        ScaleOperatorSettings ConcentrationScaler_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        ScaleOperatorSettings ComparisonHeightScaler_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        ScaleOperatorSettings ComparisonHeightMultiplierScaler_ = ScaleOperatorSettings(
+                1.0, 0.3);
+        ScaleOperatorSettings RootCoalescenceRateScaler_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        ScaleOperatorSettings ChildCoalescenceRateScaler_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        WindowOperatorSettings MutationRateMover_ = WindowOperatorSettings(
+                1.0, 0.1);
+
+    public:
+        OperatorScheduleSettings() { }
+        virtual ~OperatorScheduleSettings() { }
+        OperatorScheduleSettings& operator=(const OperatorScheduleSettings& other) {
+            this->auto_optimize_ = other.auto_optimize_;
+            this->ModelOperator_ = other.ModelOperator_;
+            this->ConcentrationScaler_ = other.ConcentrationScaler_;
+            this->ComparisonHeightScaler_ = other.ComparisonHeightScaler_;
+            this->ComparisonHeightMultiplierScaler_ = other.ComparisonHeightMultiplierScaler_;
+            this->RootCoalescenceRateScaler_ = other.RootCoalescenceRateScaler_;
+            this->ChildCoalescenceRateScaler_ = other.ChildCoalescenceRateScaler_;
+            this->MutationRateMover_ = other.MutationRateMover_;
+            return * this;
+        }
+
+        void update_from_config(const YAML::Node& operator_node) {
+            if (! operator_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting operator_settings node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(operator_node));
+            }
+
+            for (YAML::const_iterator setting = operator_node.begin();
+                    setting != operator_node.end();
+                    ++setting) {
+                if (setting->first.as<std::string>() == "auto_optimize") {
+                    this->auto_optimize_ = setting->second.as<bool>();
+                }
+                else if (setting->first.as<std::string>() == "operators") {
+                    this->parse_operators(setting->second);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator_settings: " +
+                            setting->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+        
+        void parse_operators(const YAML::Node& operators) {
+            if (! operators.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting operators node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(operators));
+            }
+
+            for (YAML::const_iterator op = operators.begin();
+                    op != operators.end();
+                    ++op) {
+                if (op->first.as<std::string>() == "ModelOperator") {
+                    this->ModelOperator_.update_from_config(op->first);
+                }
+                else if (op->first.as<std::string>() == "ConcentrationScaler") {
+                    this->ConcentrationScaler_.update_from_config(op->first);
+                }
+                else if (op->first.as<std::string>() == "ComparisonHeightScaler") {
+                    this->ComparisonHeightScaler_.update_from_config(op->first);
+                }
+                else if (op->first.as<std::string>() == "ComparisonHeightMultiplierScaler") {
+                    this->ComparisonHeightMultiplierScaler_.update_from_config(op->first);
+                }
+                else if (op->first.as<std::string>() == "RootCoalescenceRateScaler") {
+                    this->RootCoalescenceRateScaler_.update_from_config(op->first);
+                }
+                else if (op->first.as<std::string>() == "ChildCoalescenceRateScaler") {
+                    this->ChildCoalescenceRateScaler_.update_from_config(op->first);
+                }
+                else if (op->first.as<std::string>() == "MutationRateMover") {
+                    this->MutationRateMover_.update_from_config(op->first);
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "operator_settings:\n";
+            ss << margin << indent << "auto_optimize: " << this->auto_optimize_ << "\n";
+            ss << margin << indent << "operators:\n";
+            ss << margin << indent << indent << "ModelOperator:\n";
+            ss << this->ModelOperator_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "ConcentrationScaler:\n";
+            ss << this->ConcentrationScaler_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "ComparisonHeightScaler:\n";
+            ss << this->ComparisonHeightScaler_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "ComparisonHeightMultiplierScaler:\n";
+            ss << this->ComparisonHeightMultiplierScaler_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "RootCoalescenceRateScaler:\n";
+            ss << this->RootCoalescenceRateScaler_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "ChildCoalescenceRateScaler:\n";
+            ss << this->ChildCoalescenceRateScaler_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "MutationRateMover:\n";
+            ss << this->MutationRateMover_.to_string(indent_level + 3);
+            return ss.str();
+        }
+};
+
+
 class CollectionSettings {
 
     public:
@@ -857,6 +1205,36 @@ class CollectionSettings {
             return this->comparisons_.size();
         }
 
+        unsigned int get_number_of_comparisons_with_free_time_multiplier() const {
+            unsigned int nfree = 0;
+            for (const ComparisonSettings& comparison : this->comparisons_) {
+                if (! comparison.time_multiplier_settings_.is_fixed()) {
+                    ++nfree;
+                }
+            }
+            return nfree;
+        }
+
+        unsigned int get_number_of_comparisons_with_free_population_size() const {
+            unsigned int nfree = 0;
+            for (const ComparisonSettings& comparison : this->comparisons_) {
+                if (! comparison.population_size_settings_.is_fixed()) {
+                    ++nfree;
+                }
+            }
+            return nfree;
+        }
+
+        unsigned int get_number_of_comparisons_with_free_u_rate() const {
+            unsigned int nfree = 0;
+            for (const ComparisonSettings& comparison : this->comparisons_) {
+                if (! comparison.u_settings_.is_fixed()) {
+                    ++nfree;
+                }
+            }
+            return nfree;
+        }
+
         std::string to_string() const {
             std::ostringstream ss;
             ss << std::boolalpha;
@@ -886,6 +1264,8 @@ class CollectionSettings {
                 ss << "- comparison:\n";
                 ss << comp.to_string(1);
             }
+
+            ss << this->operator_schedule_settings_.to_string();
             return ss.str();
         }
 
@@ -896,6 +1276,8 @@ class CollectionSettings {
         bool use_dpp_ = true;
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
+
+        OperatorScheduleSettings operator_schedule_settings_;
 
         ContinuousDistributionSettings time_prior_settings_;
 
@@ -986,6 +1368,10 @@ class CollectionSettings {
                 if (top->first.as<std::string>() == "mcmc_settings") {
                     this->parse_mcmc_settings(top->second);
                 }
+                // parse operator settings
+                else if (top->first.as<std::string>() == "operator_settings") {
+                    this->operator_schedule_settings_.update_from_config(top->second);
+                }
                 // parse model prior
                 else if (top->first.as<std::string>() == "event_model_prior") {
                     this->parse_model_prior(top->second);
@@ -1014,6 +1400,28 @@ class CollectionSettings {
             // Override DPP settings if only one comparison
             if (this->comparisons_.size() < 2) {
                 this->use_dpp_ = false;
+            }
+
+            // "Turn off" operators that are not needed
+            this->update_operator_schedule_settings();
+        }
+
+        void update_operator_schedule_settings() {
+            if ((! this->use_dpp_) || (this->concentration_settings_.is_fixed())) {
+                this->operator_schedule_settings_.ConcentrationScaler_.set_weight(0.0);
+            }
+            if (this->comparisons_.size() < 2) {
+                this->operator_schedule_settings_.ModelOperator_.set_weight(0.0);
+            }
+            if (this->get_number_of_comparisons_with_free_time_multiplier() < 1) {
+                this->operator_schedule_settings_.ComparisonHeightMultiplierScaler_.set_weight(0.0);
+            }
+            if (this->get_number_of_comparisons_with_free_u_rate() < 1) {
+                this->operator_schedule_settings_.MutationRateMover_.set_weight(0.0);
+            }
+            if (this->get_number_of_comparisons_with_free_population_size() < 1) {
+                this->operator_schedule_settings_.RootCoalescenceRateScaler_.set_weight(0.0);
+                this->operator_schedule_settings_.ChildCoalescenceRateScaler_.set_weight(0.0);
             }
         }
 

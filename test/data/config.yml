@@ -20,6 +20,30 @@ mcmc_settings:
     chain_length: 100000
     sample_frequency: 100
 
+operator_settings:
+    auto_optimize: true
+    operators:
+        ModelOperator:
+            weight: 3.0
+        ConcentrationScaler:
+            scale: 0.5
+            weight: 1.0
+        ComparisonHeightScaler:
+            scale: 0.5
+            weight: 1.0
+        ComparisonHeightMultiplierScaler:
+            scale: 0.3
+            weight: 1.0
+        RootCoalescenceRateScaler:
+            scale: 0.5
+            weight: 1.0
+        ChildCoalescenceRateScaler:
+            scale: 0.5
+            weight: 1.0
+        MutationRateMover:
+            window: 0.1
+            weight: 1.0
+
 global_comparison_settings:
     genotypes_are_diploid: true
     markers_are_dominant: false

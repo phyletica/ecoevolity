@@ -797,6 +797,29 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 0\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightMultiplierScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.3\n";
+        e += "        RootCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ChildCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        MutationRateMover:\n";
+        e += "            weight: 0\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
@@ -804,5 +827,8 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 1);
+        REQUIRE(settings.get_number_of_comparisons_with_free_time_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 1);
     }
 }
