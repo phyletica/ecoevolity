@@ -472,16 +472,16 @@ class ConcentrationScaler: public ConcentrationOperator {
         }
 };
 
-class NodeHeightMultiplierScaler : public NodeHeightMultiplierOperator {
+class ComparisonHeightMultiplierScaler : public ComparisonHeightMultiplierOperator {
     protected:
         double scale_ = 0.3;
 
     public:
-        NodeHeightMultiplierScaler() : NodeHeightMultiplierOperator() { }
-        NodeHeightMultiplierScaler(double scale) : NodeHeightMultiplierOperator() {
+        ComparisonHeightMultiplierScaler() : ComparisonHeightMultiplierOperator() { }
+        ComparisonHeightMultiplierScaler(double scale) : ComparisonHeightMultiplierOperator() {
             this->set_scale(scale);
         }
-        virtual ~NodeHeightMultiplierScaler() { }
+        virtual ~ComparisonHeightMultiplierScaler() { }
 
         void set_scale(double scale) {
             this->scale_ = scale;
@@ -513,7 +513,7 @@ class NodeHeightMultiplierScaler : public NodeHeightMultiplierOperator {
         }
 
         std::string get_name() const {
-            return "NodeHeightMultiplierScaler";
+            return "ComparisonHeightMultiplierScaler";
         }
 };
 
