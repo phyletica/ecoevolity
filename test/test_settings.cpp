@@ -799,5 +799,10 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "            estimate: false\n";
 
         REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/minimal-config.yml");
+        REQUIRE(settings.using_dpp() == false);
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 1);
     }
 }

@@ -841,6 +841,22 @@ class CollectionSettings {
             this->comparisons_.push_back(comparison_settings);
         }
 
+        const std::string& get_path() const {
+            return this->path_;
+        }
+        bool using_dpp() const {
+            return this->use_dpp_;
+        }
+        double get_chain_length() const {
+            return this->chain_length_;
+        }
+        double get_sample_frequency() const {
+            return this->sample_frequency_;
+        }
+        unsigned int get_number_of_comparisons() const {
+            return this->comparisons_.size();
+        }
+
         std::string to_string() const {
             std::ostringstream ss;
             ss << std::boolalpha;
@@ -888,22 +904,6 @@ class CollectionSettings {
         ComparisonSettings global_comparison_settings_;
 
         std::vector<ComparisonSettings> comparisons_;
-
-        const std::string& get_path() const {
-            return this->path_;
-        }
-        bool using_dpp() const {
-            return this->use_dpp_;
-        }
-        double get_chain_length() const {
-            return this->chain_length_;
-        }
-        double get_sample_frequency() const {
-            return this->sample_frequency_;
-        }
-        unsigned int get_number_of_comparisons() const {
-            return this->comparisons_.size();
-        }
 
         void init_from_config_stream(std::istream& stream, const std::string& path) {
             this->path_ = path;
