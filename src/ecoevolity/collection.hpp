@@ -24,6 +24,7 @@
 #include "node.hpp"
 #include "tree.hpp"
 #include "parameter.hpp"
+#include "settings.hpp"
 #include "error.hpp"
 #include "assert.hpp"
 

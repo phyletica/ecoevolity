@@ -19,6 +19,44 @@
 
 #include "collection.hpp"
 
+ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
+        const CollectionSettings & settings,
+        RandomNumberGenerator & rng
+        ) {
+    this->node_height_prior_ = settings.get_time_prior_instance();
+    this->concentration_ = settings.get_concentration_instance(rng);
+    this->init_trees(settings.get_comparison_settings(), rng);
+    this->init_operator_schedule(settings);
+}
+
+void ComparisonPopulationTreeCollection::init_trees(
+    const std::vector<ComparisonSettings> & comparison_settings,
+    RandomNumberGenerator & rng) {
+    double fresh_height;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparison_settings.size();
+            ++tree_idx) {
+        fresh_height = this->node_height_prior_.draw(rng);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        ComparisonPopulationTree new_tree = comparison_settings.at(tree_idx).get_instance(rng);
+        new_tree.set_height_parameter(new_height_parameter);
+        this->node_heights_.push_back(new_height_parameter);
+        this->trees_.push_back(new_tree);
+        this->node_height_indices_.push_back(tree_idx);
+        ECOEVOLITY_ASSERT(
+                this->trees_.at(tree_idx).get_height_parameter() ==
+                this->node_heights_.at(this->node_height_indices_.at(tree_idx))
+                );
+    }
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
+}
+
+void ComparisonPopulationTreeCollection::init_operator_schedule(
+        const OperatorScheduleSettings& operator_settings) {
+    // TODO: could have 'get_instance' method in settings
+}
+
 void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();

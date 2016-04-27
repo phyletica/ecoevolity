@@ -33,7 +33,7 @@
 
 class OperatorSchedule {
     protected:
-        std::vector<Operator> operators_;
+        std::vector< std::shared_ptr<Operator> > operators_;
         double total_weight_ = 0.0;
         std::vector<double> cumulative_probs_;
         unsigned int auto_optimize_delay_ = 10000;
@@ -42,7 +42,7 @@ class OperatorSchedule {
 
     public:
 
-        void add_operator(Operator o) {
+        void add_operator(std::shared_ptr<Operator> o) {
             this->operators_.push_back(o);
             o.set_operator_schedule(this);
             this->total_weight_ += o.get_weight();
