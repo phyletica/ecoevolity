@@ -799,6 +799,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 0\n";
@@ -916,6 +917,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
@@ -1028,6 +1030,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
@@ -1156,6 +1159,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
@@ -1379,6 +1383,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
@@ -1547,6 +1552,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "                    scale: 0.001\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
@@ -1706,6 +1712,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "                    scale: 0.01\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 20000\n";
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 5\n";

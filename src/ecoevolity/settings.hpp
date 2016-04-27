@@ -972,6 +972,7 @@ class OperatorScheduleSettings {
 
     private:
         bool auto_optimize_ = true;
+        unsigned int auto_optimize_delay_ = 10000;
         OperatorSettings ModelOperator_ = OperatorSettings(3.0);
         ScaleOperatorSettings ConcentrationScaler_ = ScaleOperatorSettings(
                 1.0, 0.5);
@@ -991,6 +992,7 @@ class OperatorScheduleSettings {
         virtual ~OperatorScheduleSettings() { }
         OperatorScheduleSettings& operator=(const OperatorScheduleSettings& other) {
             this->auto_optimize_ = other.auto_optimize_;
+            this->auto_optimize_delay_ = other.auto_optimize_delay_;
             this->ModelOperator_ = other.ModelOperator_;
             this->ConcentrationScaler_ = other.ConcentrationScaler_;
             this->ComparisonHeightScaler_ = other.ComparisonHeightScaler_;
@@ -1013,6 +1015,9 @@ class OperatorScheduleSettings {
                     ++setting) {
                 if (setting->first.as<std::string>() == "auto_optimize") {
                     this->auto_optimize_ = setting->second.as<bool>();
+                }
+                else if (setting->first.as<std::string>() == "auto_optimize_delay") {
+                    this->auto_optimize_delay_ = setting->second.as<unsigned int>();
                 }
                 else if (setting->first.as<std::string>() == "operators") {
                     this->parse_operators(setting->second);
@@ -1122,6 +1127,7 @@ class OperatorScheduleSettings {
             std::string indent = string_util::get_indent(1);
             ss << margin << "operator_settings:\n";
             ss << margin << indent << "auto_optimize: " << this->auto_optimize_ << "\n";
+            ss << margin << indent << "auto_optimize_delay: " << this->auto_optimize_delay_ << "\n";
             ss << margin << indent << "operators:\n";
             ss << margin << indent << indent << "ModelOperator:\n";
             ss << this->ModelOperator_.to_string(indent_level + 3);
@@ -1239,6 +1245,17 @@ class CollectionSettings {
                 }
             }
             return nfree;
+        }
+
+        std::shared_ptr<ContinuousProbabilityDistribution> get_time_prior_instance() const {
+            return this->time_prior_settings_.get_instance();
+        }
+
+        std::shared_ptr<PositiveRealParameter> get_concentration_instance(RandomNumberGenerator& rng) const {
+            return this->concentration_settings_.get_instance(rng);
+        }
+        const std::vector<ComparisonSettings>& get_comparison_settings() const { 
+            return this->comparisons_;
         }
 
         std::string to_string() const {

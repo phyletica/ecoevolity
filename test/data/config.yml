@@ -23,6 +23,7 @@ mcmc_settings:
 
 operator_settings:
     auto_optimize: true
+    auto_optimize_delay: 20000
     operators:
         ModelOperator:
             weight: 5.0
