@@ -832,3 +832,445 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 1);
     }
 }
+
+TEST_CASE("Testing collection settings from minimal config with two comparisons", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        CollectionSettings settings = CollectionSettings(cfg_stream, cfg_path);
+
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    dirichlet_process:\n";
+        e += "        parameters:\n";
+        e += "            concentration:\n";
+        e += "                estimate: true\n";
+        e += "                prior:\n";
+        e += "                    gamma_distribution:\n";
+        e += "                        shape: 2\n";
+        e += "                        scale: 0.5\n";
+        e += "event_time_prior:\n";
+        e += "    exponential_distribution:\n";
+        e += "        rate: 100\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/hemi129.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "- comparison:\n";
+        e += "    path: data/diploid-dna.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 3\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightMultiplierScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.3\n";
+        e += "        RootCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ChildCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        MutationRateMover:\n";
+        e += "            weight: 0\n";
+        e += "            window: 0.1\n";
+
+        REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/dummy.yml");
+        REQUIRE(settings.using_dpp() == true);
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_time_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
+    }
+}
+
+TEST_CASE("Testing override model prior", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_model_prior:\n";
+        cfg_stream << "    uniform:\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        CollectionSettings settings = CollectionSettings(cfg_stream, cfg_path);
+
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    uniform:\n";
+        e += "event_time_prior:\n";
+        e += "    exponential_distribution:\n";
+        e += "        rate: 100\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/hemi129.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "- comparison:\n";
+        e += "    path: data/diploid-dna.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 3\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightMultiplierScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.3\n";
+        e += "        RootCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ChildCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        MutationRateMover:\n";
+        e += "            weight: 0\n";
+        e += "            window: 0.1\n";
+
+        REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/dummy.yml");
+        REQUIRE(settings.using_dpp() == false);
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_time_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
+    }
+}
+
+TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_model_prior:\n";
+        cfg_stream << "    dirichlet_process:\n";
+        cfg_stream << "        parameters:\n";
+        cfg_stream << "            concentration:\n";
+        cfg_stream << "                value: 10.0\n";
+        cfg_stream << "                estimate: true\n";
+        cfg_stream << "                prior:\n";
+        cfg_stream << "                    gamma_distribution:\n";
+        cfg_stream << "                        shape: 100.0\n";
+        cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        CollectionSettings settings = CollectionSettings(cfg_stream, cfg_path);
+
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    dirichlet_process:\n";
+        e += "        parameters:\n";
+        e += "            concentration:\n";
+        e += "                value: 10\n";
+        e += "                estimate: true\n";
+        e += "                prior:\n";
+        e += "                    gamma_distribution:\n";
+        e += "                        shape: 100\n";
+        e += "                        scale: 0.09\n";
+        e += "event_time_prior:\n";
+        e += "    exponential_distribution:\n";
+        e += "        rate: 100\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/hemi129.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "- comparison:\n";
+        e += "    path: data/diploid-dna.nex\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_mutation_rate_starting_values: false\n";
+        e += "    constrain_population_sizes: false\n";
+        e += "    constrain_mutation_rates: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        u_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        v_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        time_multiplier:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 3\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightMultiplierScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.3\n";
+        e += "        RootCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ChildCoalescenceRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        MutationRateMover:\n";
+        e += "            weight: 0\n";
+        e += "            window: 0.1\n";
+
+        REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/dummy.yml");
+        REQUIRE(settings.using_dpp() == true);
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_time_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
+    }
+}
+
+TEST_CASE("Testing no comparisons", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_model_prior:\n";
+        cfg_stream << "    dirichlet_process:\n";
+        cfg_stream << "        parameters:\n";
+        cfg_stream << "            concentration:\n";
+        cfg_stream << "                value: 10.0\n";
+        cfg_stream << "                estimate: true\n";
+        cfg_stream << "                prior:\n";
+        cfg_stream << "                    gamma_distribution:\n";
+        cfg_stream << "                        shape: 100.0\n";
+        cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
+
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+    }
+}
+
+TEST_CASE("Testing empty comparisons", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_model_prior:\n";
+        cfg_stream << "    dirichlet_process:\n";
+        cfg_stream << "        parameters:\n";
+        cfg_stream << "            concentration:\n";
+        cfg_stream << "                value: 10.0\n";
+        cfg_stream << "                estimate: true\n";
+        cfg_stream << "                prior:\n";
+        cfg_stream << "                    gamma_distribution:\n";
+        cfg_stream << "                        shape: 100.0\n";
+        cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
+        cfg_stream << "comparisons:\n";
+
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+    }
+}
+
+TEST_CASE("Testing empty config", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "";
+
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+    }
+}
+
+TEST_CASE("Testing bad YAML formatting", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "comparisons: :\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), std::exception);
+    }
+}
+
+TEST_CASE("Testing fixing with no value", "[CollectionSettings]") {
+    SECTION("Testing data/minimal-config.yml") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+        cfg_stream << "    parameters:\n";
+        cfg_stream << "        population_size:\n";
+        cfg_stream << "            estimate: false\n";
+
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError);
+    }
+}
