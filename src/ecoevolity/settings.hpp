@@ -1154,34 +1154,48 @@ class CollectionSettings {
 
     public:
 
-        CollectionSettings() { }
+        CollectionSettings() {
+            this->init_default_priors();
+        }
         CollectionSettings(
                 const ContinuousDistributionSettings& time_prior,
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
-                bool use_dpp) {
+                bool use_dpp)
+                : CollectionSettings() {
             this->time_prior_settings_ = time_prior;
             this->chain_length_ = chain_length;
             this->sample_frequency_ = sample_frequency;
             this->concentration_settings_ = concentration_settings;
             this->use_dpp_ = use_dpp;
         }
-        CollectionSettings(const std::string & yaml_config_path) {
+        CollectionSettings(
+                const std::string & yaml_config_path)
+                : CollectionSettings() {
             this->init_from_config_file(yaml_config_path);
         }
-        CollectionSettings(std::istream& yaml_config_stream,
-                const std::string& yaml_config_path) {
+        CollectionSettings(
+                std::istream& yaml_config_stream,
+                const std::string& yaml_config_path)
+                : CollectionSettings() {
             this->init_from_config_stream(yaml_config_stream, yaml_config_path);
         }
         virtual ~CollectionSettings() { }
         CollectionSettings& operator=(const CollectionSettings& other) {
+            this->path_ = other.path_;
+            this->operator_schedule_settings_ = other.operator_schedule_settings_;
+            this->global_comparison_settings_ = other.global_comparison_settings_;
             this->time_prior_settings_ = other.time_prior_settings_;
             this->chain_length_ = other.chain_length_;
             this->sample_frequency_ = other.sample_frequency_;
             this->concentration_settings_ = other.concentration_settings_;
             this->use_dpp_ = other.use_dpp_;
             this->comparisons_ = other.comparisons_;
+            this->default_time_prior_ = other.default_time_prior_;
+            this->default_population_size_prior_ = other.default_population_size_prior_;
+            this->default_u_prior_ = other.default_u_prior_;
+            this->default_time_multiplier_prior_ = other.default_time_multiplier_prior_;
             return * this;
         }
 
@@ -1287,6 +1301,35 @@ class CollectionSettings {
 
         std::vector<ComparisonSettings> comparisons_;
 
+        ContinuousDistributionSettings default_time_prior_;
+        ContinuousDistributionSettings default_population_size_prior_;
+        ContinuousDistributionSettings default_u_prior_;
+        ContinuousDistributionSettings default_time_multiplier_prior_;
+
+        void init_default_priors() {
+            std::unordered_map<std::string, double> default_parameters;
+            default_parameters["rate"] = 100.0;
+            this->default_time_prior_ = ContinuousDistributionSettings(
+                    "exponential_distribution",
+                    default_parameters);
+            default_parameters.clear();
+            default_parameters["rate"] = 1000.0;
+            this->default_population_size_prior_ = ContinuousDistributionSettings(
+                    "exponential_distribution",
+                    default_parameters);
+            default_parameters.clear();
+            default_parameters["rate"] = 1.0;
+            this->default_u_prior_ = ContinuousDistributionSettings(
+                    "exponential_distribution",
+                    default_parameters);
+            default_parameters.clear();
+            default_parameters["shape"] = 1000.0;
+            default_parameters["scale"] = 0.001;
+            this->default_time_multiplier_prior_ = ContinuousDistributionSettings(
+                    "gamma_distribution",
+                    default_parameters);
+        }
+
         void init_from_config_stream(std::istream& stream, const std::string& path) {
             this->path_ = path;
             this->parse_yaml_config(stream);
@@ -1320,17 +1363,7 @@ class CollectionSettings {
             ///////////////////////////////////////////////////////////////////
             // Set up defaults to be overridden by config settings:
             // Set default time prior
-            std::unordered_map<std::string, double> default_time_prior_parameters;
-            default_time_prior_parameters["rate"] = 100.0;
-            this->time_prior_settings_ = ContinuousDistributionSettings(
-                    "exponential_distribution",
-                    default_time_prior_parameters);
-            // Set default pop size
-            std::unordered_map<std::string, double> default_pop_size_parameters;
-            default_pop_size_parameters["rate"] = 1000.0;
-            this->global_comparison_settings_.population_size_settings_.prior_settings_ = ContinuousDistributionSettings(
-                    "exponential_distribution",
-                    default_pop_size_parameters);
+            this->time_prior_settings_ = this->default_time_prior_;
             // Set default time multiplier
             this->global_comparison_settings_.time_multiplier_settings_.value_ = 1.0;
             this->global_comparison_settings_.time_multiplier_settings_.is_fixed_ = true;
@@ -1348,6 +1381,9 @@ class CollectionSettings {
             this->parse_comparisons(top_level_node["comparisons"]);
 
             ///////////////////////////////////////////////////////////////////
+            // More setting up defaults
+            // Update unset priors for comparisons
+            this->update_default_comparison_priors();
             // Set default concentration prior to be overriden by config
             if (this->comparisons_.size() > 1) {
                 double default_shape = 2.0;
@@ -1411,6 +1447,7 @@ class CollectionSettings {
 
             // "Turn off" operators that are not needed
             this->update_operator_schedule_settings();
+            
         }
 
         void update_operator_schedule_settings() {
@@ -1429,6 +1466,27 @@ class CollectionSettings {
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
                 this->operator_schedule_settings_.RootCoalescenceRateScaler_.set_weight(0.0);
                 this->operator_schedule_settings_.ChildCoalescenceRateScaler_.set_weight(0.0);
+            }
+        }
+
+        void update_default_comparison_priors() {
+            for (auto&& comp : this->comparisons_) {
+                if ((! comp.time_multiplier_settings_.is_fixed()) &&
+                        (comp.time_multiplier_settings_.prior_settings_.get_name() == "none")) {
+                    comp.time_multiplier_settings_.prior_settings_ = this->default_time_multiplier_prior_;
+                }
+                if ((! comp.u_settings_.is_fixed()) &&
+                        (comp.u_settings_.prior_settings_.get_name() == "none")) {
+                    comp.u_settings_.prior_settings_ = this->default_u_prior_;
+                }
+                if ((! comp.v_settings_.is_fixed()) &&
+                        (comp.v_settings_.prior_settings_.get_name() == "none")) {
+                    comp.v_settings_.prior_settings_ = this->default_u_prior_;
+                }
+                if ((! comp.population_size_settings_.is_fixed()) &&
+                        (comp.population_size_settings_.prior_settings_.get_name() == "none")) {
+                    comp.population_size_settings_.prior_settings_ = this->default_population_size_prior_;
+                }
             }
         }
 
