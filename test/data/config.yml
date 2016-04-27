@@ -1,48 +1,49 @@
 ---
+# comments should be ok
 event_model_prior:
     dirichlet_process:
         parameters:
             concentration:
-                value:      1.0
-                estimate:   true
-                prior:
+                value:      5.0
+                estimate:   true  # inline comments should be ok too
+                prior:            # another inline comment
                     gamma_distribution:
-                        shape:      2.0
+                        shape:      10.0
                         prior_mean_number_of_events: 2.0
 
 event_time_prior:
     gamma_distribution:
-        shape: 1.0
-        scale: 1.0
+        shape: 2.0
+        scale: 0.001
         offset: 0.0
 
 mcmc_settings:
-    chain_length: 100000
-    sample_frequency: 100
+    chain_length: 2000000
+    sample_frequency: 2000
 
 operator_settings:
     auto_optimize: true
     operators:
         ModelOperator:
-            weight: 3.0
+            weight: 5.0
         ConcentrationScaler:
-            scale: 0.5
-            weight: 1.0
+            scale: 0.2
+            weight: 3.0
         ComparisonHeightScaler:
-            scale: 0.5
-            weight: 1.0
-        ComparisonHeightMultiplierScaler:
             scale: 0.3
-            weight: 1.0
+            weight: 3.0
+        ComparisonHeightMultiplierScaler:
+            scale: 0.5
+            weight: 2.0
         RootCoalescenceRateScaler:
-            scale: 0.5
-            weight: 1.0
+            scale: 0.2
+            weight: 2.0
         ChildCoalescenceRateScaler:
-            scale: 0.5
-            weight: 1.0
+            scale: 0.2
+            weight: 2.0
         MutationRateMover:
-            window: 0.1
-            weight: 1.0
+            window: 0.2
+            weight: 0.5
 
 global_comparison_settings:
     genotypes_are_diploid: true
@@ -55,26 +56,28 @@ global_comparison_settings:
     constrain_mutation_rates: false
     parameters:
         population_size:
-            value: 0.001
+            value: 0.005
             estimate: true
             prior:
                 gamma_distribution:
-                    shape: 1.0
-                    scale: 1.0
+                    shape: 10.0
+                    scale: 0.0001
                     offset: 0.0
         u_rate:
             value: 1.0
             estimate: true
             prior:
-                exponential_distribution:
-                    rate: 1.0
+                gamma_distribution:
+                    shape: 10.0
+                    scale: 0.1
 
         v_rate:
             value: 1.0 
             estimate: true
             prior:
-                exponential_distribution:
-                    rate: 1.0
+                gamma_distribution:
+                    shape: 10.0
+                    scale: 0.1
 
         time_multiplier:
             value: 1.0
@@ -82,6 +85,9 @@ global_comparison_settings:
 
 
 comparisons:
+- comparison:
+    path: "data3.nex"
+
 - comparison:
     path: "data1.nex"
     constrain_population_sizes: true
@@ -92,4 +98,14 @@ comparisons:
         
 - comparison:
     path: "data2.nex"
+    constrain_mutation_rates: true
     constant_sites_removed: false
+    population_name_delimiter: "-"
+    population_name_is_prefix: false
+    parameters:
+        time_multiplier:
+            estimate: true
+            prior:
+                gamma_distribution:
+                    shape: 100.0
+                    scale: 0.01
