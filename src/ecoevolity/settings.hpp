@@ -1245,7 +1245,7 @@ class CollectionSettings {
             if (this->use_dpp_) {
                 ss << indent << "dirichlet_process:\n"
                    << indent << indent << "parameters:\n"
-                   << indent << indent << "concentration:\n";
+                   << indent << indent <<  indent <<"concentration:\n";
                 ss << this->concentration_settings_.to_string(4);
             }
             else {
@@ -1299,7 +1299,14 @@ class CollectionSettings {
         }
 
         void parse_yaml_config(std::istream& config_stream) {
-            YAML::Node config = YAML::Load(config_stream);
+            YAML::Node config;
+            try {
+                config = YAML::Load(config_stream);
+            }
+            catch (...) {
+                std::cerr << "ERROR: Problem with YAML-formatting of config\n";
+                throw;
+            }
             this->parse_top_level(config);
         }
 
