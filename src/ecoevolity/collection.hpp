@@ -73,6 +73,17 @@ class ComparisonPopulationTreeCollection {
         void restore_state();
         void compute_log_likelihood_and_prior();
 
+        void ignore_data() {
+            for (auto tree : this->trees_) {
+                tree->ignore_data();
+            }
+        }
+        void use_data() {
+            for (auto tree : this->trees_) {
+                tree->use_data();
+            }
+        }
+
         unsigned int get_number_of_trees() const {
             return this->trees_.size();
         }
