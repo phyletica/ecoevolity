@@ -1258,6 +1258,10 @@ class CollectionSettings {
             return this->comparisons_;
         }
 
+        const OperatorScheduleSettings& get_operator_schedule_settings() const {
+            return this->operator_schedule_settings_;
+        }
+
         std::string to_string() const {
             std::ostringstream ss;
             ss << std::boolalpha;
