@@ -31,128 +31,48 @@
 #include "assert.hpp"
 #include "math_util.hpp"
 
-class OperatorSchedule {
-    protected:
-        std::vector< std::shared_ptr<Operator> > operators_;
-        double total_weight_ = 0.0;
-        std::vector<double> cumulative_probs_;
-        unsigned int auto_optimize_delay_ = 10000;
-        unsigned int auto_optimize_delay_count_ = 0;
-        bool auto_optimize_ = true;
 
-    public:
-
-        void add_operator(std::shared_ptr<Operator> o) {
-            this->operators_.push_back(o);
-            o.set_operator_schedule(this);
-            this->total_weight_ += o.get_weight();
-            this->cumulative_probs_.push_back(0.0);
-            ECOEVOLITY_ASSERT(this->operators_.size() == this->cumulative_probs_.size());
-            this->cumulative_probs_.at(0) = this->operators_.at(0).get_weight() / this->total_weight_;
-            for (unsigned int i = 1; i < this->operators_.size(); ++i) {
-                this->cumulative_probs_.at(i) =
-                        (this->operators_.at(i).get_weight() /
-                        this->total_weight_) + 
-                        this->cumulative_probs_.at(i - 1);
-            }
-        }
-
-        Operator& draw_operator(RandomNumberGenerator& rng) {
-            double u = this->rng.uniform_real();
-            for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
-                if (u <= this->cumulative_probs_.at(i)) {
-                    return this->operators_.at(i);
-                }
-            return this->operators_.back();
-        }
-
-        double calc_delta(const Operator& op, double log_alpha) {
-            if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
-                    (! this->auto_optimize_)) {
-                return 0.0;
-            }
-            double target = op.get_target_acceptance_probability();
-            double count = (op.get_number_rejected_for_correction() +
-                            op.get_number_accepted_for_correction() +
-                            1.0);
-            double delta_p = ((1.0 / count) * (std::exp(std::min(log_alpha, 0)) - target));
-            double mx = std::numeric_limits<double>::max();
-            if ((delta_p > -mx) && (delta_p < mx)) {
-                return delta_p;
-            }
-            return 0.0;
-        }
-
-        const double& get_total_weight() const {
-            return this->total_weight_;
-        }
-        const unsigned int& get_auto_optimize_delay_count() const {
-            return this->auto_optimize_delay_count_;
-        }
-        const unsigned int& get_auto_optimize_delay() const {
-            return this->auto_optimize_delay_;
-        }
-
-        void write_operator_rates(std::ofstream out) {
-            const Operator& op = this->operators_.at(0);
-            out << op.header_string();
-            out << op.to_string();
-            for (unsigned int i = 1; i < this->operators_.size(); ++i) {
-                out << this->operators_.at(0).to_string();
-            }
-        }
-};
-
+class OperatorSchedule;
 
 //////////////////////////////////////////////////////////////////////////////
-// Operator base class
+// Operator base classes
 //////////////////////////////////////////////////////////////////////////////
 
 class Operator {
     public:
         Operator() { }
+        Operator(double weight);
         virtual ~Operator() { }
 		enum OperatorTypeEnum {
-            tree_operator = 1;
-            time_operator = 2;
-            model_operator = 3;
+            tree_operator = 1,
+            time_operator = 2,
+            model_operator = 3
         };
 
         virtual Operator::OperatorTypeEnum get_type() const = 0;
 
         virtual void optimize(double log_alpha) = 0;
 
-        double get_target_acceptance_probability() {
-            return 0.234;
-        }
+        double get_target_acceptance_probability() const;
 
-        void set_operator_schedule(std::shared_ptr<OperatorSchedule> os) {
-            this->operator_schedule_ = os;
-        }
+        void set_operator_schedule(std::shared_ptr<OperatorSchedule> os);
 
-        virtual double get_coercable_parameter_value() {
-            return std::numeric_limits<double>::quiet_NaN();
-        }
+        virtual double get_coercable_parameter_value();
 
         virtual void set_coercable_parameter_value(double value) { }
 
-        const double& get_weight() const {
-            return this->weight_;
-        }
+        double get_weight() const { return this->weight_; }
 
-        void accept() {
-            ++this->number_accepted_;
-            if (this->operator_schedule_->get_auto_optimize_delay_count() >= this->operator_schedule_->get_auto_optimize_delay()) {
-                ++this->number_accepted_for_correction_;
-            }
-        }
+        void set_weight(double weight);
 
-        void reject() {
-            ++this->number_rejected_;
-            if (this->operator_schedule_->get_auto_optimize_delay_count() >= this->operator_schedule_->get_auto_optimize_delay()) {
-                ++this->number_rejected_for_correction_;
-            }
-        }
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const = 0;
+
+        void accept();
+
+        void reject();
 
         const unsigned int& get_number_rejected() const {
             return this->number_rejected_;
@@ -167,39 +87,13 @@ class Operator {
             return this->number_accepted_for_correction_;
         }
 
-        virtual std::string get_name() const {
-            return "BaseOperator";
-        }
+        virtual std::string get_name() const;
 
         virtual std::string target_parameter() const = 0;
 
-        std::string header_string() const {
-            return "name\tnumber_accepted\tnumber_rejected\tweight\tweight_prob\ttuning_parameter\n";
-        }
-        std::string to_string() const {
-            std::ostringstream ss;
-            ss << this->get_name() << "\t" 
-               << this->get_number_accepted() << "\t"
-               << this->get_number_rejected() << "\t"
-               << this->get_weight() << "\t";
+        std::string header_string() const;
 
-            if (this->operator_schedule_->get_total_weight() > 0.0) {
-                ss << this->get_weight() / this->operator_schedule_->get_total_weight() << "\t";
-            }
-            else {
-                ss << "\t";
-            }
-
-            double tuning = this->get_coercable_parameter_value();
-            if (std::isnan(tuning)) {
-                ss << "\t";
-            }
-            else {
-                ss << tuning << "\t";
-            }
-            ss << "\n";
-            return ss.str();
-        }
+        std::string to_string() const;
 
     protected:
         std::shared_ptr<OperatorSchedule> operator_schedule_;
@@ -209,20 +103,96 @@ class Operator {
         unsigned int number_rejected_for_correction = 0;
         unsigned int number_accepted_for_correction = 0;
 
-        double calc_delta(double log_alpha) {
-            return operator_schedule_->calc_delta(this, log_alpha);
+        double calc_delta(double log_alpha) const;
+};
+
+class ScaleOperator : public Operator {
+    protected:
+        double scale_ = 0.5;
+
+    public:
+        ScaleOperator() : Operator() { }
+        ScaleOperator(double weight) : Operator(weight) { }
+        ScaleOperator(double weight, double scale) : Operator(weight);
+        virtual ~ScaleOperator() { }
+
+        void set_scale(double scale);
+
+        double get_scale() const {
+            return this->scale_;
         }
 
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const;
+
+        void optimize(double log_alpha);
+
+        double get_coercable_parameter_value();
+
+        void set_coercable_parameter_value(double value);
+
+        std::string get_name() const;
+};
+
+class WindowOperator : public Operator {
+    protected:
+        double window_size_ = 0.1;
+
+    public:
+        WindowOperator() : Operator() { }
+        WindowOperator(double weight) : Operator(weight) { }
+        WindowOperator(double weight, double window_size) : Operator(weight) {
+            this->set_window_size(window_size);
+        }
+        virtual ~WindowOperator() { }
+
+        void set_window_size(double window_size) {
+            ECOEVOLITY_ASSERT(window_size > 0.0);
+            this->window_size_ = window_size;
+        }
+        double get_window_size() const {
+            return this->window_size_;
+        }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const {
+            double addend = (rng.uniform_real() * 2 * this->window_size_) - this->window_size;
+            parameter_value += addend
+            hastings_ratio = 0.0;
+        }
+
+        void optimize(double log_alpha) {
+            double delta = this->calc_delta(log_alpha);
+            delta += std::log(this->window_size_);
+            this->set_window_size(std::exp(delta));
+        }
+
+        double get_coercable_parameter_value() {
+            return this->window_size_;
+        }
+
+        void set_coercable_parameter_value(double value) {
+            this->set_window_size(value);
+        }
+
+        std::string get_name() const {
+            return "BaseWindowOperator";
+        }
 };
 
 
 //////////////////////////////////////////////////////////////////////////////
-// Operator Type base class
+// Operator Type base classes
 //////////////////////////////////////////////////////////////////////////////
 
 class ModelOperator : public Operator {
     public:
         ModelOperator() : Operator() { }
+        ModelOperator(double weight) : Operator(weight) { }
         virtual ~ModelOperator() { }
 
         Operator::OperatorTypeEnum get_type() const {
@@ -246,10 +216,12 @@ class ModelOperator : public Operator {
         }
 };
 
-class ComparisonTreeOperator : public Operator {
+class ComparisonTreeScaleOperator : public ScaleOperator {
     public:
-        ComparisonTreeOperator() : Operator() { }
-        virtual ~ComparisonTreeOperator() { }
+        ComparisonTreeScaleOperator() : ScaleOperator() { }
+        ComparisonTreeScaleOperator(double weight) : ScaleOperator(weight) { }
+        ComparisonTreeScaleOperator(double weight, double scale) : ScaleOperator(weight, scale) { }
+        virtual ~ComparisonTreeScaleOperator() { }
 
         Operator::OperatorTypeEnum get_type() const {
             return Operator::OperatorTypeEnum::tree_operator;
@@ -264,14 +236,40 @@ class ComparisonTreeOperator : public Operator {
                 ComparisonPopulationTree& tree) = 0;
 
         std::string get_name() const {
-            return "ComparisonTreeOperator";
+            return "ComparisonTreeScaleOperator";
         }
 };
 
-class NodeHeightOperator : public Operator {
+class ComparisonTreeWindowOperator : public WindowOperator {
     public:
-        NodeHeightOperator() : Operator() { }
-        virtual ~NodeHeightOperator() { }
+        ComparisonTreeWindowOperator() : WindowOperator() { }
+        ComparisonTreeWindowOperator(double weight) : WindowOperator(weight) { }
+        ComparisonTreeWindowOperator(double weight, double window_size) : WindowOperator(weight, window_size) { }
+        virtual ~ComparisonTreeWindowOperator() { }
+
+        Operator::OperatorTypeEnum get_type() const {
+            return Operator::OperatorTypeEnum::tree_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) = 0;
+
+        std::string get_name() const {
+            return "ComparisonTreeWindowOperator";
+        }
+};
+
+class NodeHeightScaleOperator : public ScaleOperator {
+    public:
+        NodeHeightScaleOperator() : ScaleOperator() { }
+        NodeHeightScaleOperator(double weight) : ScaleOperator(weight) { }
+        NodeHeightScaleOperator(double weight, double scale) : ScaleOperator(weight, scale) { }
+        virtual ~NodeHeightScaleOperator() { }
 
         Operator::OperatorTypeEnum get_type() const {
             return Operator::OperatorTypeEnum::time_operator;
@@ -286,7 +284,35 @@ class NodeHeightOperator : public Operator {
                 PositiveRealParameter& node_height) = 0;
 
         std::string get_name() const {
-            return "NodeHeightOperator";
+            return "NodeHeightScaleOperator";
+        }
+
+        std::string target_parameter() const {;
+            return "node height";
+        }
+};
+
+class NodeHeightWindowOperator : public WindowOperator {
+    public:
+        NodeHeightWindowOperator() : WindowOperator() { }
+        NodeHeightWindowOperator(double weight) : WindowOperator(weight) { }
+        NodeHeightWindowOperator(double weight, double window_size) : WindowOperator(weight, window_size) { }
+        virtual ~NodeHeightWindowOperator() { }
+
+        Operator::OperatorTypeEnum get_type() const {
+            return Operator::OperatorTypeEnum::time_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) = 0;
+
+        std::string get_name() const {
+            return "NodeHeightWindowOperator";
         }
 
         std::string target_parameter() const {;
@@ -296,175 +322,31 @@ class NodeHeightOperator : public Operator {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// Operator base classes for each parameter
+// Derived Operator classes
 //////////////////////////////////////////////////////////////////////////////
 
-class ConcentrationOperator : public ModelOperator {
+class ConcentrationScaler: public ScaleOperator {
     public:
-        ConcentrationOperator() : ModelOperator() { }
-        virtual ~ConcentrationOperator() { }
+        ConcentrationScaler() : ScaleOperator() { }
+        ConcentrationScaler(double weight) : ScaleOperator(weight) { }
+        ConcentrationScaler(double weight, double scale) : ScaleOperator(weight, scale) { }
+        virtual ~ConcentrationScaler() { }
 
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) = 0;
+        Operator::OperatorTypeEnum get_type() const {
+            return Operator::OperatorTypeEnum::model_operator;
+        }
 
-        std::string get_name() const {
-            return "ConcentrationOperator";
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons) {
+            double v = comparisons->get_concentration();
+            double hastings;
+            this->update(rng, v, hastings);
+            comparisons->set_concentration(v);
+            return hastings;
         }
 
         std::string target_parameter() const {;
             return "concentration";
-        }
-};
-
-class MutationRateOperator : public ComparisonTreeOperator {
-    public:
-        MutationRateOperator() : ComparisonTreeOperator() { }
-        virtual ~MutationRateOperator() { }
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) = 0;
-
-        std::string get_name() const {
-            return "MutationRateOperator";
-        }
-
-        std::string target_parameter() const {;
-            return "mutation rate";
-        }
-};
-
-class CoalescenceRateOperator : public ComparisonTreeOperator {
-    public:
-        CoalescenceRateOperator() : ComparisonTreeOperator() { }
-        virtual ~CoalescenceRateOperator() { }
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) = 0;
-
-        std::string get_name() const {
-            return "CoalescenceRateOperator";
-        }
-
-        std::string target_parameter() const {;
-            return "coalescence rate";
-        }
-};
-
-class NodeHeightMultiplierOperator : public ComparisonTreeOperator {
-    public:
-        NodeHeightMultiplierOperator() : ComparisonTreeOperator() { }
-        virtual ~NodeHeightMultiplierOperator() { }
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) = 0;
-
-        std::string get_name() const {
-            return "NodeHeightMultiplierOperator";
-        }
-
-        std::string target_parameter() const {;
-            return "node height multiplier";
-        }
-};
-
-
-//////////////////////////////////////////////////////////////////////////////
-// Derived Operator classes
-//////////////////////////////////////////////////////////////////////////////
-
-class MutationRateMover : public MutationRateOperator {
-    protected:
-        double window_size_ = 0.1;
-
-    public:
-        MutationRateMover() : MutationRateOperator() { }
-        MutationRateMover(double window_size) : MutationRateOperator() {
-            this->set_window_size(window_size);
-        }
-        virtual ~MutationRateMover() { }
-
-        void set_window_size(double window_size) {
-            this->window_size_ = window_size;
-        }
-        double get_window_size() const {
-            return this->window_size_;
-        }
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) {
-            double red_freq = tree->get_v() / (tree->get_u() + tree->get_v());
-            double x = this->window_size_ * ((2.0 * rng.uniform_real()) - 1.0);
-            if ((red_freq + x >= 0.0) && (red_freq + x <= 1.0)) {
-                red_freq += x;
-                // v is also set here
-                this->set_u(1.0 / (2.0 * red_freq));
-                return 0.0;
-            }
-            return -std::numeric_limits<double>::infinity();
-        }
-
-        std::string get_name() const {
-            return "MutationRateMover";
-        }
-};
-
-class ConcentrationScaler: public ConcentrationOperator {
-    protected:
-        double scale_ = 0.5;
-
-    public:
-        ConcentrationScaler() : ConcentrationOperator() { }
-        ConcentrationScaler(double scale) : public ConcentrationOperator() {
-            this->set_scale(scale);
-        }
-        virtual ~ConcentrationScaler() { }
-
-        void set_scale(double scale) {
-            this->scale_ = scale;
-        }
-        double get_scale() const {
-            return this->scale_;
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) {
-            double v = comparisons->get_concentration();
-            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
-            comparisons->set_concentration(v * multiplier);
-            return std::log(multiplier);
-        }
-
-        void optimize(double log_alpha) {
-            double delta = this->calc_delta(log_alpha);
-            delta += std::log(this->scale_);
-            this->scale_ = std::exp(delta);
-        }
-
-        double get_coercable_parameter_value() {
-            return this->scale_;
-        }
-
-        void set_coercable_parameter_value(double value) {
-            this->scale_ = value;
         }
 
         std::string get_name() const {
@@ -472,44 +354,55 @@ class ConcentrationScaler: public ConcentrationOperator {
         }
 };
 
-class ComparisonHeightMultiplierScaler : public ComparisonHeightMultiplierOperator {
-    protected:
-        double scale_ = 0.3;
-
+class MutationRateMover : public ComparisonTreeWindowOperator {
     public:
-        ComparisonHeightMultiplierScaler() : ComparisonHeightMultiplierOperator() { }
-        ComparisonHeightMultiplierScaler(double scale) : ComparisonHeightMultiplierOperator() {
-            this->set_scale(scale);
+        MutationRateMover() : ComparisonTreeWindowOperator() { }
+        MutationRateMover(double weight) : ComparisonTreeWindowOperator(weight) { }
+        MutationRateMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
+        virtual ~MutationRateMover() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) {
+            double red_freq = tree->get_v();
+            double hastings;
+            this->update(rng, red_freq, hastings);
+            if ((red_freq >= 0.0) && (red_freq <= 1.0)) {
+                // v is also set here
+                this->set_u(1.0 / (2.0 * red_freq));
+                return hastings; 
+            }
+            return -std::numeric_limits<double>::infinity();
         }
+
+        std::string target_parameter() const {;
+            return "mutation rate";
+        }
+
+        std::string get_name() const {
+            return "MutationRateMover";
+        }
+};
+
+class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
+    public:
+        ComparisonHeightMultiplierScaler() : ComparisonTreeScaleOperator() { }
+        ComparisonHeightMultiplierScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ComparisonHeightMultiplierScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
         virtual ~ComparisonHeightMultiplierScaler() { }
 
-        void set_scale(double scale) {
-            this->scale_ = scale;
-        }
-        double get_scale() const {
-            return this->scale_;
-        }
         double propose(
                 RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) {
             double v = tree->get_node_height_multiplier();
-            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
-            tree->set_node_height_multiplier(v * multiplier);
-            return std::log(multiplier);
+            double hastings;
+            this->update(rng, v, hastings);
+            tree->set_node_height_multiplier(v);
+            return hastings;
         }
 
-        void optimize(double log_alpha) {
-            double delta = this->calc_delta(log_alpha);
-            delta += std::log(this->scale_);
-            this->scale_ = std::exp(delta);
-        }
-
-        double get_coercable_parameter_value() {
-            return this->scale_;
-        }
-
-        void set_coercable_parameter_value(double value) {
-            this->scale_ = value;
+        std::string target_parameter() const {;
+            return "node height multiplier";
         }
 
         std::string get_name() const {
@@ -517,48 +410,28 @@ class ComparisonHeightMultiplierScaler : public ComparisonHeightMultiplierOperat
         }
 };
 
-class ChildCoalescenceRateScaler : public CoalescenceRateOperator {
-    protected:
-        double scale_ = 0.5;
-
+class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
     public:
-        ChildCoalescenceRateScaler() : CoalescenceRateOperator() { }
-        ChildCoalescenceRateScaler(double scale) : CoalescenceRateOperator() {
-            this->set_scale(scale);
-        }
+        ChildCoalescenceRateScaler() : ComparisonTreeScaleOperator() { }
+        ChildCoalescenceRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ChildCoalescenceRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
         virtual ~ChildCoalescenceRateScaler() { }
 
-        void set_scale(double scale) {
-            this->scale_ = scale;
-        }
-        double get_scale() const {
-            return this->scale_;
-        }
         double propose(
                 RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) {
             int pop_idx = rng.uniform_int(0, tree->get_leaf_allele_count() - 1);
             double rate = tree->get_child_coalescence_rate(pop_idx);
 
-            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+            double hastings;
+            this->update(rng, rate, hastings);
 
-            tree->set_child_coalescence_rate(pop_idx, rate * multiplier);
-
-            return std::log(multiplier);
+            tree->set_child_coalescence_rate(pop_idx, rate);
+            return hastings;
         }
 
-        void optimize(double log_alpha) {
-            double delta = this->calc_delta(log_alpha);
-            delta += std::log(this->scale_);
-            this->scale_ = std::exp(delta);
-        }
-
-        double get_coercable_parameter_value() {
-            return this->scale_;
-        }
-
-        void set_coercable_parameter_value(double value) {
-            this->scale_ = value;
+        std::string target_parameter() const {;
+            return "coalescence rate";
         }
 
         std::string get_name() const {
@@ -568,7 +441,8 @@ class ChildCoalescenceRateScaler : public CoalescenceRateOperator {
 
 class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
         RootCoalescenceRateScaler() : ChildCoalescenceRateScaler() { }
-        RootCoalescenceRateScaler(double scale) : ChildCoalescenceRateScaler(scale) { }
+        RootCoalescenceRateScaler(double weight) : ChildCoalescenceRateScaler(weight) { }
+        RootCoalescenceRateScaler(double weight, double scale) : ChildCoalescenceRateScaler(weight, scale) { }
         virtual ~RootCoalescenceRateScaler() { }
 
         double propose(
@@ -576,11 +450,12 @@ class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
                 ComparisonPopulationTree& tree) {
             double rate = tree->get_root_coalescence_rate();
 
-            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+            double hastings;
+            this->update(rng, rate, hastings);
 
-            tree->set_root_coalescence_rate(rate * multiplier);
+            tree->set_root_coalescence_rate(rate);
 
-            return std::log(multiplier);
+            return hastings;
         }
 
         std::string get_name() const {
@@ -588,44 +463,23 @@ class RootCoalescenceRateScaler : public ChildCoalescenceRateScaler {
         }
 };
 
-class ComparisonHeightScaler : public NodeHeightOperator {
-    protected:
-        double scale_ = 0.5;
-
+class ComparisonHeightScaler : public NodeHeightScaleOperator {
     public:
-        ComparisonHeightScaler() : NodeHeightOperator() { }
-        ComparisonHeightScaler(double scale) : NodeHeightOperator() {
+        ComparisonHeightScaler() : NodeHeightScaleOperator() { }
+        ComparisonHeightScaler(double weight) : NodeHeightScaleOperator(weight) { }
+        ComparisonHeightScaler(double weight, double scale) : NodeHeightScaleOperator(weight, scale) {
             this->set_scale(scale);
         }
         virtual ~ComparisonHeightScaler() { }
 
-        void set_scale(double scale) {
-            this->scale_ = scale;
-        }
-        double get_scale() const {
-            return this->scale_;
-        }
         double propose(
                 RandomNumberGenerator& rng,
                 PositiveRealParameter& node_height) {
             double h = node_height->get_value();
-            double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
-            node_height.set_value(h * multiplier);
-            return std::log(multiplier);
-        }
-
-        void optimize(double log_alpha) {
-            double delta = this->calc_delta(log_alpha);
-            delta += std::log(this->scale_);
-            this->scale_ = std::exp(delta);
-        }
-
-        double get_coercable_parameter_value() {
-            return this->scale_;
-        }
-
-        void set_coercable_parameter_value(double value) {
-            this->scale_ = value;
+            double hastings;
+            this->update(rng, h, hastings);
+            node_height.set_value(h);
+            return hastings;
         }
 
         std::string get_name() const {
@@ -636,6 +490,7 @@ class ComparisonHeightScaler : public NodeHeightOperator {
 class DirichletProcessGibbsSampler : public ModelOperator {
     public:
         DirichletProcessGibbsSampler() : ModelOperator() { }
+        DirichletProcessGibbsSampler(double weight) : ModelOperator(weight) { }
         virtual ~DirichletProcessGibbsSampler() { }
 
         std::string get_name() const {
@@ -714,5 +569,117 @@ class DirichletProcessGibbsSampler : public ModelOperator {
         }
 };
 
+class ReversibleJumpSampler : public ModelOperator {
+    public:
+        ReversibleJumpSampler() : ModelOperator() { }
+        ReversibleJumpSampler(double weight) : ModelOperator(weight) { }
+        virtual ~ReversibleJumpSampler() { }
+
+        std::string get_name() const {
+            return "ReversibleJumpSampler";
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons) {
+            throw EcoevolityNotImplementedError("rjMCMC not implemented yet");
+        }
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Operator schedule 
+//////////////////////////////////////////////////////////////////////////////
+
+class OperatorSchedule {
+    protected:
+        std::vector< std::shared_ptr<Operator> > operators_;
+        double total_weight_ = 0.0;
+        std::vector<double> cumulative_probs_;
+        unsigned int auto_optimize_delay_ = 10000;
+        unsigned int auto_optimize_delay_count_ = 0;
+        bool auto_optimize_ = true;
+
+    public:
+        OperatorSchedule() { }
+        virtual ~OperatorSchedule() { }
+
+        void add_operator(std::shared_ptr<Operator> o) {
+            this->operators_.push_back(o);
+            o.set_operator_schedule(this);
+            this->total_weight_ += o.get_weight();
+            this->cumulative_probs_.push_back(0.0);
+            ECOEVOLITY_ASSERT(this->operators_.size() == this->cumulative_probs_.size());
+            this->cumulative_probs_.at(0) = this->operators_.at(0).get_weight() / this->total_weight_;
+            for (unsigned int i = 1; i < this->operators_.size(); ++i) {
+                this->cumulative_probs_.at(i) =
+                        (this->operators_.at(i).get_weight() /
+                        this->total_weight_) + 
+                        this->cumulative_probs_.at(i - 1);
+            }
+        }
+
+        Operator& draw_operator(RandomNumberGenerator& rng) {
+            double u = this->rng.uniform_real();
+            for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
+                if (u <= this->cumulative_probs_.at(i)) {
+                    return this->operators_.at(i);
+                }
+            return this->operators_.back();
+        }
+
+        double calc_delta(const Operator& op, double log_alpha) {
+            if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
+                    (! this->auto_optimize_)) {
+                return 0.0;
+            }
+            double target = op.get_target_acceptance_probability();
+            double count = (op.get_number_rejected_for_correction() +
+                            op.get_number_accepted_for_correction() +
+                            1.0);
+            double delta_p = ((1.0 / count) * (std::exp(std::min(log_alpha, 0)) - target));
+            double mx = std::numeric_limits<double>::max();
+            if ((delta_p > -mx) && (delta_p < mx)) {
+                return delta_p;
+            }
+            return 0.0;
+        }
+
+        double get_total_weight() const {
+            return this->total_weight_;
+        }
+        unsigned int get_auto_optimize_delay_count() const {
+            return this->auto_optimize_delay_count_;
+        }
+        unsigned int get_auto_optimize_delay() const {
+            return this->auto_optimize_delay_;
+        }
+        void set_auto_optimize_delay(unsigned int delay) {
+            this->auto_optimize_delay_ = delay;
+        }
+
+        void write_operator_rates(std::ofstream out) {
+            const Operator& op = this->operators_.at(0);
+            out << op.header_string();
+            out << op.to_string();
+            for (unsigned int i = 1; i < this->operators_.size(); ++i) {
+                out << this->operators_.at(i).to_string();
+            }
+        }
+
+        bool auto_optimizing() const {
+            return this->auto_optimize_;
+        }
+        void turn_on_auto_optimize() {
+            this->auto_optimize_ = true;
+        }
+        void turn_off_auto_optimize() {
+            this->auto_optimize_ = false;
+        }
+};
 
 #endif
