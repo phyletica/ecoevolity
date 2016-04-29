@@ -944,18 +944,18 @@ class OperatorScheduleSettings {
     private:
         bool auto_optimize_ = true;
         unsigned int auto_optimize_delay_ = 10000;
-        OperatorSettings ModelOperator_ = OperatorSettings(3.0);
-        ScaleOperatorSettings ConcentrationScaler_ = ScaleOperatorSettings(
+        OperatorSettings model_operator_settings_ = OperatorSettings(3.0);
+        ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings ComparisonHeightScaler_ = ScaleOperatorSettings(
+        ScaleOperatorSettings comparison_height_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings ComparisonHeightMultiplierScaler_ = ScaleOperatorSettings(
+        ScaleOperatorSettings comparison_height_multiplier_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
-        ScaleOperatorSettings RootCoalescenceRateScaler_ = ScaleOperatorSettings(
+        ScaleOperatorSettings root_coalescence_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings ChildCoalescenceRateScaler_ = ScaleOperatorSettings(
+        ScaleOperatorSettings child_coalescence_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        WindowOperatorSettings MutationRateMover_ = WindowOperatorSettings(
+        WindowOperatorSettings mutation_rate_mover_settings_ = WindowOperatorSettings(
                 1.0, 0.1);
 
     public:
@@ -964,78 +964,43 @@ class OperatorScheduleSettings {
         OperatorScheduleSettings& operator=(const OperatorScheduleSettings& other) {
             this->auto_optimize_ = other.auto_optimize_;
             this->auto_optimize_delay_ = other.auto_optimize_delay_;
-            this->ModelOperator_ = other.ModelOperator_;
-            this->ConcentrationScaler_ = other.ConcentrationScaler_;
-            this->ComparisonHeightScaler_ = other.ComparisonHeightScaler_;
-            this->ComparisonHeightMultiplierScaler_ = other.ComparisonHeightMultiplierScaler_;
-            this->RootCoalescenceRateScaler_ = other.RootCoalescenceRateScaler_;
-            this->ChildCoalescenceRateScaler_ = other.ChildCoalescenceRateScaler_;
-            this->MutationRateMover_ = other.MutationRateMover_;
+            this->model_operator_settings_ = other.model_operator_settings_;
+            this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
+            this->comparison_height_scaler_settings_ = other.comparison_height_scaler_settings_;
+            this->comparison_height_multiplier_scaler_settings_ = other.comparison_height_multiplier_scaler_settings_;
+            this->root_coalescence_rate_scaler_settings_ = other.root_coalescence_rate_scaler_settings_;
+            this->child_coalescence_rate_scaler_settings_ = other.child_coalescence_rate_scaler_settings_;
+            this->mutation_rate_mover_settings_ = other.mutation_rate_mover_settings_;
             return * this;
         }
 
-        /* OperatorSchedule get_instance(bool use_dpp = true) const { */
-        /*     OperatorSchedule os; */
-        /*     os.turn_off_auto_optimize(); */
-        /*     if (this->auto_optimize_) { */
-        /*         os.turn_on_auto_optimize(); */
-        /*     } */
-        /*     os.set_auto_optimize_delay(this->auto_optimize_delay_); */
-
-        /*     if (this->ModelOperator_.get_weight() > 0.0) { */
-        /*         if (use_dpp) { */
-        /*             os.add_operator(std::make_shared<DirichletProcessGibbsSampler>( */
-        /*                     this->ModelOperator_.get_weight())); */
-        /*         } */
-        /*         else { */
-        /*             os.add_operator(std::make_shared<ReversibleJumpSampler>( */
-        /*                     this->ModelOperator_.get_weight())); */
-        /*         } */
-        /*     } */
-
-        /*     if (this->ConcentrationScaler_.get_weight() > 0.0) { */
-        /*         os.add_operator(std::make_shared<ConcentrationScaler>( */
-        /*                 this->ConcentrationScaler_.get_weight(), */
-        /*                 this->ConcentrationScaler_.get_scale(), */
-        /*                 )); */
-        /*     } */
-
-        /*     if (this->ComparisonHeightScaler_.get_weight() > 0.0) { */
-        /*         os.add_operator(std::make_shared<ComparisonHeightScaler>( */
-        /*                 this->ComparisonHeightScaler_.get_weight(), */
-        /*                 this->ComparisonHeightScaler_.get_scale(), */
-        /*                 )); */
-        /*     } */
-
-        /*     if (this->ComparisonHeightMultiplierScaler_.get_weight() > 0.0) { */
-        /*         os.add_operator(std::make_shared<ComparisonHeightMultiplierScaler>( */
-        /*                 this->ComparisonHeightMultiplierScaler_.get_weight(), */
-        /*                 this->ComparisonHeightMultiplierScaler_.get_scale(), */
-        /*                 )); */
-        /*     } */
-
-        /*     if (this->RootCoalescenceRateScaler_.get_weight() > 0.0) { */
-        /*         os.add_operator(std::make_shared<RootCoalescenceRateScaler>( */
-        /*                 this->RootCoalescenceRateScaler_.get_weight(), */
-        /*                 this->RootCoalescenceRateScaler_.get_scale(), */
-        /*                 )); */
-        /*     } */
-
-        /*     if (this->ChildCoalescenceRateScaler_.get_weight() > 0.0) { */
-        /*         os.add_operator(std::make_shared<ChildCoalescenceRateScaler>( */
-        /*                 this->ChildCoalescenceRateScaler_.get_weight(), */
-        /*                 this->ChildCoalescenceRateScaler_.get_scale(), */
-        /*                 )); */
-        /*     } */
-
-        /*     if (this->MutationRateMover_.get_weight() > 0.0) { */
-        /*         os.add_operator(std::make_shared<MutationRateMover>( */
-        /*                 this->MutationRateMover_.get_weight(), */
-        /*                 this->MutationRateMover_.get_window(), */
-        /*                 )); */
-        /*     } */
-        /*     return os; */
-        /* } */
+        bool auto_optimizing() const {
+            return this->auto_optimize_;
+        }
+        unsigned int get_auto_optimize_delay() const {
+            return this->auto_optimize_delay_;
+        }
+        const OperatorSettings& get_model_operator_settings() const {
+            return this->model_operator_settings_;
+        }
+        const ScaleOperatorSettings& get_concentration_scaler_settings() const {
+            return this->concentration_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_comparison_height_scaler_settings() const {
+            return this->comparison_height_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_comparison_height_multiplier_scaler_settings() const {
+            return this->comparison_height_multiplier_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_root_coalescence_rate_scaler_settings() const {
+            return this->root_coalescence_rate_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_child_coalescence_rate_scaler_settings() const {
+            return this->child_coalescence_rate_scaler_settings_;
+        }
+        const WindowOperatorSettings& get_mutation_rate_mover_settings() const {
+            return this->mutation_rate_mover_settings_;
+        }
 
         void update_from_config(const YAML::Node& operator_node) {
             if (! operator_node.IsMap()) {
@@ -1077,7 +1042,7 @@ class OperatorScheduleSettings {
                     ++op) {
                 if (op->first.as<std::string>() == "ModelOperator") {
                     try {
-                        this->ModelOperator_.update_from_config(op->second);
+                        this->model_operator_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1087,7 +1052,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "ConcentrationScaler") {
                     try {
-                        this->ConcentrationScaler_.update_from_config(op->second);
+                        this->concentration_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1097,7 +1062,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "ComparisonHeightScaler") {
                     try {
-                        this->ComparisonHeightScaler_.update_from_config(op->second);
+                        this->comparison_height_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1107,7 +1072,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "ComparisonHeightMultiplierScaler") {
                     try {
-                        this->ComparisonHeightMultiplierScaler_.update_from_config(op->second);
+                        this->comparison_height_multiplier_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1117,7 +1082,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "RootCoalescenceRateScaler") {
                     try {
-                        this->RootCoalescenceRateScaler_.update_from_config(op->second);
+                        this->root_coalescence_rate_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1127,7 +1092,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "ChildCoalescenceRateScaler") {
                     try {
-                        this->ChildCoalescenceRateScaler_.update_from_config(op->second);
+                        this->child_coalescence_rate_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1137,7 +1102,7 @@ class OperatorScheduleSettings {
                 }
                 else if (op->first.as<std::string>() == "MutationRateMover") {
                     try {
-                        this->MutationRateMover_.update_from_config(op->second);
+                        this->mutation_rate_mover_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
@@ -1164,19 +1129,19 @@ class OperatorScheduleSettings {
             ss << margin << indent << "auto_optimize_delay: " << this->auto_optimize_delay_ << "\n";
             ss << margin << indent << "operators:\n";
             ss << margin << indent << indent << "ModelOperator:\n";
-            ss << this->ModelOperator_.to_string(indent_level + 3);
+            ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
-            ss << this->ConcentrationScaler_.to_string(indent_level + 3);
+            ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonHeightScaler:\n";
-            ss << this->ComparisonHeightScaler_.to_string(indent_level + 3);
+            ss << this->comparison_height_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonHeightMultiplierScaler:\n";
-            ss << this->ComparisonHeightMultiplierScaler_.to_string(indent_level + 3);
+            ss << this->comparison_height_multiplier_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "RootCoalescenceRateScaler:\n";
-            ss << this->RootCoalescenceRateScaler_.to_string(indent_level + 3);
+            ss << this->root_coalescence_rate_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ChildCoalescenceRateScaler:\n";
-            ss << this->ChildCoalescenceRateScaler_.to_string(indent_level + 3);
+            ss << this->child_coalescence_rate_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "MutationRateMover:\n";
-            ss << this->MutationRateMover_.to_string(indent_level + 3);
+            ss << this->mutation_rate_mover_settings_.to_string(indent_level + 3);
             return ss.str();
         }
 };
@@ -1496,20 +1461,20 @@ class CollectionSettings {
 
         void update_operator_schedule_settings() {
             if ((! this->use_dpp_) || (this->concentration_settings_.is_fixed())) {
-                this->operator_schedule_settings_.ConcentrationScaler_.set_weight(0.0);
+                this->operator_schedule_settings_.concentration_scaler_settings_.set_weight(0.0);
             }
             if (this->comparisons_.size() < 2) {
-                this->operator_schedule_settings_.ModelOperator_.set_weight(0.0);
+                this->operator_schedule_settings_.model_operator_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_time_multiplier() < 1) {
-                this->operator_schedule_settings_.ComparisonHeightMultiplierScaler_.set_weight(0.0);
+                this->operator_schedule_settings_.comparison_height_multiplier_scaler_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_u_rate() < 1) {
-                this->operator_schedule_settings_.MutationRateMover_.set_weight(0.0);
+                this->operator_schedule_settings_.mutation_rate_mover_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
-                this->operator_schedule_settings_.RootCoalescenceRateScaler_.set_weight(0.0);
-                this->operator_schedule_settings_.ChildCoalescenceRateScaler_.set_weight(0.0);
+                this->operator_schedule_settings_.root_coalescence_rate_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.child_coalescence_rate_scaler_settings_.set_weight(0.0);
             }
         }
 
