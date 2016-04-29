@@ -25,8 +25,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         ) {
     this->node_height_prior_ = settings.get_time_prior_instance();
     this->concentration_ = settings.get_concentration_instance(rng);
+    this->operator_schedule_ = settings.get_operator_schedule_instance();
     this->init_trees(settings.get_comparison_settings(), rng);
-    this->init_operator_schedule(settings);
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -50,11 +50,6 @@ void ComparisonPopulationTreeCollection::init_trees(
     }
     ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
     ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
-}
-
-void ComparisonPopulationTreeCollection::init_operator_schedule(
-        const OperatorScheduleSettings& operator_settings) {
-    // TODO: could have 'get_instance' method in settings
 }
 
 void ComparisonPopulationTreeCollection::store_state() {
