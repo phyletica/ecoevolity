@@ -42,6 +42,9 @@ class OperatorSchedule {
 
     public:
         OperatorSchedule() { }
+        OperatorSchedule(
+                const OperatorScheduleSettings& settings,
+                bool use_dpp = true);
         virtual ~OperatorSchedule() { }
 
         void add_operator(std::shared_ptr<Operator> o);

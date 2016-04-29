@@ -21,6 +21,69 @@
 #include "operator.hpp"
 
 
+OperatorSchedule::OperatorSchedule(
+        const OperatorScheduleSettings& settings,
+        bool use_dpp = true) {
+    this->turn_off_auto_optimize();
+    if (settings.auto_optimizing()) {
+        this->turn_on_auto_optimize();
+    }
+    this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
+
+    if (settings.get_model_operator_settings().get_weight() > 0.0) {
+        if (use_dpp) {
+            this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight()));
+        }
+        else {
+            this->add_operator(std::make_shared<ReversibleJumpSampler>(
+                    settings.get_model_operator_settings().get_weight()));
+        }
+    }
+
+    if (settings.get_concentration_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<ConcentrationScaler>(
+                settings.get_concentration_scaler_settings().get_weight(),
+                settings.get_concentration_scaler_settings().get_scale(),
+                ));
+    }
+
+    if (settings.get_comparison_height_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<ComparisonHeightScaler>(
+                settings.get_comparison_height_scaler_settings().get_weight(),
+                settings.get_comparison_height_scaler_settings().get_scale(),
+                ));
+    }
+
+    if (settings.get_comparison_height_multiplier_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<ComparisonHeightMultiplierScaler>(
+                settings.get_comparison_height_multiplier_scaler_settings().get_weight(),
+                settings.get_comparison_height_multiplier_scaler_settings().get_scale(),
+                ));
+    }
+
+    if (settings.get_root_coalescence_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<RootCoalescenceRateScaler>(
+                settings.get_root_coalescence_rate_scaler_settings().get_weight(),
+                settings.get_root_coalescence_rate_scaler_settings().get_scale(),
+                ));
+    }
+
+    if (settings.get_child_coalescence_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<ChildCoalescenceRateScaler>(
+                settings.get_child_coalescence_rate_scaler_settings().get_weight(),
+                settings.get_child_coalescence_rate_scaler_settings().get_scale(),
+                ));
+    }
+
+    if (settings.get_mutation_rate_mover_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<MutationRateMover>(
+                settings.get_mutation_rate_mover_settings().get_weight(),
+                settings.get_mutation_rate_mover_settings().get_window(),
+                ));
+    }
+}
+
 void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
     this->operators_.push_back(o);
     o->set_operator_schedule(this);
