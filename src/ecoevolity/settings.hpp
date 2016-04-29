@@ -17,13 +17,6 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-// TODO: Need to decide what settings must be specified, and if not, what is
-// the default.
-// Defaults:
-// DPP shape 2.0, prior mean = 0.75*ncomparisons REQUIRE?
-// time prior = exp(0.01) REQUIRE?
-// pop size = exp(0.001)
-//
 // TODO: Error messages could be a lot more informative.
 
 #ifndef ECOEVOLITY_SETTINGS_HPP
@@ -45,6 +38,7 @@
 #include "probability.hpp"
 #include "parameter.hpp"
 #include "tree.hpp"
+#include "operator.hpp"
 #include "rng.hpp"
 
 
@@ -1003,6 +997,69 @@ class OperatorScheduleSettings {
             return * this;
         }
 
+        OperatorSchedule get_instance(bool use_dpp = true) const {
+            OperatorSchedule os;
+            os.turn_off_auto_optimize();
+            if (this->auto_optimize_) {
+                os.turn_on_auto_optimize();
+            }
+            os.set_auto_optimize_delay(this->auto_optimize_delay_);
+
+            if (this->ModelOperator_.get_weight() > 0.0) {
+                if (use_dpp) {
+                    os.add_operator(std::make_shared<DirichletProcessGibbsSampler>(
+                            this->ModelOperator_.get_weight());
+                }
+                else {
+                    os.add_operator(std::make_shared<ReversibleJumpSampler>(
+                            this->ModelOperator_.get_weight());
+                }
+            }
+
+            if (this->ConcentrationScaler_.get_weight() > 0.0) {
+                os.add_operator(std::make_shared<ConcentrationScaler>(
+                        this->ConcentrationScaler_.get_weight(),
+                        this->ConcentrationScaler_.get_scale(),
+                        );
+            }
+
+            if (this->ComparisonHeightScaler_.get_weight() > 0.0) {
+                os.add_operator(std::make_shared<ComparisonHeightScaler>(
+                        this->ComparisonHeightScaler_.get_weight(),
+                        this->ComparisonHeightScaler_.get_scale(),
+                        );
+            }
+
+            if (this->ComparisonHeightMultiplierScaler_.get_weight() > 0.0) {
+                os.add_operator(std::make_shared<ComparisonHeightMultiplierScaler>(
+                        this->ComparisonHeightMultiplierScaler_.get_weight(),
+                        this->ComparisonHeightMultiplierScaler_.get_scale(),
+                        );
+            }
+
+            if (this->RootCoalescenceRateScaler_.get_weight() > 0.0) {
+                os.add_operator(std::make_shared<RootCoalescenceRateScaler>(
+                        this->RootCoalescenceRateScaler_.get_weight(),
+                        this->RootCoalescenceRateScaler_.get_scale(),
+                        );
+            }
+
+            if (this->ChildCoalescenceRateScaler_.get_weight() > 0.0) {
+                os.add_operator(std::make_shared<ChildCoalescenceRateScaler>(
+                        this->ChildCoalescenceRateScaler_.get_weight(),
+                        this->ChildCoalescenceRateScaler_.get_scale(),
+                        );
+            }
+
+            if (this->MutationRateMover_.get_weight() > 0.0) {
+                os.add_operator(std::make_shared<MutationRateMover>(
+                        this->MutationRateMover_.get_weight(),
+                        this->MutationRateMover_.get_window(),
+                        );
+            }
+            return os;
+        }
+
         void update_from_config(const YAML::Node& operator_node) {
             if (! operator_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
@@ -1253,6 +1310,9 @@ class CollectionSettings {
 
         std::shared_ptr<PositiveRealParameter> get_concentration_instance(RandomNumberGenerator& rng) const {
             return this->concentration_settings_.get_instance(rng);
+        }
+        OperatorSchedule get_operator_schedule_instance() const {
+            return this->operator_schedule_settings_.get_instance(this->use_dpp_);
         }
         const std::vector<ComparisonSettings>& get_comparison_settings() const { 
             return this->comparisons_;
