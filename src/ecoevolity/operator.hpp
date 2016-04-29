@@ -22,14 +22,15 @@
 
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <cmath>
 #include <limits>
 #include <memory>
 
+#include "collection.hpp"
 #include "rng.hpp"
 #include "assert.hpp"
 #include "math_util.hpp"
+#include "operator_schedule.hpp"
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -98,8 +99,8 @@ class Operator {
         double weight_ = 1.0;
         unsigned int number_rejected_ = 0;
         unsigned int number_accepted_ = 0;
-        unsigned int number_rejected_for_correction = 0;
-        unsigned int number_accepted_for_correction = 0;
+        unsigned int number_rejected_for_correction_ = 0;
+        unsigned int number_accepted_for_correction_ = 0;
 
         double calc_delta(double log_alpha) const;
 };
@@ -111,7 +112,7 @@ class ScaleOperator : public Operator {
     public:
         ScaleOperator() : Operator() { }
         ScaleOperator(double weight) : Operator(weight) { }
-        ScaleOperator(double weight, double scale) : Operator(weight);
+        ScaleOperator(double weight, double scale);
         virtual ~ScaleOperator() { }
 
         void set_scale(double scale);
@@ -141,7 +142,7 @@ class WindowOperator : public Operator {
     public:
         WindowOperator() : Operator() { }
         WindowOperator(double weight) : Operator(weight) { }
-        WindowOperator(double weight, double window_size) : Operator(weight);
+        WindowOperator(double weight, double window_size);
         virtual ~WindowOperator() { }
 
         void set_window_size(double window_size);
@@ -403,42 +404,6 @@ class ReversibleJumpSampler : public ModelOperator {
          */
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons) const;
-};
-
-
-//////////////////////////////////////////////////////////////////////////////
-// Operator schedule 
-//////////////////////////////////////////////////////////////////////////////
-
-class OperatorSchedule {
-    protected:
-        std::vector< std::shared_ptr<Operator> > operators_;
-        double total_weight_ = 0.0;
-        std::vector<double> cumulative_probs_;
-        unsigned int auto_optimize_delay_ = 10000;
-        unsigned int auto_optimize_delay_count_ = 0;
-        bool auto_optimize_ = true;
-
-    public:
-        OperatorSchedule() { }
-        virtual ~OperatorSchedule() { }
-
-        void add_operator(std::shared_ptr<Operator> o);
-
-        Operator& draw_operator(RandomNumberGenerator& rng);
-
-        double calc_delta(const Operator& op, double log_alpha);
-
-        double get_total_weight() const;
-        unsigned int get_auto_optimize_delay_count() const;
-        unsigned int get_auto_optimize_delay() const;
-        void set_auto_optimize_delay(unsigned int delay);
-
-        void write_operator_rates(std::ofstream out);
-
-        bool auto_optimizing() const;
-        void turn_on_auto_optimize();
-        void turn_off_auto_optimize();
 };
 
 #endif

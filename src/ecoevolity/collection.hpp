@@ -25,6 +25,7 @@
 #include "tree.hpp"
 #include "parameter.hpp"
 #include "settings.hpp"
+#include "operator_schedule.hpp"
 #include "error.hpp"
 #include "assert.hpp"
 

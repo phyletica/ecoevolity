@@ -39,6 +39,7 @@
 #include "parameter.hpp"
 #include "tree.hpp"
 #include "operator.hpp"
+#include "operator_schedule.hpp"
 #include "rng.hpp"
 
 
@@ -1008,11 +1009,11 @@ class OperatorScheduleSettings {
             if (this->ModelOperator_.get_weight() > 0.0) {
                 if (use_dpp) {
                     os.add_operator(std::make_shared<DirichletProcessGibbsSampler>(
-                            this->ModelOperator_.get_weight());
+                            this->ModelOperator_.get_weight()));
                 }
                 else {
                     os.add_operator(std::make_shared<ReversibleJumpSampler>(
-                            this->ModelOperator_.get_weight());
+                            this->ModelOperator_.get_weight()));
                 }
             }
 
@@ -1020,42 +1021,42 @@ class OperatorScheduleSettings {
                 os.add_operator(std::make_shared<ConcentrationScaler>(
                         this->ConcentrationScaler_.get_weight(),
                         this->ConcentrationScaler_.get_scale(),
-                        );
+                        ));
             }
 
             if (this->ComparisonHeightScaler_.get_weight() > 0.0) {
                 os.add_operator(std::make_shared<ComparisonHeightScaler>(
                         this->ComparisonHeightScaler_.get_weight(),
                         this->ComparisonHeightScaler_.get_scale(),
-                        );
+                        ));
             }
 
             if (this->ComparisonHeightMultiplierScaler_.get_weight() > 0.0) {
                 os.add_operator(std::make_shared<ComparisonHeightMultiplierScaler>(
                         this->ComparisonHeightMultiplierScaler_.get_weight(),
                         this->ComparisonHeightMultiplierScaler_.get_scale(),
-                        );
+                        ));
             }
 
             if (this->RootCoalescenceRateScaler_.get_weight() > 0.0) {
                 os.add_operator(std::make_shared<RootCoalescenceRateScaler>(
                         this->RootCoalescenceRateScaler_.get_weight(),
                         this->RootCoalescenceRateScaler_.get_scale(),
-                        );
+                        ));
             }
 
             if (this->ChildCoalescenceRateScaler_.get_weight() > 0.0) {
                 os.add_operator(std::make_shared<ChildCoalescenceRateScaler>(
                         this->ChildCoalescenceRateScaler_.get_weight(),
                         this->ChildCoalescenceRateScaler_.get_scale(),
-                        );
+                        ));
             }
 
             if (this->MutationRateMover_.get_weight() > 0.0) {
                 os.add_operator(std::make_shared<MutationRateMover>(
                         this->MutationRateMover_.get_weight(),
                         this->MutationRateMover_.get_window(),
-                        );
+                        ));
             }
             return os;
         }
