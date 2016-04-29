@@ -23,9 +23,13 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         const CollectionSettings & settings,
         RandomNumberGenerator & rng
         ) {
-    this->node_height_prior_ = settings.get_time_prior_instance();
-    this->concentration_ = settings.get_concentration_instance(rng);
-    this->operator_schedule_ = settings.get_operator_schedule_instance();
+    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->concentration_ = std::make_shared<PositiveRealParameter>(
+            settings.get_concentration_settings(),
+            rng);
+    this->operator_schedule_ = OperatorSchedule(
+            settings.get_operator_schedule_settings(),
+            settings.using_dpp());
     this->init_trees(settings.get_comparison_settings(), rng);
 }
 
@@ -38,7 +42,9 @@ void ComparisonPopulationTreeCollection::init_trees(
             ++tree_idx) {
         fresh_height = this->node_height_prior_.draw(rng);
         std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
-        ComparisonPopulationTree new_tree = comparison_settings.at(tree_idx).get_instance(rng);
+        ComparisonPopulationTree new_tree = ComparisonPopulationTree(
+                comparison_settings.at(tree_idx),
+                rng);
         new_tree.set_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);
         this->trees_.push_back(new_tree);
