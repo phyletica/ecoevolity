@@ -28,6 +28,7 @@
 
 #include "rng.hpp"
 #include "assert.hpp"
+#include "settings.hpp"
 
 class Operator;
 
