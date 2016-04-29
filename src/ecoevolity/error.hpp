@@ -154,4 +154,11 @@ class EcoevolityYamlConfigError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityYamlConfigError", message, file_path) { }
 };
 
+class EcoevolityNotImplementedError: public EcoevolityBaseError {
+    public:
+        EcoevolityNotImplementedError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityNotImplementedError", message) { }
+};
+
 #endif
