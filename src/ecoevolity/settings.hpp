@@ -36,11 +36,7 @@
 #include "path.hpp"
 #include "math_util.hpp"
 #include "probability.hpp"
-#include "parameter.hpp"
-#include "tree.hpp"
-#include "operator.hpp"
-#include "operator_schedule.hpp"
-#include "rng.hpp"
+#include "data.hpp"
 
 
 class YamlCppUtils {
@@ -475,25 +471,8 @@ class PositiveRealParameterSettings {
         bool is_fixed() const {
             return this->is_fixed_;
         }
-
-        virtual std::shared_ptr<PositiveRealParameter> get_instance(RandomNumberGenerator & rng) const {
-            std::shared_ptr<PositiveRealParameter> p;
-            double v = this->value_;
-            if (this->is_fixed()) {
-                p =  std::make_shared<PositiveRealParameter>(
-                        v,
-                        this->is_fixed_
-                        );
-            }
-            else {
-                p = std::make_shared<PositiveRealParameter>(
-                        this->prior_settings_.get_instance(),
-                        v,
-                        this->is_fixed_
-                        );
-            }
-            p->initialize_value(rng);
-            return p;
+        const ContinuousDistributionSettings& get_prior_settings() const {
+            return this->prior_settings_;
         }
 
         virtual std::string to_string(unsigned int indent_level = 0) const {
@@ -722,47 +701,44 @@ class ComparisonSettings {
             return * this;
         }
 
-        ComparisonPopulationTree get_instance(RandomNumberGenerator & rng) const {
-            ComparisonPopulationTree t = ComparisonPopulationTree(
-                    this->path_,
-                    this->population_name_delimiter_,
-                    this->population_name_is_prefix_,
-                    this->genotypes_are_diploid_,
-                    this->markers_are_dominant_,
-                    this->constant_sites_removed_,
-                    true);
-            if (this->constrain_mutation_rates_) {
-                t.constrain_mutation_rates();
-                t.fold_patterns();
-            }
-
-            t.set_population_size_prior(this->population_size_settings_.prior_settings_.get_instance());
-            if (this->constrain_population_sizes_) {
-                t.constrain_coalescence_rates();
-            }
-            std::shared_ptr<PositiveRealParameter> p = this->population_size_settings_.get_instance(rng);
-            t.set_coalescence_rate(
-                    CoalescenceRateParameter::get_rate_from_population_size(
-                            p->get_value()));
-            if (this->population_size_settings_.is_fixed()) {
-                t.fix_coalescence_rates();
-            }
-
-            t.set_u_prior(this->u_settings_.prior_settings_.get_instance());
-            t.set_v_prior(this->v_settings_.prior_settings_.get_instance());
-            if (this->constrain_mutation_rates_) {
-                t.constrain_mutation_rates();
-            }
-            else {
-                std::shared_ptr<PositiveRealParameter> u = this->u_settings_.get_instance(rng);
-                t.set_u(u->get_value());
-                if (u->is_fixed()) {
-                    t.fix_mutation_rates();
-                }
-            }
-            t.set_node_height_multiplier_parameter(this->time_multiplier_settings_.get_instance(rng));
-
-            return t;
+        const std::string& get_path() const {
+            return this->path_;
+        }
+        char get_population_name_delimiter() const {
+            return this->population_name_delimiter_;
+        }
+        bool population_name_is_prefix() const {
+            return this->population_name_is_prefix_;
+        }
+        bool genotypes_are_diploid() const {
+            return this->genotypes_are_diploid_;
+        }
+        bool markers_are_dominant() const {
+            return this->markers_are_dominant_;
+        }
+        bool constant_sites_removed() const {
+            return this->constant_sites_removed_;
+        }
+        bool constrain_mutation_rates() const {
+            return this->constrain_mutation_rates_;
+        }
+        bool constrain_population_sizes() const {
+            return this->constrain_population_sizes_;
+        }
+        bool use_empirical_mutation_rate_starting_values() const {
+            return this->use_empirical_mutation_rate_starting_values_;
+        }
+        const PositiveRealParameterSettings& get_population_size_settings() const {
+            return this->population_size_settings_;
+        }
+        const PositiveRealParameterSettings& get_u_settings() const {
+            return this->u_settings_;
+        }
+        const PositiveRealParameterSettings& get_v_settings() const {
+            return this->v_settings_;
+        }
+        const PositiveRealParameterSettings& get_time_multiplier_settings() const {
+            return this->time_multiplier_settings_;
         }
 
         std::string to_string(unsigned int indent_level = 0) const {
@@ -998,68 +974,68 @@ class OperatorScheduleSettings {
             return * this;
         }
 
-        OperatorSchedule get_instance(bool use_dpp = true) const {
-            OperatorSchedule os;
-            os.turn_off_auto_optimize();
-            if (this->auto_optimize_) {
-                os.turn_on_auto_optimize();
-            }
-            os.set_auto_optimize_delay(this->auto_optimize_delay_);
+        /* OperatorSchedule get_instance(bool use_dpp = true) const { */
+        /*     OperatorSchedule os; */
+        /*     os.turn_off_auto_optimize(); */
+        /*     if (this->auto_optimize_) { */
+        /*         os.turn_on_auto_optimize(); */
+        /*     } */
+        /*     os.set_auto_optimize_delay(this->auto_optimize_delay_); */
 
-            if (this->ModelOperator_.get_weight() > 0.0) {
-                if (use_dpp) {
-                    os.add_operator(std::make_shared<DirichletProcessGibbsSampler>(
-                            this->ModelOperator_.get_weight()));
-                }
-                else {
-                    os.add_operator(std::make_shared<ReversibleJumpSampler>(
-                            this->ModelOperator_.get_weight()));
-                }
-            }
+        /*     if (this->ModelOperator_.get_weight() > 0.0) { */
+        /*         if (use_dpp) { */
+        /*             os.add_operator(std::make_shared<DirichletProcessGibbsSampler>( */
+        /*                     this->ModelOperator_.get_weight())); */
+        /*         } */
+        /*         else { */
+        /*             os.add_operator(std::make_shared<ReversibleJumpSampler>( */
+        /*                     this->ModelOperator_.get_weight())); */
+        /*         } */
+        /*     } */
 
-            if (this->ConcentrationScaler_.get_weight() > 0.0) {
-                os.add_operator(std::make_shared<ConcentrationScaler>(
-                        this->ConcentrationScaler_.get_weight(),
-                        this->ConcentrationScaler_.get_scale(),
-                        ));
-            }
+        /*     if (this->ConcentrationScaler_.get_weight() > 0.0) { */
+        /*         os.add_operator(std::make_shared<ConcentrationScaler>( */
+        /*                 this->ConcentrationScaler_.get_weight(), */
+        /*                 this->ConcentrationScaler_.get_scale(), */
+        /*                 )); */
+        /*     } */
 
-            if (this->ComparisonHeightScaler_.get_weight() > 0.0) {
-                os.add_operator(std::make_shared<ComparisonHeightScaler>(
-                        this->ComparisonHeightScaler_.get_weight(),
-                        this->ComparisonHeightScaler_.get_scale(),
-                        ));
-            }
+        /*     if (this->ComparisonHeightScaler_.get_weight() > 0.0) { */
+        /*         os.add_operator(std::make_shared<ComparisonHeightScaler>( */
+        /*                 this->ComparisonHeightScaler_.get_weight(), */
+        /*                 this->ComparisonHeightScaler_.get_scale(), */
+        /*                 )); */
+        /*     } */
 
-            if (this->ComparisonHeightMultiplierScaler_.get_weight() > 0.0) {
-                os.add_operator(std::make_shared<ComparisonHeightMultiplierScaler>(
-                        this->ComparisonHeightMultiplierScaler_.get_weight(),
-                        this->ComparisonHeightMultiplierScaler_.get_scale(),
-                        ));
-            }
+        /*     if (this->ComparisonHeightMultiplierScaler_.get_weight() > 0.0) { */
+        /*         os.add_operator(std::make_shared<ComparisonHeightMultiplierScaler>( */
+        /*                 this->ComparisonHeightMultiplierScaler_.get_weight(), */
+        /*                 this->ComparisonHeightMultiplierScaler_.get_scale(), */
+        /*                 )); */
+        /*     } */
 
-            if (this->RootCoalescenceRateScaler_.get_weight() > 0.0) {
-                os.add_operator(std::make_shared<RootCoalescenceRateScaler>(
-                        this->RootCoalescenceRateScaler_.get_weight(),
-                        this->RootCoalescenceRateScaler_.get_scale(),
-                        ));
-            }
+        /*     if (this->RootCoalescenceRateScaler_.get_weight() > 0.0) { */
+        /*         os.add_operator(std::make_shared<RootCoalescenceRateScaler>( */
+        /*                 this->RootCoalescenceRateScaler_.get_weight(), */
+        /*                 this->RootCoalescenceRateScaler_.get_scale(), */
+        /*                 )); */
+        /*     } */
 
-            if (this->ChildCoalescenceRateScaler_.get_weight() > 0.0) {
-                os.add_operator(std::make_shared<ChildCoalescenceRateScaler>(
-                        this->ChildCoalescenceRateScaler_.get_weight(),
-                        this->ChildCoalescenceRateScaler_.get_scale(),
-                        ));
-            }
+        /*     if (this->ChildCoalescenceRateScaler_.get_weight() > 0.0) { */
+        /*         os.add_operator(std::make_shared<ChildCoalescenceRateScaler>( */
+        /*                 this->ChildCoalescenceRateScaler_.get_weight(), */
+        /*                 this->ChildCoalescenceRateScaler_.get_scale(), */
+        /*                 )); */
+        /*     } */
 
-            if (this->MutationRateMover_.get_weight() > 0.0) {
-                os.add_operator(std::make_shared<MutationRateMover>(
-                        this->MutationRateMover_.get_weight(),
-                        this->MutationRateMover_.get_window(),
-                        ));
-            }
-            return os;
-        }
+        /*     if (this->MutationRateMover_.get_weight() > 0.0) { */
+        /*         os.add_operator(std::make_shared<MutationRateMover>( */
+        /*                 this->MutationRateMover_.get_weight(), */
+        /*                 this->MutationRateMover_.get_window(), */
+        /*                 )); */
+        /*     } */
+        /*     return os; */
+        /* } */
 
         void update_from_config(const YAML::Node& operator_node) {
             if (! operator_node.IsMap()) {
@@ -1305,16 +1281,14 @@ class CollectionSettings {
             return nfree;
         }
 
-        std::shared_ptr<ContinuousProbabilityDistribution> get_time_prior_instance() const {
-            return this->time_prior_settings_.get_instance();
+        const ContinuousDistributionSettings& get_time_prior_settings() const {
+            return this->time_prior_settings_;
         }
 
-        std::shared_ptr<PositiveRealParameter> get_concentration_instance(RandomNumberGenerator& rng) const {
-            return this->concentration_settings_.get_instance(rng);
+        const PositiveRealParameterSettings& get_concentration_settings() const {
+            return this->concentration_settings_;
         }
-        OperatorSchedule get_operator_schedule_instance() const {
-            return this->operator_schedule_settings_.get_instance(this->use_dpp_);
-        }
+
         const std::vector<ComparisonSettings>& get_comparison_settings() const { 
             return this->comparisons_;
         }

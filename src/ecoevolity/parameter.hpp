@@ -26,6 +26,7 @@
 #include "assert.hpp"
 #include "rng.hpp"
 #include "probability.hpp"
+#include "settings.hpp"
 
 
 template<class VariableType>
@@ -316,6 +317,17 @@ class PositiveRealParameter: public RealParameter {
             this->set_min(0.0);
             this->set_value(value);
             this->is_fixed_ = fix;
+        }
+        PositiveRealParameter(
+                const PositiveRealParameterSettings& settings,
+                RandomNumberGenerator& rng) {
+            this->set_min(0.0);
+            this->set_value(settings.get_value());
+            this->is_fixed_ = settings.is_fixed();
+            if (! this->is_fixed()) {
+                this->set_prior(settings.get_prior_settings().get_instance());
+            }
+            this->initialize_value(rng);
         }
         virtual ~PositiveRealParameter() { }
         PositiveRealParameter& operator=(const PositiveRealParameter& p) {

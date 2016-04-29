@@ -302,7 +302,8 @@ class ComparisonPopulationTree: public PopulationTree {
                 const bool markers_are_dominant = false,
                 const bool constant_sites_removed = true,
                 const bool validate = true);
-        /* ComparisonPopulationTree(const ComparisonSettings& settings); */
+        ComparisonPopulationTree(const ComparisonSettings& settings,
+                RandomNumberGenerator& rng);
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
         void update_child_coalescence_rate(unsigned int child_index, double rate);

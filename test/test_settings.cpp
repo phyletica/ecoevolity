@@ -1,5 +1,7 @@
 #include "catch.hpp"
 #include "ecoevolity/settings.hpp"
+#include "ecoevolity/parameter.hpp"
+#include "ecoevolity/tree.hpp"
 
 TEST_CASE("Testing bare constructor of ContinuousDistributionSettings",
         "[ContinuousDistributionSettings]") {
@@ -343,11 +345,10 @@ TEST_CASE("Testing fixed parameter settings", "[PositiveRealParameterSettings]")
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        std::shared_ptr<PositiveRealParameter> p;
-        p = settings.get_instance(rng);
-        REQUIRE_THROWS_AS(p->check_prior(), EcoevolityNullPointerError);
-        REQUIRE(p->get_value() == 0.001);
-        REQUIRE(p->is_fixed() == true);
+        PositiveRealParameter p = PositiveRealParameter(settings, rng);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
+        REQUIRE(p.get_value() == 0.001);
+        REQUIRE(p.is_fixed() == true);
     }
 }
 
@@ -371,14 +372,13 @@ TEST_CASE("Testing free parameter settings", "[PositiveRealParameterSettings]") 
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        std::shared_ptr<PositiveRealParameter> p;
-        p = settings.get_instance(rng);
-        REQUIRE(p->get_value() == 0.001);
-        REQUIRE(p->is_fixed() == false);
-        REQUIRE(p->get_prior_min() == 0.0);
-        REQUIRE(p->get_prior_mean() == 1.0);
-        REQUIRE(p->get_prior_variance() == 1.0);
-        REQUIRE(p->get_prior_string() == "gamma(shape = 1, scale = 1)");
+        PositiveRealParameter p = PositiveRealParameter(settings, rng);
+        REQUIRE(p.get_value() == 0.001);
+        REQUIRE(p.is_fixed() == false);
+        REQUIRE(p.get_prior_min() == 0.0);
+        REQUIRE(p.get_prior_mean() == 1.0);
+        REQUIRE(p.get_prior_variance() == 1.0);
+        REQUIRE(p.get_prior_string() == "gamma(shape = 1, scale = 1)");
     }
 }
 
@@ -402,13 +402,12 @@ TEST_CASE("Testing nan parameter settings", "[PositiveRealParameterSettings]") {
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        std::shared_ptr<PositiveRealParameter> p;
-        p = settings.get_instance(rng);
-        REQUIRE(p->is_fixed() == false);
-        REQUIRE(p->get_prior_min() == 0.0);
-        REQUIRE(p->get_prior_mean() == 1.0);
-        REQUIRE(p->get_prior_variance() == 1.0);
-        REQUIRE(p->get_prior_string() == "gamma(shape = 1, scale = 1)");
+        PositiveRealParameter p = PositiveRealParameter(settings, rng);
+        REQUIRE(p.is_fixed() == false);
+        REQUIRE(p.get_prior_min() == 0.0);
+        REQUIRE(p.get_prior_mean() == 1.0);
+        REQUIRE(p.get_prior_variance() == 1.0);
+        REQUIRE(p.get_prior_string() == "gamma(shape = 1, scale = 1)");
     }
 }
 
@@ -503,7 +502,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        ComparisonPopulationTree t = settings.get_instance(rng);
+        ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
 
         REQUIRE(! std::isnan(t.get_root_coalescence_rate()));
         REQUIRE(! std::isnan(t.get_child_coalescence_rate(0)));
@@ -601,7 +600,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        ComparisonPopulationTree t = settings.get_instance(rng);
+        ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
 
         REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
         REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
@@ -726,7 +725,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        ComparisonPopulationTree t = settings.get_instance(rng);
+        ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
 
         REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
         REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));

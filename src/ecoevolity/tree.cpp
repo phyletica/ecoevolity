@@ -751,6 +751,54 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     }
     this->root_->set_label("root-" + this->root_->get_child(0)->get_label());
 }
+ComparisonPopulationTree::ComparisonPopulationTree(
+        const ComparisonSettings& settings,
+        RandomNumberGenerator& rng) {
+    this->init(settings.get_path(),
+               settings.get_population_name_delimiter(),
+               settings.population_name_is_prefix(),
+               settings.genotypes_are_diploid(),
+               settings.markers_are_dominant(),
+               settings.constant_sites_removed(),
+               true);
+    if (settings.constrain_mutation_rates()) {
+        this->constrain_mutation_rates();
+        this->fold_patterns();
+    }
+    this->set_population_size_prior(
+            settings.get_population_size_settings().get_prior_settings().get_instance());
+    if (settings.constrain_population_sizes()) {
+        this->constrain_coalescence_rates();
+    }
+    PositiveRealParameter p = PositiveRealParameter(
+            settings.get_population_size_settings(),
+            rng);
+    this->set_coalescence_rate(
+            CoalescenceRateParameter::get_rate_from_population_size(
+                    p.get_value()));
+    if (settings.get_population_size_settings().is_fixed()) {
+        this->fix_coalescence_rates();
+    }
+    
+    this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
+    this->set_v_prior(settings.get_v_settings().get_prior_settings().get_instance());
+    if (settings.constrain_mutation_rates()) {
+        this->constrain_mutation_rates();
+    }
+    else {
+        PositiveRealParameter u = PositiveRealParameter(
+                settings.get_u_settings(),
+                rng);
+        this->set_u(u.get_value());
+        if (u.is_fixed()) {
+            this->fix_mutation_rates();
+        }
+    }
+    this->set_node_height_multiplier_parameter(
+            std::make_shared<PositiveRealParameter>(
+                    settings.get_time_multiplier_settings(),
+                    rng));
+}
 
 void ComparisonPopulationTree::set_child_coalescence_rate(
         unsigned int child_index,
