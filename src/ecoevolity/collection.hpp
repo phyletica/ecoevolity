@@ -20,6 +20,8 @@
 #ifndef ECOEVOLITY_COLLECTION_HPP
 #define ECOEVOLITY_COLLECTION_HPP
 
+#include <thread>
+
 #include "data.hpp"
 #include "node.hpp"
 #include "tree.hpp"
@@ -43,6 +45,11 @@ class ComparisonPopulationTreeCollection {
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
         bool use_multithreading_ = false;
+        unsigned int number_of_auxiliary_heights_ = 4;
+
+        void init_trees(
+                const std::vector<ComparisonSettings> & comparison_settings,
+                RandomNumberGenerator & rng);
 
         void compute_tree_partials();
         void compute_tree_partials_threaded();
@@ -72,16 +79,16 @@ class ComparisonPopulationTreeCollection {
         virtual ~ComparisonPopulationTreeCollection() { }
         void store_state();
         void restore_state();
-        void compute_log_likelihood_and_prior();
+        void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void ignore_data() {
             for (auto tree : this->trees_) {
-                tree->ignore_data();
+                tree.ignore_data();
             }
         }
         void use_data() {
             for (auto tree : this->trees_) {
-                tree->use_data();
+                tree.use_data();
             }
         }
 
@@ -104,11 +111,14 @@ class ComparisonPopulationTreeCollection {
         }
 
         double get_height(unsigned int tree_index) const {
-            return this->node_heights_.at(tree_index).get_value();
+            return this->node_heights_.at(tree_index)->get_value();
         }
 
         double get_concentration() const {
-            return this->concentration_.get_value();
+            return this->concentration_->get_value();
+        }
+        void set_concentration(double value) {
+            this->concentration_->set_value(value);
         }
 
         unsigned int get_number_of_auxiliary_heights() const {
@@ -119,7 +129,8 @@ class ComparisonPopulationTreeCollection {
                 unsigned int tree_index) const;
 
 
-        void mcmc();
+        void mcmc(RandomNumberGenerator& rng,
+                unsigned int chain_length);
 };
 
 #endif

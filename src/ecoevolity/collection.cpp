@@ -18,6 +18,7 @@
 ******************************************************************************/
 
 #include "collection.hpp"
+#include "operator.hpp"
 
 ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         const CollectionSettings & settings,
@@ -40,7 +41,7 @@ void ComparisonPopulationTreeCollection::init_trees(
     for (unsigned int tree_idx = 0;
             tree_idx < comparison_settings.size();
             ++tree_idx) {
-        fresh_height = this->node_height_prior_.draw(rng);
+        fresh_height = this->node_height_prior_->draw(rng);
         std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
         ComparisonPopulationTree new_tree = ComparisonPopulationTree(
                 comparison_settings.at(tree_idx),
@@ -62,14 +63,14 @@ void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
     for (auto tree_iter : this->trees_) {
-        tree_iter->store_state();
+        tree_iter.store_state();
     }
 }
 void ComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
     for (auto tree_iter : this->trees_) {
-        tree_iter->restore_state();
+        tree_iter.restore_state();
     }
 }
 void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
@@ -84,11 +85,11 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
         }
     }
     for (auto tree_iter : this->trees_) {
-        lnl += tree_iter->get_log_likelihood_value();
-        lnp += tree_iter->get_log_prior_density_value();
+        lnl += tree_iter.get_log_likelihood_value();
+        lnp += tree_iter.get_log_prior_density_value();
     }
     for (auto height_iter : this->node_heights_) {
-        lnp += this->node_heights_->relative_prior_ln_pdf();
+        lnp += height_iter->relative_prior_ln_pdf();
     }
 
     this->log_likelihood_.set_value(lnl);
@@ -97,7 +98,7 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
 
 void ComparisonPopulationTreeCollection::compute_tree_partials() {
     for (auto tree_iter : this->trees_) {
-        tree_iter->compute_log_likelihood_and_prior();
+        tree_iter.compute_log_likelihood_and_prior();
     }
 }
 
@@ -106,7 +107,9 @@ void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
     threads.reserve(this->trees_.size());
 
     for (auto tree_iter : this->trees_) {
-        threads.push_back(std::thread(tree_iter->compute_log_likelihood_and_prior));
+        threads.push_back(std::thread(
+                    &ComparisonPopulationTree::compute_log_likelihood_and_prior,
+                    tree_iter));
     }
 
     for (auto &t : threads) {
@@ -116,7 +119,7 @@ void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
 
 void ComparisonPopulationTreeCollection::make_trees_clean() {
     for (auto tree_iter : this->trees_) {
-        tree_iter->make_clean();
+        tree_iter.make_clean();
     }
 }
 
@@ -129,6 +132,13 @@ unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_h
         }
     }
     return count;
+}
+
+std::vector<unsigned int> ComparisonPopulationTreeCollection::get_other_height_indices(
+        unsigned int tree_index) const {
+    std::vector<unsigned int> others;
+    // TODO:
+    return others;
 }
 
 unsigned int ComparisonPopulationTreeCollection::get_number_of_partners(
@@ -144,7 +154,7 @@ void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
         unsigned int height_index,
         double log_likelihood) {
-    if (! this->get_height_index(tree_index) == height_index) {
+    if (! (this->get_height_index(tree_index) == height_index)) {
         unsigned int num_partners = this->get_number_of_partners(tree_index);
         unsigned int old_height_index = this->get_height_index(tree_index);
         this->node_height_indices_.at(tree_index) = height_index;
@@ -177,7 +187,7 @@ void ComparisonPopulationTreeCollection::remove_height(
         unsigned int height_index) {
     ECOEVOLITY_ASSERT(this->get_number_of_trees_mapped_to_height(height_index) == 0);
     ECOEVOLITY_ASSERT(this->node_heights_.at(height_index).use_count() < 2);
-    this->node_heights_.erase(height_index);
+    this->node_heights_.erase(this->node_heights_.begin() + height_index);
     for (unsigned int i = 0; i < this->node_height_indices_.size(); ++i) {
         ECOEVOLITY_ASSERT(this->node_height_indices_.at(i) != height_index);
         if (this->node_height_indices_.at(i) > height_index) {
@@ -197,35 +207,38 @@ void ComparisonPopulationTreeCollection::add_height(
     }
 }
 
-void ComparisonPopulationTreeCollection::mcmc() {
+void ComparisonPopulationTreeCollection::mcmc(
+        RandomNumberGenerator& rng,
+        unsigned int chain_length) {
     // TODO:  initialize state
-    for (unsigned int gen = 0; gen < ngens; ++gen) {
+    std::shared_ptr<Operator> op;
+    for (unsigned int gen = 0; gen < chain_length; ++gen) {
         this->store_state();
-        Operator& op = this->operator_schedule_.draw_operator(this->rng_);
-        if (op.get_type() == Operator::OperatorTypeEnum::tree_operator) {
+        op = this->operator_schedule_.draw_operator(rng);
+        if (op->get_type() == Operator::OperatorTypeEnum::tree_operator) {
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->trees_.size());
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
-                hastings_ratios.push_back(op.propose(this->rng_, this->trees_.at(tree_idx)));
+                hastings_ratios.push_back(op->propose(rng, this->trees_.at(tree_idx)));
             }
             this->compute_tree_partials();
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
                 // Check to see if we updated a fixed parameter. If so, do
                 // nothing and continue to next tree (to avoid counting toward
                 // operator acceptance ratio).
-                if ((op.target_parameter() == "coalescence rate") &&
-                        (this->trees_.at(tree_index).coalescence_rates_are_fixed())) {
-                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_index).is_dirty());
+                if ((op->target_parameter() == "coalescence rate") &&
+                        (this->trees_.at(tree_idx).coalescence_rates_are_fixed())) {
+                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op.target_parameter() == "mutation rate") &&
-                        (this->trees_.at(tree_index).mutation_rates_are_fixed())) {
-                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_index).is_dirty());
+                if ((op->target_parameter() == "mutation rate") &&
+                        (this->trees_.at(tree_idx).mutation_rates_are_fixed())) {
+                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op.target_parameter() == "node height multiplier") &&
-                        (this->trees_.at(tree_index).node_height_multiplier_is_fixed())) {
-                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_index).is_dirty());
+                if ((op->target_parameter() == "node height multiplier") &&
+                        (this->trees_.at(tree_idx).node_height_multiplier_is_fixed())) {
+                    ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
                 double likelihood_ratio =
@@ -239,23 +252,23 @@ void ComparisonPopulationTreeCollection::mcmc() {
                         likelihood_ratio + 
                         prior_ratio +
                         hastings_ratio;
-                double u = this->rng_.uniform_real();
+                double u = rng.uniform_real();
                 if (u < acceptance_probability) {
-                    op.accept();
+                    op->accept();
                 }
                 else {
-                    op.reject();
+                    op->reject();
                     this->trees_.at(tree_idx).restore_state();
                 }
                 this->trees_.at(tree_idx).make_clean();
             }
             this->compute_log_likelihood_and_prior(false);
         }
-        else if (op.get_type() == Operator::OperatorTypeEnum::time_operator) {
+        else if (op->get_type() == Operator::OperatorTypeEnum::time_operator) {
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->node_heights_.size());
             for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
-                hastings_ratios.push_back(op.propose(this->rng_, *(this->heights_.at(height_idx))));
+                hastings_ratios.push_back(op->propose(rng, *(this->node_heights_.at(height_idx))));
             }
             this->compute_tree_partials();
             for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
@@ -277,13 +290,13 @@ void ComparisonPopulationTreeCollection::mcmc() {
                         likelihood_ratio + 
                         prior_ratio +
                         hastings_ratio;
-                double u = this->rng_.uniform_real();
+                double u = rng.uniform_real();
                 if (u < acceptance_probability) {
-                    op.accept();
+                    op->accept();
                 }
                 else {
-                    op.reject();
-                    this->node_heights_.at(height_idx).restore_state();
+                    op->reject();
+                    this->node_heights_.at(height_idx)->restore();
                     for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
                         if (this->node_height_indices_.at(tree_idx) == height_idx) {
                             this->trees_.at(tree_idx).restore_likelihood();
@@ -295,25 +308,26 @@ void ComparisonPopulationTreeCollection::mcmc() {
             this->make_trees_clean();
             this->compute_log_likelihood_and_prior(false);
         }
-        else if (op.get_type() == Operator::OperatorTypeEnum::model_operator) {
-            double hastings_ratio = op.propose(this->rng_, this);
+        else if (op->get_type() == Operator::OperatorTypeEnum::model_operator) {
+            // TODO: for DPP nothing to accept/reject
+            double hastings_ratio = op->propose(rng, *this);
             this->compute_log_likelihood_and_prior(true);
             double likelihood_ratio = 
                 this->log_likelihood_.get_value() -
-                this->log_likelihood_.get_store_value();
+                this->log_likelihood_.get_stored_value();
             double prior_ratio = 
                 this->log_prior_density_.get_value() -
-                this->log_prior_density_.get_store_value();
+                this->log_prior_density_.get_stored_value();
             double acceptance_probability =
                     likelihood_ratio + 
                     prior_ratio +
                     hastings_ratio;
-            double u = this->rng_.uniform_real();
+            double u = rng.uniform_real();
             if (u < acceptance_probability) {
-                op.accept();
+                op->accept();
             }
             else {
-                op.reject();
+                op->reject();
                 this->restore_state();
             }
             this->make_trees_clean();

@@ -7,6 +7,9 @@ set(ECOEVOLITY_SOURCES
     error.cpp
     matrix.cpp
     tree.cpp
+    operator_schedule.cpp
+    operator.cpp
+    collection.cpp
     data.cpp)
 
 foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})

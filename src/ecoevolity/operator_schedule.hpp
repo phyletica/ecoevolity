@@ -32,7 +32,7 @@
 
 class Operator;
 
-class OperatorSchedule {
+class OperatorSchedule : public std::enable_shared_from_this<OperatorSchedule> {
     protected:
         std::vector< std::shared_ptr<Operator> > operators_;
         double total_weight_ = 0.0;
@@ -50,9 +50,9 @@ class OperatorSchedule {
 
         void add_operator(std::shared_ptr<Operator> o);
 
-        Operator& draw_operator(RandomNumberGenerator& rng);
+        std::shared_ptr<Operator>& draw_operator(RandomNumberGenerator& rng);
 
-        double calc_delta(const Operator& op, double log_alpha);
+        double calc_delta(std::shared_ptr<const Operator> op, double log_alpha);
 
         double get_total_weight() const;
         unsigned int get_auto_optimize_delay_count() const;

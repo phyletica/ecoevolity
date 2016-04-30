@@ -35,7 +35,7 @@ void Operator::set_operator_schedule(std::shared_ptr<OperatorSchedule> os) {
     this->operator_schedule_ = os;
 }
 
-double Operator::get_coercable_parameter_value() {
+double Operator::get_coercable_parameter_value() const {
     return std::numeric_limits<double>::quiet_NaN();
 }
 
@@ -92,7 +92,7 @@ std::string Operator::to_string() const {
 }
 
 double Operator::calc_delta(double log_alpha) const {
-    return this->operator_schedule_->calc_delta(this, log_alpha);
+    return this->operator_schedule_->calc_delta(shared_from_this(), log_alpha);
 }
 
 
@@ -114,7 +114,7 @@ void ScaleOperator::update(
         double& parameter_value,
         double& hastings_ratio) const {
     double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
-    parameter_value *= multiplier
+    parameter_value *= multiplier;
     hastings_ratio = std::log(multiplier);
 }
 
@@ -124,7 +124,7 @@ void ScaleOperator::optimize(double log_alpha) {
     this->set_scale(std::exp(delta));
 }
 
-double ScaleOperator::get_coercable_parameter_value() {
+double ScaleOperator::get_coercable_parameter_value() const {
     return this->scale_;
 }
 
@@ -156,8 +156,8 @@ void WindowOperator::update(
         RandomNumberGenerator& rng,
         double& parameter_value,
         double& hastings_ratio) const {
-    double addend = (rng.uniform_real() * 2 * this->window_size_) - this->window_size;
-    parameter_value += addend
+    double addend = (rng.uniform_real() * 2 * this->window_size_) - this->window_size_;
+    parameter_value += addend;
     hastings_ratio = 0.0;
 }
 
@@ -167,7 +167,7 @@ void WindowOperator::optimize(double log_alpha) {
     this->set_window_size(std::exp(delta));
 }
 
-double WindowOperator::get_coercable_parameter_value() {
+double WindowOperator::get_coercable_parameter_value() const {
     return this->window_size_;
 }
 
@@ -266,10 +266,10 @@ Operator::OperatorTypeEnum ConcentrationScaler::get_type() const {
 
 double ConcentrationScaler::propose(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons) const {
-    double v = comparisons->get_concentration();
+    double v = comparisons.get_concentration();
     double hastings;
     this->update(rng, v, hastings);
-    comparisons->set_concentration(v);
+    comparisons.set_concentration(v);
     return hastings;
 }
 
@@ -289,12 +289,12 @@ std::string ConcentrationScaler::get_name() const {
 double MutationRateMover::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    double red_freq = tree->get_v();
+    double red_freq = tree.get_v();
     double hastings;
     this->update(rng, red_freq, hastings);
     if ((red_freq >= 0.0) && (red_freq <= 1.0)) {
         // v is also set here
-        this->set_u(1.0 / (2.0 * red_freq));
+        tree.set_u(1.0 / (2.0 * red_freq));
         return hastings; 
     }
     return -std::numeric_limits<double>::infinity();
@@ -316,10 +316,10 @@ std::string MutationRateMover::get_name() const {
 double ComparisonHeightMultiplierScaler::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    double v = tree->get_node_height_multiplier();
+    double v = tree.get_node_height_multiplier();
     double hastings;
     this->update(rng, v, hastings);
-    tree->set_node_height_multiplier(v);
+    tree.set_node_height_multiplier(v);
     return hastings;
 }
 
@@ -339,13 +339,13 @@ std::string ComparisonHeightMultiplierScaler::get_name() const {
 double ChildCoalescenceRateScaler::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    int pop_idx = rng.uniform_int(0, tree->get_leaf_allele_count() - 1);
-    double rate = tree->get_child_coalescence_rate(pop_idx);
+    int pop_idx = rng.uniform_int(0, tree.get_leaf_node_count() - 1);
+    double rate = tree.get_child_coalescence_rate(pop_idx);
 
     double hastings;
     this->update(rng, rate, hastings);
 
-    tree->set_child_coalescence_rate(pop_idx, rate);
+    tree.set_child_coalescence_rate(pop_idx, rate);
     return hastings;
 }
 
@@ -365,14 +365,18 @@ std::string ChildCoalescenceRateScaler::get_name() const {
 double RootCoalescenceRateScaler::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    double rate = tree->get_root_coalescence_rate();
+    double rate = tree.get_root_coalescence_rate();
 
     double hastings;
     this->update(rng, rate, hastings);
 
-    tree->set_root_coalescence_rate(rate);
+    tree.set_root_coalescence_rate(rate);
 
     return hastings;
+}
+
+std::string RootCoalescenceRateScaler::target_parameter() const {
+    return "coalescence rate";
 }
 
 std::string RootCoalescenceRateScaler::get_name() const {
@@ -387,7 +391,7 @@ std::string RootCoalescenceRateScaler::get_name() const {
 double ComparisonHeightScaler::propose(
         RandomNumberGenerator& rng,
         PositiveRealParameter& node_height) const {
-    double h = node_height->get_value();
+    double h = node_height.get_value();
     double hastings;
     this->update(rng, h, hastings);
     node_height.set_value(h);
@@ -412,7 +416,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
 
     const double ln_concentration_over_num_aux = std::log(
             comparisons.get_concentration() /
-            comparisons.get_number_of_auxiliary_heights())
+            comparisons.get_number_of_auxiliary_heights());
 
     for (unsigned int tree_idx = 0;
             tree_idx < comparisons.get_number_of_trees();
@@ -423,7 +427,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                 comparisons.get_number_of_auxiliary_heights());
 
         // store height associated with this tree
-        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx)).store();
+        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->store();
         for (auto height_idx : other_height_indices) {
             unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height(height_idx);
             if (height_idx == comparisons.get_height_index(tree_idx)) {
@@ -435,7 +439,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                 }
             }
             else {
-                comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx).get_value());
+                comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx)->get_value());
             }
             double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
             ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
@@ -444,7 +448,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<double> auxiliary_heights;
         auxiliary_heights.reserve(comparisons.get_number_of_auxiliary_heights());
         for (unsigned int i = 0; i < comparisons.get_number_of_auxiliary_heights(); ++i) {
-            double fresh_height = comparisons.node_height_prior_.draw(rng);
+            double fresh_height = comparisons.node_height_prior_->draw(rng);
             auxiliary_heights.push_back(fresh_height);
             comparisons.trees_.at(tree_idx).set_height(fresh_height);
             double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
@@ -452,7 +456,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         }
 
         // restore height associated with this tree
-        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx)).restore();
+        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->restore();
 
         std::vector<double> category_probs(ln_category_likelihoods);
         normalize_log_likelihoods(category_probs);
@@ -460,17 +464,22 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         if (prob_index < other_height_indices.size()) {
             comparisons.remap_tree(
                     tree_idx,
-                    other_height_indices.at(prob_idx),
-                    ln_category_likelihoods.at(prob_idx));
+                    other_height_indices.at(prob_index),
+                    ln_category_likelihoods.at(prob_index));
         }
         else {
+            // TODO: I think I need to remove height parameter from
+            // auxiliaries, add it to heights, and create a new auxiliary in
+            // its place?
             comparisons.map_tree_to_new_height(
                     tree_idx,
-                    auxiliary_heights.at(new_height_index -
+                    auxiliary_heights.at(prob_index -
                             other_height_indices.size()),
-                    ln_category_likelihoods.at(prob_idx));
+                    ln_category_likelihoods.at(prob_index));
         }
     }
+    // TODO: check this is legit
+    return std::numeric_limits<double>::infinity();
 }
 
 
