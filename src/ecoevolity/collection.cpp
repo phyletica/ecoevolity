@@ -139,7 +139,20 @@ unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_h
 std::vector<unsigned int> ComparisonPopulationTreeCollection::get_other_height_indices(
         unsigned int tree_index) const {
     std::vector<unsigned int> others;
-    // TODO:
+    others.reserve(this->node_heights_.size());
+    if (this->get_number_of_partners(tree_index) > 0) {
+        for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+            others.push_back(i);
+        }
+    }
+    else {
+        unsigned int removed_height_index = this->get_height_index(tree_index);
+        for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+            if (i != removed_height_index) {
+                others.push_back(i);
+            }
+        }
+    }
     return others;
 }
 
