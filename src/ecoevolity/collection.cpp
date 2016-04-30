@@ -103,18 +103,20 @@ void ComparisonPopulationTreeCollection::compute_tree_partials() {
 }
 
 void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
-    std::vector<std::thread> threads;
-    threads.reserve(this->trees_.size());
+    this->compute_tree_partials();
+    // TODO: get multithreading working
+    // std::vector<std::thread> threads;
+    // threads.reserve(this->trees_.size());
 
-    for (auto tree_iter : this->trees_) {
-        threads.push_back(std::thread(
-                    &ComparisonPopulationTree::compute_log_likelihood_and_prior,
-                    tree_iter));
-    }
+    // for (auto tree_iter : this->trees_) {
+    //     threads.push_back(std::thread(
+    //                 &ComparisonPopulationTree::compute_log_likelihood_and_prior,
+    //                 tree_iter));
+    // }
 
-    for (auto &t : threads) {
-        t.join();
-    }
+    // for (auto &t : threads) {
+    //     t.join();
+    // }
 }
 
 void ComparisonPopulationTreeCollection::make_trees_clean() {
