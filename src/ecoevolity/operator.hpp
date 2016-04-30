@@ -459,10 +459,18 @@ class DirichletProcessGibbsSampler : public ModelOperator {
 
     using ModelOperator::propose;
 
+    protected:
+        unsigned int number_of_auxiliary_categories_ = 4;
+
     public:
         DirichletProcessGibbsSampler() : ModelOperator() { }
         DirichletProcessGibbsSampler(double weight) : ModelOperator(weight) { }
+        DirichletProcessGibbsSampler(double weight,
+                unsigned int number_of_auxiliary_categories);
         virtual ~DirichletProcessGibbsSampler() { }
+
+        void set_number_of_auxiliary_categories(unsigned int n);
+        unsigned int get_number_of_auxiliary_categories() const;
 
         std::string get_name() const;
 

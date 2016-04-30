@@ -407,6 +407,20 @@ std::string ComparisonHeightScaler::get_name() const {
 // DirichletProcessGibbsSampler methods
 //////////////////////////////////////////////////////////////////////////////
 
+DirichletProcessGibbsSampler::DirichletProcessGibbsSampler(
+        double weight,
+        unsigned int number_of_auxiliary_categories) : ModelOperator(weight) {
+    this->set_number_of_auxiliary_categories(number_of_auxiliary_categories);
+}
+
+void DirichletProcessGibbsSampler::set_number_of_auxiliary_categories(
+        unsigned int n) {
+    this->number_of_auxiliary_categories_ = n;
+}
+unsigned int DirichletProcessGibbsSampler::get_number_of_auxiliary_categories() const {
+    return this->number_of_auxiliary_categories_;
+}
+
 std::string DirichletProcessGibbsSampler::get_name() const {
     return "DirichletProcessGibbsSampler";
 }
@@ -416,7 +430,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
 
     const double ln_concentration_over_num_aux = std::log(
             comparisons.get_concentration() /
-            comparisons.get_number_of_auxiliary_heights());
+            this->get_number_of_auxiliary_categories());
 
     for (unsigned int tree_idx = 0;
             tree_idx < comparisons.get_number_of_trees();
@@ -424,7 +438,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
         std::vector<double> ln_category_likelihoods;
         ln_category_likelihoods.reserve(other_height_indices.size() +
-                comparisons.get_number_of_auxiliary_heights());
+                this->get_number_of_auxiliary_categories());
 
         // store height associated with this tree
         comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->store();
@@ -446,8 +460,8 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         }
 
         std::vector<double> auxiliary_heights;
-        auxiliary_heights.reserve(comparisons.get_number_of_auxiliary_heights());
-        for (unsigned int i = 0; i < comparisons.get_number_of_auxiliary_heights(); ++i) {
+        auxiliary_heights.reserve(this->get_number_of_auxiliary_categories());
+        for (unsigned int i = 0; i < this->get_number_of_auxiliary_categories(); ++i) {
             double fresh_height = comparisons.node_height_prior_->draw(rng);
             auxiliary_heights.push_back(fresh_height);
             comparisons.trees_.at(tree_idx).set_height(fresh_height);
@@ -468,9 +482,6 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                     ln_category_likelihoods.at(prob_index));
         }
         else {
-            // TODO: I think I need to remove height parameter from
-            // auxiliaries, add it to heights, and create a new auxiliary in
-            // its place?
             comparisons.map_tree_to_new_height(
                     tree_idx,
                     auxiliary_heights.at(prob_index -

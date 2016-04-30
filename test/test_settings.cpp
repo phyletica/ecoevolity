@@ -802,6 +802,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 0\n";
+        e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.5\n";
@@ -920,6 +921,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
+        e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1033,6 +1035,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
+        e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.5\n";
@@ -1162,6 +1165,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
+        e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1386,6 +1390,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
+        e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1555,6 +1560,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 3\n";
+        e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1715,6 +1721,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "    operators:\n";
         e += "        ModelOperator:\n";
         e += "            weight: 5\n";
+        e += "            number_of_auxiliary_categories: 5\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 3\n";
         e += "            scale: 0.2\n";

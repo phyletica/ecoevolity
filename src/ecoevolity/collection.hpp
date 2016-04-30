@@ -45,7 +45,6 @@ class ComparisonPopulationTreeCollection {
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
         bool use_multithreading_ = false;
-        unsigned int number_of_auxiliary_heights_ = 4;
 
         void init_trees(
                 const std::vector<ComparisonSettings> & comparison_settings,
@@ -119,10 +118,6 @@ class ComparisonPopulationTreeCollection {
         }
         void set_concentration(double value) {
             this->concentration_->set_value(value);
-        }
-
-        unsigned int get_number_of_auxiliary_heights() const {
-            return this->number_of_auxiliary_heights_;
         }
 
         std::vector<unsigned int> get_other_height_indices(

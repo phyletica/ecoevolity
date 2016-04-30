@@ -825,6 +825,65 @@ class OperatorSettings {
         }
 };
 
+class ModelOperatorSettings : public OperatorSettings {
+    protected:
+        unsigned int number_of_auxiliary_categories_;
+
+    public:
+        ModelOperatorSettings() { }
+        ModelOperatorSettings(
+                double weight,
+                double number_of_auxiliary_categories)
+                : OperatorSettings(weight) {
+            this->number_of_auxiliary_categories_ = number_of_auxiliary_categories;
+        }
+        virtual ~ModelOperatorSettings() { }
+        ModelOperatorSettings& operator=(const ModelOperatorSettings& other) {
+            this->weight_ = other.weight_;
+            this->number_of_auxiliary_categories_ = other.number_of_auxiliary_categories_;
+            return * this;
+        }
+        double get_number_of_auxiliary_categories() const {
+            return this->number_of_auxiliary_categories_;
+        }
+        void set_number_of_auxiliary_categories(double number_of_auxiliary_categories) {
+            this->number_of_auxiliary_categories_ = number_of_auxiliary_categories;
+        }
+        virtual void update_from_config(const YAML::Node& parameters) {
+            if (! parameters.IsMap()) {
+                std::string message = (
+                        "Expecting operator parameters to be a map, but found: " +
+                        YamlCppUtils::get_node_type(parameters));
+                throw EcoevolityYamlConfigError(message);
+            }
+
+            for (YAML::const_iterator p = parameters.begin();
+                    p != parameters.end();
+                    ++p) {
+                if (p->first.as<std::string>() == "weight") {
+                    this->set_weight(p->second.as<double>());
+                }
+                else if (p->first.as<std::string>() == "number_of_auxiliary_categories") {
+                    this->set_number_of_auxiliary_categories(p->second.as<unsigned int>());
+                }
+                else {
+                    std::string message = (
+                            "Unrecognized key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            std::string margin = string_util::get_indent(indent_level);
+            ss << margin << "weight: " << this->weight_ << "\n";
+            ss << margin << "number_of_auxiliary_categories: " << this->number_of_auxiliary_categories_ << "\n";
+            return ss.str();
+        }
+};
+
 class ScaleOperatorSettings : public OperatorSettings {
     protected:
         double scale_;
@@ -944,7 +1003,8 @@ class OperatorScheduleSettings {
     private:
         bool auto_optimize_ = true;
         unsigned int auto_optimize_delay_ = 10000;
-        OperatorSettings model_operator_settings_ = OperatorSettings(3.0);
+        ModelOperatorSettings model_operator_settings_ = ModelOperatorSettings(
+                3.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
         ScaleOperatorSettings comparison_height_scaler_settings_ = ScaleOperatorSettings(

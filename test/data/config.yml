@@ -27,6 +27,7 @@ operator_settings:
     operators:
         ModelOperator:
             weight: 5.0
+            number_of_auxiliary_categories: 5
         ConcentrationScaler:
             scale: 0.2
             weight: 3.0
