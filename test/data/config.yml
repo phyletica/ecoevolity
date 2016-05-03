@@ -21,6 +21,10 @@ mcmc_settings:
     chain_length: 2000000
     sample_frequency: 2000
 
+output_settings:
+    state_log_path: "../results/parameters.txt"
+    operator_log_path: "../results/operators.txt"
+
 operator_settings:
     auto_optimize: true
     auto_optimize_delay: 20000

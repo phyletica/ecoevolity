@@ -1253,6 +1253,8 @@ class CollectionSettings {
             this->default_population_size_prior_ = other.default_population_size_prior_;
             this->default_u_prior_ = other.default_u_prior_;
             this->default_time_multiplier_prior_ = other.default_time_multiplier_prior_;
+            this->state_log_path_ = other.state_log_path_;
+            this->operator_log_path_ = other.operator_log_path_;
             return * this;
         }
 
@@ -1262,6 +1264,15 @@ class CollectionSettings {
 
         const std::string& get_path() const {
             return this->path_;
+        }
+        std::string get_config_directory() const {
+            return path::dirname(this->get_path());
+        }
+        const std::string& get_state_log_path() const {
+            return this->state_log_path_;
+        }
+        const std::string& get_operator_log_path() const {
+            return this->operator_log_path_;
         }
         bool using_dpp() const {
             return this->use_dpp_;
@@ -1346,6 +1357,10 @@ class CollectionSettings {
                << indent << "chain_length: " << this->chain_length_ << "\n"
                << indent << "sample_frequency: " << this->sample_frequency_ << "\n";
 
+            ss << "output_settings:\n"
+               << indent << "state_log_path: " << this->state_log_path_ << "\n"
+               << indent << "operator_log_path: " << this->operator_log_path_ << "\n";
+
             ss << "comparisons:\n";
             for (auto comp : this->comparisons_) {
                 ss << "- comparison:\n";
@@ -1363,6 +1378,8 @@ class CollectionSettings {
         bool use_dpp_ = true;
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
+        std::string state_log_path_ = "ecoevolity-state.log";
+        std::string operator_log_path_ = "ecoevolity-operator.log";
 
         OperatorScheduleSettings operator_schedule_settings_;
 
@@ -1403,8 +1420,18 @@ class CollectionSettings {
                     default_parameters);
         }
 
+        void set_output_paths_to_config_directory() {
+            this->state_log_path_ = path::join(
+                    path::dirname(this->path_),
+                    path::basename(this->state_log_path_));
+            this->operator_log_path_ = path::join(
+                    path::dirname(this->path_),
+                    path::basename(this->operator_log_path_));
+        }
+
         void init_from_config_stream(std::istream& stream, const std::string& path) {
             this->path_ = path;
+            this->set_output_paths_to_config_directory();
             this->parse_yaml_config(stream);
         }
         void init_from_config_file(const std::string& path) {
@@ -1483,6 +1510,10 @@ class CollectionSettings {
                 // parse mcmc settings
                 if (top->first.as<std::string>() == "mcmc_settings") {
                     this->parse_mcmc_settings(top->second);
+                }
+                // parse output settings
+                else if (top->first.as<std::string>() == "output_settings") {
+                    this->parse_output_settings(top->second);
                 }
                 // parse operator settings
                 else if (top->first.as<std::string>() == "operator_settings") {
@@ -1581,6 +1612,32 @@ class CollectionSettings {
                     throw EcoevolityYamlConfigError(
                             "Unrecognized mcmc_settings key: " +
                             mcmc->first.as<std::string>());
+                }
+            }
+        }
+
+        void parse_output_settings(const YAML::Node& output_node) {
+            if (! output_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting output_settings to be a map, but found: " +
+                        YamlCppUtils::get_node_type(output_node));
+            }
+            for (YAML::const_iterator output = output_node.begin(); output != output_node.end(); ++output) {
+                if (output->first.as<std::string>() == "state_log_path") {
+                    this->state_log_path_ = path::join(
+                            path::dirname(this->path_),
+                            output->second.as<std::string>());
+
+                }
+                else if (output->first.as<std::string>() == "operator_log_path") {
+                    this->operator_log_path_ = path::join(
+                            path::dirname(this->path_),
+                            output->second.as<std::string>());
+                }
+                else {
+                    throw EcoevolityYamlConfigError(
+                            "Unrecognized output_settings key: " +
+                            output->first.as<std::string>());
                 }
             }
         }
