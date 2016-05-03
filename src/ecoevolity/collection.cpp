@@ -24,6 +24,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         const CollectionSettings & settings,
         RandomNumberGenerator & rng
         ) {
+    this->state_log_path_ = settings.get_state_log_path();
+    this->operator_log_path_ = settings.get_operator_log_path();
     this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
@@ -124,6 +126,11 @@ void ComparisonPopulationTreeCollection::make_trees_clean() {
         tree_iter.make_clean();
     }
 }
+void ComparisonPopulationTreeCollection::make_trees_dirty() {
+    for (auto tree_iter : this->trees_) {
+        tree_iter.make_dirty();
+    }
+}
 
 unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
         unsigned int height_index) const {
@@ -222,10 +229,59 @@ void ComparisonPopulationTreeCollection::add_height(
     }
 }
 
+void ComparisonPopulationTreeCollection::write_state_log_header(std::ostream& out) const {
+    // TODO
+}
+
+void ComparisonPopulationTreeCollection::log_state(std::ostream& out) const {
+    // TODO
+}
+
 void ComparisonPopulationTreeCollection::mcmc(
         RandomNumberGenerator& rng,
-        unsigned int chain_length) {
-    // TODO:  initialize state
+        unsigned int chain_length,
+        unsigned int sample_frequency) {
+
+    if (path::exists(this->get_state_log_path())) {
+        std::ostringstream message;
+        message << "ERROR: The parameter log file \'"
+                << this->get_state_log_path()
+                << "\' already exists!\n";
+        throw EcoevolityError(message.str());
+    }
+    if (path::exists(this->get_operator_log_path())) {
+        std::ostringstream message;
+        message << "ERROR: The operator log file \'"
+                << this->get_operator_log_path()
+                << "\' already exists!\n";
+        throw EcoevolityError(message.str());
+    }
+    std::ofstream state_log_stream;
+    std::ofstream operator_log_stream;
+    state_log_stream.open(this->get_state_log_path());
+    operator_log_stream.open(this->get_operator_log_path());
+    
+    if (! state_log_stream.is_open()) {
+        std::ostringstream message;
+        message << "ERROR: Could not open parameter log file \'"
+                << this->get_state_log_path()
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+    if (! operator_log_stream.is_open()) {
+        std::ostringstream message;
+        message << "ERROR: Could not open operator log file \'"
+                << this->get_operator_log_path()
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+
+    this->write_state_log_header(state_log_stream);
+
+    this->make_trees_dirty();
+    this->compute_log_likelihood_and_prior(true);
+    this->log_state(state_log_stream);
+
     std::shared_ptr<Operator> op;
     for (unsigned int gen = 0; gen < chain_length; ++gen) {
         this->store_state();
@@ -268,7 +324,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                         prior_ratio +
                         hastings_ratio;
                 double u = rng.uniform_real();
-                if (u < acceptance_probability) {
+                if (u < std::exp(acceptance_probability)) {
                     op->accept();
                 }
                 else {
@@ -276,6 +332,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                     this->trees_.at(tree_idx).restore_state();
                 }
                 this->trees_.at(tree_idx).make_clean();
+                op->optimize(acceptance_probability);
             }
             this->compute_log_likelihood_and_prior(false);
         }
@@ -306,7 +363,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                         prior_ratio +
                         hastings_ratio;
                 double u = rng.uniform_real();
-                if (u < acceptance_probability) {
+                if (u < std::exp(acceptance_probability)) {
                     op->accept();
                 }
                 else {
@@ -319,12 +376,12 @@ void ComparisonPopulationTreeCollection::mcmc(
                         }
                     }
                 }
+                op->optimize(acceptance_probability);
             }
             this->make_trees_clean();
             this->compute_log_likelihood_and_prior(false);
         }
         else if (op->get_type() == Operator::OperatorTypeEnum::model_operator) {
-            // TODO: for DPP nothing to accept/reject
             double hastings_ratio = op->propose(rng, *this);
             this->compute_log_likelihood_and_prior(true);
             double likelihood_ratio = 
@@ -338,7 +395,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                     prior_ratio +
                     hastings_ratio;
             double u = rng.uniform_real();
-            if (u < acceptance_probability) {
+            if (u < std::exp(acceptance_probability)) {
                 op->accept();
             }
             else {
@@ -346,10 +403,38 @@ void ComparisonPopulationTreeCollection::mcmc(
                 this->restore_state();
             }
             this->make_trees_clean();
+            op->optimize(acceptance_probability);
         }
         else {
+            state_log_stream.close();
+            operator_log_stream.close();
             throw EcoevolityError("unexpected operator");
         }
-        // TODO: check if its a logging generation
+
+        if ((gen + 1) % sample_frequency == 0) {
+            this->operator_schedule_.write_operator_rates(operator_log_stream);
+            this->log_state(state_log_stream);
+        }
+
+        // Check if the chain has gone astray
+        ECOEVOLITY_DEBUG(
+            if (gen % 10 == 0) {
+                double chain_ln_likelihood = this->log_likelihood_.get_value();
+                this->make_trees_dirty();
+                this->compute_log_likelihood_and_prior(true);
+                double expected_ln_likelihood = this->log_likelihood_.get_value();
+                if (fabs(chain_ln_likelihood - expected_ln_likelihood) > 1e-6) {
+                    std::ostringstream message;
+                    message << "ERROR: The likelihood at generation "
+                            << gen
+                            << " is incorrect\n";
+                    state_log_stream.close();
+                    operator_log_stream.close();
+                    throw EcoevolityError(message.str());
+                }
+            }
+        )
     }
+    state_log_stream.close();
+    operator_log_stream.close();
 }

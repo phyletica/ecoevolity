@@ -139,7 +139,7 @@ void OperatorSchedule::set_auto_optimize_delay(unsigned int delay) {
     this->auto_optimize_delay_ = delay;
 }
 
-void OperatorSchedule::write_operator_rates(std::ofstream out) {
+void OperatorSchedule::write_operator_rates(std::ostream& out) const {
     const std::shared_ptr<Operator>& op = this->operators_.at(0);
     out << op->header_string();
     out << op->to_string();

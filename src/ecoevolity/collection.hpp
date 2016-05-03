@@ -44,6 +44,8 @@ class ComparisonPopulationTreeCollection {
         std::shared_ptr<PositiveRealParameter> concentration_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
+        std::string state_log_path_ = "ecoevolity-state.log";
+        std::string operator_log_path_ = "ecoevolity-operator.log";
         bool use_multithreading_ = false;
 
         void init_trees(
@@ -53,6 +55,7 @@ class ComparisonPopulationTreeCollection {
         void compute_tree_partials();
         void compute_tree_partials_threaded();
         void make_trees_clean();
+        void make_trees_dirty();
 
         void remap_tree(unsigned int tree_index,
                         unsigned int height_index,
@@ -68,6 +71,9 @@ class ComparisonPopulationTreeCollection {
                 const std::vector<unsigned int>& mapped_tree_indices);
 
         void remove_height(unsigned int height_index);
+
+        void write_state_log_header(std::ostream& out) const;
+        void log_state(std::ostream& out) const;
 
     public:
         ComparisonPopulationTreeCollection() { }
@@ -123,9 +129,22 @@ class ComparisonPopulationTreeCollection {
         std::vector<unsigned int> get_other_height_indices(
                 unsigned int tree_index) const;
 
+        std::string get_state_log_path() const {
+            return this->state_log_path_;
+        }
+        std::string get_operator_log_path() const {
+            return this->operator_log_path_;
+        }
+        void set_state_log_path(const std::string& path) {
+            this->state_log_path_ = path;
+        }
+        void set_operator_log_path(const std::string& path) {
+            this->operator_log_path_ = path;
+        }
 
         void mcmc(RandomNumberGenerator& rng,
-                unsigned int chain_length);
+                unsigned int chain_length,
+                unsigned int sample_frequency);
 };
 
 #endif

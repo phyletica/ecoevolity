@@ -59,7 +59,7 @@ class OperatorSchedule : public std::enable_shared_from_this<OperatorSchedule> {
         unsigned int get_auto_optimize_delay() const;
         void set_auto_optimize_delay(unsigned int delay);
 
-        void write_operator_rates(std::ofstream out);
+        void write_operator_rates(std::ostream& out) const;
 
         bool auto_optimizing() const;
         void turn_on_auto_optimize();

@@ -489,7 +489,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                     ln_category_likelihoods.at(prob_index));
         }
     }
-    // TODO: check this is legit
+    // Always accept, so returning inf
     return std::numeric_limits<double>::infinity();
 }
 
