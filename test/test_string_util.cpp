@@ -25,6 +25,16 @@ SCENARIO("split provides Python-like splitting of strings", "[string_util]") {
         REQUIRE(words[3] == "TO");
         REQUIRE(words[4] == "Split");
     }
+
+    SECTION("splitting string by tabs") {
+        string_util::split("Test\tstring\t\tTO\tSplit", '\t', elements);
+        REQUIRE(elements.size() == 5);
+        REQUIRE(elements[0] == "Test");
+        REQUIRE(elements[1] == "string");
+        REQUIRE(elements[2] == "");
+        REQUIRE(elements[3] == "TO");
+        REQUIRE(elements[4] == "Split");
+    }
 }
 
 TEST_CASE("Testing get_indent", "[string_util]") {
