@@ -333,6 +333,21 @@ class ComparisonPopulationTree: public PopulationTree {
         }
 
         double compute_log_prior_density();
+
+        void write_state_log_header(std::ostream& out,
+                bool include_event_index,
+                const std::string& delimiter = "\t") const;
+        void log_state(std::ostream& out,
+                unsigned int event_index,
+                const std::string& delimiter = "\t") const;
+        void log_state(std::ostream& out,
+                const std::string& delimiter = "\t") const;
+
+        std::string get_state_header_string(
+                const std::string& delimiter = "\t") const;
+        std::string get_state_string(
+                const std::string& delimiter = "\t",
+                unsigned int precision = 18) const;
 };
 
 #endif

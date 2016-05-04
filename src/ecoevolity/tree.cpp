@@ -833,7 +833,7 @@ std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_co
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
 }
 
-// Node eight sharing needs to be dealt with in next level up in
+// Node height sharing needs to be dealt with in next level up in
 // class hierarchy
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
@@ -843,4 +843,60 @@ double ComparisonPopulationTree::compute_log_prior_density() {
     d += this->compute_log_prior_density_of_coalescence_rates();
     this->log_prior_density_.set_value(d);
     return d;
+}
+
+void ComparisonPopulationTree::write_state_log_header(
+        std::ostream& out,
+        bool include_event_index,
+        const std::string& delimiter) const {
+    std::string suffix = "_" + this->root_->get_child(0)->get_label();
+    if (include_event_index) {
+        out << "root_height_index" << suffix << delimiter;
+    }
+    out << "root_height" << suffix << delimiter
+        << "time_multiplier" << suffix << delimiter
+        << "u" << suffix << delimiter
+        << "v" << suffix << delimiter
+        << "pop_size" << suffix << delimiter;
+    if (this->root_->get_number_of_children() > 1) {
+        out << "pop_size" << "_" << this->root_->get_child(1)->get_label() << delimiter;
+    }
+    out << "pop_size_root" << suffix;
+}
+
+void ComparisonPopulationTree::log_state(
+        std::ostream& out,
+        const std::string& delimiter) const {
+    out << this->get_height() << delimiter
+        << this->get_node_height_multiplier() << delimiter
+        << this->get_u() << delimiter
+        << this->get_v() << delimiter
+        << CoalescenceRateParameter::get_population_size_from_rate(this->get_child_coalescence_rate(0)) << delimiter;
+    if (this->root_->get_number_of_children() > 1) {
+        out << CoalescenceRateParameter::get_population_size_from_rate(this->get_child_coalescence_rate(1)) << delimiter;
+    }
+    out << CoalescenceRateParameter::get_population_size_from_rate(this->get_root_coalescence_rate());
+}
+void ComparisonPopulationTree::log_state(
+        std::ostream& out,
+        unsigned int event_index,
+        const std::string& delimiter) const {
+    out << event_index << delimiter;
+    this->log_state(out, delimiter);
+}
+
+std::string ComparisonPopulationTree::get_state_header_string(
+        const std::string& delimiter) const {
+    std::ostringstream ss;
+    this->write_state_log_header(ss, false, delimiter);
+    return ss.str();
+}
+
+std::string ComparisonPopulationTree::get_state_string(
+        const std::string& delimiter,
+        unsigned int precision) const {
+    std::ostringstream ss;
+    ss.precision(precision);
+    this->log_state(ss, delimiter);
+    return ss.str();
 }
