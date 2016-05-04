@@ -47,6 +47,8 @@ class ComparisonPopulationTreeCollection {
         std::string state_log_path_ = "ecoevolity-state.log";
         std::string operator_log_path_ = "ecoevolity-operator.log";
         bool use_multithreading_ = false;
+        unsigned int logging_precision_ = 18;
+        std::string logging_delimiter_ = "\t";
 
         void init_trees(
                 const std::vector<ComparisonSettings> & comparison_settings,
@@ -73,7 +75,8 @@ class ComparisonPopulationTreeCollection {
         void remove_height(unsigned int height_index);
 
         void write_state_log_header(std::ostream& out) const;
-        void log_state(std::ostream& out) const;
+        void log_state(std::ostream& out,
+                unsigned int generation_index) const;
 
     public:
         ComparisonPopulationTreeCollection() { }
@@ -95,6 +98,23 @@ class ComparisonPopulationTreeCollection {
             for (auto tree : this->trees_) {
                 tree.use_data();
             }
+        }
+
+        bool using_dpp() const {
+            return this->operator_schedule_.using_dpp();
+        }
+
+        unsigned int get_logging_precision() const {
+            return this->logging_precision_;
+        }
+        void set_logging_precision(unsigned int precision) {
+            this->logging_precision_ = precision;
+        }
+        const std::string& get_logging_delimiter() const {
+            return this->logging_delimiter_;
+        }
+        void set_logging_delimiter(const std::string& delimiter) {
+            this->logging_delimiter_ = delimiter;
         }
 
         unsigned int get_number_of_trees() const {

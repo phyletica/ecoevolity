@@ -157,3 +157,12 @@ void OperatorSchedule::turn_on_auto_optimize() {
 void OperatorSchedule::turn_off_auto_optimize() {
     this->auto_optimize_ = false;
 }
+
+bool OperatorSchedule::using_dpp() const {
+    for (auto op : this->operators_) {
+        if (op->get_name() == "DirichletProcessGibbsSampler") {
+            return true;
+        }
+    }
+    return false;
+}

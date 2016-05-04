@@ -64,6 +64,8 @@ class OperatorSchedule : public std::enable_shared_from_this<OperatorSchedule> {
         bool auto_optimizing() const;
         void turn_on_auto_optimize();
         void turn_off_auto_optimize();
+
+        bool using_dpp() const;
 };
 
 #endif
