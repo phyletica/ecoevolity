@@ -1490,23 +1490,25 @@ class CollectionSettings {
             // Update unset priors for comparisons
             this->update_default_comparison_priors();
             // Set default concentration prior to be overriden by config
+            double default_shape = 2.0;
+            double default_prior_mean_num_events = 1.0;
+            double default_scale = 1.0;
             if (this->comparisons_.size() > 1) {
-                double default_shape = 2.0;
-                double default_prior_mean_num_events = (double)this->comparisons_.size() * 0.75;
-                double default_scale = get_dpp_gamma_scale(
+                default_prior_mean_num_events = (double)this->comparisons_.size() * 0.75;
+                default_scale = get_dpp_gamma_scale(
                         default_prior_mean_num_events,
                         this->comparisons_.size(),
                         default_shape);
-                std::unordered_map<std::string, double> default_parameters;
-                default_parameters["shape"] = default_shape;
-                default_parameters["scale"] = default_scale;
-                this->concentration_settings_.prior_settings_ = ContinuousDistributionSettings(
-                        "gamma_distribution",
-                        default_parameters);
             }
             else {
                 this->use_dpp_ = false;
             }
+            std::unordered_map<std::string, double> default_parameters;
+            default_parameters["shape"] = default_shape;
+            default_parameters["scale"] = default_scale;
+            this->concentration_settings_.prior_settings_ = ContinuousDistributionSettings(
+                    "gamma_distribution",
+                    default_parameters);
             ///////////////////////////////////////////////////////////////////
 
             for (YAML::const_iterator top = top_level_node.begin();
