@@ -22,7 +22,7 @@
 
 #include <limits>
 
-#include "OptionParser.h"
+#include "cpp-optparse/OptionParser.h"
 
 #include "version.hpp"
 #include "error.hpp"

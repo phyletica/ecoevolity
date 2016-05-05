@@ -1,4 +1,4 @@
-include_directories("${YAML_CPP_INCLUDE_DIR}")
+include_directories("${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
 set(ECOEVOLITY_MAIN_SOURCES
     ecoevolity_main.cpp)
@@ -10,7 +10,7 @@ set(ECOEVOLITY_SOURCES
     operator_schedule.cpp
     operator.cpp
     collection.cpp
-    OptionParser.cpp
+    "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     ecoevolity.cpp
     data.cpp)
 
