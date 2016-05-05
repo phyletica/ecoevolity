@@ -10,6 +10,8 @@ set(ECOEVOLITY_SOURCES
     operator_schedule.cpp
     operator.cpp
     collection.cpp
+    OptionParser.cpp
+    ecoevolity.cpp
     data.cpp)
 
 foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})

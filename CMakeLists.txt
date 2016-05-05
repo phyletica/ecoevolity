@@ -115,6 +115,8 @@ file(WRITE ${ECOEVOLITY_SOURCE_DIR}/version.hpp.in
  * file instead.
  */
 
+#ifndef ECOEVOLITY_VERSION_HPP
+#define ECOEVOLITY_VERSION_HPP
 #cmakedefine01 PROJECT_SOURCE_IDENTIFIED
 #cmakedefine PROJECT_GIT_SHA1               \"${PROJECT_GIT_SHA1}\"
 #cmakedefine PROJECT_GIT_SHA1_SHORT         \"${PROJECT_GIT_SHA1_SHORT}\"
@@ -124,6 +126,8 @@ file(WRITE ${ECOEVOLITY_SOURCE_DIR}/version.hpp.in
 #cmakedefine PROJECT_SOURCE_IDENTIFIER      \"${PROJECT_SOURCE_IDENTIFIER}\"
 #cmakedefine PROJECT_VERSION                \"${PROJECT_VERSION}\"
 #cmakedefine PROJECT_DETAILED_VERSION       \"${PROJECT_DETAILED_VERSION}\"
+#define PROJECT_NAME                        \"Ecoevolity\"
+#endif
 ")
 configure_file(
     "${ECOEVOLITY_SOURCE_DIR}/version.hpp.in"

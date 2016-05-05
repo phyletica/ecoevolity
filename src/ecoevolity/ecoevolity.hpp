@@ -17,9 +17,18 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#include "ecoevolity.hpp"
+#ifndef ECOEVOLITY_HPP
+#define ECOEVOLITY_HPP
 
-int main(int argc, char *argv[]) {
-    ecoevolity_main(argc, argv);
-    return 0;
-}
+#include <limits>
+
+#include "OptionParser.h"
+
+#include "version.hpp"
+#include "error.hpp"
+#include "rng.hpp"
+#include "path.hpp"
+
+int ecoevolity_main(int argc, char * argv[]);
+
+#endif
