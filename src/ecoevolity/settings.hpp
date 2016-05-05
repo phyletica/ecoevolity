@@ -1437,6 +1437,11 @@ class CollectionSettings {
         void init_from_config_file(const std::string& path) {
             std::ifstream in_stream;
             in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityYamlConfigError(
+                        "Could not open YAML config file",
+                        path);
+            }
             this->init_from_config_stream(in_stream, path);
             in_stream.close();
         }
