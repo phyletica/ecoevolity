@@ -33,7 +33,9 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->operator_schedule_ = OperatorSchedule(
             settings.get_operator_schedule_settings(),
             settings.using_dpp());
+    std::cout << "Initiating trees...\n";
     this->init_trees(settings.get_comparison_settings(), rng);
+    std::cout << "Trees are set\n";
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -370,14 +372,14 @@ void ComparisonPopulationTreeCollection::mcmc(
                         hastings_ratio;
                 double u = rng.uniform_real();
                 if (u < std::exp(acceptance_probability)) {
-                    op->accept();
+                    op->accept(this->operator_schedule_);
                 }
                 else {
-                    op->reject();
+                    op->reject(this->operator_schedule_);
                     this->trees_.at(tree_idx).restore_state();
                 }
                 this->trees_.at(tree_idx).make_clean();
-                op->optimize(acceptance_probability);
+                op->optimize(this->operator_schedule_, acceptance_probability);
             }
             this->compute_log_likelihood_and_prior(false);
         }
@@ -409,10 +411,10 @@ void ComparisonPopulationTreeCollection::mcmc(
                         hastings_ratio;
                 double u = rng.uniform_real();
                 if (u < std::exp(acceptance_probability)) {
-                    op->accept();
+                    op->accept(this->operator_schedule_);
                 }
                 else {
-                    op->reject();
+                    op->reject(this->operator_schedule_);
                     this->node_heights_.at(height_idx)->restore();
                     for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
                         if (this->node_height_indices_.at(tree_idx) == height_idx) {
@@ -421,7 +423,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                         }
                     }
                 }
-                op->optimize(acceptance_probability);
+                op->optimize(this->operator_schedule_, acceptance_probability);
             }
             this->make_trees_clean();
             this->compute_log_likelihood_and_prior(false);
@@ -441,14 +443,14 @@ void ComparisonPopulationTreeCollection::mcmc(
                     hastings_ratio;
             double u = rng.uniform_real();
             if (u < std::exp(acceptance_probability)) {
-                op->accept();
+                op->accept(this->operator_schedule_);
             }
             else {
-                op->reject();
+                op->reject(this->operator_schedule_);
                 this->restore_state();
             }
             this->make_trees_clean();
-            op->optimize(acceptance_probability);
+            op->optimize(this->operator_schedule_, acceptance_probability);
         }
         else {
             state_log_stream.close();

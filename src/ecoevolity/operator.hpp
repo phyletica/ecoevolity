@@ -50,11 +50,9 @@ class Operator : public std::enable_shared_from_this<Operator> {
 
         virtual Operator::OperatorTypeEnum get_type() const = 0;
 
-        virtual void optimize(double log_alpha) = 0;
+        virtual void optimize(OperatorSchedule& os, double log_alpha) = 0;
 
         double get_target_acceptance_probability() const;
-
-        void set_operator_schedule(std::shared_ptr<OperatorSchedule> os);
 
         virtual double get_coercable_parameter_value() const;
 
@@ -81,9 +79,9 @@ class Operator : public std::enable_shared_from_this<Operator> {
         virtual double propose(RandomNumberGenerator& rng,
                 PositiveRealParameter& node_height) const = 0;
 
-        void accept();
+        void accept(const OperatorSchedule& os);
 
-        void reject();
+        void reject(const OperatorSchedule& os);
 
         const unsigned int& get_number_rejected() const {
             return this->number_rejected_;
@@ -104,17 +102,16 @@ class Operator : public std::enable_shared_from_this<Operator> {
 
         std::string header_string() const;
 
-        std::string to_string() const;
+        std::string to_string(const OperatorSchedule& os) const;
 
     protected:
-        std::shared_ptr<OperatorSchedule> operator_schedule_;
         double weight_ = 1.0;
         unsigned int number_rejected_ = 0;
         unsigned int number_accepted_ = 0;
         unsigned int number_rejected_for_correction_ = 0;
         unsigned int number_accepted_for_correction_ = 0;
 
-        double calc_delta(double log_alpha) const;
+        double calc_delta(OperatorSchedule& os, double log_alpha) const;
 };
 
 class ScaleOperator : public Operator {
@@ -138,7 +135,7 @@ class ScaleOperator : public Operator {
                 double& parameter_value,
                 double& hastings_ratio) const;
 
-        void optimize(double log_alpha);
+        void optimize(OperatorSchedule& os, double log_alpha);
 
         double get_coercable_parameter_value() const;
 
@@ -165,7 +162,7 @@ class WindowOperator : public Operator {
                 double& parameter_value,
                 double& hastings_ratio) const;
 
-        void optimize(double log_alpha);
+        void optimize(OperatorSchedule& os, double log_alpha);
 
         double get_coercable_parameter_value() const;
 
@@ -207,7 +204,7 @@ class ModelOperator : public Operator {
 
         std::string target_parameter() const;
 
-        void optimize(double log_alpha) { }
+        void optimize(OperatorSchedule& os, double log_alpha) { }
         void update(
                 RandomNumberGenerator& rng,
                 double& parameter_value,

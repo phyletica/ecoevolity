@@ -92,6 +92,7 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     std::cout << "Parsing config file..." << std::endl;
     CollectionSettings settings = CollectionSettings(config_path);
+    std::cout << settings.to_string() << std::endl;
 
     std::cout << "Configuring model..." << std::endl;
     ComparisonPopulationTreeCollection comparisons =

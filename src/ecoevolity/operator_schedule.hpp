@@ -32,7 +32,7 @@
 
 class Operator;
 
-class OperatorSchedule : public std::enable_shared_from_this<OperatorSchedule> {
+class OperatorSchedule {
     protected:
         std::vector< std::shared_ptr<Operator> > operators_;
         double total_weight_ = 0.0;

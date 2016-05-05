@@ -31,10 +31,6 @@ double Operator::get_target_acceptance_probability() const {
     return 0.234;
 }
 
-void Operator::set_operator_schedule(std::shared_ptr<OperatorSchedule> os) {
-    this->operator_schedule_ = os;
-}
-
 double Operator::get_coercable_parameter_value() const {
     return std::numeric_limits<double>::quiet_NaN();
 }
@@ -44,16 +40,16 @@ void Operator::set_weight(double weight) {
     this->weight_ = weight;
 }
 
-void Operator::accept() {
+void Operator::accept(const OperatorSchedule& os) {
     ++this->number_accepted_;
-    if (this->operator_schedule_->get_auto_optimize_delay_count() >= this->operator_schedule_->get_auto_optimize_delay()) {
+    if (os.get_auto_optimize_delay_count() >= os.get_auto_optimize_delay()) {
         ++this->number_accepted_for_correction_;
     }
 }
 
-void Operator::reject() {
+void Operator::reject(const OperatorSchedule& os) {
     ++this->number_rejected_;
-    if (this->operator_schedule_->get_auto_optimize_delay_count() >= this->operator_schedule_->get_auto_optimize_delay()) {
+    if (os.get_auto_optimize_delay_count() >= os.get_auto_optimize_delay()) {
         ++this->number_rejected_for_correction_;
     }
 }
@@ -66,15 +62,15 @@ std::string Operator::header_string() const {
     return "name\tnumber_accepted\tnumber_rejected\tweight\tweight_prob\ttuning_parameter\n";
 }
 
-std::string Operator::to_string() const {
+std::string Operator::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
        << this->get_number_rejected() << "\t"
        << this->get_weight() << "\t";
 
-    if (this->operator_schedule_->get_total_weight() > 0.0) {
-        ss << this->get_weight() / this->operator_schedule_->get_total_weight() << "\t";
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
     }
     else {
         ss << "\t";
@@ -91,8 +87,9 @@ std::string Operator::to_string() const {
     return ss.str();
 }
 
-double Operator::calc_delta(double log_alpha) const {
-    return this->operator_schedule_->calc_delta(shared_from_this(), log_alpha);
+double Operator::calc_delta(OperatorSchedule& os,
+        double log_alpha) const {
+    return os.calc_delta(shared_from_this(), log_alpha);
 }
 
 
@@ -118,8 +115,8 @@ void ScaleOperator::update(
     hastings_ratio = std::log(multiplier);
 }
 
-void ScaleOperator::optimize(double log_alpha) {
-    double delta = this->calc_delta(log_alpha);
+void ScaleOperator::optimize(OperatorSchedule& os, double log_alpha) {
+    double delta = this->calc_delta(os, log_alpha);
     delta += std::log(this->scale_);
     this->set_scale(std::exp(delta));
 }
@@ -161,8 +158,8 @@ void WindowOperator::update(
     hastings_ratio = 0.0;
 }
 
-void WindowOperator::optimize(double log_alpha) {
-    double delta = this->calc_delta(log_alpha);
+void WindowOperator::optimize(OperatorSchedule& os, double log_alpha) {
+    double delta = this->calc_delta(os, log_alpha);
     delta += std::log(this->window_size_);
     this->set_window_size(std::exp(delta));
 }

@@ -86,7 +86,6 @@ OperatorSchedule::OperatorSchedule(
 
 void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
     this->operators_.push_back(o);
-    o->set_operator_schedule(shared_from_this());
     this->total_weight_ += o->get_weight();
     this->cumulative_probs_.push_back(0.0);
     ECOEVOLITY_ASSERT(this->operators_.size() == this->cumulative_probs_.size());
@@ -112,6 +111,7 @@ std::shared_ptr<Operator>& OperatorSchedule::draw_operator(RandomNumberGenerator
 double OperatorSchedule::calc_delta(std::shared_ptr<const Operator> op, double log_alpha) {
     if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
             (! this->auto_optimize_)) {
+        ++this->auto_optimize_delay_count_;
         return 0.0;
     }
     double target = op->get_target_acceptance_probability();
@@ -142,9 +142,9 @@ void OperatorSchedule::set_auto_optimize_delay(unsigned int delay) {
 void OperatorSchedule::write_operator_rates(std::ostream& out) const {
     const std::shared_ptr<Operator>& op = this->operators_.at(0);
     out << op->header_string();
-    out << op->to_string();
+    out << op->to_string(*this);
     for (unsigned int i = 1; i < this->operators_.size(); ++i) {
-        out << this->operators_.at(i)->to_string();
+        out << this->operators_.at(i)->to_string(*this);
     }
 }
 
