@@ -90,5 +90,33 @@ int ecoevolity_main(int argc, char * argv[]) {
     }
     std::cout << "Config path: " << config_path << std::endl;
 
+    std::cout << "Parsing config file..." << std::endl;
+    CollectionSettings settings = CollectionSettings(config_path);
+
+    std::cout << "Configuring model..." << std::endl;
+    ComparisonPopulationTreeCollection comparisons =
+            ComparisonPopulationTreeCollection(settings, rng);
+
+    if (ignore_data) {
+        comparisons.ignore_data();
+    }
+    else {
+        comparisons.use_data();
+    }
+
+    time_t start;
+    time_t finish;
+    time(&start);
+
+    std::cout << "Firing up MCMC..." << std::endl;
+    comparisons.mcmc(
+            rng,
+            settings.get_chain_length(),
+            settings.get_sample_frequency());
+
+    time(&finish);
+    double duration = difftime(finish, start);
+    std::cout << "Runtime: " << duration << " seconds." << std::endl;
+
     return 0;
 }

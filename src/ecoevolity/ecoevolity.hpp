@@ -21,6 +21,7 @@
 #define ECOEVOLITY_HPP
 
 #include <limits>
+#include <time.h>
 
 #include "cpp-optparse/OptionParser.h"
 
@@ -28,6 +29,8 @@
 #include "error.hpp"
 #include "rng.hpp"
 #include "path.hpp"
+#include "settings.hpp"
+#include "collection.hpp"
 
 int ecoevolity_main(int argc, char * argv[]);
 
