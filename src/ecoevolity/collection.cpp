@@ -230,15 +230,22 @@ void ComparisonPopulationTreeCollection::add_height(
 }
 
 void ComparisonPopulationTreeCollection::write_state_log_header(
-        std::ostream& out) const {
+        std::ostream& out,
+        bool short_summary) const {
     out << "generation" << this->logging_delimiter_
-        << "ln_likelihood" << this->logging_delimiter_;
+        << "ln_likelihood" << this->logging_delimiter_
+        << "number_of_events";
     if (this->using_dpp()) {
-        out << "concentration" << this->logging_delimiter_;
+        out << this->logging_delimiter_ << "concentration";
+    }
+    if (short_summary) {
+        out << std::endl;
+        return;
     }
     for (unsigned int tree_idx = 0;
             tree_idx < this->get_number_of_trees();
             ++tree_idx) {
+        out << this->logging_delimiter_;
         this->trees_.at(tree_idx).write_state_log_header(out,
                 true,
                 this->logging_delimiter_);
@@ -247,15 +254,22 @@ void ComparisonPopulationTreeCollection::write_state_log_header(
 }
 
 void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
-        unsigned int generation_index) const {
+        unsigned int generation_index,
+        bool short_summary) const {
     out << generation_index << this->logging_delimiter_
-        << this->log_likelihood_.get_value() << this->logging_delimiter_;
+        << this->log_likelihood_.get_value() << this->logging_delimiter_
+        << this->get_number_of_events();
     if (this->using_dpp()) {
-        out << this->get_concentration() << this->logging_delimiter_;
+        out << this->logging_delimiter_ << this->get_concentration();
+    }
+    if (short_summary) {
+        out << std::endl;
+        return;
     }
     for (unsigned int tree_idx = 0;
             tree_idx < this->get_number_of_trees();
             ++tree_idx) {
+        out << this->logging_delimiter_;
         this->trees_.at(tree_idx).log_state(out,
                 this->get_height_index(tree_idx),
                 this->logging_delimiter_);
@@ -306,10 +320,12 @@ void ComparisonPopulationTreeCollection::mcmc(
     operator_log_stream.precision(this->get_logging_precision());
 
     this->write_state_log_header(state_log_stream);
+    this->write_state_log_header(std::cout, true);
 
     this->make_trees_dirty();
     this->compute_log_likelihood_and_prior(true);
     this->log_state(state_log_stream, 0);
+    this->log_state(std::cout, 0, true);
 
     std::shared_ptr<Operator> op;
     for (unsigned int gen = 0; gen < chain_length; ++gen) {
@@ -443,6 +459,7 @@ void ComparisonPopulationTreeCollection::mcmc(
         if ((gen + 1) % sample_frequency == 0) {
             this->operator_schedule_.write_operator_rates(operator_log_stream);
             this->log_state(state_log_stream, gen + 1);
+            this->log_state(std::cout, gen + 1, true);
         }
 
         // Check if the chain has gone astray

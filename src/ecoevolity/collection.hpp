@@ -74,9 +74,11 @@ class ComparisonPopulationTreeCollection {
 
         void remove_height(unsigned int height_index);
 
-        void write_state_log_header(std::ostream& out) const;
+        void write_state_log_header(std::ostream& out,
+                bool short_summary = false) const;
         void log_state(std::ostream& out,
-                unsigned int generation_index) const;
+                unsigned int generation_index,
+                bool short_summary = false) const;
 
     public:
         ComparisonPopulationTreeCollection() { }
@@ -119,6 +121,10 @@ class ComparisonPopulationTreeCollection {
 
         unsigned int get_number_of_trees() const {
             return this->trees_.size();
+        }
+
+        unsigned int get_number_of_events() const {
+            return this->node_heights_.size();
         }
 
         unsigned int get_number_of_trees_mapped_to_height(
