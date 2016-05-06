@@ -98,13 +98,23 @@ int ecoevolity_main(int argc, char * argv[]) {
     ComparisonPopulationTreeCollection comparisons =
             ComparisonPopulationTreeCollection(settings, rng);
 
-    if (ignore_data) {
-        comparisons.ignore_data();
-    }
-    else {
-        comparisons.use_data();
-    }
+    std::cout << "Model ready..." << std::endl;
+    std::cout << "Number of children: " << comparisons.get_tree(0).get_degree_of_root() << std::endl;
+    std::cout << "Tree initialized: " << comparisons.get_tree(0).initialized() << std::endl;
 
+    std::cout << "Using DPP: " << comparisons.using_dpp() << "\n";
+    std::cout << "Number of trees: " << comparisons.get_number_of_trees() << "\n";
+    std::cout << "Number of events: " << comparisons.get_number_of_events() << "\n";
+    std::cout << "Height 0: " << comparisons.get_height(0) << "\n";
+    comparisons.use_data();
+    /* if (ignore_data) { */
+    /*     comparisons.ignore_data(); */
+    /* } */
+    /* else { */
+    /*     comparisons.use_data(); */
+    /* } */
+
+    std::cout << "Start timer..." << std::endl;
     time_t start;
     time_t finish;
     time(&start);

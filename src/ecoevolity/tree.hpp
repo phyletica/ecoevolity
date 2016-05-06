@@ -34,7 +34,7 @@
 class PopulationTree {
     protected:
         BiallelicData data_;
-        PopulationNode * root_;
+        std::shared_ptr<PopulationNode> root_;
         MatrixExponentiator matrix_exponentiator;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
@@ -82,12 +82,12 @@ class PopulationTree {
 
         void compute_pattern_partials(
                 int pattern_index,
-                PopulationNode * node);
-        void compute_internal_partials(PopulationNode * node);
-        void compute_top_of_branch_partials(PopulationNode * node);
+                const std::shared_ptr<PopulationNode>& node);
+        void compute_internal_partials(const std::shared_ptr<PopulationNode>& node);
+        void compute_top_of_branch_partials(const std::shared_ptr<PopulationNode>& node);
         void compute_leaf_partials(
                 int pattern_index,
-                PopulationNode * node);
+                const std::shared_ptr<PopulationNode>& node);
         
 
     public:
@@ -101,7 +101,7 @@ class PopulationTree {
                 const bool constant_sites_removed = true,
                 const bool validate = true
                 );
-        ~PopulationTree () { delete this->root_; }
+        //~PopulationTree () { delete this->root_; }
 
         void init(
                 const std::string path, 
@@ -114,7 +114,8 @@ class PopulationTree {
 
         void fold_patterns();
 
-        PopulationNode * get_root() const {return this->root_;}
+        bool initialized() const {return (bool)this->root_;}
+        const std::shared_ptr<PopulationNode>& get_root() const {return this->root_;}
         void set_root_height(double height);
         void update_root_height(double height);
         const double& get_root_height() const;
@@ -123,6 +124,10 @@ class PopulationTree {
 
         void set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h);
         std::shared_ptr<PositiveRealParameter> get_root_height_parameter() const;
+
+        unsigned int get_degree_of_root() const {
+            return this->root_->degree();
+        }
 
         void set_u(double u);
         void update_u(double u);

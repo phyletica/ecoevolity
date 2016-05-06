@@ -36,6 +36,13 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     std::cout << "Initiating trees...\n";
     this->init_trees(settings.get_comparison_settings(), rng);
     std::cout << "Trees are set\n";
+    std::cout << "Tree exists: " << this->trees_.at(0).initialized() << "\n";
+    std::cout << "Tree nchildren: " << this->trees_.at(0).get_degree_of_root() << "\n";
+    std::cout << "ntrees: " << this->trees_.size() << "\n";
+    /* std::cout << "tip labels:\n"; */
+    /* for (unsigned int i = 0; i < this->trees_.at(0).get_degree_of_root(); ++i) { */
+    /*     std::cout << this->trees_.at(0).get_root()->get_child(0)->get_label() << "\n"; */
+    /* } */
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -50,6 +57,8 @@ void ComparisonPopulationTreeCollection::init_trees(
         ComparisonPopulationTree new_tree = ComparisonPopulationTree(
                 comparison_settings.at(tree_idx),
                 rng);
+        std::cout << "new tree nchildren: " << new_tree.get_degree_of_root() << "\n";
+        new_tree.set_node_height_prior(this->node_height_prior_);
         new_tree.set_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);
         this->trees_.push_back(new_tree);
@@ -58,23 +67,27 @@ void ComparisonPopulationTreeCollection::init_trees(
                 this->trees_.at(tree_idx).get_height_parameter() ==
                 this->node_heights_.at(this->node_height_indices_.at(tree_idx))
                 );
+        std::cout << "new tree end of loop nchildren: " << new_tree.get_degree_of_root() << "\n";
+        std::cout << "appended tree end of loop nchildren: " << this->trees_.at(0).get_degree_of_root() << "\n";
     }
     ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
     ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
+    std::cout << "end of init_trees nchildren: " << this->trees_.at(0).get_degree_of_root() << "\n";
+    std::cout << "end of init_trees ntrees: " << this->trees_.size() << "\n";
 }
 
 void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
-    for (auto tree_iter : this->trees_) {
-        tree_iter.store_state();
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        this->trees_.at(i).store_state();
     }
 }
 void ComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
-    for (auto tree_iter : this->trees_) {
-        tree_iter.restore_state();
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        this->trees_.at(i).restore_state();
     }
 }
 void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
@@ -88,12 +101,12 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
             this->compute_tree_partials();
         }
     }
-    for (auto tree_iter : this->trees_) {
-        lnl += tree_iter.get_log_likelihood_value();
-        lnp += tree_iter.get_log_prior_density_value();
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        lnl += this->trees_.at(i).get_log_likelihood_value();
+        lnp += this->trees_.at(i).get_log_prior_density_value();
     }
-    for (auto height_iter : this->node_heights_) {
-        lnp += height_iter->relative_prior_ln_pdf();
+    for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
+        lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
     }
 
     this->log_likelihood_.set_value(lnl);
@@ -101,8 +114,8 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
 }
 
 void ComparisonPopulationTreeCollection::compute_tree_partials() {
-    for (auto tree_iter : this->trees_) {
-        tree_iter.compute_log_likelihood_and_prior();
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        this->trees_.at(i).compute_log_likelihood_and_prior();
     }
 }
 
@@ -112,25 +125,25 @@ void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
     // std::vector<std::thread> threads;
     // threads.reserve(this->trees_.size());
 
-    // for (auto tree_iter : this->trees_) {
+    // for (unsigned int i = 0; i < this->trees_.size(); ++i) {
     //     threads.push_back(std::thread(
     //                 &ComparisonPopulationTree::compute_log_likelihood_and_prior,
-    //                 tree_iter));
+    //                 this->trees_.at(i)));
     // }
 
-    // for (auto &t : threads) {
-    //     t.join();
+    // for (unsigned int i = 0; i < threads.size(); ++i) {
+    //     threads.at(i).join()
     // }
 }
 
 void ComparisonPopulationTreeCollection::make_trees_clean() {
-    for (auto tree_iter : this->trees_) {
-        tree_iter.make_clean();
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        this->trees_.at(i).make_clean();
     }
 }
 void ComparisonPopulationTreeCollection::make_trees_dirty() {
-    for (auto tree_iter : this->trees_) {
-        tree_iter.make_dirty();
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        this->trees_.at(i).make_dirty();
     }
 }
 
@@ -245,7 +258,7 @@ void ComparisonPopulationTreeCollection::write_state_log_header(
         return;
     }
     for (unsigned int tree_idx = 0;
-            tree_idx < this->get_number_of_trees();
+            tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
         this->trees_.at(tree_idx).write_state_log_header(out,
@@ -269,7 +282,7 @@ void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
         return;
     }
     for (unsigned int tree_idx = 0;
-            tree_idx < this->get_number_of_trees();
+            tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
         this->trees_.at(tree_idx).log_state(out,
@@ -283,6 +296,8 @@ void ComparisonPopulationTreeCollection::mcmc(
         RandomNumberGenerator& rng,
         unsigned int chain_length,
         unsigned int sample_frequency) {
+
+    std::cout << "In MCMC...\n";
 
     if (path::exists(this->get_state_log_path())) {
         std::ostringstream message;
@@ -298,6 +313,9 @@ void ComparisonPopulationTreeCollection::mcmc(
                 << "\' already exists!\n";
         throw EcoevolityError(message.str());
     }
+
+    std::cout << "Opening logs...\n";
+
     std::ofstream state_log_stream;
     std::ofstream operator_log_stream;
     state_log_stream.open(this->get_state_log_path());
@@ -318,15 +336,21 @@ void ComparisonPopulationTreeCollection::mcmc(
         throw EcoevolityError(message.str());
     }
     
+    std::cout << "Set log precision...\n";
+
     state_log_stream.precision(this->get_logging_precision());
     operator_log_stream.precision(this->get_logging_precision());
 
-    this->write_state_log_header(state_log_stream);
+    std::cout << "Write log heders...\n";
+    //this->write_state_log_header(state_log_stream);
     this->write_state_log_header(std::cout, true);
 
+    std::cout << "Make dirty...\n";
     this->make_trees_dirty();
+    std::cout << "Compute...\n";
     this->compute_log_likelihood_and_prior(true);
-    this->log_state(state_log_stream, 0);
+    std::cout << "Log initial state...\n";
+    //this->log_state(state_log_stream, 0);
     this->log_state(std::cout, 0, true);
 
     std::shared_ptr<Operator> op;
@@ -460,7 +484,7 @@ void ComparisonPopulationTreeCollection::mcmc(
 
         if ((gen + 1) % sample_frequency == 0) {
             this->operator_schedule_.write_operator_rates(operator_log_stream);
-            this->log_state(state_log_stream, gen + 1);
+            //this->log_state(state_log_stream, gen + 1);
             this->log_state(std::cout, gen + 1, true);
         }
 

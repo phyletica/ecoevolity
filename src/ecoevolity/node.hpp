@@ -41,7 +41,7 @@ class Node: public BaseNode<Node>{
 
     public:
         Node() { }
-        Node(const Node& node) : BaseClass(node) { }
+        //Node(const Node& node) : BaseClass(node) { }
         Node(std::string label) : BaseClass(label) { }
         Node(double height) : BaseClass(height) { }
         Node(std::string label, double height) : BaseClass(label, height) { }
@@ -68,18 +68,18 @@ class PopulationNode: public BaseNode<PopulationNode>{
                 density += this->coalescence_rate_->relative_prior_ln_pdf();
                 parameters.push_back(this->coalescence_rate_);
             }
-            for (auto child_iter: this->children_) {
-                child_iter->add_ln_relative_coalescence_rate_prior_density(density, parameters);
+            for (unsigned int i = 0; i < this->children_.size(); ++i) {
+                this->children_.at(i)->add_ln_relative_coalescence_rate_prior_density(density, parameters);
             }
         }
 
     public:
         PopulationNode() { }
-        PopulationNode(const Node& node) : BaseClass(node) { }
-        PopulationNode(const PopulationNode& node) : BaseClass(node) {
-            this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
-            this->top_pattern_probs_ = node.top_pattern_probs_;
-        }
+        // PopulationNode(const Node& node) : BaseClass(node) { }
+        // PopulationNode(const PopulationNode& node) : BaseClass(node) {
+        //     this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
+        //     this->top_pattern_probs_ = node.top_pattern_probs_;
+        // }
         PopulationNode(std::string label) : BaseClass(label) { }
         PopulationNode(double height) : BaseClass(height) { }
         PopulationNode(std::string label, double height) :
@@ -111,16 +111,16 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
 
         // overload copy operator
-        PopulationNode& operator=(const PopulationNode& node) {
-            this->children_ = node.children_;
-            this->parent_ = node.parent_;
-            this->height_->set_value(node.height_->get_value());
-            this->label_ = node.label_;
-            this->is_dirty_ = node.is_dirty_;
-            this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
-            this->top_pattern_probs_ = node.top_pattern_probs_;
-            return * this;
-        }
+        // PopulationNode& operator=(const PopulationNode& node) {
+        //     this->children_ = node.children_;
+        //     this->parent_ = node.parent_;
+        //     this->height_->set_value(node.height_->get_value());
+        //     this->label_ = node.label_;
+        //     this->is_dirty_ = node.is_dirty_;
+        //     this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
+        //     this->top_pattern_probs_ = node.top_pattern_probs_;
+        //     return * this;
+        // }
 
         // methods for accessing/changing pattern probabilities
         unsigned int get_allele_count() const {

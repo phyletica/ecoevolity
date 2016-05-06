@@ -92,13 +92,13 @@ class ComparisonPopulationTreeCollection {
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void ignore_data() {
-            for (auto tree : this->trees_) {
-                tree.ignore_data();
+            for (unsigned int i = 0; i < this->trees_.size();  ++i) {
+                this->trees_.at(i).ignore_data();
             }
         }
         void use_data() {
-            for (auto tree : this->trees_) {
-                tree.use_data();
+            for (unsigned int i = 0; i < this->trees_.size();  ++i) {
+                this->trees_.at(i).use_data();
             }
         }
 
@@ -118,6 +118,12 @@ class ComparisonPopulationTreeCollection {
         void set_logging_delimiter(const std::string& delimiter) {
             this->logging_delimiter_ = delimiter;
         }
+
+        const ComparisonPopulationTree& get_tree(
+                unsigned int tree_index) const {
+            return this->trees_.at(tree_index);
+        }
+
 
         unsigned int get_number_of_trees() const {
             return this->trees_.size();

@@ -503,6 +503,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
+        REQUIRE(t.get_degree_of_root() == 2);
 
         REQUIRE(! std::isnan(t.get_root_coalescence_rate()));
         REQUIRE(! std::isnan(t.get_child_coalescence_rate(0)));
@@ -601,6 +602,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
+        REQUIRE(t.get_degree_of_root() == 2);
 
         REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
         REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
@@ -628,6 +630,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         t.set_root_height(0.01);
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(t.get_degree_of_root() == 2);
     }
 
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex likelihood with constrained sizes") {
@@ -726,6 +729,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
+        REQUIRE(t.get_degree_of_root() == 2);
 
         REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
         REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
@@ -753,6 +757,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         t.set_root_height(0.01);
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(t.get_degree_of_root() == 2);
     }
 }
 

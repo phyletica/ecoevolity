@@ -71,11 +71,11 @@ void PopulationTree::init(
 
 void PopulationTree::init_tree() {
     if (this->data_.get_number_of_populations() < 3) {
-        this->root_ = new PopulationNode(0.0);
+        this->root_ = std::make_shared<PopulationNode>(0.0);
         for (unsigned int pop_idx = 0;
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
-            PopulationNode * tip = new PopulationNode(
+            std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
                     this->data_.get_population_label(pop_idx),
                     0.0,
                     this->data_.get_max_allele_count(pop_idx));
@@ -84,15 +84,15 @@ void PopulationTree::init_tree() {
         }
         return;
     }
-    PopulationNode * ancestor = new PopulationNode(0.0);
-    ancestor->add_child(new PopulationNode(this->data_.get_population_label(0)));
-    ancestor->add_child(new PopulationNode(this->data_.get_population_label(1)));
+    std::shared_ptr<PopulationNode> ancestor = std::make_shared<PopulationNode>(0.0);
+    ancestor->add_child(std::make_shared<PopulationNode>(this->data_.get_population_label(0)));
+    ancestor->add_child(std::make_shared<PopulationNode>(this->data_.get_population_label(1)));
     for (unsigned int pop_idx = 2;
             pop_idx < this->data_.get_number_of_populations();
             ++pop_idx) {
-        PopulationNode * next_ancestor = new PopulationNode(0.0);
+        std::shared_ptr<PopulationNode> next_ancestor = std::make_shared<PopulationNode>(0.0);
         next_ancestor->add_child(ancestor);
-        PopulationNode * tip = new PopulationNode(
+        std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
                 this->data_.get_population_label(pop_idx),
                 0.0,
                 this->data_.get_max_allele_count(pop_idx));
@@ -105,7 +105,7 @@ void PopulationTree::init_tree() {
 
 void PopulationTree::compute_leaf_partials(
         int pattern_index,
-        PopulationNode * node) {
+        const std::shared_ptr<PopulationNode>& node) {
     unsigned int pop_idx = this->data_.get_population_index(node->get_label());
     unsigned int allele_count = 0;
     unsigned int red_allele_count = 0;
@@ -154,7 +154,7 @@ void PopulationTree::compute_leaf_partials(
 }
 
 void PopulationTree::compute_top_of_branch_partials(
-        PopulationNode * node) {
+        const std::shared_ptr<PopulationNode>& node) {
     if (node->get_allele_count() == 0) {
         node->copy_top_pattern_probs(node->get_bottom_pattern_probs());
         return;
@@ -171,7 +171,7 @@ void PopulationTree::compute_top_of_branch_partials(
 }
 
 void PopulationTree::compute_internal_partials(
-        PopulationNode * node) {
+        const std::shared_ptr<PopulationNode>& node) {
     if (node->get_number_of_children() == 1) {
         node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
         return;
@@ -240,7 +240,7 @@ void PopulationTree::compute_internal_partials(
 
 void PopulationTree::compute_pattern_partials(
         int pattern_index,
-        PopulationNode * node) {
+        const std::shared_ptr<PopulationNode>& node) {
     if (node->is_leaf()) {
         this->compute_leaf_partials(pattern_index, node);
     }
@@ -257,8 +257,11 @@ void PopulationTree::compute_pattern_partials(
         compute_internal_partials(node);
     }
     else {
-        throw EcoevolityError(
-            "PopulationTree::compute_pattern_probability(); unexpected number of children");
+        std::ostringstream message;
+        message << "PopulationTree::compute_pattern_probability(); "
+                << "unexpected number of children: "
+                << node->get_number_of_children();
+        throw EcoevolityError(message.str());
     }
 }
 
@@ -754,6 +757,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
 ComparisonPopulationTree::ComparisonPopulationTree(
         const ComparisonSettings& settings,
         RandomNumberGenerator& rng) {
+    /* std::cout << "Number of children: " << this->get_degree_of_root() << "\n"; */
+    std::cout << "Init'ing tree with settings...\n";
     this->init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -761,6 +766,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                settings.markers_are_dominant(),
                settings.constant_sites_removed(),
                true);
+    std::cout << "Number of children: " << this->get_degree_of_root() << "\n";
     if (settings.constrain_mutation_rates()) {
         this->constrain_mutation_rates();
         this->fold_patterns();
@@ -798,6 +804,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
             std::make_shared<PositiveRealParameter>(
                     settings.get_time_multiplier_settings(),
                     rng));
+    std::cout << "Number of children: " << this->get_degree_of_root() << "\n";
+    std::cout << "Exiting tree init with settings...\n";
 }
 
 void ComparisonPopulationTree::set_child_coalescence_rate(

@@ -24,13 +24,11 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        Node * p = n.get_parent();
+        std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 
     SECTION("Testing label constructor") {
@@ -52,13 +50,11 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        Node * p = n.get_parent();
+        std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 
     SECTION("Testing height constructor") {
@@ -80,13 +76,11 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        Node * p = n.get_parent();
+        std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 
     SECTION("Testing label and height constructor") {
@@ -108,13 +102,11 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        Node * p = n.get_parent();
+        std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 
     SECTION("Testing node ref constructor") {
@@ -138,7 +130,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        Node * p = n.get_parent();
+        std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
@@ -151,8 +143,6 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         n2.set_height(0.06);
         REQUIRE(n.get_height() == Approx(0.02));
         REQUIRE(n2.get_height() == Approx(0.06));
-
-        delete p;
     }
 
 }
@@ -180,7 +170,7 @@ TEST_CASE("Testing copy operator of Node", "[Node]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        Node * p = n.get_parent();
+        std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
@@ -193,146 +183,142 @@ TEST_CASE("Testing copy operator of Node", "[Node]") {
         n2.set_height(0.06);
         REQUIRE(n.get_height() == Approx(0.02));
         REQUIRE(n2.get_height() == Approx(0.06));
-
-        delete p;
     }
 
 }
 
-TEST_CASE("Testing clone method of Node", "[Node]") {
+/* TEST_CASE("Testing clone method of Node", "[Node]") { */
 
-    SECTION("Testing clone") {
-        Node * n2 = new Node("leaf1", 0.02);
-        Node * n = n2->clone();
-        REQUIRE(typeid(n).hash_code() == typeid(n2).hash_code());
-        REQUIRE(n->get_height() == Approx(0.02));
-        REQUIRE(n->get_length() == 0.0);
-        REQUIRE(n->get_label() == "leaf1");
-        REQUIRE(n->is_dirty());
+/*     SECTION("Testing clone") { */
+/*         Node * n2 = new Node("leaf1", 0.02); */
+/*         Node * n = n2->clone(); */
+/*         REQUIRE(typeid(n).hash_code() == typeid(n2).hash_code()); */
+/*         REQUIRE(n->get_height() == Approx(0.02)); */
+/*         REQUIRE(n->get_length() == 0.0); */
+/*         REQUIRE(n->get_label() == "leaf1"); */
+/*         REQUIRE(n->is_dirty()); */
 
-        REQUIRE(n->degree() == 0);
-        REQUIRE(n->has_parent() == false);
-        REQUIRE(n->get_number_of_parents() == 0);
-        REQUIRE(n->has_children() == false);
-        REQUIRE(n->get_number_of_children() == 0);
+/*         REQUIRE(n->degree() == 0); */
+/*         REQUIRE(n->has_parent() == false); */
+/*         REQUIRE(n->get_number_of_parents() == 0); */
+/*         REQUIRE(n->has_children() == false); */
+/*         REQUIRE(n->get_number_of_children() == 0); */
 
-        REQUIRE(n->is_leaf() == true);
-        REQUIRE(n->is_root() == true);
-        REQUIRE(n->get_node_count() == 1);
-        REQUIRE(n->get_leaf_node_count() == 1);
-        REQUIRE(n->get_internal_node_count() == 0);
+/*         REQUIRE(n->is_leaf() == true); */
+/*         REQUIRE(n->is_root() == true); */
+/*         REQUIRE(n->get_node_count() == 1); */
+/*         REQUIRE(n->get_leaf_node_count() == 1); */
+/*         REQUIRE(n->get_internal_node_count() == 0); */
 
-        Node * p = n->get_parent();
-        REQUIRE(p == NULL);
-        REQUIRE(typeid(n).hash_code() == typeid(p).hash_code());
+/*         std::shared_ptr<Node> p = n->get_parent(); */
+/*         REQUIRE(p == NULL); */
+/*         REQUIRE(typeid(n).hash_code() == typeid(p).hash_code()); */
 
-        REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range);
+/*         REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range); */
         
-        n->set_label("leaf2");
-        REQUIRE(n->get_label() == "leaf2");
-        REQUIRE(n2->get_label() == "leaf1");
+/*         n->set_label("leaf2"); */
+/*         REQUIRE(n->get_label() == "leaf2"); */
+/*         REQUIRE(n2->get_label() == "leaf1"); */
 
-        n2->set_height(0.06);
-        REQUIRE(n->get_height() == Approx(0.02));
-        REQUIRE(n2->get_height() == Approx(0.06));
+/*         n2->set_height(0.06); */
+/*         REQUIRE(n->get_height() == Approx(0.02)); */
+/*         REQUIRE(n2->get_height() == Approx(0.06)); */
+/*         delete n; */
+/*         delete n2; */
+/*     } */
 
-        delete p;
-        delete n;
-        delete n2;
-    }
-
-}
+/* } */
 
 TEST_CASE("Testing parent methods of Node", "[Node]") {
 
     SECTION("Testing parent methods") {
-        Node c = Node();
-        Node p = Node();
+        std::shared_ptr<Node> c = std::make_shared<Node>();
+        std::shared_ptr<Node> p = std::make_shared<Node>();
 
-        REQUIRE(c.degree() == 0);
-        REQUIRE(p.degree() == 0);
-        REQUIRE(c.has_parent() == false);
-        REQUIRE(c.get_number_of_parents() == 0);
+        REQUIRE(c->degree() == 0);
+        REQUIRE(p->degree() == 0);
+        REQUIRE(c->has_parent() == false);
+        REQUIRE(c->get_number_of_parents() == 0);
 
-        REQUIRE(c.get_parent() == NULL);
-        REQUIRE_THROWS_AS(p.get_child(0), std::out_of_range);
-        REQUIRE(c.is_parent(&p) == false);
-        REQUIRE(p.is_child(&c) == false);
+        REQUIRE(c->get_parent() == NULL);
+        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range);
+        REQUIRE(c->is_parent(p) == false);
+        REQUIRE(p->is_child(c) == false);
 
-        c.add_parent(&p);
-        REQUIRE(c.has_parent() == true);
-        REQUIRE(c.is_parent(&p) == true);
-        REQUIRE(p.is_child(&c) == true);
-        REQUIRE(c.get_number_of_parents() == 1);
-        REQUIRE(c.degree() == 1);
-        REQUIRE(p.degree() == 1);
+        c->add_parent(p);
+        REQUIRE(c->has_parent() == true);
+        REQUIRE(c->is_parent(p) == true);
+        REQUIRE(p->is_child(c) == true);
+        REQUIRE(c->get_number_of_parents() == 1);
+        REQUIRE(c->degree() == 1);
+        REQUIRE(p->degree() == 1);
 
-        Node * r = c.remove_parent();
+        std::shared_ptr<Node> r = c->remove_parent();
         REQUIRE(r != NULL);
-        REQUIRE(r == &p);
-        REQUIRE(typeid(r).hash_code() == typeid(&c).hash_code());
-        REQUIRE(c.has_parent() == false);
-        REQUIRE(c.is_parent(&p) == false);
-        REQUIRE(p.is_child(&c) == false);
-        REQUIRE(c.get_number_of_parents() == 0);
-        REQUIRE(c.degree() == 0);
-        REQUIRE(p.degree() == 0);
+        REQUIRE(r == p);
+        REQUIRE(typeid(r).hash_code() == typeid(c).hash_code());
+        REQUIRE(c->has_parent() == false);
+        REQUIRE(c->is_parent(p) == false);
+        REQUIRE(p->is_child(c) == false);
+        REQUIRE(c->get_number_of_parents() == 0);
+        REQUIRE(c->degree() == 0);
+        REQUIRE(p->degree() == 0);
     }
 }
 
 TEST_CASE("Testing child methods of Node", "[Node]") {
 
     SECTION("Testing child methods") {
-        Node c = Node();
-        Node p = Node();
+        std::shared_ptr<Node> c = std::make_shared<Node>();
+        std::shared_ptr<Node> p = std::make_shared<Node>();
         REQUIRE(typeid(c).hash_code() == typeid(p).hash_code());
 
-        REQUIRE(c.degree() == 0);
-        REQUIRE(p.degree() == 0);
-        REQUIRE(p.has_children() == false);
-        REQUIRE(p.get_number_of_children() == 0);
+        REQUIRE(c->degree() == 0);
+        REQUIRE(p->degree() == 0);
+        REQUIRE(p->has_children() == false);
+        REQUIRE(p->get_number_of_children() == 0);
 
-        REQUIRE(c.get_parent() == NULL);
-        REQUIRE_THROWS_AS(p.get_child(0), std::out_of_range);
-        REQUIRE(c.is_parent(&p) == false);
-        REQUIRE(p.is_child(&c) == false);
+        REQUIRE(c->get_parent() == NULL);
+        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range);
+        REQUIRE(c->is_parent(p) == false);
+        REQUIRE(p->is_child(c) == false);
 
-        p.add_child(&c);
-        REQUIRE(p.has_children() == true);
-        REQUIRE(c.is_parent(&p) == true);
-        REQUIRE(p.is_child(&c) == true);
-        REQUIRE(p.get_number_of_children() == 1);
-        REQUIRE(c.degree() == 1);
-        REQUIRE(p.degree() == 1);
+        p->add_child(c);
+        REQUIRE(p->has_children() == true);
+        REQUIRE(c->is_parent(p) == true);
+        REQUIRE(p->is_child(c) == true);
+        REQUIRE(p->get_number_of_children() == 1);
+        REQUIRE(c->degree() == 1);
+        REQUIRE(p->degree() == 1);
 
         unsigned int i = 1;
-        REQUIRE_THROWS_AS(p.remove_child(i), std::out_of_range);
+        REQUIRE_THROWS_AS(p->remove_child(i), std::out_of_range);
         i = 0;
-        Node * r = p.remove_child(i);
-        REQUIRE(r == &c);
+        std::shared_ptr<Node> r = p->remove_child(i);
+        REQUIRE(r == c);
         REQUIRE(typeid(&c).hash_code() == typeid(r).hash_code());
-        REQUIRE(p.has_children() == false);
-        REQUIRE(c.is_parent(&p) == false);
-        REQUIRE(p.is_child(&c) == false);
-        REQUIRE(p.get_number_of_children() == 0);
-        REQUIRE(c.degree() == 0);
-        REQUIRE(p.degree() == 0);
+        REQUIRE(p->has_children() == false);
+        REQUIRE(c->is_parent(p) == false);
+        REQUIRE(p->is_child(c) == false);
+        REQUIRE(p->get_number_of_children() == 0);
+        REQUIRE(c->degree() == 0);
+        REQUIRE(p->degree() == 0);
 
-        p.add_child(&c);
-        REQUIRE(p.has_children() == true);
-        REQUIRE(c.is_parent(&p) == true);
-        REQUIRE(p.is_child(&c) == true);
-        REQUIRE(p.get_number_of_children() == 1);
-        REQUIRE(c.degree() == 1);
-        REQUIRE(p.degree() == 1);
+        p->add_child(c);
+        REQUIRE(p->has_children() == true);
+        REQUIRE(c->is_parent(p) == true);
+        REQUIRE(p->is_child(c) == true);
+        REQUIRE(p->get_number_of_children() == 1);
+        REQUIRE(c->degree() == 1);
+        REQUIRE(p->degree() == 1);
 
-        p.remove_child(&c);
-        REQUIRE(p.has_children() == false);
-        REQUIRE(c.is_parent(&p) == false);
-        REQUIRE(p.is_child(&c) == false);
-        REQUIRE(p.get_number_of_children() == 0);
-        REQUIRE(c.degree() == 0);
-        REQUIRE(p.degree() == 0);
+        p->remove_child(c);
+        REQUIRE(p->has_children() == false);
+        REQUIRE(c->is_parent(p) == false);
+        REQUIRE(p->is_child(c) == false);
+        REQUIRE(p->get_number_of_children() == 0);
+        REQUIRE(c->degree() == 0);
+        REQUIRE(p->degree() == 0);
         
     }
 }
@@ -753,13 +739,11 @@ TEST_CASE("Testing bare constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -788,13 +772,11 @@ TEST_CASE("Testing label constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -822,13 +804,11 @@ TEST_CASE("Testing height constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -856,13 +836,11 @@ TEST_CASE("Testing label and height constructor of PopulationNode", "[Population
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -892,13 +870,11 @@ TEST_CASE("Testing allele count constructor of PopulationNode", "[PopulationNode
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -928,13 +904,11 @@ TEST_CASE("Testing height and allele count constructor of PopulationNode", "[Pop
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -964,13 +938,11 @@ TEST_CASE("Testing label and allele count constructor of PopulationNode", "[Popu
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -1000,13 +972,11 @@ TEST_CASE("Testing label, height, and allele count constructor of PopulationNode
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
-
-        delete p;
     }
 }
 
@@ -1036,7 +1006,7 @@ TEST_CASE("Testing node ref constructor of PopulationNode", "[PopulationNode]") 
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
@@ -1066,8 +1036,6 @@ TEST_CASE("Testing node ref constructor of PopulationNode", "[PopulationNode]") 
         REQUIRE(n.get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n);
         REQUIRE(n2.get_bottom_pattern_probs().get_pattern_prob_matrix() == e_bottom_n2);
         REQUIRE(n2.get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n2);
-
-        delete p;
     }
 }
 
@@ -1096,7 +1064,7 @@ TEST_CASE("Testing copy operator of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
 
-        PopulationNode * p = n.get_parent();
+        std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == NULL);
         REQUIRE(typeid(&n).hash_code() == typeid(p).hash_code());
 
@@ -1126,73 +1094,70 @@ TEST_CASE("Testing copy operator of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n);
         REQUIRE(n2.get_bottom_pattern_probs().get_pattern_prob_matrix() == e_bottom_n2);
         REQUIRE(n2.get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n2);
-
-        delete p;
     }
 }
 
-TEST_CASE("Testing clone method of PopulationNode", "[PopulationNode]") {
+/* TEST_CASE("Testing clone method of PopulationNode", "[PopulationNode]") { */
 
-    SECTION("Testing clone") {
-        PopulationNode * n2 = new PopulationNode("leaf1", 0.03, (unsigned int)3);
-        n2->set_bottom_pattern_probability(2, 1, 1.0);
-        PopulationNode * n = n2->clone();
-        REQUIRE(typeid(n).hash_code() == typeid(n2).hash_code());
-        REQUIRE(n->get_height() == Approx(0.03));
-        REQUIRE(n->get_length() == 0.0);
-        REQUIRE(n->get_label() == "leaf1");
-        REQUIRE(n->get_allele_count() == 3);
-        REQUIRE(n->get_bottom_pattern_probability(2, 1) == Approx(1.0));
-        REQUIRE(n->is_dirty());
+/*     SECTION("Testing clone") { */
+/*         PopulationNode * n2 = new PopulationNode("leaf1", 0.03, (unsigned int)3); */
+/*         n2->set_bottom_pattern_probability(2, 1, 1.0); */
+/*         PopulationNode * n = n2->clone(); */
+/*         REQUIRE(typeid(n).hash_code() == typeid(n2).hash_code()); */
+/*         REQUIRE(n->get_height() == Approx(0.03)); */
+/*         REQUIRE(n->get_length() == 0.0); */
+/*         REQUIRE(n->get_label() == "leaf1"); */
+/*         REQUIRE(n->get_allele_count() == 3); */
+/*         REQUIRE(n->get_bottom_pattern_probability(2, 1) == Approx(1.0)); */
+/*         REQUIRE(n->is_dirty()); */
 
-        REQUIRE(n->degree() == 0);
-        REQUIRE(n->has_parent() == false);
-        REQUIRE(n->get_number_of_parents() == 0);
-        REQUIRE(n->has_children() == false);
-        REQUIRE(n->get_number_of_children() == 0);
+/*         REQUIRE(n->degree() == 0); */
+/*         REQUIRE(n->has_parent() == false); */
+/*         REQUIRE(n->get_number_of_parents() == 0); */
+/*         REQUIRE(n->has_children() == false); */
+/*         REQUIRE(n->get_number_of_children() == 0); */
 
-        REQUIRE(n->is_leaf() == true);
-        REQUIRE(n->is_root() == true);
-        REQUIRE(n->get_node_count() == 1);
-        REQUIRE(n->get_leaf_node_count() == 1);
-        REQUIRE(n->get_internal_node_count() == 0);
+/*         REQUIRE(n->is_leaf() == true); */
+/*         REQUIRE(n->is_root() == true); */
+/*         REQUIRE(n->get_node_count() == 1); */
+/*         REQUIRE(n->get_leaf_node_count() == 1); */
+/*         REQUIRE(n->get_internal_node_count() == 0); */
 
-        PopulationNode * p = n->get_parent();
-        REQUIRE(p == NULL);
-        REQUIRE(typeid(n).hash_code() == typeid(p).hash_code());
+/*         std::shared_ptr<PopulationNode> p = n.get_parent(); */
+/*         REQUIRE(p == NULL); */
+/*         REQUIRE(typeid(n).hash_code() == typeid(p).hash_code()); */
 
-        REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range);
+/*         REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range); */
         
-        n->set_label("leaf2");
-        REQUIRE(n->get_label() == "leaf2");
-        REQUIRE(n2->get_label() == "leaf1");
+/*         n->set_label("leaf2"); */
+/*         REQUIRE(n->get_label() == "leaf2"); */
+/*         REQUIRE(n2->get_label() == "leaf1"); */
 
-        n2->set_height(0.06);
-        n2->reset(2);
-        n2->set_bottom_pattern_probability(1, 1, 1.0);
-        REQUIRE(n->get_height() == Approx(0.03));
-        REQUIRE(n2->get_height() == Approx(0.06));
-        REQUIRE(n->get_allele_count() == 3);
-        REQUIRE(n->get_bottom_pattern_probability(2, 1) == Approx(1.0));
-        REQUIRE(n->get_bottom_pattern_probability(1, 1) == Approx(0.0));
-        REQUIRE(n2->get_allele_count() == 2);
-        REQUIRE(n2->get_bottom_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE(n2->get_bottom_pattern_probability(1, 1) == Approx(1.0));
+/*         n2->set_height(0.06); */
+/*         n2->reset(2); */
+/*         n2->set_bottom_pattern_probability(1, 1, 1.0); */
+/*         REQUIRE(n->get_height() == Approx(0.03)); */
+/*         REQUIRE(n2->get_height() == Approx(0.06)); */
+/*         REQUIRE(n->get_allele_count() == 3); */
+/*         REQUIRE(n->get_bottom_pattern_probability(2, 1) == Approx(1.0)); */
+/*         REQUIRE(n->get_bottom_pattern_probability(1, 1) == Approx(0.0)); */
+/*         REQUIRE(n2->get_allele_count() == 2); */
+/*         REQUIRE(n2->get_bottom_pattern_probability(2, 1) == Approx(0.0)); */
+/*         REQUIRE(n2->get_bottom_pattern_probability(1, 1) == Approx(1.0)); */
 
-        std::vector<double> e_bottom_n = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-        std::vector<double> e_top_n = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-        std::vector<double> e_bottom_n2 = {0.0, 1.0, 0.0, 0.0, 0.0};
-        std::vector<double> e_top_n2 = {0.0, 0.0, 0.0, 0.0, 0.0};
-        REQUIRE(n->get_bottom_pattern_probs().get_pattern_prob_matrix() == e_bottom_n);
-        REQUIRE(n->get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n);
-        REQUIRE(n2->get_bottom_pattern_probs().get_pattern_prob_matrix() == e_bottom_n2);
-        REQUIRE(n2->get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n2);
+/*         std::vector<double> e_bottom_n = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0}; */
+/*         std::vector<double> e_top_n = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; */
+/*         std::vector<double> e_bottom_n2 = {0.0, 1.0, 0.0, 0.0, 0.0}; */
+/*         std::vector<double> e_top_n2 = {0.0, 0.0, 0.0, 0.0, 0.0}; */
+/*         REQUIRE(n->get_bottom_pattern_probs().get_pattern_prob_matrix() == e_bottom_n); */
+/*         REQUIRE(n->get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n); */
+/*         REQUIRE(n2->get_bottom_pattern_probs().get_pattern_prob_matrix() == e_bottom_n2); */
+/*         REQUIRE(n2->get_top_pattern_probs().get_pattern_prob_matrix() == e_top_n2); */
 
-        delete p;
-        delete n;
-        delete n2;
-    }
-}
+/*         delete n; */
+/*         delete n2; */
+/*     } */
+/* } */
 
 TEST_CASE("Testing parent methods of PopulationNode", "[PopulationNode]") {
 
@@ -1218,7 +1183,7 @@ TEST_CASE("Testing parent methods of PopulationNode", "[PopulationNode]") {
         REQUIRE(c.degree() == 1);
         REQUIRE(p.degree() == 1);
 
-        PopulationNode * r = c.remove_parent();
+        std::shared_ptr<PopulationNode> r = c.remove_parent();
         REQUIRE(r != NULL);
         REQUIRE(r == &p);
         REQUIRE(typeid(r).hash_code() == typeid(&c).hash_code());
@@ -1259,7 +1224,7 @@ TEST_CASE("Testing child methods of PopulationNode", "[PopulationNode]") {
         unsigned int i = 1;
         REQUIRE_THROWS_AS(p.remove_child(i), std::out_of_range);
         i = 0;
-        PopulationNode * r = p.remove_child(i);
+        std::shared_ptr<PopulationNode> r = p.remove_child(i);
         REQUIRE(r == &c);
         REQUIRE(typeid(&c).hash_code() == typeid(r).hash_code());
         REQUIRE(p.has_children() == false);
