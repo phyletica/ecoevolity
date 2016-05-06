@@ -128,9 +128,6 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 throw EcoevolityError("BaseNode::add_parent(), this node already has a parent");
             }
             this->parent_ = node;
-            /* if (! node->is_child(static_cast<DerivedNodeT *>(this))) { */
-            /*     node->add_child(static_cast<DerivedNodeT *>(this)); */
-            /* } */
             if (! node->is_child(this->shared_from_this())) {
                 node->add_child(this->shared_from_this());
             }
@@ -140,7 +137,6 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (this->has_parent()) {
                 std::shared_ptr<DerivedNodeT> p = this->parent_;
                 this->parent_ = nullptr;
-                /* p->remove_child(static_cast<DerivedNodeT *>(this)); */
                 p->remove_child(this->shared_from_this());
                 return p;
             }
@@ -181,9 +177,6 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (! this->is_child(node)) {
                 this->children_.push_back(node);
             }
-            /* if (! node->is_parent(static_cast<DerivedNodeT *>(this))) { */
-            /*     node->add_parent(static_cast<DerivedNodeT *>(this)); */
-            /* } */
             if (! node->is_parent(this->shared_from_this())) {
                 node->add_parent(this->shared_from_this());
             }

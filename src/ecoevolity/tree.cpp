@@ -757,8 +757,6 @@ ComparisonPopulationTree::ComparisonPopulationTree(
 ComparisonPopulationTree::ComparisonPopulationTree(
         const ComparisonSettings& settings,
         RandomNumberGenerator& rng) {
-    /* std::cout << "Number of children: " << this->get_degree_of_root() << "\n"; */
-    std::cout << "Init'ing tree with settings...\n";
     this->init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -766,7 +764,6 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                settings.markers_are_dominant(),
                settings.constant_sites_removed(),
                true);
-    std::cout << "Number of children: " << this->get_degree_of_root() << "\n";
     if (settings.constrain_mutation_rates()) {
         this->constrain_mutation_rates();
         this->fold_patterns();
@@ -804,8 +801,6 @@ ComparisonPopulationTree::ComparisonPopulationTree(
             std::make_shared<PositiveRealParameter>(
                     settings.get_time_multiplier_settings(),
                     rng));
-    std::cout << "Number of children: " << this->get_degree_of_root() << "\n";
-    std::cout << "Exiting tree init with settings...\n";
 }
 
 void ComparisonPopulationTree::set_child_coalescence_rate(

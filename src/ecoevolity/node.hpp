@@ -41,7 +41,6 @@ class Node: public BaseNode<Node>{
 
     public:
         Node() { }
-        //Node(const Node& node) : BaseClass(node) { }
         Node(std::string label) : BaseClass(label) { }
         Node(double height) : BaseClass(height) { }
         Node(std::string label, double height) : BaseClass(label, height) { }
@@ -75,11 +74,6 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
     public:
         PopulationNode() { }
-        // PopulationNode(const Node& node) : BaseClass(node) { }
-        // PopulationNode(const PopulationNode& node) : BaseClass(node) {
-        //     this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
-        //     this->top_pattern_probs_ = node.top_pattern_probs_;
-        // }
         PopulationNode(std::string label) : BaseClass(label) { }
         PopulationNode(double height) : BaseClass(height) { }
         PopulationNode(std::string label, double height) :
