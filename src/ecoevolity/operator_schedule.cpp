@@ -98,14 +98,14 @@ void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
     }
 }
 
-std::shared_ptr<Operator>& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) {
+Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) {
     double u = rng.uniform_real();
     for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
         if (u <= this->cumulative_probs_.at(i)) {
-            return this->operators_.at(i);
+            return *this->operators_.at(i);
         }
     }
-    return this->operators_.back();
+    return *this->operators_.back();
 }
 
 double OperatorSchedule::calc_delta(std::shared_ptr<const Operator> op, double log_alpha) {

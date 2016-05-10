@@ -328,32 +328,31 @@ void ComparisonPopulationTreeCollection::mcmc(
     this->log_state(state_log_stream, 0);
     this->log_state(std::cout, 0, true);
 
-    std::shared_ptr<Operator> op;
     for (unsigned int gen = 0; gen < chain_length; ++gen) {
         this->store_state();
-        op = this->operator_schedule_.draw_operator(rng);
-        if (op->get_type() == Operator::OperatorTypeEnum::tree_operator) {
+        Operator& op = this->operator_schedule_.draw_operator(rng);
+        if (op.get_type() == Operator::OperatorTypeEnum::tree_operator) {
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->trees_.size());
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
-                hastings_ratios.push_back(op->propose(rng, this->trees_.at(tree_idx)));
+                hastings_ratios.push_back(op.propose(rng, this->trees_.at(tree_idx)));
             }
             this->compute_tree_partials();
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
                 // Check to see if we updated a fixed parameter. If so, do
                 // nothing and continue to next tree (to avoid counting toward
                 // operator acceptance ratio).
-                if ((op->target_parameter() == "coalescence rate") &&
+                if ((op.target_parameter() == "coalescence rate") &&
                         (this->trees_.at(tree_idx).coalescence_rates_are_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op->target_parameter() == "mutation rate") &&
+                if ((op.target_parameter() == "mutation rate") &&
                         (this->trees_.at(tree_idx).mutation_rates_are_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op->target_parameter() == "node height multiplier") &&
+                if ((op.target_parameter() == "node height multiplier") &&
                         (this->trees_.at(tree_idx).node_height_multiplier_is_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
@@ -371,22 +370,22 @@ void ComparisonPopulationTreeCollection::mcmc(
                         hastings_ratio;
                 double u = rng.uniform_real();
                 if (u < std::exp(acceptance_probability)) {
-                    op->accept(this->operator_schedule_);
+                    op.accept(this->operator_schedule_);
                 }
                 else {
-                    op->reject(this->operator_schedule_);
+                    op.reject(this->operator_schedule_);
                     this->trees_.at(tree_idx).restore_state();
                 }
                 this->trees_.at(tree_idx).make_clean();
-                op->optimize(this->operator_schedule_, acceptance_probability);
+                op.optimize(this->operator_schedule_, acceptance_probability);
             }
             this->compute_log_likelihood_and_prior(false);
         }
-        else if (op->get_type() == Operator::OperatorTypeEnum::time_operator) {
+        else if (op.get_type() == Operator::OperatorTypeEnum::time_operator) {
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->node_heights_.size());
             for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
-                hastings_ratios.push_back(op->propose(rng, *(this->node_heights_.at(height_idx))));
+                hastings_ratios.push_back(op.propose(rng, *(this->node_heights_.at(height_idx))));
             }
             this->make_trees_dirty();
             this->compute_tree_partials();
@@ -411,10 +410,10 @@ void ComparisonPopulationTreeCollection::mcmc(
                         hastings_ratio;
                 double u = rng.uniform_real();
                 if (u < std::exp(acceptance_probability)) {
-                    op->accept(this->operator_schedule_);
+                    op.accept(this->operator_schedule_);
                 }
                 else {
-                    op->reject(this->operator_schedule_);
+                    op.reject(this->operator_schedule_);
                     this->node_heights_.at(height_idx)->restore();
                     for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
                         if (this->node_height_indices_.at(tree_idx) == height_idx) {
@@ -423,13 +422,13 @@ void ComparisonPopulationTreeCollection::mcmc(
                         }
                     }
                 }
-                op->optimize(this->operator_schedule_, acceptance_probability);
+                op.optimize(this->operator_schedule_, acceptance_probability);
             }
             this->make_trees_clean();
             this->compute_log_likelihood_and_prior(false);
         }
-        else if (op->get_type() == Operator::OperatorTypeEnum::model_operator) {
-            double hastings_ratio = op->propose(rng, *this);
+        else if (op.get_type() == Operator::OperatorTypeEnum::model_operator) {
+            double hastings_ratio = op.propose(rng, *this);
             this->compute_log_likelihood_and_prior(true);
             double likelihood_ratio = 
                 this->log_likelihood_.get_value() -
@@ -443,14 +442,14 @@ void ComparisonPopulationTreeCollection::mcmc(
                     hastings_ratio;
             double u = rng.uniform_real();
             if (u < std::exp(acceptance_probability)) {
-                op->accept(this->operator_schedule_);
+                op.accept(this->operator_schedule_);
             }
             else {
-                op->reject(this->operator_schedule_);
+                op.reject(this->operator_schedule_);
                 this->restore_state();
             }
             this->make_trees_clean();
-            op->optimize(this->operator_schedule_, acceptance_probability);
+            op.optimize(this->operator_schedule_, acceptance_probability);
         }
         else {
             state_log_stream.close();
@@ -477,7 +476,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                             << gen
                             << " is " << chain_ln_likelihood
                             << "; expected " << expected_ln_likelihood
-                            << "; last operator " << op->get_name();
+                            << "; last operator " << op.get_name();
                     state_log_stream.close();
                     operator_log_stream.close();
                     throw EcoevolityError(message.str());
