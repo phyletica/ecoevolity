@@ -89,7 +89,7 @@ std::string Operator::to_string(const OperatorSchedule& os) const {
 
 double Operator::calc_delta(OperatorSchedule& os,
         double log_alpha) const {
-    return os.calc_delta(shared_from_this(), log_alpha);
+    return os.calc_delta(*this, log_alpha);
 }
 
 

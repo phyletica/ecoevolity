@@ -52,7 +52,7 @@ class OperatorSchedule {
 
         Operator& draw_operator(RandomNumberGenerator& rng);
 
-        double calc_delta(std::shared_ptr<const Operator> op, double log_alpha);
+        double calc_delta(const Operator& op, double log_alpha);
 
         double get_total_weight() const;
         unsigned int get_auto_optimize_delay_count() const;

@@ -108,15 +108,15 @@ Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) {
     return *this->operators_.back();
 }
 
-double OperatorSchedule::calc_delta(std::shared_ptr<const Operator> op, double log_alpha) {
+double OperatorSchedule::calc_delta(const Operator& op, double log_alpha) {
     if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
             (! this->auto_optimize_)) {
         ++this->auto_optimize_delay_count_;
         return 0.0;
     }
-    double target = op->get_target_acceptance_probability();
-    double count = (op->get_number_rejected_for_correction() +
-                    op->get_number_accepted_for_correction() +
+    double target = op.get_target_acceptance_probability();
+    double count = (op.get_number_rejected_for_correction() +
+                    op.get_number_accepted_for_correction() +
                     1.0);
     double delta_p = ((1.0 / count) * (std::exp(std::min(log_alpha, 0.0)) - target));
     double mx = std::numeric_limits<double>::max();

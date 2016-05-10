@@ -37,7 +37,7 @@
 // Operator base classes
 //////////////////////////////////////////////////////////////////////////////
 
-class Operator : public std::enable_shared_from_this<Operator> {
+class Operator {
     public:
         Operator() { }
         Operator(double weight);
