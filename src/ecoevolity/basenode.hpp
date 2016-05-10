@@ -106,14 +106,14 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         unsigned int get_number_of_parents() const { return parent_ ? 1 : 0; }
 
-        const std::shared_ptr<DerivedNodeT> get_parent() const {
+        const std::shared_ptr<DerivedNodeT>& get_parent() const {
             return this->parent_;
         }
         std::shared_ptr<DerivedNodeT> get_parent() {
             return this->parent_;
         }
 
-        bool is_parent(const std::shared_ptr<DerivedNodeT> node) const {
+        bool is_parent(const std::shared_ptr<DerivedNodeT>& node) const {
             if (this->parent_ == node) {
                 return true;
             }
@@ -147,7 +147,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         bool is_leaf() const { return this->children_.empty(); }
 
         unsigned int get_number_of_children() const { return this->children_.size(); }
-        const std::shared_ptr<DerivedNodeT> get_child(unsigned int index) const {
+        const std::shared_ptr<DerivedNodeT>& get_child(unsigned int index) const {
             if (index >= this->children_.size()) {
                 throw std::out_of_range("BaseNode::get_child() index out of range");
             }
@@ -161,7 +161,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->children_.at(index);
         }
 
-        bool is_child(const std::shared_ptr<DerivedNodeT> node) const {
+        bool is_child(const std::shared_ptr<DerivedNodeT>& node) const {
             for (auto child_iter: this->children_) {
                 if (child_iter == node) {
                     return true;
