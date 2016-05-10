@@ -20,12 +20,12 @@
 #include "data.hpp"
 
 BiallelicData::BiallelicData(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -35,12 +35,12 @@ BiallelicData::BiallelicData(
 }
 
 void BiallelicData::init(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool validate) {
     char pop_name_delimiter = population_name_delimiter;
     if (population_name_delimiter == '_') {
         pop_name_delimiter = ' ';
@@ -318,22 +318,22 @@ const std::vector<unsigned int>& BiallelicData::get_red_allele_counts(unsigned i
 const std::vector<unsigned int>& BiallelicData::get_allele_counts(unsigned int pattern_index) const {
     return this->allele_counts_.at(pattern_index);
 }
-const unsigned int& BiallelicData::get_red_allele_count(
+unsigned int BiallelicData::get_red_allele_count(
         unsigned int pattern_index,
         unsigned int population_index) const {
     return this->red_allele_counts_.at(pattern_index).at(population_index);
 }
-const unsigned int& BiallelicData::get_allele_count(
+unsigned int BiallelicData::get_allele_count(
         unsigned int pattern_index,
         unsigned int population_index) const {
     return this->allele_counts_.at(pattern_index).at(population_index);
 }
 
-const unsigned int& BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
+unsigned int BiallelicData::get_pattern_weight(unsigned int pattern_index) const {
     return this->pattern_weights_.at(pattern_index);
 }
 
-const unsigned int& BiallelicData::get_max_allele_count(unsigned int population_index) const {
+unsigned int BiallelicData::get_max_allele_count(unsigned int population_index) const {
     return this->max_allele_counts_.at(population_index);
 }
 
@@ -341,11 +341,11 @@ const std::vector<unsigned int>& BiallelicData::get_max_allele_counts() const {
     return this->max_allele_counts_;
 }
 
-const unsigned int& BiallelicData::get_population_index(std::string population_label) const {
+unsigned int BiallelicData::get_population_index(std::string population_label) const {
     return this->pop_label_to_index_map_.at(population_label);
 }
 
-const unsigned int& BiallelicData::get_population_index_from_seq_label(std::string seq_label) const {
+unsigned int BiallelicData::get_population_index_from_seq_label(std::string seq_label) const {
     const std::string pop_label = this->seq_label_to_pop_label_map_.at(seq_label);
     return this->get_population_index(pop_label);
 }
@@ -378,27 +378,27 @@ unsigned int BiallelicData::get_number_of_populations() const {
     return this->population_labels_.size();
 }
 
-const bool& BiallelicData::markers_are_dominant() const {
+bool BiallelicData::markers_are_dominant() const {
     return this->markers_are_dominant_;
 }
 
-const bool& BiallelicData::genotypes_are_diploid() const {
+bool BiallelicData::genotypes_are_diploid() const {
     return this->genotypes_are_diploid_;
 }
 
-const bool& BiallelicData::has_constant_patterns() const {
+bool BiallelicData::has_constant_patterns() const {
     return this->has_constant_patterns_;
 }
 
-const bool& BiallelicData::has_missing_population_patterns() const {
+bool BiallelicData::has_missing_population_patterns() const {
     return this->has_missing_population_patterns_;
 }
 
-const bool& BiallelicData::has_mirrored_patterns() const {
+bool BiallelicData::has_mirrored_patterns() const {
     return this->has_mirrored_patterns_;
 }
 
-const bool& BiallelicData::patterns_are_folded() const {
+bool BiallelicData::patterns_are_folded() const {
     return this->patterns_are_folded_;
 }
 
@@ -677,15 +677,15 @@ unsigned int BiallelicData::get_number_of_constant_sites_removed() const {
             this->number_of_constant_red_sites_removed_);
 }
 
-const unsigned int& BiallelicData::get_number_of_constant_green_sites_removed() const {
+unsigned int BiallelicData::get_number_of_constant_green_sites_removed() const {
     return this->number_of_constant_green_sites_removed_;
 }
 
-const unsigned int& BiallelicData::get_number_of_constant_red_sites_removed() const {
+unsigned int BiallelicData::get_number_of_constant_red_sites_removed() const {
     return this->number_of_constant_red_sites_removed_;
 }
 
-const unsigned int& BiallelicData::get_number_of_missing_sites_removed() const {
+unsigned int BiallelicData::get_number_of_missing_sites_removed() const {
     return this->number_of_missing_sites_removed_;
 }
 
