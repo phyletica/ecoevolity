@@ -73,10 +73,10 @@ class Variable {
         }
         
         //Methods
-        const VariableType& get_value() const { return this->value_; }
-        const VariableType& get_stored_value() const { return this->stored_value_; }
-        const VariableType& get_max() const { return this->max_; }
-        const VariableType& get_min() const { return this->min_; }
+        VariableType get_value() const { return this->value_; }
+        VariableType get_stored_value() const { return this->stored_value_; }
+        VariableType get_max() const { return this->max_; }
+        VariableType get_min() const { return this->min_; }
 
         bool is_fixed() const { return this->is_fixed_; }
         void fix() {

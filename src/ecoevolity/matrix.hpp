@@ -62,14 +62,14 @@ class BiallelicPatternProbabilityMatrix {
         }
         
         //Methods
-        const double& get_pattern_probability(
+        double get_pattern_probability(
                 unsigned int allele_count,
                 unsigned int red_allele_count) const;
         void set_pattern_probability(
                 unsigned int allele_count,
                 unsigned int red_allele_count,
                 double probability);
-        const unsigned int& get_allele_count() const;
+        unsigned int get_allele_count() const;
         const std::vector<double>& get_pattern_prob_matrix() const;
 
         void resize(unsigned int allele_count);

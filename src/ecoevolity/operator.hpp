@@ -83,16 +83,16 @@ class Operator {
 
         void reject(const OperatorSchedule& os);
 
-        const unsigned int& get_number_rejected() const {
+        unsigned int get_number_rejected() const {
             return this->number_rejected_;
         }
-        const unsigned int& get_number_accepted() const {
+        unsigned int get_number_accepted() const {
             return this->number_accepted_;
         }
-        const unsigned int& get_number_rejected_for_correction() const {
+        unsigned int get_number_rejected_for_correction() const {
             return this->number_rejected_for_correction_;
         }
-        const unsigned int& get_number_accepted_for_correction() const {
+        unsigned int get_number_accepted_for_correction() const {
             return this->number_accepted_for_correction_;
         }
 

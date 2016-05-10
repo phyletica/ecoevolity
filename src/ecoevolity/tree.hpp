@@ -93,24 +93,24 @@ class PopulationTree {
     public:
         PopulationTree() { }
         PopulationTree(
-                const std::string path, 
-                const char population_name_delimiter = '_',
-                const bool population_name_is_prefix = true,
-                const bool genotypes_are_diploid = true,
-                const bool markers_are_dominant = false,
-                const bool constant_sites_removed = true,
-                const bool validate = true
+                std::string path, 
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true
                 );
         //~PopulationTree () { delete this->root_; }
 
         void init(
-                const std::string path, 
-                const char population_name_delimiter = '_',
-                const bool population_name_is_prefix = true,
-                const bool genotypes_are_diploid = true,
-                const bool markers_are_dominant = false,
+                std::string path, 
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                const bool validate = true);
+                bool validate = true);
 
         void fold_patterns();
 
@@ -118,7 +118,7 @@ class PopulationTree {
         const PopulationNode& get_root() const {return *this->root_;}
         void set_root_height(double height);
         void update_root_height(double height);
-        const double& get_root_height() const;
+        double get_root_height() const;
         void store_root_height();
         void restore_root_height();
 
@@ -131,14 +131,14 @@ class PopulationTree {
 
         void set_u(double u);
         void update_u(double u);
-        const double& get_u() const;
-        const double& get_v() const;
+        double get_u() const;
+        double get_v() const;
         void store_u();
         void restore_u();
 
         void set_node_height_multiplier(double m);
         void update_node_height_multiplier(double m);
-        const double& get_node_height_multiplier() const;
+        double get_node_height_multiplier() const;
         void store_node_height_multiplier();
         void restore_node_height_multiplier();
 
@@ -300,19 +300,19 @@ class ComparisonPopulationTree: public PopulationTree {
     public:
         ComparisonPopulationTree() { }
         ComparisonPopulationTree(
-                const std::string path, 
-                const char population_name_delimiter = '_',
-                const bool population_name_is_prefix = true,
-                const bool genotypes_are_diploid = true,
-                const bool markers_are_dominant = false,
-                const bool constant_sites_removed = true,
-                const bool validate = true);
+                std::string path, 
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true);
         ComparisonPopulationTree(const ComparisonSettings& settings,
                 RandomNumberGenerator& rng);
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
         void update_child_coalescence_rate(unsigned int child_index, double rate);
-        const double& get_child_coalescence_rate(unsigned int child_index) const;
+        double get_child_coalescence_rate(unsigned int child_index) const;
         void store_child_coalescence_rate(unsigned int child_index);
         void restore_child_coalescence_rate(unsigned int child_index);
         std::shared_ptr<CoalescenceRateParameter> get_child_coalescence_rate_parameter(
@@ -320,7 +320,7 @@ class ComparisonPopulationTree: public PopulationTree {
 
         void set_height(double height) {this->set_root_height(height);}
         void update_height(double height) {this->update_root_height(height);}
-        const double& get_height() const {return this->get_root_height();}
+        double get_height() const {return this->get_root_height();}
         void store_height() {this->store_root_height();}
         void restore_height() {this->restore_root_height();}
         void set_height_parameter(std::shared_ptr<PositiveRealParameter> h) {

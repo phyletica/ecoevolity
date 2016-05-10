@@ -204,7 +204,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return c;
         }
 
-        const double& get_height() const {
+        double get_height() const {
             return this->height_->get_value();
         }
 
@@ -263,7 +263,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->label_ = label;
         }
 
-        const bool& is_dirty() const {
+        bool is_dirty() const {
             return this->is_dirty_;
         }
 

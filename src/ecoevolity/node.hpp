@@ -187,14 +187,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->top_pattern_probs_.copy(top_probs);
         }
 
-        const double& get_bottom_pattern_probability(
+        double get_bottom_pattern_probability(
                 unsigned int allele_count,
                 unsigned int red_allele_count) const {
             return this->bottom_pattern_probs_.get_pattern_probability(
                     allele_count,
                     red_allele_count);
         }
-        const double& get_top_pattern_probability(
+        double get_top_pattern_probability(
                 unsigned int allele_count,
                 unsigned int red_allele_count) const {
             return this->top_pattern_probs_.get_pattern_probability(
@@ -220,7 +220,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
                     probability);
         }
 
-        const double& get_coalescence_rate() const {
+        double get_coalescence_rate() const {
             return this->coalescence_rate_->get_value();
         }
         std::shared_ptr<CoalescenceRateParameter> get_coalescence_rate_parameter() const {

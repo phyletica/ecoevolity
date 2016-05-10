@@ -97,7 +97,7 @@ class Vector2d {
             return ((i - 1) * this->ncols_) + j - 1;
         }
 
-        const double& at(unsigned int i, unsigned int j) const {
+        double at(unsigned int i, unsigned int j) const {
             return this->values_.at(this->get_index(i, j));
         }
 

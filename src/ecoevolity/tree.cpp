@@ -20,13 +20,13 @@
 #include "tree.hpp"
 
 PopulationTree::PopulationTree(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool constant_sites_removed,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -37,13 +37,13 @@ PopulationTree::PopulationTree(
 }
 
 void PopulationTree::init(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool constant_sites_removed,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate) {
     this->data_.init(
             path,
             population_name_delimiter,
@@ -485,7 +485,7 @@ void PopulationTree::set_root_height(double height) {
 void PopulationTree::update_root_height(double height) {
     this->root_->update_height(height);
 }
-const double& PopulationTree::get_root_height() const {
+double PopulationTree::get_root_height() const {
     return this->root_->get_height();
 }
 void PopulationTree::store_root_height() {
@@ -524,10 +524,10 @@ void PopulationTree::update_u(double u) {
     ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
-const double& PopulationTree::get_u() const {
+double PopulationTree::get_u() const {
     return this->u_->get_value();
 }
-const double& PopulationTree::get_v() const {
+double PopulationTree::get_v() const {
     return this->v_->get_value();
 }
 void PopulationTree::store_u() {
@@ -554,7 +554,7 @@ void PopulationTree::update_node_height_multiplier(double m) {
     this->node_height_multiplier_->update_value(m);
     this->make_dirty();
 }
-const double& PopulationTree::get_node_height_multiplier() const {
+double PopulationTree::get_node_height_multiplier() const {
     return this->node_height_multiplier_->get_value();
 }
 void PopulationTree::store_node_height_multiplier() {
@@ -735,13 +735,13 @@ void PopulationTree::provide_number_of_constant_sites(
 
 
 ComparisonPopulationTree::ComparisonPopulationTree(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool constant_sites_removed,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -819,7 +819,7 @@ void ComparisonPopulationTree::update_child_coalescence_rate(
     }
     this->root_->get_child(child_index)->update_coalescence_rate(rate);
 }
-const double& ComparisonPopulationTree::get_child_coalescence_rate(
+double ComparisonPopulationTree::get_child_coalescence_rate(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate();
 }
