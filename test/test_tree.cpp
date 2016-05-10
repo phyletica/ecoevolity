@@ -192,8 +192,6 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[Po
     }
 }
 
-
-
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
 // hemi129.nex 
@@ -1259,6 +1257,33 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
     }
 }
 
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 0.01
+// coalescent_rate = 100.0, 200.0, 500.0
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -226.11914854623677
+// log likelihood correction  = -135.97095011239867
+TEST_CASE("Testing hemi129.nex likelihood (0.01, 100.0, 200.0, 500.0)", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.01);
+        tree.set_child_coalescence_rate(0, 100.0);
+        tree.set_child_coalescence_rate(1, 200.0);
+        tree.set_root_coalescence_rate(500.0);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-226.11914854623677));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
 // hemi129.nex 
@@ -1374,8 +1399,17 @@ TEST_CASE("Testing hemi129.nex likelihood (1.04856228318474786e-08, 2.0 / 4.4393
     }
 }
 
-/* 4100	-96.3438656046311053	1	0	1.012386610001351e-08	1	1	1	5.46641122085615013e-09	7.39871781998828579e-08	2.71077053326002069e-13 */
-
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 1.012386610001351e-08
+// coalescent_rate = 2.0 / 5.46641122085615013e-09,
+//                   2.0 / 7.39871781998828579e-08,
+//                   2.0 / 2.71077053326002069e-13
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -96.34394008351177
+// log likelihood correction  = -135.97095011239867
 TEST_CASE("Testing hemi129.nex weirdness", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
@@ -1385,10 +1419,36 @@ TEST_CASE("Testing hemi129.nex weirdness", "[ComparisonPopulationTree]") {
         tree.set_root_height(1.012386610001351e-08);
         tree.set_child_coalescence_rate(0, 2.0 / 5.46641122085615013e-09);
         tree.set_child_coalescence_rate(1, 2.0 / 7.39871781998828579e-08);
-        tree.set_root_coalescence_rate(2.71077053326002069e-13);
+        tree.set_root_coalescence_rate(2.0 / 2.71077053326002069e-13);
         double l = tree.compute_log_likelihood();
-        tree.log_state(std::cout);
-        REQUIRE(l == Approx(-282.140434769));
+        REQUIRE(l == Approx(-96.34394008351177));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 1.036374107244057e-08
+// coalescent_rate = 2.0 / 4.57999694763258361e-09,
+//                   2.0 / 6.70991782555376588e-08,
+//                   2.0 / 1.33514111020266258e-08
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -44.95791900747736
+// log likelihood correction  = -135.97095011239867
+TEST_CASE("Testing hemi129.nex weirdness 2", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(1.036374107244057e-08);
+        tree.set_child_coalescence_rate(0, 2.0 / 4.57999694763258361e-09);
+        tree.set_child_coalescence_rate(1, 2.0 / 6.70991782555376588e-08);
+        tree.set_root_coalescence_rate(2.0 / 1.33514111020266258e-08);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-44.95791900747736));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
