@@ -82,12 +82,12 @@ class PopulationTree {
 
         void compute_pattern_partials(
                 int pattern_index,
-                const std::shared_ptr<PopulationNode>& node);
-        void compute_internal_partials(const std::shared_ptr<PopulationNode>& node);
-        void compute_top_of_branch_partials(const std::shared_ptr<PopulationNode>& node);
+                PopulationNode& node);
+        void compute_internal_partials(PopulationNode& node);
+        void compute_top_of_branch_partials(PopulationNode& node);
         void compute_leaf_partials(
                 int pattern_index,
-                const std::shared_ptr<PopulationNode>& node);
+                PopulationNode& node);
         
 
     public:
@@ -115,7 +115,7 @@ class PopulationTree {
         void fold_patterns();
 
         bool initialized() const {return (bool)this->root_;}
-        const std::shared_ptr<PopulationNode>& get_root() const {return this->root_;}
+        const PopulationNode& get_root() const {return *this->root_;}
         void set_root_height(double height);
         void update_root_height(double height);
         const double& get_root_height() const;

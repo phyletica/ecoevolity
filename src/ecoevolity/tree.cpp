@@ -105,8 +105,8 @@ void PopulationTree::init_tree() {
 
 void PopulationTree::compute_leaf_partials(
         int pattern_index,
-        const std::shared_ptr<PopulationNode>& node) {
-    unsigned int pop_idx = this->data_.get_population_index(node->get_label());
+        PopulationNode& node) {
+    unsigned int pop_idx = this->data_.get_population_index(node.get_label());
     unsigned int allele_count = 0;
     unsigned int red_allele_count = 0;
     if (pattern_index == -1) {
@@ -141,54 +141,54 @@ void PopulationTree::compute_leaf_partials(
                 }
                 m.set_pattern_probability(allele_count, k, p_r_k_n);
             }
-            node->copy_bottom_pattern_probs(m);
+            node.copy_bottom_pattern_probs(m);
             return;
         }
         BiallelicPatternProbabilityMatrix m(allele_count, n_reds);
-        node->copy_bottom_pattern_probs(m);
+        node.copy_bottom_pattern_probs(m);
         return;
     }
     BiallelicPatternProbabilityMatrix m(allele_count, red_allele_count);
-    node->copy_bottom_pattern_probs(m);
+    node.copy_bottom_pattern_probs(m);
     return;
 }
 
 void PopulationTree::compute_top_of_branch_partials(
-        const std::shared_ptr<PopulationNode>& node) {
-    if (node->get_allele_count() == 0) {
-        node->copy_top_pattern_probs(node->get_bottom_pattern_probs());
+        PopulationNode& node) {
+    if (node.get_allele_count() == 0) {
+        node.copy_top_pattern_probs(node.get_bottom_pattern_probs());
         return;
     }
 
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
-            node->get_allele_count(),
+            node.get_allele_count(),
             this->u_->get_value(),
             this->v_->get_value(),
-            node->get_coalescence_rate(),
-            node->get_length() * this->node_height_multiplier_->get_value(),
-            node->get_bottom_pattern_probs());
-    node->copy_top_pattern_probs(m);
+            node.get_coalescence_rate(),
+            node.get_length() * this->node_height_multiplier_->get_value(),
+            node.get_bottom_pattern_probs());
+    node.copy_top_pattern_probs(m);
 }
 
 void PopulationTree::compute_internal_partials(
-        const std::shared_ptr<PopulationNode>& node) {
-    if (node->get_number_of_children() == 1) {
-        node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+        PopulationNode& node) {
+    if (node.get_number_of_children() == 1) {
+        node.copy_bottom_pattern_probs(node.get_child(0)->get_top_pattern_probs());
         return;
     }
-    if (node->get_child(0)->get_allele_count() == 0) {
-        node->copy_bottom_pattern_probs(node->get_child(1)->get_top_pattern_probs());
+    if (node.get_child(0)->get_allele_count() == 0) {
+        node.copy_bottom_pattern_probs(node.get_child(1)->get_top_pattern_probs());
         return;
     }
-    if (node->get_child(1)->get_allele_count() == 0) {
-        node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+    if (node.get_child(1)->get_allele_count() == 0) {
+        node.copy_bottom_pattern_probs(node.get_child(0)->get_top_pattern_probs());
         return;
     }
-    unsigned int allele_count_child1 = node->get_child(0)->get_allele_count();
-    unsigned int allele_count_child2 = node->get_child(1)->get_allele_count();
+    unsigned int allele_count_child1 = node.get_child(0)->get_allele_count();
+    unsigned int allele_count_child2 = node.get_child(1)->get_allele_count();
 
-    std::vector<double> pattern_probs_child1 = node->get_child(0)->get_top_pattern_probs().get_pattern_prob_matrix();
-    std::vector<double> pattern_probs_child2 = node->get_child(1)->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child1 = node.get_child(0)->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child2 = node.get_child(1)->get_top_pattern_probs().get_pattern_prob_matrix();
 
     for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
@@ -235,32 +235,32 @@ void PopulationTree::compute_internal_partials(
         }
     }
     BiallelicPatternProbabilityMatrix m(allele_count, pattern_probs);
-    node->copy_bottom_pattern_probs(m);
+    node.copy_bottom_pattern_probs(m);
 }
 
 void PopulationTree::compute_pattern_partials(
         int pattern_index,
-        const std::shared_ptr<PopulationNode>& node) {
-    if (node->is_leaf()) {
+        PopulationNode& node) {
+    if (node.is_leaf()) {
         this->compute_leaf_partials(pattern_index, node);
     }
-    else if (node->get_number_of_children() == 1) {
-        compute_pattern_partials(pattern_index, node->get_child(0));
-        compute_top_of_branch_partials(node->get_child(0));
+    else if (node.get_number_of_children() == 1) {
+        compute_pattern_partials(pattern_index, *node.get_child(0));
+        compute_top_of_branch_partials(*node.get_child(0));
         compute_internal_partials(node);
     }
-    else if (node->get_number_of_children() == 2) {
-        compute_pattern_partials(pattern_index, node->get_child(0));
-        compute_pattern_partials(pattern_index, node->get_child(1));
-        compute_top_of_branch_partials(node->get_child(0));
-        compute_top_of_branch_partials(node->get_child(1));
+    else if (node.get_number_of_children() == 2) {
+        compute_pattern_partials(pattern_index, *node.get_child(0));
+        compute_pattern_partials(pattern_index, *node.get_child(1));
+        compute_top_of_branch_partials(*node.get_child(0));
+        compute_top_of_branch_partials(*node.get_child(1));
         compute_internal_partials(node);
     }
     else {
         std::ostringstream message;
         message << "PopulationTree::compute_pattern_probability(); "
                 << "unexpected number of children: "
-                << node->get_number_of_children();
+                << node.get_number_of_children();
         throw EcoevolityError(message.str());
     }
 }
@@ -332,7 +332,7 @@ double PopulationTree::compute_root_likelihood() {
 }
 
 double PopulationTree::compute_pattern_likelihood(int pattern_index) {
-    this->compute_pattern_partials(pattern_index, this->root_);
+    this->compute_pattern_partials(pattern_index, *this->root_);
     return this->compute_root_likelihood();
 }
 

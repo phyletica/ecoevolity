@@ -546,7 +546,7 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
         ComparisonPopulationTree tree(nex_path, '_', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
-        REQUIRE(tree.get_root()->get_label() == "root-pop1");
+        REQUIRE(tree.get_root().get_label() == "root-pop1");
         tree.set_height(0.01);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
