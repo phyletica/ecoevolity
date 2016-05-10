@@ -1268,11 +1268,11 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
 // v = 1.0
 // Log likelihood            = -277.06960543551577
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (0.00506843962151613554, 2.0 / 0.00018955324120485613)", "[PopulationTree]") {
+TEST_CASE("Testing hemi129.nex likelihood (0.00506843962151613554, 2.0 / 0.00018955324120485613)", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.00506843962151613554);
         tree.set_coalescence_rate(2.0 / 0.00018955324120485613);
@@ -1291,11 +1291,11 @@ TEST_CASE("Testing hemi129.nex likelihood (0.00506843962151613554, 2.0 / 0.00018
 // v = 1.0
 // Log likelihood            = -221.69627648370943
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (9.08323190033687971e-09, 2.0 / 2.47975039926886321e-08)", "[PopulationTree]") {
+TEST_CASE("Testing hemi129.nex likelihood (9.08323190033687971e-09, 2.0 / 2.47975039926886321e-08)", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(9.08323190033687971e-09);
         tree.set_coalescence_rate(2.0 / 2.47975039926886321e-08);
@@ -1314,11 +1314,11 @@ TEST_CASE("Testing hemi129.nex likelihood (9.08323190033687971e-09, 2.0 / 2.4797
 // v = 1.0
 // Log likelihood            = -324.2737564069293
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (1.04921319733994759e-08, 2.0 / 2.75977168733651178e-10)", "[PopulationTree]") {
+TEST_CASE("Testing hemi129.nex likelihood (1.04921319733994759e-08, 2.0 / 2.75977168733651178e-10)", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.04921319733994759e-08);
         tree.set_coalescence_rate(2.0 / 2.75977168733651178e-10);
@@ -1337,11 +1337,11 @@ TEST_CASE("Testing hemi129.nex likelihood (1.04921319733994759e-08, 2.0 / 2.7597
 // v = 1.0
 // Log likelihood            = -1364.1427530000253
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (1.012386610001351e-08, 2.0 / 5.75048645855884647e-30)", "[PopulationTree]") {
+TEST_CASE("Testing hemi129.nex likelihood (1.012386610001351e-08, 2.0 / 5.75048645855884647e-30)", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.012386610001351e-08);
         tree.set_coalescence_rate(2.0 / 5.75048645855884647e-30);
@@ -1360,16 +1360,35 @@ TEST_CASE("Testing hemi129.nex likelihood (1.012386610001351e-08, 2.0 / 5.750486
 // v = 1.0
 // Log likelihood            = NaN
 // Log likelihood correction = -135.97095011239867
-TEST_CASE("Testing hemi129.nex likelihood (1.04856228318474786e-08, 2.0 / 4.43934332792563837e-305)", "[PopulationTree]") {
+TEST_CASE("Testing hemi129.nex likelihood (1.04856228318474786e-08, 2.0 / 4.43934332792563837e-305)", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.04856228318474786e-08);
         tree.set_coalescence_rate(2.0 / 4.43934332792563837e-305);
         double l = tree.compute_log_likelihood();
         REQUIRE(std::isnan(l));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+/* 4100	-96.3438656046311053	1	0	1.012386610001351e-08	1	1	1	5.46641122085615013e-09	7.39871781998828579e-08	2.71077053326002069e-13 */
+
+TEST_CASE("Testing hemi129.nex weirdness", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(1.012386610001351e-08);
+        tree.set_child_coalescence_rate(0, 2.0 / 5.46641122085615013e-09);
+        tree.set_child_coalescence_rate(1, 2.0 / 7.39871781998828579e-08);
+        tree.set_root_coalescence_rate(2.71077053326002069e-13);
+        double l = tree.compute_log_likelihood();
+        tree.log_state(std::cout);
+        REQUIRE(l == Approx(-282.140434769));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
