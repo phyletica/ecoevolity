@@ -1258,3 +1258,118 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
         REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 0.00506843962151613554
+// coalescent_rate = 2.0 / 0.00018955324120485613
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -277.06960543551577
+// Log likelihood correction = -135.97095011239867
+TEST_CASE("Testing hemi129.nex likelihood (0.00506843962151613554, 2.0 / 0.00018955324120485613)", "[PopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.00506843962151613554);
+        tree.set_coalescence_rate(2.0 / 0.00018955324120485613);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-277.06960543551577));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 9.08323190033687971e-09
+// coalescent_rate = 2.0 / 2.47975039926886321e-08
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -221.69627648370943
+// Log likelihood correction = -135.97095011239867
+TEST_CASE("Testing hemi129.nex likelihood (9.08323190033687971e-09, 2.0 / 2.47975039926886321e-08)", "[PopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(9.08323190033687971e-09);
+        tree.set_coalescence_rate(2.0 / 2.47975039926886321e-08);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-221.69627648370943));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 1.04921319733994759e-08
+// coalescent_rate = 2.0 / 2.75977168733651178e-10
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -324.2737564069293
+// Log likelihood correction = -135.97095011239867
+TEST_CASE("Testing hemi129.nex likelihood (1.04921319733994759e-08, 2.0 / 2.75977168733651178e-10)", "[PopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(1.04921319733994759e-08);
+        tree.set_coalescence_rate(2.0 / 2.75977168733651178e-10);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-324.2737564069293));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 1.012386610001351e-08
+// coalescent_rate = 2.0 / 5.75048645855884647e-30
+// u = 1.0
+// v = 1.0
+// Log likelihood            = -1364.1427530000253
+// Log likelihood correction = -135.97095011239867
+TEST_CASE("Testing hemi129.nex likelihood (1.012386610001351e-08, 2.0 / 5.75048645855884647e-30)", "[PopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(1.012386610001351e-08);
+        tree.set_coalescence_rate(2.0 / 5.75048645855884647e-30);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-1364.1427530000253));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
+
+// BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
+// SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
+// hemi129.nex 
+// height = 1.04856228318474786e-08
+// coalescent_rate = 2.0 / 4.43934332792563837e-305
+// u = 1.0
+// v = 1.0
+// Log likelihood            = NaN
+// Log likelihood correction = -135.97095011239867
+TEST_CASE("Testing hemi129.nex likelihood (1.04856228318474786e-08, 2.0 / 4.43934332792563837e-305)", "[PopulationTree]") {
+
+    SECTION("Testing likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, '_', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(1.04856228318474786e-08);
+        tree.set_coalescence_rate(2.0 / 4.43934332792563837e-305);
+        double l = tree.compute_log_likelihood();
+        REQUIRE(std::isnan(l));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+    }
+}
