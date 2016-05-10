@@ -30,7 +30,7 @@ set(SOURCE_DIR "${BASE_DIR}/src")
 set(ECOEVOLITY_SOURCE_DIR "${SOURCE_DIR}/ecoevolity")
 set(EXTERNAL_PROJECT_DIR "${SOURCE_DIR}/external")
 set(NCL_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/ncl")
-set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-release-0.5.3")
+set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-master-7d2873c")
 set(TEST_DIR "${BASE_DIR}/test")
 set(TEST_DATA_DIR "${TEST_DIR}/data")
 
