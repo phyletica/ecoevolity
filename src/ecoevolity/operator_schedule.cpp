@@ -98,7 +98,7 @@ void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
     }
 }
 
-Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) {
+Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) const {
     double u = rng.uniform_real();
     for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
         if (u <= this->cumulative_probs_.at(i)) {
@@ -106,6 +106,10 @@ Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) {
         }
     }
     return *this->operators_.back();
+}
+
+Operator& OperatorSchedule::get_operator(unsigned int operator_index) const {
+    return *this->operators_.at(operator_index);
 }
 
 double OperatorSchedule::calc_delta(const Operator& op, double log_alpha) {
@@ -140,11 +144,11 @@ void OperatorSchedule::set_auto_optimize_delay(unsigned int delay) {
 }
 
 void OperatorSchedule::write_operator_rates(std::ostream& out) const {
-    const std::shared_ptr<Operator>& op = this->operators_.at(0);
-    out << op->header_string();
-    out << op->to_string(*this);
+    Operator& op = this->get_operator(0);
+    out << op.header_string();
+    out << op.to_string(*this);
     for (unsigned int i = 1; i < this->operators_.size(); ++i) {
-        out << this->operators_.at(i)->to_string(*this);
+        out << this->get_operator(i).to_string(*this);
     }
 }
 

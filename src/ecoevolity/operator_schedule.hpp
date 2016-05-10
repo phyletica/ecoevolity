@@ -50,7 +50,8 @@ class OperatorSchedule {
 
         void add_operator(std::shared_ptr<Operator> o);
 
-        Operator& draw_operator(RandomNumberGenerator& rng);
+        Operator& draw_operator(RandomNumberGenerator& rng) const;
+        Operator& get_operator(unsigned int operator_index) const;
 
         double calc_delta(const Operator& op, double log_alpha);
 
