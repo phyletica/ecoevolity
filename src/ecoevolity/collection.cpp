@@ -222,11 +222,10 @@ void ComparisonPopulationTreeCollection::remove_height(
 void ComparisonPopulationTreeCollection::add_height(
         double height,
         const std::vector<unsigned int>& mapped_tree_indices) {
-    std::shared_ptr<PositiveRealParameter> new_height = std::make_shared<PositiveRealParameter>(this->node_height_prior_, height);
-    this->node_heights_.push_back(new_height);
+    this->node_heights_.push_back(std::make_shared<PositiveRealParameter>(this->node_height_prior_, height));
     for (auto tree_idx : mapped_tree_indices) {
         this->node_height_indices_.at(tree_idx) = this->node_heights_.size() - 1;
-        this->trees_.at(tree_idx).set_height_parameter(new_height);
+        this->trees_.at(tree_idx).set_height_parameter(this->node_heights_.back());
     }
 }
 
