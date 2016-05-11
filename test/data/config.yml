@@ -47,8 +47,8 @@ operator_settings:
         ChildCoalescenceRateScaler:
             scale: 0.2
             weight: 2.0
-        MutationRateMover:
-            window: 0.2
+        MutationRateScaler:
+            scale: 0.2
             weight: 0.5
 
 global_comparison_settings:
@@ -71,14 +71,6 @@ global_comparison_settings:
                     offset: 0.0
         u_rate:
             value: 1.0
-            estimate: true
-            prior:
-                gamma_distribution:
-                    shape: 10.0
-                    scale: 0.1
-
-        v_rate:
-            value: 1.0 
             estimate: true
             prior:
                 gamma_distribution:

@@ -76,10 +76,10 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_mutation_rate_mover_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<MutationRateMover>(
-                settings.get_mutation_rate_mover_settings().get_weight(),
-                settings.get_mutation_rate_mover_settings().get_window()
+    if (settings.get_mutation_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<MutationRateScaler>(
+                settings.get_mutation_rate_scaler_settings().get_weight(),
+                settings.get_mutation_rate_scaler_settings().get_scale()
                 ));
     }
 }

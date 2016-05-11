@@ -376,6 +376,25 @@ class MutationRateMover : public ComparisonTreeWindowOperator {
         std::string get_name() const;
 };
 
+class MutationRateScaler : public ComparisonTreeScaleOperator {
+
+    using ComparisonTreeScaleOperator::propose;
+
+    public:
+        MutationRateScaler() : ComparisonTreeScaleOperator() { }
+        MutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        MutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~MutationRateScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
@@ -440,10 +459,25 @@ class ComparisonHeightScaler : public NodeHeightScaleOperator {
     public:
         ComparisonHeightScaler() : NodeHeightScaleOperator() { }
         ComparisonHeightScaler(double weight) : NodeHeightScaleOperator(weight) { }
-        ComparisonHeightScaler(double weight, double scale) : NodeHeightScaleOperator(weight, scale) {
-            this->set_scale(scale);
-        }
+        ComparisonHeightScaler(double weight, double scale) : NodeHeightScaleOperator(weight, scale) { }
         virtual ~ComparisonHeightScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const;
+
+        std::string get_name() const;
+};
+
+class ComparisonHeightMover : public NodeHeightWindowOperator {
+
+    using NodeHeightWindowOperator::propose;
+
+    public:
+        ComparisonHeightMover() : NodeHeightWindowOperator() { }
+        ComparisonHeightMover(double weight) : NodeHeightWindowOperator(weight) { }
+        ComparisonHeightMover(double weight, double window_size) : NodeHeightWindowOperator(weight, window_size) { }
+        virtual ~ComparisonHeightMover() { }
 
         double propose(
                 RandomNumberGenerator& rng,

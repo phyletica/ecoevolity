@@ -41,9 +41,6 @@ class PopulationTree {
         std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<ExponentialDistribution>(1.0),
                 1.0);
-        std::shared_ptr<PositiveRealParameter> v_ = std::make_shared<PositiveRealParameter>(
-                std::make_shared<ExponentialDistribution>(1.0),
-                1.0);
         std::shared_ptr<PositiveRealParameter> node_height_multiplier_ = std::make_shared<PositiveRealParameter>(
                 1.0,
                 true);
@@ -158,7 +155,6 @@ class PopulationTree {
                 unsigned int number_all_green);
 
         std::shared_ptr<PositiveRealParameter> get_u_parameter() const;
-        std::shared_ptr<PositiveRealParameter> get_v_parameter() const;
 
         void set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h);
         std::shared_ptr<PositiveRealParameter> get_node_height_multiplier_parameter() const;
@@ -217,12 +213,8 @@ class PopulationTree {
         }
 
         void set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
-        void set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         std::shared_ptr<ContinuousProbabilityDistribution> get_u_prior() const {
             return this->u_->prior;
-        }
-        std::shared_ptr<ContinuousProbabilityDistribution> get_v_prior() const {
-            return this->v_->prior;
         }
 
         void set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
@@ -242,20 +234,15 @@ class PopulationTree {
 
         void fix_mutation_rates() {
             this->u_->fix();
-            this->v_->fix();
         }
         void estimate_mutation_rates() {
             if (this->mutation_rates_are_constrained_) {
                 throw EcoevolityError("Cannot estimate constrained mutation rates");
             }
             this->u_->estimate();
-            this->v_->estimate();
         }
         bool mutation_rates_are_fixed() const {
-            if ((this->u_->is_fixed()) && (this->v_->is_fixed())) {
-                return true;
-            }
-            return false;
+            return this->u_->is_fixed();
         }
 
         void fix_node_height_multiplier() {
@@ -279,7 +266,6 @@ class PopulationTree {
             this->mutation_rates_are_constrained_ = true;
             this->u_->set_value(1.0);
             this->u_->fix();
-            this->v_ = this->u_;
             this->make_dirty();
         }
         bool mutation_rates_are_constrained() const {

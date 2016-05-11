@@ -163,7 +163,7 @@ void PopulationTree::compute_top_of_branch_partials(
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node.get_allele_count(),
             this->u_->get_value(),
-            this->v_->get_value(),
+            this->get_v(),
             node.get_coalescence_rate(),
             node.get_length() * this->node_height_multiplier_->get_value(),
             node.get_bottom_pattern_probs());
@@ -271,7 +271,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
     QMatrix q = QMatrix(
             N,
             this->u_->get_value(),
-            this->v_->get_value(),
+            this->get_v(),
             this->root_->get_coalescence_rate());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
@@ -507,9 +507,8 @@ void PopulationTree::set_u(double u) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
-    double v = u / ((2.0 * u) - 1.0);
     this->u_->set_value(u);
-    this->v_->set_value(v);
+    double v = this->get_v();
     ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
@@ -520,7 +519,6 @@ void PopulationTree::update_u(double u) {
     ECOEVOLITY_ASSERT(u >= 0.5);
     double v = u / ((2.0 * u) - 1.0);
     this->u_->update_value(u);
-    this->v_->update_value(v);
     ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
@@ -528,15 +526,14 @@ double PopulationTree::get_u() const {
     return this->u_->get_value();
 }
 double PopulationTree::get_v() const {
-    return this->v_->get_value();
+    double u = this->get_u();
+    return u / ((2.0 * u) - 1.0);
 }
 void PopulationTree::store_u() {
     this->u_->store();
-    this->v_->store();
 }
 void PopulationTree::restore_u() {
     this->u_->restore();
-    this->v_->restore();
     this->make_dirty();
 }
 
@@ -567,9 +564,6 @@ void PopulationTree::restore_node_height_multiplier() {
 
 std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
-}
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_v_parameter() const {
-    return this->v_;
 }
 
 void PopulationTree::set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
@@ -668,10 +662,6 @@ void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistributi
     this->u_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->v_->set_prior(prior);
-    this->make_dirty();
-}
 void PopulationTree::set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->node_height_multiplier_->set_prior(prior);
     this->make_dirty();
@@ -687,11 +677,7 @@ double PopulationTree::compute_log_prior_density() {
     return d;
 }
 double PopulationTree::compute_log_prior_density_of_mutation_rates() const {
-    double d = this->u_->relative_prior_ln_pdf();
-    if (! this->mutation_rates_are_constrained()) {
-        d += this->v_->relative_prior_ln_pdf();
-    }
-    return d;
+    return this->u_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_node_height_multiplier() const {
     return this->node_height_multiplier_->relative_prior_ln_pdf();
@@ -787,7 +773,6 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     }
     
     this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
-    this->set_v_prior(settings.get_v_settings().get_prior_settings().get_instance());
     if (settings.constrain_mutation_rates()) {
         this->constrain_mutation_rates();
     }
