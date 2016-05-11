@@ -418,7 +418,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                     for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
                         if (this->node_height_indices_.at(tree_idx) == height_idx) {
                             this->trees_.at(tree_idx).restore_likelihood();
-                            this->trees_.at(tree_idx).restore_prior_density();
+                            // this->trees_.at(tree_idx).restore_prior_density();
                         }
                     }
                 }
