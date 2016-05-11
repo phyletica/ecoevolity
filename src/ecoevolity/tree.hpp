@@ -167,6 +167,7 @@ class PopulationTree {
         void set_coalescence_rate(double rate);
         double get_root_coalescence_rate() const;
         std::shared_ptr<CoalescenceRateParameter> get_root_coalescence_rate_parameter() const;
+        double get_root_population_size() const;
 
         double get_likelihood_correction(bool force = false);
 
@@ -317,6 +318,8 @@ class ComparisonPopulationTree: public PopulationTree {
         void restore_child_coalescence_rate(unsigned int child_index);
         std::shared_ptr<CoalescenceRateParameter> get_child_coalescence_rate_parameter(
                 unsigned int child_index) const;
+
+        double get_child_population_size(unsigned int child_index) const;
 
         void set_height(double height) {this->set_root_height(height);}
         void update_height(double height) {this->update_root_height(height);}

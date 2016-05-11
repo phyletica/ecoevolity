@@ -595,6 +595,9 @@ void PopulationTree::set_coalescence_rate(double rate) {
 double PopulationTree::get_root_coalescence_rate() const {
     return this->root_->get_coalescence_rate();
 }
+double PopulationTree::get_root_population_size() const {
+    return this->root_->get_population_size();
+}
 std::shared_ptr<CoalescenceRateParameter> PopulationTree::get_root_coalescence_rate_parameter() const {
     return this->root_->get_coalescence_rate_parameter();
 }
@@ -836,6 +839,11 @@ std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_co
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
 }
 
+double ComparisonPopulationTree::get_child_population_size(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size();
+}
+
 // Node height sharing needs to be dealt with in next level up in
 // class hierarchy
 double ComparisonPopulationTree::compute_log_prior_density() {
@@ -874,11 +882,11 @@ void ComparisonPopulationTree::log_state(
         << this->get_node_height_multiplier() << delimiter
         << this->get_u() << delimiter
         << this->get_v() << delimiter
-        << CoalescenceRateParameter::get_population_size_from_rate(this->get_child_coalescence_rate(0)) << delimiter;
+        << this->get_child_population_size(0) << delimiter;
     if (this->root_->get_number_of_children() > 1) {
-        out << CoalescenceRateParameter::get_population_size_from_rate(this->get_child_coalescence_rate(1)) << delimiter;
+        out << this->get_child_population_size(1) << delimiter;
     }
-    out << CoalescenceRateParameter::get_population_size_from_rate(this->get_root_coalescence_rate());
+    out << this->get_root_population_size();
 }
 void ComparisonPopulationTree::log_state(
         std::ostream& out,

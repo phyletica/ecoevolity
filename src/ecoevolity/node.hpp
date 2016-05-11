@@ -223,6 +223,9 @@ class PopulationNode: public BaseNode<PopulationNode>{
         double get_coalescence_rate() const {
             return this->coalescence_rate_->get_value();
         }
+        double get_population_size() const {
+            return this->coalescence_rate_->get_population_size();
+        }
         std::shared_ptr<CoalescenceRateParameter> get_coalescence_rate_parameter() const {
             return this->coalescence_rate_;
         }
