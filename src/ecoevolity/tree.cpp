@@ -26,14 +26,16 @@ PopulationTree::PopulationTree(
         bool genotypes_are_diploid,
         bool markers_are_dominant,
         bool constant_sites_removed,
-        bool validate) {
+        bool validate,
+        bool show_site_removal_warnings) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
                genotypes_are_diploid,
                markers_are_dominant,
                constant_sites_removed,
-               validate);
+               validate,
+               show_site_removal_warnings);
 }
 
 void PopulationTree::init(
@@ -43,7 +45,8 @@ void PopulationTree::init(
         bool genotypes_are_diploid,
         bool markers_are_dominant,
         bool constant_sites_removed,
-        bool validate) {
+        bool validate,
+        bool show_site_removal_warnings) {
     this->data_.init(
             path,
             population_name_delimiter,
@@ -55,12 +58,35 @@ void PopulationTree::init(
         throw EcoevolityError("PopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
+    if (show_site_removal_warnings && (number_of_missing_patterns_removed > 0)) {
+        std::ostringstream message;
+        message << "WARNING: "
+                << this->data_.get_number_of_missing_sites_removed()
+                << " sites were removed from the alignment in:\n    \'"
+                << path << "\'\n"
+                << "due to at least one population with no data";
+        std::cerr << message.str() << std::endl;
+    }
     this->constant_sites_removed_ = constant_sites_removed;
     if (this->constant_sites_removed_) {
         // Have to make sure there are no missing sites
         unsigned int number_of_constant_patterns_removed = this->data_.remove_constant_patterns();
+        if (show_site_removal_warnings && (number_of_constant_patterns_removed > 0)) {
+            std::ostringstream message;
+            message << "WARNING: "
+                    << this->data_.get_number_of_constant_sites_removed()
+                    << " constant sites were found in the alignment in:\n    \'"
+                    << path << "\'\n"
+                    << "but it was indicated that such sites were already removed.\n"
+                    << "These sites have been removed, so if you intended to remove them,\n"
+                    << "but missed them, all is well. However, if you intended for the\n"
+                    << "constant sites to be used in the likelihood calculations, you\n"
+                    << "should set \'constant_sites_removed\' to false for this\n"
+                    << "alignment and re-run this analysis.";
+            // TODO: Should we throw an error instead?
+            std::cerr << message.str() << std::endl;
+        }
     }
-    // TODO: If there are constant sites removed above, throw error or warning here!
 
     this->init_tree();
 
@@ -508,8 +534,10 @@ void PopulationTree::set_u(double u) {
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
     this->u_->set_value(u);
-    double v = this->get_v();
-    ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
+    ECOEVOLITY_DEBUG(
+        double v = this->get_v();
+        ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
+    )
     this->make_dirty();
 }
 void PopulationTree::update_u(double u) {
@@ -517,9 +545,11 @@ void PopulationTree::update_u(double u) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
-    double v = u / ((2.0 * u) - 1.0);
     this->u_->update_value(u);
-    ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
+    ECOEVOLITY_DEBUG(
+        double v = this->get_v();
+        ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
+    )
     this->make_dirty();
 }
 double PopulationTree::get_u() const {
@@ -743,14 +773,16 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool genotypes_are_diploid,
         bool markers_are_dominant,
         bool constant_sites_removed,
-        bool validate) {
+        bool validate,
+        bool show_site_removal_warnings) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
                genotypes_are_diploid,
                markers_are_dominant,
                constant_sites_removed,
-               validate);
+               validate,
+               show_site_removal_warnings);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
     }
@@ -765,6 +797,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                settings.genotypes_are_diploid(),
                settings.markers_are_dominant(),
                settings.constant_sites_removed(),
+               true,
                true);
     if (settings.constrain_mutation_rates()) {
         this->constrain_mutation_rates();

@@ -96,7 +96,8 @@ class PopulationTree {
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool validate = true
+                bool validate = true,
+                bool show_site_removal_warnings = false
                 );
         //~PopulationTree () { delete this->root_; }
 
@@ -107,7 +108,8 @@ class PopulationTree {
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool validate = true);
+                bool validate = true,
+                bool show_site_removal_warnings = false);
 
         void fold_patterns();
 
@@ -295,7 +297,8 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool validate = true);
+                bool validate = true,
+                bool show_site_removal_warnings = false);
         ComparisonPopulationTree(const ComparisonSettings& settings,
                 RandomNumberGenerator& rng);
 
