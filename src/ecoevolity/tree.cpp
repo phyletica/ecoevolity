@@ -586,6 +586,19 @@ void PopulationTree::set_coalescence_rate(double rate) {
     }
     this->root_->set_all_coalescence_rates(rate);
 }
+void PopulationTree::set_root_population_size(double size) {
+    if (this->coalescence_rates_are_fixed()) {
+        return;
+    }
+    this->root_->set_population_size(size);
+}
+void PopulationTree::set_population_size(double size) {
+    if (this->coalescence_rates_are_fixed()) {
+        return;
+    }
+    this->root_->set_all_population_sizes(size);
+}
+
 double PopulationTree::get_root_coalescence_rate() const {
     return this->root_->get_coalescence_rate();
 }
@@ -798,6 +811,14 @@ void ComparisonPopulationTree::set_child_coalescence_rate(
         return;
     }
     this->root_->get_child(child_index)->set_coalescence_rate(rate);
+}
+void ComparisonPopulationTree::set_child_population_size(
+        unsigned int child_index,
+        double size) {
+    if (this->coalescence_rates_are_fixed()) {
+        return;
+    }
+    this->root_->get_child(child_index)->set_population_size(size);
 }
 void ComparisonPopulationTree::update_child_coalescence_rate(
         unsigned int child_index,

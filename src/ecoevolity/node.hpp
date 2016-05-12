@@ -259,6 +259,17 @@ class PopulationNode: public BaseNode<PopulationNode>{
                 child_iter->set_all_coalescence_rates(rate);
             }
         }
+        void set_population_size(double size) {
+            this->coalescence_rate_->set_population_size(size);
+            this->make_all_dirty();
+        }
+        void set_all_population_sizes(double size) {
+            this->coalescence_rate_->set_population_size(size);
+            this->make_dirty();
+            for (auto child_iter: this->children_) {
+                child_iter->set_all_population_sizes(size);
+            }
+        }
         void update_coalescence_rate(double rate) {
             this->coalescence_rate_->update_value(rate);
             this->make_all_dirty();

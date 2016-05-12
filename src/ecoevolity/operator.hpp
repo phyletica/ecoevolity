@@ -452,6 +452,25 @@ class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+class RootPopulationSizeScaler : public ComparisonTreeScaleOperator {
+
+    using ComparisonTreeScaleOperator::propose;
+
+    public:
+        RootPopulationSizeScaler() : ComparisonTreeScaleOperator() { }
+        RootPopulationSizeScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        RootPopulationSizeScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~RootPopulationSizeScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 class ComparisonHeightScaler : public NodeHeightScaleOperator {
 
     using NodeHeightScaleOperator::propose;

@@ -409,6 +409,32 @@ std::string RootCoalescenceRateScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// RootPopulationSizeScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double RootPopulationSizeScaler::propose(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTree& tree) const {
+    double size = tree.get_root_population_size();
+
+    double hastings;
+    this->update(rng, size, hastings);
+
+    tree.set_root_population_size(size);
+
+    return hastings;
+}
+
+std::string RootPopulationSizeScaler::target_parameter() const {
+    return "coalescence rate";
+}
+
+std::string RootPopulationSizeScaler::get_name() const {
+    return "RootPopulationSizeScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // ComparisonHeightScaler methods
 //////////////////////////////////////////////////////////////////////////////
 

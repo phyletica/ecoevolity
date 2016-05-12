@@ -378,6 +378,9 @@ class CoalescenceRateParameter: public PositiveRealParameter {
         double get_population_size() const {
             return this->get_population_size_from_rate(this->get_value());
         }
+        void set_population_size(double population_size) {
+            this->set_value(this->get_rate_from_population_size(population_size));
+        }
 
         virtual double draw_from_prior(RandomNumberGenerator & rng) {
             this->check_prior();
