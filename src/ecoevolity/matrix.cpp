@@ -81,7 +81,7 @@ void BiallelicPatternProbabilityMatrix::copy(
     this->pattern_prob_matrix_ = m.get_pattern_prob_matrix();
 }
 
-const double& BiallelicPatternProbabilityMatrix::get_pattern_probability(
+double BiallelicPatternProbabilityMatrix::get_pattern_probability(
         unsigned int allele_count,
         unsigned int red_allele_count) const {
     int i = (((allele_count * (allele_count + 1))/2) - 1 + red_allele_count);
@@ -102,7 +102,7 @@ void BiallelicPatternProbabilityMatrix::set_pattern_probability(
     this->pattern_prob_matrix_.at(i) = probability;
 }
 
-const unsigned int& BiallelicPatternProbabilityMatrix::get_allele_count() const {
+unsigned int BiallelicPatternProbabilityMatrix::get_allele_count() const {
     return this->allele_count_;
 }
 

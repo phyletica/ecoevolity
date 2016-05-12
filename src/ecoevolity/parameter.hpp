@@ -73,10 +73,10 @@ class Variable {
         }
         
         //Methods
-        const VariableType& get_value() const { return this->value_; }
-        const VariableType& get_stored_value() const { return this->stored_value_; }
-        const VariableType& get_max() const { return this->max_; }
-        const VariableType& get_min() const { return this->min_; }
+        VariableType get_value() const { return this->value_; }
+        VariableType get_stored_value() const { return this->stored_value_; }
+        VariableType get_max() const { return this->max_; }
+        VariableType get_min() const { return this->min_; }
 
         bool is_fixed() const { return this->is_fixed_; }
         void fix() {
@@ -377,6 +377,9 @@ class CoalescenceRateParameter: public PositiveRealParameter {
         }
         double get_population_size() const {
             return this->get_population_size_from_rate(this->get_value());
+        }
+        void set_population_size(double population_size) {
+            this->set_value(this->get_rate_from_population_size(population_size));
         }
 
         virtual double draw_from_prior(RandomNumberGenerator & rng) {

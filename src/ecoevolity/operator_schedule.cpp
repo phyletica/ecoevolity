@@ -62,24 +62,24 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_root_coalescence_rate_scaler_settings().get_weight() > 0.0) {
+    if (settings.get_root_population_size_scaler_settings().get_weight() > 0.0) {
         this->add_operator(std::make_shared<RootCoalescenceRateScaler>(
-                settings.get_root_coalescence_rate_scaler_settings().get_weight(),
-                settings.get_root_coalescence_rate_scaler_settings().get_scale()
+                settings.get_root_population_size_scaler_settings().get_weight(),
+                settings.get_root_population_size_scaler_settings().get_scale()
                 ));
     }
 
-    if (settings.get_child_coalescence_rate_scaler_settings().get_weight() > 0.0) {
+    if (settings.get_child_population_size_scaler_settings().get_weight() > 0.0) {
         this->add_operator(std::make_shared<ChildCoalescenceRateScaler>(
-                settings.get_child_coalescence_rate_scaler_settings().get_weight(),
-                settings.get_child_coalescence_rate_scaler_settings().get_scale()
+                settings.get_child_population_size_scaler_settings().get_weight(),
+                settings.get_child_population_size_scaler_settings().get_scale()
                 ));
     }
 
-    if (settings.get_mutation_rate_mover_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<MutationRateMover>(
-                settings.get_mutation_rate_mover_settings().get_weight(),
-                settings.get_mutation_rate_mover_settings().get_window()
+    if (settings.get_mutation_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<MutationRateScaler>(
+                settings.get_mutation_rate_scaler_settings().get_weight(),
+                settings.get_mutation_rate_scaler_settings().get_scale()
                 ));
     }
 }
@@ -98,25 +98,29 @@ void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
     }
 }
 
-std::shared_ptr<Operator>& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) {
+Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) const {
     double u = rng.uniform_real();
     for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
         if (u <= this->cumulative_probs_.at(i)) {
-            return this->operators_.at(i);
+            return *this->operators_.at(i);
         }
     }
-    return this->operators_.back();
+    return *this->operators_.back();
 }
 
-double OperatorSchedule::calc_delta(std::shared_ptr<const Operator> op, double log_alpha) {
+Operator& OperatorSchedule::get_operator(unsigned int operator_index) const {
+    return *this->operators_.at(operator_index);
+}
+
+double OperatorSchedule::calc_delta(const Operator& op, double log_alpha) {
     if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
             (! this->auto_optimize_)) {
         ++this->auto_optimize_delay_count_;
         return 0.0;
     }
-    double target = op->get_target_acceptance_probability();
-    double count = (op->get_number_rejected_for_correction() +
-                    op->get_number_accepted_for_correction() +
+    double target = op.get_target_acceptance_probability();
+    double count = (op.get_number_rejected_for_correction() +
+                    op.get_number_accepted_for_correction() +
                     1.0);
     double delta_p = ((1.0 / count) * (std::exp(std::min(log_alpha, 0.0)) - target));
     double mx = std::numeric_limits<double>::max();
@@ -140,11 +144,11 @@ void OperatorSchedule::set_auto_optimize_delay(unsigned int delay) {
 }
 
 void OperatorSchedule::write_operator_rates(std::ostream& out) const {
-    const std::shared_ptr<Operator>& op = this->operators_.at(0);
-    out << op->header_string();
-    out << op->to_string(*this);
+    Operator& op = this->get_operator(0);
+    out << op.header_string();
+    out << op.to_string(*this);
     for (unsigned int i = 1; i < this->operators_.size(); ++i) {
-        out << this->operators_.at(i)->to_string(*this);
+        out << this->get_operator(i).to_string(*this);
     }
 }
 

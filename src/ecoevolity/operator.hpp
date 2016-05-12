@@ -37,7 +37,7 @@
 // Operator base classes
 //////////////////////////////////////////////////////////////////////////////
 
-class Operator : public std::enable_shared_from_this<Operator> {
+class Operator {
     public:
         Operator() { }
         Operator(double weight);
@@ -83,16 +83,16 @@ class Operator : public std::enable_shared_from_this<Operator> {
 
         void reject(const OperatorSchedule& os);
 
-        const unsigned int& get_number_rejected() const {
+        unsigned int get_number_rejected() const {
             return this->number_rejected_;
         }
-        const unsigned int& get_number_accepted() const {
+        unsigned int get_number_accepted() const {
             return this->number_accepted_;
         }
-        const unsigned int& get_number_rejected_for_correction() const {
+        unsigned int get_number_rejected_for_correction() const {
             return this->number_rejected_for_correction_;
         }
-        const unsigned int& get_number_accepted_for_correction() const {
+        unsigned int get_number_accepted_for_correction() const {
             return this->number_accepted_for_correction_;
         }
 
@@ -357,6 +357,10 @@ class ConcentrationScaler : public ScaleOperator {
         std::string get_name() const;
 };
 
+
+// TODO:
+// NOTE: Failing to sample from the prior with no data; use at your own peril
+// (or just use MutationRateScaler).
 class MutationRateMover : public ComparisonTreeWindowOperator {
 
     using ComparisonTreeWindowOperator::propose;
@@ -366,6 +370,25 @@ class MutationRateMover : public ComparisonTreeWindowOperator {
         MutationRateMover(double weight) : ComparisonTreeWindowOperator(weight) { }
         MutationRateMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
         virtual ~MutationRateMover() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class MutationRateScaler : public ComparisonTreeScaleOperator {
+
+    using ComparisonTreeScaleOperator::propose;
+
+    public:
+        MutationRateScaler() : ComparisonTreeScaleOperator() { }
+        MutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        MutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~MutationRateScaler() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -395,6 +418,10 @@ class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+
+// TODO:
+// NOTE: Failing to sample from the prior with no data; use at your own peril
+// (or just use ChildPopulationSizeScaler).
 class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
@@ -414,6 +441,29 @@ class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
+
+    using ComparisonTreeScaleOperator::propose;
+
+    public:
+        ChildPopulationSizeScaler() : ComparisonTreeScaleOperator() { }
+        ChildPopulationSizeScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ChildPopulationSizeScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~ChildPopulationSizeScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+// TODO:
+// NOTE: Failing to sample from the prior with no data; use at your own peril
+// (or just use RootPopulationSizeScaler).
 class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
@@ -433,6 +483,25 @@ class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+class RootPopulationSizeScaler : public ComparisonTreeScaleOperator {
+
+    using ComparisonTreeScaleOperator::propose;
+
+    public:
+        RootPopulationSizeScaler() : ComparisonTreeScaleOperator() { }
+        RootPopulationSizeScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        RootPopulationSizeScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~RootPopulationSizeScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 class ComparisonHeightScaler : public NodeHeightScaleOperator {
 
     using NodeHeightScaleOperator::propose;
@@ -440,10 +509,25 @@ class ComparisonHeightScaler : public NodeHeightScaleOperator {
     public:
         ComparisonHeightScaler() : NodeHeightScaleOperator() { }
         ComparisonHeightScaler(double weight) : NodeHeightScaleOperator(weight) { }
-        ComparisonHeightScaler(double weight, double scale) : NodeHeightScaleOperator(weight, scale) {
-            this->set_scale(scale);
-        }
+        ComparisonHeightScaler(double weight, double scale) : NodeHeightScaleOperator(weight, scale) { }
         virtual ~ComparisonHeightScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const;
+
+        std::string get_name() const;
+};
+
+class ComparisonHeightMover : public NodeHeightWindowOperator {
+
+    using NodeHeightWindowOperator::propose;
+
+    public:
+        ComparisonHeightMover() : NodeHeightWindowOperator() { }
+        ComparisonHeightMover(double weight) : NodeHeightWindowOperator(weight) { }
+        ComparisonHeightMover(double weight, double window_size) : NodeHeightWindowOperator(weight, window_size) { }
+        virtual ~ComparisonHeightMover() { }
 
         double propose(
                 RandomNumberGenerator& rng,

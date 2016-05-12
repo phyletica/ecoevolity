@@ -50,9 +50,10 @@ class OperatorSchedule {
 
         void add_operator(std::shared_ptr<Operator> o);
 
-        std::shared_ptr<Operator>& draw_operator(RandomNumberGenerator& rng);
+        Operator& draw_operator(RandomNumberGenerator& rng) const;
+        Operator& get_operator(unsigned int operator_index) const;
 
-        double calc_delta(std::shared_ptr<const Operator> op, double log_alpha);
+        double calc_delta(const Operator& op, double log_alpha);
 
         double get_total_weight() const;
         unsigned int get_auto_optimize_delay_count() const;

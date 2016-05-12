@@ -44,10 +44,10 @@
  *              Copyright:  CNRS, (January 12, 2011)
  */
 template<class DerivedNodeT>
-class BaseNode {
+class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
     protected:
-        std::vector< DerivedNodeT * > children_;
-        DerivedNodeT * parent_ = 0;
+        std::vector< std::shared_ptr<DerivedNodeT> > children_;
+        std::shared_ptr<DerivedNodeT> parent_ = nullptr;
         std::string label_ = "";
         std::shared_ptr<PositiveRealParameter> height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
@@ -74,13 +74,6 @@ class BaseNode {
     public:
         // Constructors
         BaseNode() { }
-        BaseNode(const DerivedNodeT& node) {
-            this->children_ = node.children_;
-            this->parent_ = node.parent_;
-            this->height_->set_value(node.height_->get_value());
-            this->label_ = node.label_;
-            this->is_dirty_ = node.is_dirty_;
-        }
         BaseNode(std::string label) {
             this->label_ = label;
         }
@@ -93,27 +86,11 @@ class BaseNode {
         }
 
         // Destructor
-        virtual ~BaseNode() {
-            if (this->parent_) {
-                this->parent_->remove_child(static_cast<DerivedNodeT *>(this));
-            }
-            for (auto child_iter: this->children_) {
-                child_iter->remove_parent();
-            }
-        }
+        // virtual ~BaseNode() { }
 
-        DerivedNodeT& operator=(const DerivedNodeT& node) {
-            this->children_ = node.children_;
-            this->parent_ = node.parent_;
-            this->height_->set_value(node.height_->get_value());
-            this->label_ = node.label_;
-            this->is_dirty_ = node.is_dirty_;
-            return * this;
-        }
-
-        DerivedNodeT* clone() const {
-            return new DerivedNodeT(static_cast<DerivedNodeT const &>(* this));
-        }
+        /* DerivedNodeT* clone() const { */
+        /*     return new DerivedNodeT(static_cast<DerivedNodeT const &>(* this)); */
+        /* } */
         
         //Methods
         unsigned int degree() const {
@@ -129,21 +106,21 @@ class BaseNode {
 
         unsigned int get_number_of_parents() const { return parent_ ? 1 : 0; }
 
-        const DerivedNodeT* get_parent() const {
+        const std::shared_ptr<DerivedNodeT>& get_parent() const {
             return this->parent_;
         }
-        DerivedNodeT* get_parent() {
+        std::shared_ptr<DerivedNodeT> get_parent() {
             return this->parent_;
         }
 
-        bool is_parent(const DerivedNodeT* node) const {
-            if (this->parent_ ==  node) {
+        bool is_parent(const std::shared_ptr<DerivedNodeT>& node) const {
+            if (this->parent_ == node) {
                 return true;
             }
             return false;
         }
 
-        void add_parent(DerivedNodeT* node) {
+        void add_parent(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNode::add_parent(), empty node given");
             }
@@ -151,40 +128,40 @@ class BaseNode {
                 throw EcoevolityError("BaseNode::add_parent(), this node already has a parent");
             }
             this->parent_ = node;
-            if (! node->is_child(static_cast<DerivedNodeT *>(this))) {
-                node->add_child(static_cast<DerivedNodeT *>(this));
+            if (! node->is_child(this->shared_from_this())) {
+                node->add_child(this->shared_from_this());
             }
         }
 
-        DerivedNodeT* remove_parent() {
+        std::shared_ptr<DerivedNodeT> remove_parent() {
             if (this->has_parent()) {
-                DerivedNodeT* p = this->parent_;
-                this->parent_ = 0;
-                p->remove_child(static_cast<DerivedNodeT *>(this));
+                std::shared_ptr<DerivedNodeT> p = this->parent_;
+                this->parent_ = nullptr;
+                p->remove_child(this->shared_from_this());
                 return p;
             }
-            return 0;
+            return nullptr;
         }
 
         bool has_children() const { return !this->children_.empty(); }
         bool is_leaf() const { return this->children_.empty(); }
 
         unsigned int get_number_of_children() const { return this->children_.size(); }
-        const DerivedNodeT* get_child(unsigned int index) const {
+        const std::shared_ptr<DerivedNodeT>& get_child(unsigned int index) const {
             if (index >= this->children_.size()) {
                 throw std::out_of_range("BaseNode::get_child() index out of range");
             }
             return this->children_.at(index);
         }
 
-        DerivedNodeT* get_child(unsigned int index) {
+        std::shared_ptr<DerivedNodeT> get_child(unsigned int index) {
             if (index >= this->children_.size()) {
                 throw std::out_of_range("BaseNode::get_child() index out of range");
             }
             return this->children_.at(index);
         }
 
-        bool is_child(const DerivedNodeT* node) const {
+        bool is_child(const std::shared_ptr<DerivedNodeT>& node) const {
             for (auto child_iter: this->children_) {
                 if (child_iter == node) {
                     return true;
@@ -193,19 +170,19 @@ class BaseNode {
             return false;
         }
 
-        void add_child(DerivedNodeT* node) {
+        void add_child(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNode::add_child(), empty node given");
             }
             if (! this->is_child(node)) {
                 this->children_.push_back(node);
             }
-            if (! node->is_parent(static_cast<DerivedNodeT *>(this))) {
-                node->add_parent(static_cast<DerivedNodeT *>(this));
+            if (! node->is_parent(this->shared_from_this())) {
+                node->add_parent(this->shared_from_this());
             }
         }
 
-        void remove_child(DerivedNodeT* node) {
+        void remove_child(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNode::remove_child(), empty node given");
             }
@@ -217,17 +194,17 @@ class BaseNode {
             }
         }
 
-        DerivedNodeT* remove_child(unsigned int index) {
+        std::shared_ptr<DerivedNodeT> remove_child(unsigned int index) {
             if (index >= this->children_.size()) {
                 throw std::out_of_range("BaseNode::remove_child() index out of range");
             }
-            DerivedNodeT* c = this->children_.at(index);
+            std::shared_ptr<DerivedNodeT> c = this->children_.at(index);
             this->children_.erase(this->children_.begin() + index);
             c->remove_parent();
             return c;
         }
 
-        const double& get_height() const {
+        double get_height() const {
             return this->height_->get_value();
         }
 
@@ -286,7 +263,7 @@ class BaseNode {
             this->label_ = label;
         }
 
-        const bool& is_dirty() const {
+        bool is_dirty() const {
             return this->is_dirty_;
         }
 

@@ -89,7 +89,7 @@ std::string Operator::to_string(const OperatorSchedule& os) const {
 
 double Operator::calc_delta(OperatorSchedule& os,
         double log_alpha) const {
-    return os.calc_delta(shared_from_this(), log_alpha);
+    return os.calc_delta(*this, log_alpha);
 }
 
 
@@ -286,15 +286,15 @@ std::string ConcentrationScaler::get_name() const {
 double MutationRateMover::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    double red_freq = tree.get_v();
+    double red_freq = tree.get_v() / (tree.get_u() + tree.get_v());
     double hastings;
     this->update(rng, red_freq, hastings);
-    if ((red_freq >= 0.0) && (red_freq <= 1.0)) {
-        // v is also set here
-        tree.set_u(1.0 / (2.0 * red_freq));
-        return hastings; 
+    if ((red_freq <= 0.0) || (red_freq > 1.0)) {
+        return -std::numeric_limits<double>::infinity();
     }
-    return -std::numeric_limits<double>::infinity();
+    // v is also set here
+    tree.set_u(1.0 / (2.0 * red_freq));
+    return hastings; 
 }
 
 std::string MutationRateMover::target_parameter() const {
@@ -303,6 +303,33 @@ std::string MutationRateMover::target_parameter() const {
 
 std::string MutationRateMover::get_name() const {
     return "MutationRateMover";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// MutationRateScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double MutationRateScaler::propose(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTree& tree) const {
+    double val = tree.get_u();
+    double hastings;
+    this->update(rng, val, hastings);
+    if (val < 0.5) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    // v is also set here
+    tree.set_u(val);
+    return hastings;
+}
+
+std::string MutationRateScaler::target_parameter() const {
+    return "mutation rate";
+}
+
+std::string MutationRateScaler::get_name() const {
+    return "MutationRateScaler";
 }
 
 
@@ -342,6 +369,11 @@ double ChildCoalescenceRateScaler::propose(
     double hastings;
     this->update(rng, rate, hastings);
 
+    // avoid zero division to get population size
+    if (rate <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+
     tree.set_child_coalescence_rate(pop_idx, rate);
     return hastings;
 }
@@ -352,6 +384,37 @@ std::string ChildCoalescenceRateScaler::target_parameter() const {
 
 std::string ChildCoalescenceRateScaler::get_name() const {
     return "ChildCoalescenceRateScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// ChildPopulationSizeScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double ChildPopulationSizeScaler::propose(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTree& tree) const {
+    int pop_idx = rng.uniform_int(0, tree.get_leaf_node_count() - 1);
+    double size = tree.get_child_population_size(pop_idx);
+
+    double hastings;
+    this->update(rng, size, hastings);
+
+    // avoid zero division to get coalescence rate
+    if (size <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+
+    tree.set_child_population_size(pop_idx, size);
+    return hastings;
+}
+
+std::string ChildPopulationSizeScaler::target_parameter() const {
+    return "coalescence rate";
+}
+
+std::string ChildPopulationSizeScaler::get_name() const {
+    return "ChildPopulationSizeScaler";
 }
 
 
@@ -367,6 +430,11 @@ double RootCoalescenceRateScaler::propose(
     double hastings;
     this->update(rng, rate, hastings);
 
+    // avoid zero division to get population size
+    if (rate <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+
     tree.set_root_coalescence_rate(rate);
 
     return hastings;
@@ -378,6 +446,37 @@ std::string RootCoalescenceRateScaler::target_parameter() const {
 
 std::string RootCoalescenceRateScaler::get_name() const {
     return "RootCoalescenceRateScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// RootPopulationSizeScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double RootPopulationSizeScaler::propose(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTree& tree) const {
+    double size = tree.get_root_population_size();
+
+    double hastings;
+    this->update(rng, size, hastings);
+
+    // avoid zero division to get coalescence rate
+    if (size <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+
+    tree.set_root_population_size(size);
+
+    return hastings;
+}
+
+std::string RootPopulationSizeScaler::target_parameter() const {
+    return "coalescence rate";
+}
+
+std::string RootPopulationSizeScaler::get_name() const {
+    return "RootPopulationSizeScaler";
 }
 
 
@@ -397,6 +496,28 @@ double ComparisonHeightScaler::propose(
 
 std::string ComparisonHeightScaler::get_name() const {
     return "ComparisonHeightScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// ComparisonHeightMover methods
+//////////////////////////////////////////////////////////////////////////////
+
+double ComparisonHeightMover::propose(
+        RandomNumberGenerator& rng,
+        PositiveRealParameter& node_height) const {
+    double h = node_height.get_value();
+    double hastings;
+    this->update(rng, h, hastings);
+    if (h < 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    node_height.set_value(h);
+    return hastings;
+}
+
+std::string ComparisonHeightMover::get_name() const {
+    return "ComparisonHeightMover";
 }
 
 

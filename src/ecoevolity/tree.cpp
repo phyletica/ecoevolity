@@ -20,13 +20,13 @@
 #include "tree.hpp"
 
 PopulationTree::PopulationTree(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool constant_sites_removed,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -37,13 +37,13 @@ PopulationTree::PopulationTree(
 }
 
 void PopulationTree::init(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool constant_sites_removed,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate) {
     this->data_.init(
             path,
             population_name_delimiter,
@@ -71,11 +71,11 @@ void PopulationTree::init(
 
 void PopulationTree::init_tree() {
     if (this->data_.get_number_of_populations() < 3) {
-        this->root_ = new PopulationNode(0.0);
+        this->root_ = std::make_shared<PopulationNode>(0.0);
         for (unsigned int pop_idx = 0;
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
-            PopulationNode * tip = new PopulationNode(
+            std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
                     this->data_.get_population_label(pop_idx),
                     0.0,
                     this->data_.get_max_allele_count(pop_idx));
@@ -84,15 +84,15 @@ void PopulationTree::init_tree() {
         }
         return;
     }
-    PopulationNode * ancestor = new PopulationNode(0.0);
-    ancestor->add_child(new PopulationNode(this->data_.get_population_label(0)));
-    ancestor->add_child(new PopulationNode(this->data_.get_population_label(1)));
+    std::shared_ptr<PopulationNode> ancestor = std::make_shared<PopulationNode>(0.0);
+    ancestor->add_child(std::make_shared<PopulationNode>(this->data_.get_population_label(0)));
+    ancestor->add_child(std::make_shared<PopulationNode>(this->data_.get_population_label(1)));
     for (unsigned int pop_idx = 2;
             pop_idx < this->data_.get_number_of_populations();
             ++pop_idx) {
-        PopulationNode * next_ancestor = new PopulationNode(0.0);
+        std::shared_ptr<PopulationNode> next_ancestor = std::make_shared<PopulationNode>(0.0);
         next_ancestor->add_child(ancestor);
-        PopulationNode * tip = new PopulationNode(
+        std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
                 this->data_.get_population_label(pop_idx),
                 0.0,
                 this->data_.get_max_allele_count(pop_idx));
@@ -105,8 +105,8 @@ void PopulationTree::init_tree() {
 
 void PopulationTree::compute_leaf_partials(
         int pattern_index,
-        PopulationNode * node) {
-    unsigned int pop_idx = this->data_.get_population_index(node->get_label());
+        PopulationNode& node) {
+    unsigned int pop_idx = this->data_.get_population_index(node.get_label());
     unsigned int allele_count = 0;
     unsigned int red_allele_count = 0;
     if (pattern_index == -1) {
@@ -141,54 +141,54 @@ void PopulationTree::compute_leaf_partials(
                 }
                 m.set_pattern_probability(allele_count, k, p_r_k_n);
             }
-            node->copy_bottom_pattern_probs(m);
+            node.copy_bottom_pattern_probs(m);
             return;
         }
         BiallelicPatternProbabilityMatrix m(allele_count, n_reds);
-        node->copy_bottom_pattern_probs(m);
+        node.copy_bottom_pattern_probs(m);
         return;
     }
     BiallelicPatternProbabilityMatrix m(allele_count, red_allele_count);
-    node->copy_bottom_pattern_probs(m);
+    node.copy_bottom_pattern_probs(m);
     return;
 }
 
 void PopulationTree::compute_top_of_branch_partials(
-        PopulationNode * node) {
-    if (node->get_allele_count() == 0) {
-        node->copy_top_pattern_probs(node->get_bottom_pattern_probs());
+        PopulationNode& node) {
+    if (node.get_allele_count() == 0) {
+        node.copy_top_pattern_probs(node.get_bottom_pattern_probs());
         return;
     }
 
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
-            node->get_allele_count(),
+            node.get_allele_count(),
             this->u_->get_value(),
-            this->v_->get_value(),
-            node->get_coalescence_rate(),
-            node->get_length() * this->node_height_multiplier_->get_value(),
-            node->get_bottom_pattern_probs());
-    node->copy_top_pattern_probs(m);
+            this->get_v(),
+            node.get_coalescence_rate(),
+            node.get_length() * this->node_height_multiplier_->get_value(),
+            node.get_bottom_pattern_probs());
+    node.copy_top_pattern_probs(m);
 }
 
 void PopulationTree::compute_internal_partials(
-        PopulationNode * node) {
-    if (node->get_number_of_children() == 1) {
-        node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+        PopulationNode& node) {
+    if (node.get_number_of_children() == 1) {
+        node.copy_bottom_pattern_probs(node.get_child(0)->get_top_pattern_probs());
         return;
     }
-    if (node->get_child(0)->get_allele_count() == 0) {
-        node->copy_bottom_pattern_probs(node->get_child(1)->get_top_pattern_probs());
+    if (node.get_child(0)->get_allele_count() == 0) {
+        node.copy_bottom_pattern_probs(node.get_child(1)->get_top_pattern_probs());
         return;
     }
-    if (node->get_child(1)->get_allele_count() == 0) {
-        node->copy_bottom_pattern_probs(node->get_child(0)->get_top_pattern_probs());
+    if (node.get_child(1)->get_allele_count() == 0) {
+        node.copy_bottom_pattern_probs(node.get_child(0)->get_top_pattern_probs());
         return;
     }
-    unsigned int allele_count_child1 = node->get_child(0)->get_allele_count();
-    unsigned int allele_count_child2 = node->get_child(1)->get_allele_count();
+    unsigned int allele_count_child1 = node.get_child(0)->get_allele_count();
+    unsigned int allele_count_child2 = node.get_child(1)->get_allele_count();
 
-    std::vector<double> pattern_probs_child1 = node->get_child(0)->get_top_pattern_probs().get_pattern_prob_matrix();
-    std::vector<double> pattern_probs_child2 = node->get_child(1)->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child1 = node.get_child(0)->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child2 = node.get_child(1)->get_top_pattern_probs().get_pattern_prob_matrix();
 
     for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
@@ -235,30 +235,33 @@ void PopulationTree::compute_internal_partials(
         }
     }
     BiallelicPatternProbabilityMatrix m(allele_count, pattern_probs);
-    node->copy_bottom_pattern_probs(m);
+    node.copy_bottom_pattern_probs(m);
 }
 
 void PopulationTree::compute_pattern_partials(
         int pattern_index,
-        PopulationNode * node) {
-    if (node->is_leaf()) {
+        PopulationNode& node) {
+    if (node.is_leaf()) {
         this->compute_leaf_partials(pattern_index, node);
     }
-    else if (node->get_number_of_children() == 1) {
-        compute_pattern_partials(pattern_index, node->get_child(0));
-        compute_top_of_branch_partials(node->get_child(0));
+    else if (node.get_number_of_children() == 1) {
+        compute_pattern_partials(pattern_index, *node.get_child(0));
+        compute_top_of_branch_partials(*node.get_child(0));
         compute_internal_partials(node);
     }
-    else if (node->get_number_of_children() == 2) {
-        compute_pattern_partials(pattern_index, node->get_child(0));
-        compute_pattern_partials(pattern_index, node->get_child(1));
-        compute_top_of_branch_partials(node->get_child(0));
-        compute_top_of_branch_partials(node->get_child(1));
+    else if (node.get_number_of_children() == 2) {
+        compute_pattern_partials(pattern_index, *node.get_child(0));
+        compute_pattern_partials(pattern_index, *node.get_child(1));
+        compute_top_of_branch_partials(*node.get_child(0));
+        compute_top_of_branch_partials(*node.get_child(1));
         compute_internal_partials(node);
     }
     else {
-        throw EcoevolityError(
-            "PopulationTree::compute_pattern_probability(); unexpected number of children");
+        std::ostringstream message;
+        message << "PopulationTree::compute_pattern_probability(); "
+                << "unexpected number of children: "
+                << node.get_number_of_children();
+        throw EcoevolityError(message.str());
     }
 }
 
@@ -268,7 +271,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
     QMatrix q = QMatrix(
             N,
             this->u_->get_value(),
-            this->v_->get_value(),
+            this->get_v(),
             this->root_->get_coalescence_rate());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
@@ -329,7 +332,7 @@ double PopulationTree::compute_root_likelihood() {
 }
 
 double PopulationTree::compute_pattern_likelihood(int pattern_index) {
-    this->compute_pattern_partials(pattern_index, this->root_);
+    this->compute_pattern_partials(pattern_index, *this->root_);
     return this->compute_root_likelihood();
 }
 
@@ -482,7 +485,7 @@ void PopulationTree::set_root_height(double height) {
 void PopulationTree::update_root_height(double height) {
     this->root_->update_height(height);
 }
-const double& PopulationTree::get_root_height() const {
+double PopulationTree::get_root_height() const {
     return this->root_->get_height();
 }
 void PopulationTree::store_root_height() {
@@ -504,9 +507,8 @@ void PopulationTree::set_u(double u) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
-    double v = u / ((2.0 * u) - 1.0);
     this->u_->set_value(u);
-    this->v_->set_value(v);
+    double v = this->get_v();
     ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
@@ -517,23 +519,21 @@ void PopulationTree::update_u(double u) {
     ECOEVOLITY_ASSERT(u >= 0.5);
     double v = u / ((2.0 * u) - 1.0);
     this->u_->update_value(u);
-    this->v_->update_value(v);
     ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
     this->make_dirty();
 }
-const double& PopulationTree::get_u() const {
+double PopulationTree::get_u() const {
     return this->u_->get_value();
 }
-const double& PopulationTree::get_v() const {
-    return this->v_->get_value();
+double PopulationTree::get_v() const {
+    double u = this->get_u();
+    return u / ((2.0 * u) - 1.0);
 }
 void PopulationTree::store_u() {
     this->u_->store();
-    this->v_->store();
 }
 void PopulationTree::restore_u() {
     this->u_->restore();
-    this->v_->restore();
     this->make_dirty();
 }
 
@@ -551,7 +551,7 @@ void PopulationTree::update_node_height_multiplier(double m) {
     this->node_height_multiplier_->update_value(m);
     this->make_dirty();
 }
-const double& PopulationTree::get_node_height_multiplier() const {
+double PopulationTree::get_node_height_multiplier() const {
     return this->node_height_multiplier_->get_value();
 }
 void PopulationTree::store_node_height_multiplier() {
@@ -564,9 +564,6 @@ void PopulationTree::restore_node_height_multiplier() {
 
 std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
-}
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_v_parameter() const {
-    return this->v_;
 }
 
 void PopulationTree::set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
@@ -589,8 +586,24 @@ void PopulationTree::set_coalescence_rate(double rate) {
     }
     this->root_->set_all_coalescence_rates(rate);
 }
+void PopulationTree::set_root_population_size(double size) {
+    if (this->coalescence_rates_are_fixed()) {
+        return;
+    }
+    this->root_->set_population_size(size);
+}
+void PopulationTree::set_population_size(double size) {
+    if (this->coalescence_rates_are_fixed()) {
+        return;
+    }
+    this->root_->set_all_population_sizes(size);
+}
+
 double PopulationTree::get_root_coalescence_rate() const {
     return this->root_->get_coalescence_rate();
+}
+double PopulationTree::get_root_population_size() const {
+    return this->root_->get_population_size();
 }
 std::shared_ptr<CoalescenceRateParameter> PopulationTree::get_root_coalescence_rate_parameter() const {
     return this->root_->get_coalescence_rate_parameter();
@@ -662,10 +675,6 @@ void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistributi
     this->u_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_v_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->v_->set_prior(prior);
-    this->make_dirty();
-}
 void PopulationTree::set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->node_height_multiplier_->set_prior(prior);
     this->make_dirty();
@@ -681,11 +690,7 @@ double PopulationTree::compute_log_prior_density() {
     return d;
 }
 double PopulationTree::compute_log_prior_density_of_mutation_rates() const {
-    double d = this->u_->relative_prior_ln_pdf();
-    if (! this->mutation_rates_are_constrained()) {
-        d += this->v_->relative_prior_ln_pdf();
-    }
-    return d;
+    return this->u_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_node_height_multiplier() const {
     return this->node_height_multiplier_->relative_prior_ln_pdf();
@@ -732,13 +737,13 @@ void PopulationTree::provide_number_of_constant_sites(
 
 
 ComparisonPopulationTree::ComparisonPopulationTree(
-        const std::string path, 
-        const char population_name_delimiter,
-        const bool population_name_is_prefix,
-        const bool genotypes_are_diploid,
-        const bool markers_are_dominant,
-        const bool constant_sites_removed,
-        const bool validate) {
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -781,7 +786,6 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     }
     
     this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
-    this->set_v_prior(settings.get_v_settings().get_prior_settings().get_instance());
     if (settings.constrain_mutation_rates()) {
         this->constrain_mutation_rates();
     }
@@ -808,6 +812,14 @@ void ComparisonPopulationTree::set_child_coalescence_rate(
     }
     this->root_->get_child(child_index)->set_coalescence_rate(rate);
 }
+void ComparisonPopulationTree::set_child_population_size(
+        unsigned int child_index,
+        double size) {
+    if (this->coalescence_rates_are_fixed()) {
+        return;
+    }
+    this->root_->get_child(child_index)->set_population_size(size);
+}
 void ComparisonPopulationTree::update_child_coalescence_rate(
         unsigned int child_index,
         double rate) {
@@ -816,7 +828,7 @@ void ComparisonPopulationTree::update_child_coalescence_rate(
     }
     this->root_->get_child(child_index)->update_coalescence_rate(rate);
 }
-const double& ComparisonPopulationTree::get_child_coalescence_rate(
+double ComparisonPopulationTree::get_child_coalescence_rate(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate();
 }
@@ -831,6 +843,11 @@ void ComparisonPopulationTree::restore_child_coalescence_rate(
 std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_coalescence_rate_parameter(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
+}
+
+double ComparisonPopulationTree::get_child_population_size(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size();
 }
 
 // Node height sharing needs to be dealt with in next level up in
@@ -871,11 +888,11 @@ void ComparisonPopulationTree::log_state(
         << this->get_node_height_multiplier() << delimiter
         << this->get_u() << delimiter
         << this->get_v() << delimiter
-        << CoalescenceRateParameter::get_population_size_from_rate(this->get_child_coalescence_rate(0)) << delimiter;
+        << this->get_child_population_size(0) << delimiter;
     if (this->root_->get_number_of_children() > 1) {
-        out << CoalescenceRateParameter::get_population_size_from_rate(this->get_child_coalescence_rate(1)) << delimiter;
+        out << this->get_child_population_size(1) << delimiter;
     }
-    out << CoalescenceRateParameter::get_population_size_from_rate(this->get_root_coalescence_rate());
+    out << this->get_root_population_size();
 }
 void ComparisonPopulationTree::log_state(
         std::ostream& out,

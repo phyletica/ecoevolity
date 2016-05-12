@@ -41,18 +41,18 @@ class BiallelicData {
     public:
         // Constructor
         BiallelicData() { }
-        BiallelicData(const std::string path,
-                const char population_name_delimiter = '_',
-                const bool population_name_is_prefix = true,
-                const bool genotypes_are_diploid = true,
-                const bool markers_are_dominant = false,
-                const bool validate = true);
+        BiallelicData(std::string path,
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool validate = true);
         void init(const std::string path,
-                const char population_name_delimiter = '_',
-                const bool population_name_is_prefix = true,
-                const bool genotypes_are_diploid = true,
-                const bool markers_are_dominant = false,
-                const bool validate = true);
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool validate = true);
 
         // Destructor
         // ~BiallelicData();
@@ -61,16 +61,16 @@ class BiallelicData {
         const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
         const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
 
-        const unsigned int& get_red_allele_count(unsigned int pattern_index,
+        unsigned int get_red_allele_count(unsigned int pattern_index,
                 unsigned int population_index) const;
-        const unsigned int& get_allele_count(unsigned int pattern_index,
+        unsigned int get_allele_count(unsigned int pattern_index,
                 unsigned int population_index) const;
 
-        const unsigned int& get_pattern_weight(unsigned int pattern_index) const;
-        const unsigned int& get_max_allele_count(unsigned int population_index) const;
+        unsigned int get_pattern_weight(unsigned int pattern_index) const;
+        unsigned int get_max_allele_count(unsigned int population_index) const;
         const std::vector<unsigned int>& get_max_allele_counts() const;
-        const unsigned int& get_population_index(std::string population_label) const;
-        const unsigned int& get_population_index_from_seq_label(std::string seq_label) const;
+        unsigned int get_population_index(std::string population_label) const;
+        unsigned int get_population_index_from_seq_label(std::string seq_label) const;
         const std::string& get_population_label(unsigned int population_index) const;
         const std::vector<std::string>& get_sequence_labels(unsigned int population_index) const;
         const std::string& get_path() const;
@@ -79,13 +79,13 @@ class BiallelicData {
         unsigned int get_number_of_sites() const;
         unsigned int get_number_of_populations() const;
 
-        const bool& markers_are_dominant() const;
-        const bool& genotypes_are_diploid() const;
+        bool markers_are_dominant() const;
+        bool genotypes_are_diploid() const;
 
-        const bool& has_constant_patterns() const;
-        const bool& has_missing_population_patterns() const;
-        const bool& has_mirrored_patterns() const;
-        const bool& patterns_are_folded() const;
+        bool has_constant_patterns() const;
+        bool has_missing_population_patterns() const;
+        bool has_mirrored_patterns() const;
+        bool patterns_are_folded() const;
 
         void get_pattern_index(
                 bool& was_found,
@@ -100,9 +100,9 @@ class BiallelicData {
         unsigned int fold_patterns(const bool validate = true);
 
         unsigned int get_number_of_constant_sites_removed() const;
-        const unsigned int& get_number_of_constant_red_sites_removed() const;
-        const unsigned int& get_number_of_constant_green_sites_removed() const;
-        const unsigned int& get_number_of_missing_sites_removed() const;
+        unsigned int get_number_of_constant_red_sites_removed() const;
+        unsigned int get_number_of_constant_green_sites_removed() const;
+        unsigned int get_number_of_missing_sites_removed() const;
 
         double get_proportion_of_red_alleles() const;
         void get_empirical_mutation_rates(double& u, double& v) const;

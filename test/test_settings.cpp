@@ -445,11 +445,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 true,
                 "none",
                 no_prior_parameters);
-        PositiveRealParameterSettings v = PositiveRealParameterSettings(
-                1.0,
-                true,
-                "none",
-                no_prior_parameters);
         PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
                 1.0,
                 true,
@@ -460,7 +455,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 nex_path,
                 pop_size,
                 u,
-                v,
                 multiplier,
                 '_',
                 true,
@@ -492,9 +486,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "    u_rate:\n";
         e += "        value: 1.2\n";
         e += "        estimate: false\n";
-        e += "    v_rate:\n";
-        e += "        value: 0.857143\n";
-        e += "        estimate: false\n";
         e += "    time_multiplier:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
@@ -503,6 +494,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
+        REQUIRE(t.get_degree_of_root() == 2);
 
         REQUIRE(! std::isnan(t.get_root_coalescence_rate()));
         REQUIRE(! std::isnan(t.get_child_coalescence_rate(0)));
@@ -510,7 +502,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_u() == Approx(1.2));
         REQUIRE(t.get_v() == Approx(0.8571429));
         REQUIRE(t.get_u_parameter()->is_fixed() == true);
-        REQUIRE(t.get_v_parameter()->is_fixed() == true);
         REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
         REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
@@ -523,7 +514,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.node_height_multiplier_is_fixed() == true);
 
         REQUIRE(! t.get_u_prior());
-        REQUIRE(! t.get_v_prior());
         REQUIRE(t.get_population_size_prior()->to_string() == "gamma(shape = 10, scale = 0.0001)");
         REQUIRE(! t.get_node_height_multiplier_prior());
     }
@@ -546,11 +536,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 false,
                 "gamma_distribution",
                 u_prior_parameters);
-        PositiveRealParameterSettings v = PositiveRealParameterSettings(
-                1.0,
-                false,
-                "gamma_distribution",
-                u_prior_parameters);
         PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
                 1.0,
                 true,
@@ -561,7 +546,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 nex_path,
                 pop_size,
                 u,
-                v,
                 multiplier,
                 '_',
                 true,
@@ -590,9 +574,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "    u_rate:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
-        e += "    v_rate:\n";
-        e += "        value: 1\n";
-        e += "        estimate: false\n";
         e += "    time_multiplier:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
@@ -601,6 +582,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
+        REQUIRE(t.get_degree_of_root() == 2);
 
         REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
         REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
@@ -608,7 +590,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_u() == 1.0);
         REQUIRE(t.get_v() == 1.0);
         REQUIRE(t.get_u_parameter()->is_fixed() == true);
-        REQUIRE(t.get_v_parameter()->is_fixed() == true);
         REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == true);
         REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == true);
         REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == true);
@@ -621,13 +602,13 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.node_height_multiplier_is_fixed() == true);
 
         REQUIRE(! t.get_u_prior());
-        REQUIRE(! t.get_v_prior());
         REQUIRE(! t.get_population_size_prior());
         REQUIRE(! t.get_node_height_multiplier_prior());
 
         t.set_root_height(0.01);
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(t.get_degree_of_root() == 2);
     }
 
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex likelihood with constrained sizes") {
@@ -640,9 +621,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         std::unordered_map<std::string, double> u_prior_parameters;
         u_prior_parameters["shape"] = 10.0;
         u_prior_parameters["scale"] = 0.1;
-        std::unordered_map<std::string, double> v_prior_parameters;
-        v_prior_parameters["shape"] = 100.0;
-        v_prior_parameters["scale"] = 0.01;
         std::unordered_map<std::string, double> m_prior_parameters;
         m_prior_parameters["min"] = 0.9;
         m_prior_parameters["max"] = 1.1;
@@ -656,11 +634,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 false,
                 "gamma_distribution",
                 u_prior_parameters);
-        PositiveRealParameterSettings v = PositiveRealParameterSettings(
-                1.0,
-                false,
-                "gamma_distribution",
-                v_prior_parameters);
         PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
                 1.0,
                 false,
@@ -671,7 +644,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 nex_path,
                 pop_size,
                 u,
-                v,
                 multiplier,
                 '_',
                 true,
@@ -707,13 +679,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "            gamma_distribution:\n";
         e += "                shape: 10\n";
         e += "                scale: 0.1\n";
-        e += "    v_rate:\n";
-        e += "        value: 1\n";
-        e += "        estimate: true\n";
-        e += "        prior:\n";
-        e += "            gamma_distribution:\n";
-        e += "                shape: 100\n";
-        e += "                scale: 0.01\n";
         e += "    time_multiplier:\n";
         e += "        value: 1\n";
         e += "        estimate: true\n";
@@ -726,6 +691,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
+        REQUIRE(t.get_degree_of_root() == 2);
 
         REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
         REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
@@ -733,7 +699,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_u() == 1.0);
         REQUIRE(t.get_v() == 1.0);
         REQUIRE(t.get_u_parameter()->is_fixed() == false);
-        REQUIRE(t.get_v_parameter()->is_fixed() == false);
         REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
         REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
@@ -746,13 +711,13 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.node_height_multiplier_is_fixed() == false);
 
         REQUIRE(t.get_u_prior()->to_string() == "gamma(shape = 10, scale = 0.1)");
-        REQUIRE(t.get_v_prior()->to_string() == "gamma(shape = 100, scale = 0.01)");
         REQUIRE(t.get_population_size_prior()->to_string() == "exp(lambda = 1)");
         REQUIRE(t.get_node_height_multiplier_prior()->to_string() == "uniform(0.9, 1.1)");
 
         t.set_root_height(0.01);
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(t.get_degree_of_root() == 2);
     }
 }
 
@@ -793,9 +758,6 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -815,15 +777,15 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 0\n";
-        e += "            window: 0.1\n";
+        e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
@@ -890,9 +852,6 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -915,9 +874,6 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -937,15 +893,15 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 0\n";
-        e += "            window: 0.1\n";
+        e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1007,9 +963,6 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1032,9 +985,6 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1054,15 +1004,15 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 0\n";
-        e += "            window: 0.1\n";
+        e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1140,9 +1090,6 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1165,9 +1112,6 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1187,15 +1131,15 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 0\n";
-        e += "            window: 0.1\n";
+        e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1358,13 +1302,8 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
-        e += "                    rate: 1\n";
-        e += "        v_rate:\n";
-        e += "            value: 1.04545\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                exponential_distribution:\n";
-        e += "                    rate: 1\n";
+        e += "                    rate: 2\n";
+        e += "                    offset: 0.5\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1389,13 +1328,8 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
-        e += "                    rate: 1\n";
-        e += "        v_rate:\n";
-        e += "            value: 1.28571\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                exponential_distribution:\n";
-        e += "                    rate: 1\n";
+        e += "                    rate: 2\n";
+        e += "                    offset: 0.5\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1415,15 +1349,15 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 1\n";
-        e += "            window: 0.1\n";
+        e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1454,13 +1388,6 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         cfg_stream << "    parameters:\n";
         cfg_stream << "        time_multiplier:\n";
         cfg_stream << "            estimate: true\n";
-        cfg_stream << "        v_rate:\n";
-        cfg_stream << "            value: 1.1\n";
-        cfg_stream << "            estimate: true\n";
-        cfg_stream << "            prior:\n";
-        cfg_stream << "                gamma_distribution:\n";
-        cfg_stream << "                    shape: 10.0\n";
-        cfg_stream << "                    scale: 0.1\n";
         cfg_stream << "        u_rate:\n";
         cfg_stream << "            value: 0.9\n";
         cfg_stream << "            estimate: true\n";
@@ -1525,13 +1452,6 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "                gamma_distribution:\n";
         e += "                    shape: 100\n";
         e += "                    scale: 0.01\n";
-        e += "        v_rate:\n";
-        e += "            value: 1.04545\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 10\n";
-        e += "                    scale: 0.1\n";
         e += "        time_multiplier:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
@@ -1559,13 +1479,6 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "                gamma_distribution:\n";
         e += "                    shape: 100\n";
         e += "                    scale: 0.01\n";
-        e += "        v_rate:\n";
-        e += "            value: 1.28571\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 10\n";
-        e += "                    scale: 0.1\n";
         e += "        time_multiplier:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
@@ -1588,15 +1501,15 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.3\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.5\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.5\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 1\n";
-        e += "            window: 0.1\n";
+        e += "            scale: 0.5\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1664,13 +1577,6 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "                gamma_distribution:\n";
         e += "                    shape: 10\n";
         e += "                    scale: 0.1\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 10\n";
-        e += "                    scale: 0.1\n";
         e += "        time_multiplier:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
@@ -1689,13 +1595,6 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "            value: 0.01\n";
         e += "            estimate: false\n";
         e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 10\n";
-        e += "                    scale: 0.1\n";
-        e += "        v_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
@@ -1727,9 +1626,6 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        v_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        time_multiplier:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
@@ -1752,15 +1648,15 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        ComparisonHeightMultiplierScaler:\n";
         e += "            weight: 2\n";
         e += "            scale: 0.5\n";
-        e += "        RootCoalescenceRateScaler:\n";
+        e += "        RootPopulationSizeScaler:\n";
         e += "            weight: 2\n";
         e += "            scale: 0.2\n";
-        e += "        ChildCoalescenceRateScaler:\n";
+        e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 2\n";
         e += "            scale: 0.2\n";
-        e += "        MutationRateMover:\n";
+        e += "        MutationRateScaler:\n";
         e += "            weight: 0.5\n";
-        e += "            window: 0.2\n";
+        e += "            scale: 0.2\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config.yml");
