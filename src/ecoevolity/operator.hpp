@@ -357,6 +357,10 @@ class ConcentrationScaler : public ScaleOperator {
         std::string get_name() const;
 };
 
+
+// TODO:
+// NOTE: Failing to sample from the prior with no data; use at your own peril
+// (or just use MutationRateScaler).
 class MutationRateMover : public ComparisonTreeWindowOperator {
 
     using ComparisonTreeWindowOperator::propose;
@@ -414,6 +418,10 @@ class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+
+// TODO:
+// NOTE: Failing to sample from the prior with no data; use at your own peril
+// (or just use ChildPopulationSizeScaler).
 class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
@@ -452,6 +460,10 @@ class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+
+// TODO:
+// NOTE: Failing to sample from the prior with no data; use at your own peril
+// (or just use RootPopulationSizeScaler).
 class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
