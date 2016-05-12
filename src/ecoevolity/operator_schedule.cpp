@@ -62,17 +62,17 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_root_coalescence_rate_scaler_settings().get_weight() > 0.0) {
+    if (settings.get_root_population_size_scaler_settings().get_weight() > 0.0) {
         this->add_operator(std::make_shared<RootCoalescenceRateScaler>(
-                settings.get_root_coalescence_rate_scaler_settings().get_weight(),
-                settings.get_root_coalescence_rate_scaler_settings().get_scale()
+                settings.get_root_population_size_scaler_settings().get_weight(),
+                settings.get_root_population_size_scaler_settings().get_scale()
                 ));
     }
 
-    if (settings.get_child_coalescence_rate_scaler_settings().get_weight() > 0.0) {
+    if (settings.get_child_population_size_scaler_settings().get_weight() > 0.0) {
         this->add_operator(std::make_shared<ChildCoalescenceRateScaler>(
-                settings.get_child_coalescence_rate_scaler_settings().get_weight(),
-                settings.get_child_coalescence_rate_scaler_settings().get_scale()
+                settings.get_child_population_size_scaler_settings().get_weight(),
+                settings.get_child_population_size_scaler_settings().get_scale()
                 ));
     }
 

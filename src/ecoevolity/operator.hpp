@@ -433,6 +433,25 @@ class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
+class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
+
+    using ComparisonTreeScaleOperator::propose;
+
+    public:
+        ChildPopulationSizeScaler() : ComparisonTreeScaleOperator() { }
+        ChildPopulationSizeScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ChildPopulationSizeScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~ChildPopulationSizeScaler() { }
+
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;

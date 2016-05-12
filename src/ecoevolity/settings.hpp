@@ -994,9 +994,9 @@ class OperatorScheduleSettings {
                 1.0, 0.5);
         ScaleOperatorSettings comparison_height_multiplier_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
-        ScaleOperatorSettings root_coalescence_rate_scaler_settings_ = ScaleOperatorSettings(
+        ScaleOperatorSettings root_population_size_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings child_coalescence_rate_scaler_settings_ = ScaleOperatorSettings(
+        ScaleOperatorSettings child_population_size_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
@@ -1011,8 +1011,8 @@ class OperatorScheduleSettings {
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
             this->comparison_height_scaler_settings_ = other.comparison_height_scaler_settings_;
             this->comparison_height_multiplier_scaler_settings_ = other.comparison_height_multiplier_scaler_settings_;
-            this->root_coalescence_rate_scaler_settings_ = other.root_coalescence_rate_scaler_settings_;
-            this->child_coalescence_rate_scaler_settings_ = other.child_coalescence_rate_scaler_settings_;
+            this->root_population_size_scaler_settings_ = other.root_population_size_scaler_settings_;
+            this->child_population_size_scaler_settings_ = other.child_population_size_scaler_settings_;
             this->mutation_rate_scaler_settings_ = other.mutation_rate_scaler_settings_;
             return * this;
         }
@@ -1035,11 +1035,11 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_comparison_height_multiplier_scaler_settings() const {
             return this->comparison_height_multiplier_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_root_coalescence_rate_scaler_settings() const {
-            return this->root_coalescence_rate_scaler_settings_;
+        const ScaleOperatorSettings& get_root_population_size_scaler_settings() const {
+            return this->root_population_size_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_child_coalescence_rate_scaler_settings() const {
-            return this->child_coalescence_rate_scaler_settings_;
+        const ScaleOperatorSettings& get_child_population_size_scaler_settings() const {
+            return this->child_population_size_scaler_settings_;
         }
         const ScaleOperatorSettings& get_mutation_rate_scaler_settings() const {
             return this->mutation_rate_scaler_settings_;
@@ -1123,23 +1123,23 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "RootCoalescenceRateScaler") {
+                else if (op->first.as<std::string>() == "RootPopulationSizeScaler") {
                     try {
-                        this->root_coalescence_rate_scaler_settings_.update_from_config(op->second);
+                        this->root_population_size_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing RootCoalescenceRateScaler settings\n";
+                                  << "Problem parsing RootPopulationSizeScaler settings\n";
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "ChildCoalescenceRateScaler") {
+                else if (op->first.as<std::string>() == "ChildPopulationSizeScaler") {
                     try {
-                        this->child_coalescence_rate_scaler_settings_.update_from_config(op->second);
+                        this->child_population_size_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing ChildCoalescenceRateScaler settings\n";
+                                  << "Problem parsing ChildPopulationSizeScaler settings\n";
                         throw;
                     }
                 }
@@ -1179,10 +1179,10 @@ class OperatorScheduleSettings {
             ss << this->comparison_height_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonHeightMultiplierScaler:\n";
             ss << this->comparison_height_multiplier_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "RootCoalescenceRateScaler:\n";
-            ss << this->root_coalescence_rate_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "ChildCoalescenceRateScaler:\n";
-            ss << this->child_coalescence_rate_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "RootPopulationSizeScaler:\n";
+            ss << this->root_population_size_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "ChildPopulationSizeScaler:\n";
+            ss << this->child_population_size_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "MutationRateScaler:\n";
             ss << this->mutation_rate_scaler_settings_.to_string(indent_level + 3);
             return ss.str();
@@ -1559,8 +1559,8 @@ class CollectionSettings {
                 this->operator_schedule_settings_.mutation_rate_scaler_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
-                this->operator_schedule_settings_.root_coalescence_rate_scaler_settings_.set_weight(0.0);
-                this->operator_schedule_settings_.child_coalescence_rate_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.child_population_size_scaler_settings_.set_weight(0.0);
             }
         }
 

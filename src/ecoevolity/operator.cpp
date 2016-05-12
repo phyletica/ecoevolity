@@ -369,6 +369,11 @@ double ChildCoalescenceRateScaler::propose(
     double hastings;
     this->update(rng, rate, hastings);
 
+    // avoid zero division to get population size
+    if (rate <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+
     tree.set_child_coalescence_rate(pop_idx, rate);
     return hastings;
 }
@@ -383,6 +388,37 @@ std::string ChildCoalescenceRateScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// ChildPopulationSizeScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double ChildPopulationSizeScaler::propose(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTree& tree) const {
+    int pop_idx = rng.uniform_int(0, tree.get_leaf_node_count() - 1);
+    double size = tree.get_child_population_size(pop_idx);
+
+    double hastings;
+    this->update(rng, size, hastings);
+
+    // avoid zero division to get coalescence rate
+    if (size <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+
+    tree.set_child_population_size(pop_idx, size);
+    return hastings;
+}
+
+std::string ChildPopulationSizeScaler::target_parameter() const {
+    return "coalescence rate";
+}
+
+std::string ChildPopulationSizeScaler::get_name() const {
+    return "ChildPopulationSizeScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // RootCoalescenceRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
@@ -393,6 +429,11 @@ double RootCoalescenceRateScaler::propose(
 
     double hastings;
     this->update(rng, rate, hastings);
+
+    // avoid zero division to get population size
+    if (rate <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
 
     tree.set_root_coalescence_rate(rate);
 
@@ -419,6 +460,11 @@ double RootPopulationSizeScaler::propose(
 
     double hastings;
     this->update(rng, size, hastings);
+
+    // avoid zero division to get coalescence rate
+    if (size <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
 
     tree.set_root_population_size(size);
 

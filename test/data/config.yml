@@ -41,10 +41,10 @@ operator_settings:
         ComparisonHeightMultiplierScaler:
             scale: 0.5
             weight: 2.0
-        RootCoalescenceRateScaler:
+        RootPopulationSizeScaler:
             scale: 0.2
             weight: 2.0
-        ChildCoalescenceRateScaler:
+        ChildPopulationSizeScaler:
             scale: 0.2
             weight: 2.0
         MutationRateScaler:
