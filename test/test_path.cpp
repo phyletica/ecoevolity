@@ -518,3 +518,171 @@ SCENARIO("join is a dumb path merger", "[path]") {
         }
     }
 }
+
+SCENARIO("splitext returns the prefix and extension as a pair", "[path]") {
+
+    GIVEN("A full file path") {
+        std::string path = "/home/jamie/Desktop/file.txt";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal path up to ext") {
+                REQUIRE(p.first == "/home/jamie/Desktop/file");
+            }
+            THEN("then second should equal the ext") {
+                REQUIRE(p.second == ".txt");
+            }
+        }
+    }
+
+    GIVEN("A full file path with leading space") {
+        std::string path = "  /home/jamie/Desktop/file.txt";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal path up to ext including space") {
+                REQUIRE(p.first == "  /home/jamie/Desktop/file");
+            }
+            THEN("then second should equal the ext") {
+                REQUIRE(p.second == ".txt");
+            }
+        }
+    }
+
+    GIVEN("A full file path with trailing space") {
+        std::string path = "/home/jamie/Desktop/file.txt  ";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal path up to ext") {
+                REQUIRE(p.first == "/home/jamie/Desktop/file");
+            }
+            THEN("then second should equal the ext including space") {
+                REQUIRE(p.second == ".txt  ");
+            }
+        }
+    }
+
+    GIVEN("A file name only") {
+        std::string path = "file.txt";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal name up to ext") {
+                REQUIRE(p.first == "file");
+            }
+            THEN("then second should equal the ext") {
+                REQUIRE(p.second == ".txt");
+            }
+        }
+    }
+
+    GIVEN("A file name only with leading and trailing space") {
+        std::string path = "  file.txt  ";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal name up to ext including space") {
+                REQUIRE(p.first == "  file");
+            }
+            THEN("then second should equal the ext including space") {
+                REQUIRE(p.second == ".txt  ");
+            }
+        }
+    }
+
+    GIVEN("A path that ends with a separator") {
+        std::string path = "../jamie/Desktop/";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal path") {
+                REQUIRE(p.first == "../jamie/Desktop/");
+            }
+            THEN("then second should be empty string") {
+                REQUIRE(p.second == "");
+            }
+        }
+    }
+
+    GIVEN("A path that ends with a separator and space") {
+        std::string path = "../jamie/Desktop/    ";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal path") {
+                REQUIRE(p.first == "../jamie/Desktop/    ");
+            }
+            THEN("then second should be empty string") {
+                REQUIRE(p.second == "");
+            }
+        }
+    }
+
+    GIVEN("An empty string") {
+        std::string path = "";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should empty") {
+                REQUIRE(p.first == "");
+            }
+            THEN("then second should be empty string") {
+                REQUIRE(p.second == "");
+            }
+        }
+    }
+
+    GIVEN("A string of only spaces") {
+        std::string path = "    ";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal space") {
+                REQUIRE(p.first == "    ");
+            }
+            THEN("then second should be empty string") {
+                REQUIRE(p.second == "");
+            }
+        }
+    }
+
+    GIVEN("A dotty file name") {
+        std::string path = ".bash.profile.bak";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal file name up to ext") {
+                REQUIRE(p.first == ".bash.profile");
+            }
+            THEN("then second should equal the ext") {
+                REQUIRE(p.second == ".bak");
+            }
+        }
+    }
+
+    GIVEN("A dotty path") {
+        std::string path = "../../some.dir.with.dots/../another.dir/.bash.profile.bak";
+
+        WHEN("splitext is called") {
+            std::pair<std::string, std::string> p = path::splitext(path);
+            
+            THEN("then first should equal path up to ext") {
+                REQUIRE(p.first == "../../some.dir.with.dots/../another.dir/.bash.profile");
+            }
+            THEN("then second should equal the ext") {
+                REQUIRE(p.second == ".bak");
+            }
+        }
+    }
+}

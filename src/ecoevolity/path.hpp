@@ -71,9 +71,30 @@ inline std::string join(const std::string& parent, const std::string& child) {
     if (isabs(child)) {
         return child;
     }
+    if (parent == "") {
+        return child;
+    }
     std::string p = string_util::rstrip(parent, PATH_SEP);
     return p + PATH_SEP + child;
 }
+
+inline std::pair<std::string, std::string> splitext(const std::string& path) {
+    std::string dir_name = dirname(path);
+    std::string file_name = basename(path);
+    if (string_util::strip(file_name) == "") {
+        std::pair<std::string, std::string> r (path, "");
+        return r;
+    }
+    std::vector<std::string> file_name_elements = string_util::split(
+            file_name, '.');
+    std::string ext = "." + file_name_elements.back();
+    file_name_elements.pop_back();
+    std::string file_name_prefix = string_util::join(file_name_elements, ".");
+    std::string path_prefix = join(dir_name, file_name_prefix);
+    std::pair<std::string, std::string> r(path_prefix, ext);
+    return r;
+}
+
 
 inline bool exists(const std::string& path) {
     struct stat info;
