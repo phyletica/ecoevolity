@@ -44,8 +44,8 @@ class ComparisonPopulationTreeCollection {
         std::shared_ptr<PositiveRealParameter> concentration_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
-        std::string state_log_path_ = "ecoevolity-state.log";
-        std::string operator_log_path_ = "ecoevolity-operator.log";
+        std::string state_log_path_ = "ecoevolity-state-run-1.log";
+        std::string operator_log_path_ = "ecoevolity-operator-run-1.log";
         bool use_multithreading_ = false;
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
@@ -79,6 +79,9 @@ class ComparisonPopulationTreeCollection {
         void log_state(std::ostream& out,
                 unsigned int generation_index,
                 bool short_summary = false) const;
+
+        void update_log_paths(unsigned int max_number_of_attempts = 10000);
+        void increment_log_paths();
 
     public:
         ComparisonPopulationTreeCollection() { }

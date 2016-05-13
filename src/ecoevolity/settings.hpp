@@ -1340,9 +1340,9 @@ class CollectionSettings {
                << indent << "chain_length: " << this->chain_length_ << "\n"
                << indent << "sample_frequency: " << this->sample_frequency_ << "\n";
 
-            ss << "output_settings:\n"
-               << indent << "state_log_path: " << this->state_log_path_ << "\n"
-               << indent << "operator_log_path: " << this->operator_log_path_ << "\n";
+            // ss << "output_settings:\n"
+            //    << indent << "state_log_path: " << this->state_log_path_ << "\n"
+            //    << indent << "operator_log_path: " << this->operator_log_path_ << "\n";
 
             ss << "comparisons:\n";
             for (auto comp : this->comparisons_) {
@@ -1361,8 +1361,8 @@ class CollectionSettings {
         bool use_dpp_ = true;
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
-        std::string state_log_path_ = "ecoevolity-state.log";
-        std::string operator_log_path_ = "ecoevolity-operator.log";
+        std::string state_log_path_ = "ecoevolity-state-run-1.log";
+        std::string operator_log_path_ = "ecoevolity-operator-run-1.log";
 
         OperatorScheduleSettings operator_schedule_settings_;
 
@@ -1406,8 +1406,8 @@ class CollectionSettings {
 
         void set_output_paths_to_config_directory() {
             std::pair<std::string, std::string> prefix_ext = path::splitext(this->path_);
-            this->state_log_path_ = prefix_ext.first + "-state.log";
-            this->operator_log_path_ = prefix_ext.first + "-operator.log";
+            this->state_log_path_ = prefix_ext.first + "-state-run-1.log";
+            this->operator_log_path_ = prefix_ext.first + "-operator-run-1.log";
         }
 
         void init_from_config_stream(std::istream& stream, const std::string& path) {
@@ -1500,9 +1500,9 @@ class CollectionSettings {
                     this->parse_mcmc_settings(top->second);
                 }
                 // parse output settings
-                else if (top->first.as<std::string>() == "output_settings") {
-                    this->parse_output_settings(top->second);
-                }
+                // else if (top->first.as<std::string>() == "output_settings") {
+                //     this->parse_output_settings(top->second);
+                // }
                 // parse operator settings
                 else if (top->first.as<std::string>() == "operator_settings") {
                     this->operator_schedule_settings_.update_from_config(top->second);
@@ -1600,31 +1600,31 @@ class CollectionSettings {
             }
         }
 
-        void parse_output_settings(const YAML::Node& output_node) {
-            if (! output_node.IsMap()) {
-                throw EcoevolityYamlConfigError(
-                        "Expecting output_settings to be a map, but found: " +
-                        YamlCppUtils::get_node_type(output_node));
-            }
-            for (YAML::const_iterator output = output_node.begin(); output != output_node.end(); ++output) {
-                if (output->first.as<std::string>() == "state_log_path") {
-                    this->state_log_path_ = path::join(
-                            path::dirname(this->path_),
-                            output->second.as<std::string>());
+        // void parse_output_settings(const YAML::Node& output_node) {
+        //     if (! output_node.IsMap()) {
+        //         throw EcoevolityYamlConfigError(
+        //                 "Expecting output_settings to be a map, but found: " +
+        //                 YamlCppUtils::get_node_type(output_node));
+        //     }
+        //     for (YAML::const_iterator output = output_node.begin(); output != output_node.end(); ++output) {
+        //         if (output->first.as<std::string>() == "state_log_path") {
+        //             this->state_log_path_ = path::join(
+        //                     path::dirname(this->path_),
+        //                     output->second.as<std::string>());
 
-                }
-                else if (output->first.as<std::string>() == "operator_log_path") {
-                    this->operator_log_path_ = path::join(
-                            path::dirname(this->path_),
-                            output->second.as<std::string>());
-                }
-                else {
-                    throw EcoevolityYamlConfigError(
-                            "Unrecognized output_settings key: " +
-                            output->first.as<std::string>());
-                }
-            }
-        }
+        //         }
+        //         else if (output->first.as<std::string>() == "operator_log_path") {
+        //             this->operator_log_path_ = path::join(
+        //                     path::dirname(this->path_),
+        //                     output->second.as<std::string>());
+        //         }
+        //         else {
+        //             throw EcoevolityYamlConfigError(
+        //                     "Unrecognized output_settings key: " +
+        //                     output->first.as<std::string>());
+        //         }
+        //     }
+        // }
 
         void parse_model_prior(const YAML::Node& model_prior_node) {
             if (! model_prior_node.IsMap()) {

@@ -735,9 +735,6 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "mcmc_settings:\n";
         e += "    chain_length: 100000\n";
         e += "    sample_frequency: 100\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/minimal-config-state.log\n";
-        e += "    operator_log_path: data/minimal-config-operator.log\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
@@ -829,9 +826,6 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "mcmc_settings:\n";
         e += "    chain_length: 100000\n";
         e += "    sample_frequency: 100\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/dummy-state.log\n";
-        e += "    operator_log_path: data/dummy-operator.log\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
@@ -940,9 +934,6 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "mcmc_settings:\n";
         e += "    chain_length: 100000\n";
         e += "    sample_frequency: 100\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/dummy-state.log\n";
-        e += "    operator_log_path: data/dummy-operator.log\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
@@ -1067,9 +1058,6 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "mcmc_settings:\n";
         e += "    chain_length: 100000\n";
         e += "    sample_frequency: 100\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/dummy-state.log\n";
-        e += "    operator_log_path: data/dummy-operator.log\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
@@ -1277,9 +1265,6 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "mcmc_settings:\n";
         e += "    chain_length: 100000\n";
         e += "    sample_frequency: 100\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/dummy-state.log\n";
-        e += "    operator_log_path: data/dummy-operator.log\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard.nex\n";
@@ -1427,9 +1412,6 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "mcmc_settings:\n";
         e += "    chain_length: 100000\n";
         e += "    sample_frequency: 100\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/dummy-state.log\n";
-        e += "    operator_log_path: data/dummy-operator.log\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard.nex\n";
@@ -1547,9 +1529,6 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "mcmc_settings:\n";
         e += "    chain_length: 2000000\n";
         e += "    sample_frequency: 2000\n";
-        e += "output_settings:\n";
-        e += "    state_log_path: data/../results/parameters.txt\n";
-        e += "    operator_log_path: data/../results/operators.txt\n";
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/data3.nex\n";

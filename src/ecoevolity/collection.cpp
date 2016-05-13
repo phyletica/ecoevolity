@@ -277,11 +277,56 @@ void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
     out << std::endl;
 }
 
+void ComparisonPopulationTreeCollection::update_log_paths(
+        unsigned int max_number_of_attempts) {
+    if (! path::exists(this->get_state_log_path())) {
+        return;
+    }
+    unsigned int ntries = 0;
+    while (true) {
+        this->increment_log_paths();
+        ++ntries;
+        if (! path::exists(this->get_state_log_path())) {
+            break;
+        }
+        if (ntries > max_number_of_attempts) {
+            throw EcoevolityError("Could not generate unique output files");
+        }
+    }
+}
+
+void ComparisonPopulationTreeCollection::increment_log_paths() {
+    std::vector<std::string> path_elements;
+    std::pair<std::string, std::string> prefix_ext;
+    std::string new_suffix;
+    int run_number;
+
+    prefix_ext = path::splitext(this->get_state_log_path());
+    path_elements = string_util::split(prefix_ext.first, '-');
+    run_number = std::stoi(path_elements.back());
+    path_elements.pop_back();
+    ++run_number;
+    
+    new_suffix = "-" + std::to_string(run_number) + prefix_ext.second;
+
+    this->set_state_log_path(
+            string_util::join(path_elements, "-") + new_suffix);
+
+    prefix_ext = path::splitext(this->get_operator_log_path());
+    path_elements = string_util::split(prefix_ext.first, '-');
+    path_elements.pop_back();
+    this->set_operator_log_path(
+            string_util::join(path_elements, "-") + new_suffix);
+}
+
 void ComparisonPopulationTreeCollection::mcmc(
         RandomNumberGenerator& rng,
         unsigned int chain_length,
         unsigned int sample_frequency) {
 
+    std::ofstream state_log_stream;
+    std::ofstream operator_log_stream;
+    this->update_log_paths();
     if (path::exists(this->get_state_log_path())) {
         std::ostringstream message;
         message << "ERROR: The parameter log file \'"
@@ -296,9 +341,6 @@ void ComparisonPopulationTreeCollection::mcmc(
                 << "\' already exists!\n";
         throw EcoevolityError(message.str());
     }
-
-    std::ofstream state_log_stream;
-    std::ofstream operator_log_stream;
     state_log_stream.open(this->get_state_log_path());
     operator_log_stream.open(this->get_operator_log_path());
     
@@ -316,6 +358,9 @@ void ComparisonPopulationTreeCollection::mcmc(
                 << "\'\n";
         throw EcoevolityError(message.str());
     }
+
+    std::cout << "State log path: " << this->get_state_log_path() << std::endl;
+    std::cout << "Operator log path: " << this->get_operator_log_path() << std::endl;
     
     state_log_stream.precision(this->get_logging_precision());
     operator_log_stream.precision(this->get_logging_precision());
