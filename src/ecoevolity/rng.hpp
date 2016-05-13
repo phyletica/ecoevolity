@@ -119,6 +119,32 @@ class RandomNumberGenerator {
             ECOEVOLITY_ASSERT_APPROX_EQUAL(u, 0.0);
             return probabilities.size() - 1;
         }
+
+        inline std::string random_string(
+                unsigned int length,
+                std::vector<char> char_pool = {
+                    '0', '1', '2', '3', '4',
+                    '5', '6', '7', '8', '9',
+                    'a', 'b', 'c', 'd', 'e',
+                    'f', 'g', 'h', 'i', 'j',
+                    'k', 'l', 'm', 'n', 'o',
+                    'p', 'q', 'r', 's', 't',
+                    'u', 'v', 'w', 'x', 'y',
+                    'z',
+                    'A', 'B', 'C', 'D', 'E',
+                    'F', 'G', 'H', 'I', 'J',
+                    'K', 'L', 'M', 'N', 'O',
+                    'P', 'Q', 'R', 'S', 'T',
+                    'U', 'V', 'W', 'X', 'Y',
+                    'Z'
+                }) {
+            ECOEVOLITY_ASSERT(char_pool.size() > 0);
+            std::string s = "";
+            for (unsigned int i = 0; i < length; ++i) {
+                s += char_pool.at(this->uniform_int(0, char_pool.size() - 1));
+            }
+            return s;
+        }
 };
 
 #endif

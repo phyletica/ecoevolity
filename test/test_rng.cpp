@@ -171,3 +171,53 @@ TEST_CASE("Testing weighted_index", "[RandomNumberGenerator]") {
         REQUIRE(counts.at(1) / 100000.0 == Approx(0.5).epsilon(0.001));
     }
 }
+
+TEST_CASE("Testing random_string", "[RandomNumberGenerator]") {
+    SECTION("Testing expectation for first char in pool") {
+        RandomNumberGenerator rng(11111);
+
+        std::string s;
+        unsigned int count = 0;
+        unsigned int total = 0;
+        unsigned int reps = 100000;
+        unsigned int str_len = 10;
+        for (unsigned int i = 0; i < reps; ++i) {
+            s = rng.random_string(str_len);
+            for (unsigned int j = 0; j < s.size(); ++j) {
+                if (s.at(j) == '0') {
+                    ++count;
+                }
+            }
+            total += s.size();
+        }
+        REQUIRE(total == (reps * str_len));
+
+        double p = count / (double)total;
+        double e =  1.0 / 62.0;
+        REQUIRE(p == Approx(e).epsilon(0.001));
+    }
+
+    SECTION("Testing expectation for last char in pool") {
+        RandomNumberGenerator rng(11111);
+
+        std::string s;
+        unsigned int count = 0;
+        unsigned int total = 0;
+        unsigned int reps = 100000;
+        unsigned int str_len = 10;
+        for (unsigned int i = 0; i < reps; ++i) {
+            s = rng.random_string(str_len);
+            for (unsigned int j = 0; j < s.size(); ++j) {
+                if (s.at(j) == 'Z') {
+                    ++count;
+                }
+            }
+            total += s.size();
+        }
+        REQUIRE(total == (reps * str_len));
+
+        double p = count / (double)total;
+        double e =  1.0 / 62.0;
+        REQUIRE(p == Approx(e).epsilon(0.001));
+    }
+}
