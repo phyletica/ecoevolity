@@ -1405,12 +1405,9 @@ class CollectionSettings {
         }
 
         void set_output_paths_to_config_directory() {
-            this->state_log_path_ = path::join(
-                    path::dirname(this->path_),
-                    path::basename(this->state_log_path_));
-            this->operator_log_path_ = path::join(
-                    path::dirname(this->path_),
-                    path::basename(this->operator_log_path_));
+            std::pair<std::string, std::string> prefix_ext = path::splitext(this->path_);
+            this->state_log_path_ = prefix_ext.first + "-state.log";
+            this->operator_log_path_ = prefix_ext.first + "-operator.log";
         }
 
         void init_from_config_stream(std::istream& stream, const std::string& path) {
