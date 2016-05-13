@@ -98,6 +98,12 @@ class EcoevolityParsingError: public EcoevolityBaseError {
                 unsigned int line_number) :
             EcoevolityBaseError("EcoevolityParsingError", message,
                     line_number) { }
+
+        EcoevolityParsingError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityParsingError", message,
+                    file_name) { }
 };
 
 class EcoevolityInvalidCharacterError: public EcoevolityBaseError {
