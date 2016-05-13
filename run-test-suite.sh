@@ -41,6 +41,6 @@ make clean
 make -j $COMPILETHREADS check
 
 cd test
-./test_ecoevolity
+./test_ecoevolity $@
 
 cd "$ECOEVOLITY_BASE_DIR"
