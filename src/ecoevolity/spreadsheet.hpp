@@ -102,12 +102,12 @@ inline void parse(
 }
 
 inline void parse(
-        const std::vector<const std::string>& paths,
+        const std::vector<std::string>& paths,
         std::map<std::string, std::vector<std::string> >& column_data,
         unsigned int offset = 0,
         char delimiter = '\t') {
-    for (auto p : paths) {
-        parse(p, column_data, offset, delimiter);
+    for (unsigned int i = 0; i < paths.size(); ++i) {
+        parse(paths.at(i), column_data, offset, delimiter);
     }
 }
 
