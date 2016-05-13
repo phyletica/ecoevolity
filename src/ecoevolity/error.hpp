@@ -43,6 +43,10 @@ class EcoevolityBaseError: public std::exception {
         EcoevolityBaseError(
                 const std::string & name,
                 const std::string & message,
+                unsigned int line_number);
+        EcoevolityBaseError(
+                const std::string & name,
+                const std::string & message,
                 const std::string & file_name,
                 unsigned int line_number);
         EcoevolityBaseError(
@@ -87,6 +91,12 @@ class EcoevolityParsingError: public EcoevolityBaseError {
                 const std::string & file_name,
                 unsigned int line_number) :
             EcoevolityBaseError("EcoevolityParsingError", message, file_name,
+                    line_number) { }
+
+        EcoevolityParsingError(
+                const std::string & message,
+                unsigned int line_number) :
+            EcoevolityBaseError("EcoevolityParsingError", message,
                     line_number) { }
 };
 
