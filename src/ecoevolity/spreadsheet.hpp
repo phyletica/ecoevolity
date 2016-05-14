@@ -49,6 +49,11 @@ inline void parse(
     std::string line;
     unsigned int line_index = 0;
     std::vector<std::string> header = parse_header(in_stream);
+    if (header.size() == 0) {
+        throw EcoevolityParsingError(
+                "Could not parse header",
+                line_index + 1);
+    }
     unsigned int number_of_columns = header.size();
     std::vector<std::string> elements;
     if (column_data.size() > 0) {
@@ -66,16 +71,26 @@ inline void parse(
             }
         }
     }
+    else {
+        for (unsigned int i = 0; i < header.size(); ++i) {
+            column_data[header.at(i)];
+        }
+    }
     elements.reserve(header.size());
     while (std::getline(in_stream, line)) {
         if (line_index < offset) {
             ++line_index;
             continue;
         }
+        elements.clear();
         string_util::split(line, delimiter, elements);
         if (elements.size() != number_of_columns) {
+            std::ostringstream message;
+            message << "Incorrect number of columns: Expecting "
+                    << number_of_columns << ", but found "
+                    << elements.size();
             throw EcoevolityParsingError(
-                    "Incorrect number of columns",
+                    message.str(),
                     line_index + 1);
         }
         for (unsigned int i = 0; i < elements.size(); ++i) {
@@ -97,7 +112,14 @@ inline void parse(
                 "Could not open spreadsheet file",
                 path);
     }
-    parse(in_stream, column_data, offset, delimiter);
+    try {
+        parse(in_stream, column_data, offset, delimiter);
+    }
+    catch (...) {
+        std::cerr << "ERROR: Problem parsing spreadsheet \'"
+                  << path << "\'\n";
+        throw;
+    }
     in_stream.close();
 }
 
