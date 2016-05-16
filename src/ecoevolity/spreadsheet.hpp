@@ -133,6 +133,50 @@ inline void parse(
     }
 }
 
+class Spreadsheet {
+
+    protected:
+        number_of_rows_ = 0;
+
+    public:
+        std::map<std::string, std::vector<std::string> > data;
+
+        template <typename T>
+        void get(
+                const std::string& column_label,
+                std::vector<T>& target)
+        {
+            std::stringstream converter;
+            T value;
+            for (unsigned int i = 0;
+                    i < this->data.at(column_label).size();
+                    ++i) {
+                converter << this->data.at(column_label).at(i);
+                if (! (converter >> value)) {
+                    std::string s;
+                    converter >> s;
+                    throw EcoevolitySpreadsheetError("could not convert \'" +
+                            s + "\'");
+                }
+                target.push_back(value);
+            }
+        }
+
+        template <typename T>
+        std::vector<T> get(
+                const std::string& column_label)
+        {
+            std::vector<T> r;
+            this->get<T>(column_label, r);
+            return r;
+        }
+
+        // make sure all columns have same number of samples
+        void validate() const {
+        }
+
+
+
 } // namespace spreadsheet 
 
 #endif
