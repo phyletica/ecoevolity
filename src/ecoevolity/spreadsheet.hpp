@@ -141,6 +141,33 @@ class Spreadsheet {
     public:
         std::map<std::string, std::vector<std::string> > data;
 
+        void update(
+                std::istream& in_stream,
+                unsigned int offset = 0,
+                char delimiter = '\t')
+        {
+            parse(in_stream, this->data, offset, delimiter);
+
+        }
+
+        void update(
+                const std::string& path,
+                unsigned int offset = 0,
+                char delimiter = '\t')
+        {
+            parse(path, this->data, offset, delimiter);
+
+        }
+
+        void update(
+                const std::vector<std::string>& paths,
+                unsigned int offset = 0,
+                char delimiter = '\t')
+        {
+            parse(paths, this->data, offset, delimiter);
+
+        }
+
         template <typename T>
         void get(
                 const std::string& column_label,
@@ -167,6 +194,7 @@ class Spreadsheet {
                 const std::string& column_label)
         {
             std::vector<T> r;
+            r.reserve(this->data.at(column_label).size();
             this->get<T>(column_label, r);
             return r;
         }
@@ -174,8 +202,7 @@ class Spreadsheet {
         // make sure all columns have same number of samples
         void validate() const {
         }
-
-
+};
 
 } // namespace spreadsheet 
 
