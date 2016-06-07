@@ -414,3 +414,352 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
         REQUIRE(data.at("col3").size() == 0);
     }
 }
+
+TEST_CASE("Testing Spreadsheet.update on empty file", "[spreadsheet]") {
+    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::ofstream test_file;
+    test_file.open(test_path);
+    test_file.close();
+    REQUIRE(path::exists(test_path));
+
+    SECTION("Testing stream from empty file") {
+        std::ifstream in_stream;
+        in_stream.open(test_path);
+
+        spreadsheet::Spreadsheet data = spreadsheet::Spreadsheet();
+        REQUIRE_THROWS_AS(data.update(in_stream),
+                EcoevolityParsingError);
+        in_stream.close();
+    }
+
+    SECTION("Testing path of empty file") {
+        spreadsheet::Spreadsheet data = spreadsheet::Spreadsheet();
+        REQUIRE_THROWS_AS(data.update(test_path),
+                EcoevolityParsingError);
+    }
+}
+
+TEST_CASE("Testing Spreadsheet.update on empty stream", "[spreadsheet]") {
+    SECTION("Testing empty stream") {
+        std::stringstream stream;
+
+        spreadsheet::Spreadsheet data = spreadsheet::Spreadsheet();
+        REQUIRE_THROWS_AS(data.update(stream),
+                EcoevolityParsingError);
+    }
+}
+
+TEST_CASE("Testing Spreadsheet.update on simple header with three columns",
+        "[spreadsheet]") {
+    SECTION("Testing simple header only") {
+        std::stringstream stream;
+        stream << "col1\tcol2\tcol3\n";
+
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(stream);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 0);
+        REQUIRE(ss.data.at("col2").size() == 0);
+        REQUIRE(ss.data.at("col3").size() == 0);
+
+        std::vector<double> col1 = ss.get<double>("col1");
+        REQUIRE(col1.size() == 0);
+    }
+
+    SECTION("Testing simple header with one data row") {
+        std::stringstream stream;
+        stream << "col1\tcol2\tcol3\n";
+        stream << "1.0\t2.0\t3.0\n";
+
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(stream);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 1);
+        REQUIRE(ss.data.at("col2").size() == 1);
+        REQUIRE(ss.data.at("col3").size() == 1);
+        REQUIRE(ss.data.at("col1").at(0) == "1.0");
+        REQUIRE(ss.data.at("col2").at(0) == "2.0");
+        REQUIRE(ss.data.at("col3").at(0) == "3.0");
+
+        std::vector<double> expected_double_col1 = {1.0};
+        std::vector<double> double_col1 = ss.get<double>("col1");
+        REQUIRE(double_col1 == expected_double_col1);
+
+        std::vector<int> expected_int_col1 = {1};
+        std::vector<int> int_col1 = ss.get<int>("col1");
+        REQUIRE(int_col1 == expected_int_col1);
+
+
+        std::vector<double> expected_double_col2 = {2.0};
+        std::vector<double> double_col2 = ss.get<double>("col2");
+        REQUIRE(double_col2 == expected_double_col2);
+
+        std::vector<int> expected_int_col2 = {2};
+        std::vector<int> int_col2 = ss.get<int>("col2");
+        REQUIRE(int_col2 == expected_int_col2);
+
+
+        std::vector<double> expected_double_col3 = {3.0};
+        std::vector<double> double_col3 = ss.get<double>("col3");
+        REQUIRE(double_col3 == expected_double_col3);
+
+        std::vector<int> expected_int_col3 = {3};
+        std::vector<int> int_col3 = ss.get<int>("col3");
+        REQUIRE(int_col3 == expected_int_col3);
+    }
+}
+
+TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
+    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::ofstream os;
+    os.open(test_path);
+    os << "col1\tcol2\tcol3\n";
+    os << "11.0\t12.0\t13.0\n";
+    os << "21.0\t22.0\t23.0\n";
+    os << "31.0\t32.0\t33.0\n";
+    os << "41.0\t42.0\t43.0\n";
+    os << "51.0\t52.0\t53.0\n";
+    os << "61.0\t62.0\t63.0\n";
+    os << "71.0\t72.0\t73.0\n";
+    os << "81.0\t82.0\t83.0\n";
+    os << "91.0\t92.0\t93.0\n";
+    os << "101.0\t102.0\t103.0\n";
+    os.close();
+    REQUIRE(path::exists(test_path));
+
+    SECTION("Testing zero offset") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path, 0);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 10);
+        REQUIRE(ss.data.at("col2").size() == 10);
+        REQUIRE(ss.data.at("col3").size() == 10);
+        std::vector<std::string> c1 = {
+            "11.0", "21.0", "31.0", "41.0", "51.0",
+            "61.0", "71.0", "81.0", "91.0", "101.0"};
+        std::vector<std::string> c2 = {
+            "12.0", "22.0", "32.0", "42.0", "52.0",
+            "62.0", "72.0", "82.0", "92.0", "102.0"};
+        std::vector<std::string> c3 = {
+            "13.0", "23.0", "33.0", "43.0", "53.0",
+            "63.0", "73.0", "83.0", "93.0", "103.0"};
+        REQUIRE(ss.data.at("col1") == c1);
+        REQUIRE(ss.data.at("col2") == c2);
+        REQUIRE(ss.data.at("col3") == c3);
+
+        std::vector<double> expected_double_c1 {
+            11.0, 21.0, 31.0, 41.0, 51.0,
+            61.0, 71.0, 81.0, 91.0, 101.0};
+        std::vector<double> expected_double_c2 = {
+            12.0, 22.0, 32.0, 42.0, 52.0,
+            62.0, 72.0, 82.0, 92.0, 102.0};
+        std::vector<double> expected_double_c3 = {
+            13.0, 23.0, 33.0, 43.0, 53.0,
+            63.0, 73.0, 83.0, 93.0, 103.0};
+
+        REQUIRE(ss.get<double>("col1") == expected_double_c1);
+        REQUIRE(ss.get<double>("col2") == expected_double_c2);
+        REQUIRE(ss.get<double>("col3") == expected_double_c3);
+
+        std::vector<int> expected_int_c1 {
+            11, 21, 31, 41, 51,
+            61, 71, 81, 91, 101};
+        std::vector<int> expected_int_c2 = {
+            12, 22, 32, 42, 52,
+            62, 72, 82, 92, 102};
+        std::vector<int> expected_int_c3 = {
+            13, 23, 33, 43, 53,
+            63, 73, 83, 93, 103};
+
+        REQUIRE(ss.get<int>("col1") == expected_int_c1);
+        REQUIRE(ss.get<int>("col2") == expected_int_c2);
+        REQUIRE(ss.get<int>("col3") == expected_int_c3);
+    }
+
+    SECTION("Testing one offset") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path, 1);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 9);
+        REQUIRE(ss.data.at("col2").size() == 9);
+        REQUIRE(ss.data.at("col3").size() == 9);
+        std::vector<std::string> c1 = {
+            "21.0", "31.0", "41.0", "51.0",
+            "61.0", "71.0", "81.0", "91.0", "101.0"};
+        std::vector<std::string> c2 = {
+            "22.0", "32.0", "42.0", "52.0",
+            "62.0", "72.0", "82.0", "92.0", "102.0"};
+        std::vector<std::string> c3 = {
+             "23.0", "33.0", "43.0", "53.0",
+            "63.0", "73.0", "83.0", "93.0", "103.0"};
+        REQUIRE(ss.data.at("col1") == c1);
+        REQUIRE(ss.data.at("col2") == c2);
+        REQUIRE(ss.data.at("col3") == c3);
+
+        std::vector<double> expected_double_c1 {
+            21.0, 31.0, 41.0, 51.0,
+            61.0, 71.0, 81.0, 91.0, 101.0};
+        std::vector<double> expected_double_c2 = {
+            22.0, 32.0, 42.0, 52.0,
+            62.0, 72.0, 82.0, 92.0, 102.0};
+        std::vector<double> expected_double_c3 = {
+            23.0, 33.0, 43.0, 53.0,
+            63.0, 73.0, 83.0, 93.0, 103.0};
+
+        REQUIRE(ss.get<double>("col1") == expected_double_c1);
+        REQUIRE(ss.get<double>("col2") == expected_double_c2);
+        REQUIRE(ss.get<double>("col3") == expected_double_c3);
+
+        std::vector<int> expected_int_c1 {
+            21, 31, 41, 51,
+            61, 71, 81, 91, 101};
+        std::vector<int> expected_int_c2 = {
+            22, 32, 42, 52,
+            62, 72, 82, 92, 102};
+        std::vector<int> expected_int_c3 = {
+            23, 33, 43, 53,
+            63, 73, 83, 93, 103};
+
+        REQUIRE(ss.get<int>("col1") == expected_int_c1);
+        REQUIRE(ss.get<int>("col2") == expected_int_c2);
+        REQUIRE(ss.get<int>("col3") == expected_int_c3);
+    }
+
+    SECTION("Testing five offset") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path, 5);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 5);
+        REQUIRE(ss.data.at("col2").size() == 5);
+        REQUIRE(ss.data.at("col3").size() == 5);
+        std::vector<std::string> c1 = {
+            "61.0", "71.0", "81.0", "91.0", "101.0"};
+        std::vector<std::string> c2 = {
+            "62.0", "72.0", "82.0", "92.0", "102.0"};
+        std::vector<std::string> c3 = {
+            "63.0", "73.0", "83.0", "93.0", "103.0"};
+        REQUIRE(ss.data.at("col1") == c1);
+        REQUIRE(ss.data.at("col2") == c2);
+        REQUIRE(ss.data.at("col3") == c3);
+
+        std::vector<double> expected_double_c1 {
+            61.0, 71.0, 81.0, 91.0, 101.0};
+        std::vector<double> expected_double_c2 = {
+            62.0, 72.0, 82.0, 92.0, 102.0};
+        std::vector<double> expected_double_c3 = {
+            63.0, 73.0, 83.0, 93.0, 103.0};
+
+        REQUIRE(ss.get<double>("col1") == expected_double_c1);
+        REQUIRE(ss.get<double>("col2") == expected_double_c2);
+        REQUIRE(ss.get<double>("col3") == expected_double_c3);
+
+        std::vector<int> expected_int_c1 {
+            61, 71, 81, 91, 101};
+        std::vector<int> expected_int_c2 = {
+            62, 72, 82, 92, 102};
+        std::vector<int> expected_int_c3 = {
+            63, 73, 83, 93, 103};
+
+        REQUIRE(ss.get<int>("col1") == expected_int_c1);
+        REQUIRE(ss.get<int>("col2") == expected_int_c2);
+        REQUIRE(ss.get<int>("col3") == expected_int_c3);
+    }
+
+    SECTION("Testing nine offset") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path, 9);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 1);
+        REQUIRE(ss.data.at("col2").size() == 1);
+        REQUIRE(ss.data.at("col3").size() == 1);
+        std::vector<std::string> c1 = {
+            "101.0"};
+        std::vector<std::string> c2 = {
+            "102.0"};
+        std::vector<std::string> c3 = {
+            "103.0"};
+        REQUIRE(ss.data.at("col1") == c1);
+        REQUIRE(ss.data.at("col2") == c2);
+        REQUIRE(ss.data.at("col3") == c3);
+
+        std::vector<double> expected_double_c1 {
+            101.0};
+        std::vector<double> expected_double_c2 = {
+            102.0};
+        std::vector<double> expected_double_c3 = {
+            103.0};
+
+        REQUIRE(ss.get<double>("col1") == expected_double_c1);
+        REQUIRE(ss.get<double>("col2") == expected_double_c2);
+        REQUIRE(ss.get<double>("col3") == expected_double_c3);
+
+        std::vector<int> expected_int_c1 {
+            101};
+        std::vector<int> expected_int_c2 = {
+            102};
+        std::vector<int> expected_int_c3 = {
+            103};
+
+        REQUIRE(ss.get<int>("col1") == expected_int_c1);
+        REQUIRE(ss.get<int>("col2") == expected_int_c2);
+        REQUIRE(ss.get<int>("col3") == expected_int_c3);
+    }
+
+    SECTION("Testing offset equals number of data lines") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path, 10);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 0);
+        REQUIRE(ss.data.at("col2").size() == 0);
+        REQUIRE(ss.data.at("col3").size() == 0);
+
+        std::vector<double> expected_double_c1 {};
+        std::vector<double> expected_double_c2 = {};
+        std::vector<double> expected_double_c3 = {};
+
+        REQUIRE(ss.get<double>("col1") == expected_double_c1);
+        REQUIRE(ss.get<double>("col2") == expected_double_c2);
+        REQUIRE(ss.get<double>("col3") == expected_double_c3);
+
+        std::vector<int> expected_int_c1 {};
+        std::vector<int> expected_int_c2 = {};
+        std::vector<int> expected_int_c3 = {};
+
+        REQUIRE(ss.get<int>("col1") == expected_int_c1);
+        REQUIRE(ss.get<int>("col2") == expected_int_c2);
+        REQUIRE(ss.get<int>("col3") == expected_int_c3);
+    }
+
+    SECTION("Testing offset exceeds number of data lines") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path, 20);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 0);
+        REQUIRE(ss.data.at("col2").size() == 0);
+        REQUIRE(ss.data.at("col3").size() == 0);
+
+        std::vector<double> expected_double_c1 {};
+        std::vector<double> expected_double_c2 = {};
+        std::vector<double> expected_double_c3 = {};
+
+        REQUIRE(ss.get<double>("col1") == expected_double_c1);
+        REQUIRE(ss.get<double>("col2") == expected_double_c2);
+        REQUIRE(ss.get<double>("col3") == expected_double_c3);
+
+        std::vector<int> expected_int_c1 {};
+        std::vector<int> expected_int_c2 = {};
+        std::vector<int> expected_int_c3 = {};
+
+        REQUIRE(ss.get<int>("col1") == expected_int_c1);
+        REQUIRE(ss.get<int>("col2") == expected_int_c2);
+        REQUIRE(ss.get<int>("col3") == expected_int_c3);
+    }
+}
