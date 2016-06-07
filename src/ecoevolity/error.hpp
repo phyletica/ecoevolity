@@ -170,6 +170,13 @@ class EcoevolityYamlConfigError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityYamlConfigError", message, file_path) { }
 };
 
+class EcoevolitySpreadsheetError: public EcoevolityBaseError {
+    public:
+        EcoevolitySpreadsheetError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolitySpreadsheetError", message) { }
+};
+
 class EcoevolityNotImplementedError: public EcoevolityBaseError {
     public:
         EcoevolityNotImplementedError(

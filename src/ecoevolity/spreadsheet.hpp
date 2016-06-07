@@ -135,9 +135,6 @@ inline void parse(
 
 class Spreadsheet {
 
-    protected:
-        number_of_rows_ = 0;
-
     public:
         std::map<std::string, std::vector<std::string> > data;
 
@@ -194,7 +191,7 @@ class Spreadsheet {
                 const std::string& column_label)
         {
             std::vector<T> r;
-            r.reserve(this->data.at(column_label).size();
+            r.reserve(this->data.at(column_label).size());
             this->get<T>(column_label, r);
             return r;
         }
