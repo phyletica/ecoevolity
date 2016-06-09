@@ -4,10 +4,10 @@
 #include "ecoevolity/rng.hpp"
 #include "ecoevolity/path.hpp"
 
-RandomNumberGenerator _RNG = RandomNumberGenerator();
+RandomNumberGenerator _TEST_SPREADSHEET_RNG = RandomNumberGenerator();
 
 TEST_CASE("Testing parse_header on empty file", "[spreadsheet]") {
-    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::string test_path = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
     std::ofstream test_file;
     test_file.open(test_path);
     test_file.close();
@@ -57,7 +57,7 @@ TEST_CASE("Testing parse_header on simple header with three columns", "[spreadsh
 }
 
 TEST_CASE("Testing parse on empty file", "[spreadsheet]") {
-    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::string test_path = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
     std::ofstream test_file;
     test_file.open(test_path);
     test_file.close();
@@ -123,7 +123,7 @@ TEST_CASE("Testing parse on simple header with three columns", "[spreadsheet]") 
 }
 
 TEST_CASE("Testing parse offset", "[spreadsheet]") {
-    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::string test_path = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
     std::ofstream os;
     os.open(test_path);
     os << "col1\tcol2\tcol3\n";
@@ -244,9 +244,9 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
 }
 
 TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
-    std::string test_path1 = "data/tmp-" + _RNG.random_string(10) + ".txt";
-    std::string test_path2 = "data/tmp-" + _RNG.random_string(10) + ".txt";
-    std::string test_path3 = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::string test_path1 = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
+    std::string test_path2 = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
+    std::string test_path3 = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
     std::ofstream os;
     os.open(test_path1);
     os << "col1\tcol2\tcol3\n";
@@ -416,7 +416,7 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
 }
 
 TEST_CASE("Testing Spreadsheet.update on empty file", "[spreadsheet]") {
-    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::string test_path = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
     std::ofstream test_file;
     test_file.open(test_path);
     test_file.close();
@@ -544,7 +544,7 @@ TEST_CASE("Testing Spreadsheet.update on simple header with three columns",
 }
 
 TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
-    std::string test_path = "data/tmp-" + _RNG.random_string(10) + ".txt";
+    std::string test_path = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
     std::ofstream os;
     os.open(test_path);
     os << "col1\tcol2\tcol3\n";
