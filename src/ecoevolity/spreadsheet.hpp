@@ -193,9 +193,6 @@ class Spreadsheet {
             return r;
         }
 
-        // make sure all columns have same number of samples
-        void validate() const {
-        }
 };
 
 } // namespace spreadsheet 
