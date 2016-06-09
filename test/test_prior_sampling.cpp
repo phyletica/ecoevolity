@@ -3,6 +3,7 @@
 
 #include "ecoevolity/rng.hpp"
 #include "ecoevolity/path.hpp"
+#include "ecoevolity/spreadsheet.hpp"
 
 RandomNumberGenerator _PRIOR_SAMPLING_RNG = RandomNumberGenerator();
 
@@ -91,6 +92,11 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         ret = ecoevolity_main(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+        std::vector<double> samples = prior_sample.get<double>("root_height_kya");
+        REQUIRE(samples.size() == 10001);
 
         delete[] cfg_path;
     }
