@@ -170,17 +170,14 @@ class Spreadsheet {
                 const std::string& column_label,
                 std::vector<T>& target)
         {
-            std::stringstream converter;
             T value;
             for (unsigned int i = 0;
                     i < this->data.at(column_label).size();
                     ++i) {
-                converter << this->data.at(column_label).at(i);
+                std::stringstream converter(this->data.at(column_label).at(i));
                 if (! (converter >> value)) {
-                    std::string s;
-                    converter >> s;
                     throw EcoevolitySpreadsheetError("could not convert \'" +
-                            s + "\'");
+                            converter.str() + "\'");
                 }
                 target.push_back(value);
             }

@@ -484,30 +484,62 @@ TEST_CASE("Testing Spreadsheet.update on simple header with three columns",
         REQUIRE(ss.data.at("col3").at(0) == "3.0");
 
         std::vector<double> expected_double_col1 = {1.0};
-        std::vector<double> double_col1 = ss.get<double>("col1");
-        REQUIRE(double_col1 == expected_double_col1);
+        REQUIRE(ss.get<double>("col1") == expected_double_col1);
 
         std::vector<int> expected_int_col1 = {1};
-        std::vector<int> int_col1 = ss.get<int>("col1");
-        REQUIRE(int_col1 == expected_int_col1);
+        REQUIRE(ss.get<int>("col1") == expected_int_col1);
 
 
         std::vector<double> expected_double_col2 = {2.0};
-        std::vector<double> double_col2 = ss.get<double>("col2");
-        REQUIRE(double_col2 == expected_double_col2);
+        REQUIRE(ss.get<double>("col2") == expected_double_col2);
 
         std::vector<int> expected_int_col2 = {2};
-        std::vector<int> int_col2 = ss.get<int>("col2");
-        REQUIRE(int_col2 == expected_int_col2);
+        REQUIRE(ss.get<int>("col2") == expected_int_col2);
 
 
         std::vector<double> expected_double_col3 = {3.0};
-        std::vector<double> double_col3 = ss.get<double>("col3");
-        REQUIRE(double_col3 == expected_double_col3);
+        REQUIRE(ss.get<double>("col3") == expected_double_col3);
 
         std::vector<int> expected_int_col3 = {3};
-        std::vector<int> int_col3 = ss.get<int>("col3");
-        REQUIRE(int_col3 == expected_int_col3);
+        REQUIRE(ss.get<int>("col3") == expected_int_col3);
+    }
+
+    SECTION("Testing simple header with tow data rows") {
+        std::stringstream stream;
+        stream << "col1\tcol2\tcol3\n";
+        stream << "1.0\t2.0\t3.0\n";
+        stream << "11.0\t12.0\t13.0\n";
+
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(stream);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 2);
+        REQUIRE(ss.data.at("col2").size() == 2);
+        REQUIRE(ss.data.at("col3").size() == 2);
+        REQUIRE(ss.data.at("col1").at(0) == "1.0");
+        REQUIRE(ss.data.at("col2").at(0) == "2.0");
+        REQUIRE(ss.data.at("col3").at(0) == "3.0");
+
+        std::vector<double> expected_double_col1 = {1.0, 11.0};
+        REQUIRE(ss.get<double>("col1") == expected_double_col1);
+
+        std::vector<int> expected_int_col1 = {1, 11};
+        REQUIRE(ss.get<int>("col1") == expected_int_col1);
+
+
+        std::vector<double> expected_double_col2 = {2.0, 12.0};
+        REQUIRE(ss.get<double>("col2") == expected_double_col2);
+
+        std::vector<int> expected_int_col2 = {2, 12};
+        REQUIRE(ss.get<int>("col2") == expected_int_col2);
+
+
+        std::vector<double> expected_double_col3 = {3.0, 13.0};
+        REQUIRE(ss.get<double>("col3") == expected_double_col3);
+
+        std::vector<int> expected_int_col3 = {3, 13};
+        REQUIRE(ss.get<int>("col3") == expected_int_col3);
     }
 }
 
