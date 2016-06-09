@@ -1,7 +1,7 @@
 # Make sure compiler optimization doesn't bork catch
 set(CMAKE_BUILD_TYPE Debug)
 
-include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}")
+include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
 file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
 
@@ -12,6 +12,8 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/operator_schedule.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/operator.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/collection.cpp"
+    "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/ecoevolity.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 #set(ECOEVOLITY_TEST_SOURCES "${ECOEVOLITY_TEST_SOURCES} ${TEST_DIR}/ecoevolity_testing.cpp")
