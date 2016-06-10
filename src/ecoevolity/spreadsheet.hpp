@@ -168,7 +168,7 @@ class Spreadsheet {
         template <typename T>
         void get(
                 const std::string& column_label,
-                std::vector<T>& target)
+                std::vector<T>& target) const
         {
             T value;
             for (unsigned int i = 0;
@@ -185,7 +185,7 @@ class Spreadsheet {
 
         template <typename T>
         std::vector<T> get(
-                const std::string& column_label)
+                const std::string& column_label) const
         {
             std::vector<T> r;
             r.reserve(this->data.at(column_label).size());
