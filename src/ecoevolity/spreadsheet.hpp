@@ -28,6 +28,7 @@
 #include "assert.hpp"
 #include "error.hpp"
 #include "string_util.hpp"
+#include "stats_util.hpp"
 
 namespace spreadsheet {
 
@@ -62,18 +63,18 @@ inline void parse(
                     "Columns do not match existing column data map",
                     line_index + 1);
         }
-        for (unsigned int i = 0; i < header.size(); ++i) {
-            if (column_data.count(header.at(i)) < 1) {
+        for (const auto &h: header) {
+            if (column_data.count(h) < 1) {
                 throw EcoevolityParsingError(
-                        "Column header \'" + header.at(i) +
+                        "Column header \'" + h +
                         "\' not found in existing column data map",
                     line_index + 1);
             }
         }
     }
     else {
-        for (unsigned int i = 0; i < header.size(); ++i) {
-            column_data[header.at(i)];
+        for (const auto &h: header) {
+            column_data[h];
         }
     }
     elements.reserve(header.size());
@@ -128,8 +129,8 @@ inline void parse(
         std::map<std::string, std::vector<std::string> >& column_data,
         unsigned int offset = 0,
         char delimiter = '\t') {
-    for (unsigned int i = 0; i < paths.size(); ++i) {
-        parse(paths.at(i), column_data, offset, delimiter);
+    for (const auto &p: paths) {
+        parse(p, column_data, offset, delimiter);
     }
 }
 
@@ -171,10 +172,8 @@ class Spreadsheet {
                 std::vector<T>& target) const
         {
             T value;
-            for (unsigned int i = 0;
-                    i < this->data.at(column_label).size();
-                    ++i) {
-                std::stringstream converter(this->data.at(column_label).at(i));
+            for (const auto &s: this->data.at(column_label)) {
+                std::stringstream converter(s);
                 if (! (converter >> value)) {
                     throw EcoevolitySpreadsheetError("could not convert \'" +
                             converter.str() + "\'");
@@ -191,6 +190,21 @@ class Spreadsheet {
             r.reserve(this->data.at(column_label).size());
             this->get<T>(column_label, r);
             return r;
+        }
+
+        template <typename T>
+        SampleSummarizer<T> summarize(const std::string& column_label) const {
+            SampleSummarizer<T> summarizer;
+            T value;
+            for (const auto &s: this->data.at(column_label)) {
+                std::stringstream converter(s);
+                if (! (converter >> value)) {
+                    throw EcoevolitySpreadsheetError("could not convert \'" +
+                            converter.str() + "\'");
+                }
+                summarizer.add_sample(value);
+            }
+            return summarizer;
         }
 
 };

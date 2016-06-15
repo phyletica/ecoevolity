@@ -795,3 +795,86 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         REQUIRE(ss.get<int>("col3") == expected_int_c3);
     }
 }
+
+TEST_CASE("Testing spreadsheet.summarize", "[spreadsheet]") {
+    std::string test_path = "data/tmp-" + _TEST_SPREADSHEET_RNG.random_string(10) + ".txt";
+    std::ofstream os;
+    os.open(test_path);
+    os << "col1\tcol2\tcol3\n";
+    os <<"0"    << "\t" << "0.0"    << "\t" << "1.0"   << "\n";
+    os <<"1"    << "\t" << "1.0"    << "\t" << "2.0"   << "\n";
+    os <<"-1"   << "\t" << "-1.0"   << "\t" << "3.0"   << "\n";
+    os <<"2"    << "\t" << "2.0"    << "\t" << "4.0"   << "\n";
+    os <<"-2"   << "\t" << "-2.0"   << "\t" << "5.0"   << "\n";
+    os <<"3"    << "\t" << "3.0"    << "\t" << "6.0"   << "\n";
+    os <<"-3"   << "\t" << "-3.0"   << "\t" << "7.0"   << "\n";
+    os <<"4"    << "\t" << "4.0"    << "\t" << "8.0"   << "\n";
+    os <<"-4"   << "\t" << "-4.0"   << "\t" << "9.0"   << "\n";
+    os <<"5"    << "\t" << "5.0"    << "\t" << "10.0"  << "\n";
+    os <<"-5"   << "\t" << "-5.0"   << "\t" << "11.0"  << "\n";
+    os <<"5"    << "\t" << "5.0"    << "\t" << "12.0"  << "\n";
+    os.close();
+    REQUIRE(path::exists(test_path));
+
+    SECTION("Testing summarizer") {
+        spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
+        ss.update(test_path);
+
+        REQUIRE(ss.data.size() == 3);
+        REQUIRE(ss.data.at("col1").size() == 12);
+        REQUIRE(ss.data.at("col2").size() == 12);
+        REQUIRE(ss.data.at("col3").size() == 12);
+
+        SampleSummarizer<int> summarizer1 = ss.summarize<int>("col1");
+        REQUIRE(summarizer1.sample_size() == 12);
+        REQUIRE(summarizer1.min() == -5);
+        REQUIRE(summarizer1.max() == 5);
+        REQUIRE(summarizer1.mean() == 5.0/12.0);
+        REQUIRE(summarizer1.variance() == Approx(12.0833333));
+        REQUIRE(summarizer1.population_variance() == Approx(11.07639));
+        REQUIRE(summarizer1.std_dev() == Approx(3.476109));
+        REQUIRE(summarizer1.std_error() == Approx(1.003466));
+        REQUIRE(summarizer1.skewness() == Approx(-0.09497610248616362));
+        REQUIRE(summarizer1.kurtosis() == Approx(1.7077461896011248));
+        REQUIRE(summarizer1.excess_kurtosis() == Approx(-1.2922538103988752));
+
+        SampleSummarizer<double> summarizer2 = ss.summarize<double>("col1");
+        REQUIRE(summarizer2.sample_size() == 12);
+        REQUIRE(summarizer2.min() == -5);
+        REQUIRE(summarizer2.max() == 5);
+        REQUIRE(summarizer2.mean() == 5.0/12.0);
+        REQUIRE(summarizer2.variance() == Approx(12.0833333));
+        REQUIRE(summarizer2.population_variance() == Approx(11.07639));
+        REQUIRE(summarizer2.std_dev() == Approx(3.476109));
+        REQUIRE(summarizer2.std_error() == Approx(1.003466));
+        REQUIRE(summarizer2.skewness() == Approx(-0.09497610248616362));
+        REQUIRE(summarizer2.kurtosis() == Approx(1.7077461896011248));
+        REQUIRE(summarizer2.excess_kurtosis() == Approx(-1.2922538103988752));
+
+        SampleSummarizer<double> summarizer3 = ss.summarize<double>("col2");
+        REQUIRE(summarizer3.sample_size() == 12);
+        REQUIRE(summarizer3.min() == -5);
+        REQUIRE(summarizer3.max() == 5);
+        REQUIRE(summarizer3.mean() == 5.0/12.0);
+        REQUIRE(summarizer3.variance() == Approx(12.0833333));
+        REQUIRE(summarizer3.population_variance() == Approx(11.07639));
+        REQUIRE(summarizer3.std_dev() == Approx(3.476109));
+        REQUIRE(summarizer3.std_error() == Approx(1.003466));
+        REQUIRE(summarizer3.skewness() == Approx(-0.09497610248616362));
+        REQUIRE(summarizer3.kurtosis() == Approx(1.7077461896011248));
+        REQUIRE(summarizer3.excess_kurtosis() == Approx(-1.2922538103988752));
+
+        SampleSummarizer<double> summarizer4 = ss.summarize<double>("col3");
+        REQUIRE(summarizer4.sample_size() == 12);
+        REQUIRE(summarizer4.min() == 1.0);
+        REQUIRE(summarizer4.max() == 12.0);
+        REQUIRE(summarizer4.mean() == 6.5);
+        REQUIRE(summarizer4.variance() == 13.0);
+        REQUIRE(summarizer4.population_variance() == Approx(143.0/12.0));
+        REQUIRE(summarizer4.std_dev() == Approx(std::sqrt(13.0)));
+        REQUIRE(summarizer4.std_error() == Approx(std::sqrt(13.0)/std::sqrt(12.0)));
+        REQUIRE(summarizer4.skewness() == 0.0);
+        REQUIRE(summarizer4.kurtosis() == Approx(1.7832167832167833));
+        REQUIRE(summarizer4.excess_kurtosis() == Approx(-1.2167832167832167));
+    }
+}
