@@ -42,7 +42,7 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     parser.add_option("--seed")
             .action("store")
-            .type("int")
+            .type("long")
             .dest("seed")
             .help("Random number seed. Default: Set from clock.");
     parser.add_option("--ignore-data")
@@ -55,14 +55,15 @@ int ecoevolity_main(int argc, char * argv[]) {
     std::vector<std::string> args = parser.args();
 
     RandomNumberGenerator rng;
-    int seed_opt;
+    long seed_opt;
     if (options.is_set_by_user("seed")) {
         seed_opt = options.get("seed");
     }
     else {
         seed_opt = rng.uniform_int(1, std::numeric_limits<int>::max() - 1);
     }
-    const int seed = seed_opt;
+    const long seed = seed_opt;
+    rng.set_seed(seed);
     std::cout << "Seed: " << seed << std::endl;
 
     const bool ignore_data = options.get("ignore_data");
