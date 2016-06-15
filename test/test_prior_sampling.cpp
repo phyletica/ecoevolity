@@ -74,7 +74,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "123";
+        char arg2[] = "1234";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -97,6 +97,10 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         prior_sample.update(log_path);
         std::vector<double> samples = prior_sample.get<double>("root_height_kya");
         REQUIRE(samples.size() == 10001);
+
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("root_height_kya");
+        REQUIRE(summary.mean() == Approx(1.0).epsilon(0.001));
+        REQUIRE(summary.variance() == Approx(10.0 * 0.1 * 0.1).epsilon(0.001));
 
         delete[] cfg_path;
     }
