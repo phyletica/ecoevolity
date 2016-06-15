@@ -63,14 +63,14 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_root_population_size_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<RootCoalescenceRateScaler>(
+        this->add_operator(std::make_shared<RootPopulationSizeScaler>(
                 settings.get_root_population_size_scaler_settings().get_weight(),
                 settings.get_root_population_size_scaler_settings().get_scale()
                 ));
     }
 
     if (settings.get_child_population_size_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<ChildCoalescenceRateScaler>(
+        this->add_operator(std::make_shared<ChildPopulationSizeScaler>(
                 settings.get_child_population_size_scaler_settings().get_weight(),
                 settings.get_child_population_size_scaler_settings().get_scale()
                 ));
