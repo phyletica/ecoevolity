@@ -77,7 +77,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "111";
+        char arg2[] = "1234";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -102,8 +102,8 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         REQUIRE(samples.size() == 10001);
 
         SampleSummarizer<double> summary = prior_sample.summarize<double>("root_height_kya");
-        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.001));
-        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.001));
+        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
         delete[] cfg_path;
     }
@@ -180,7 +180,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "111";
+        char arg2[] = "4321";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -205,8 +205,8 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         REQUIRE(samples.size() == 10001);
 
         SampleSummarizer<double> summary = prior_sample.summarize<double>("root_height_kya");
-        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.001));
-        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.001));
+        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
         delete[] cfg_path;
     }
@@ -285,7 +285,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "111";
+        char arg2[] = "1111";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -309,13 +309,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         std::vector<double> samples = prior_sample.get<double>("pop_size_root_kya");
         REQUIRE(samples.size() == 10001);
 
-        for (auto v: samples) {
-            std::cout << v << "\n";
-        }
-
         SampleSummarizer<double> summary = prior_sample.summarize<double>("pop_size_root_kya");
-        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.001));
-        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.001));
+        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
         delete[] cfg_path;
     }
@@ -394,7 +390,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "111";
+        char arg2[] = "2222";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -418,13 +414,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         std::vector<double> samples = prior_sample.get<double>("pop_size_root_kya");
         REQUIRE(samples.size() == 10001);
 
-        for (auto v: samples) {
-            std::cout << v << "\n";
-        }
-
         SampleSummarizer<double> summary = prior_sample.summarize<double>("pop_size_root_kya");
-        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.001));
-        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.001));
+        REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
         delete[] cfg_path;
     }
