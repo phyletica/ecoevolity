@@ -1015,3 +1015,388 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         delete[] cfg_path;
     }
 }
+
+TEST_CASE("Testing sampling from prior with MutationRateScaler without offset",
+        "[SamplingPrior]") {
+
+    SECTION("Testing gamma(1.0, 1.0) prior and no optimizing") {
+        double shape = 1.0;
+        double scale = 1.0;
+        std::string auto_optimize = "false";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: 10.0\n";
+        os << "        scale: 0.001\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 100000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            weight: 0.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: true\n";
+        os << "    constrain_mutation_rates: false\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << shape << "\n";
+        os << "                    scale: " << scale << "\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "1234";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+        std::vector<double> samples = prior_sample.get<double>("u_kya");
+        REQUIRE(samples.size() == 10001);
+
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("u_kya");
+        // This should *not* match prior, because u_rate is bounded to be
+        // greater than 0.5
+        REQUIRE(summary.mean() != Approx(shape * scale).epsilon(0.01));
+        REQUIRE(summary.variance() != Approx(shape * scale * scale).epsilon(0.01));
+
+        // Make sure the rest of the prior sample is as expected
+        summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
+
+        std::vector<std::string> columns_to_ignore = {"generation", "u_kya", "v_kya"};
+        for (auto const &kv: prior_sample.data) {
+            bool test = true;
+            for (auto const &p: columns_to_ignore) {
+                if (kv.first == p) {
+                    test = false;
+                }
+            }
+            if (test) {
+                summary = prior_sample.summarize<double>(kv.first);
+                REQUIRE(summary.variance() == 0.0);
+            }
+        }
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing sampling from prior with MutationRateScaler with offset",
+        "[SamplingPrior]") {
+
+    SECTION("Testing gamma(1.0, 0.5, offset=0.5) prior and no optimizing") {
+        double shape = 1.0;
+        double scale = 0.5;
+        double offset = 0.5;
+        std::string auto_optimize = "false";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: 10.0\n";
+        os << "        scale: 0.001\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 100000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            weight: 0.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: true\n";
+        os << "    constrain_mutation_rates: false\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    offset: " << offset << "\n";
+        os << "                    shape: " << shape << "\n";
+        os << "                    scale: " << scale << "\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "1234";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+        std::vector<double> samples = prior_sample.get<double>("u_kya");
+        REQUIRE(samples.size() == 10001);
+
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("u_kya");
+        // This should match prior, because offset matches the bound on u_rate to be
+        // greater than 0.5.
+        REQUIRE(summary.mean() == Approx((shape * scale) + offset).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
+
+        // Make sure the rest of the prior sample is as expected
+        summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
+
+        std::vector<std::string> columns_to_ignore = {"generation", "u_kya", "v_kya"};
+        for (auto const &kv: prior_sample.data) {
+            bool test = true;
+            for (auto const &p: columns_to_ignore) {
+                if (kv.first == p) {
+                    test = false;
+                }
+            }
+            if (test) {
+                summary = prior_sample.summarize<double>(kv.first);
+                REQUIRE(summary.variance() == 0.0);
+            }
+        }
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing sampling from prior with MutationRateScaler with offset and optimizing",
+        "[SamplingPrior]") {
+
+    SECTION("Testing gamma(1.0, 0.5, offset=0.5) prior and optimizing") {
+        double shape = 1.0;
+        double scale = 0.5;
+        double offset = 0.5;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: 10.0\n";
+        os << "        scale: 0.001\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 100000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            weight: 0.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: true\n";
+        os << "    constrain_mutation_rates: false\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    offset: " << offset << "\n";
+        os << "                    shape: " << shape << "\n";
+        os << "                    scale: " << scale << "\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "1234";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+        std::vector<double> samples = prior_sample.get<double>("u_kya");
+        REQUIRE(samples.size() == 10001);
+
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("u_kya");
+        // This should match prior, because offset matches the bound on u_rate to be
+        // greater than 0.5.
+        REQUIRE(summary.mean() == Approx((shape * scale) + offset).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
+
+        // Make sure the rest of the prior sample is as expected
+        summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
+
+        std::vector<std::string> columns_to_ignore = {"generation", "u_kya", "v_kya"};
+        for (auto const &kv: prior_sample.data) {
+            bool test = true;
+            for (auto const &p: columns_to_ignore) {
+                if (kv.first == p) {
+                    test = false;
+                }
+            }
+            if (test) {
+                summary = prior_sample.summarize<double>(kv.first);
+                REQUIRE(summary.variance() == 0.0);
+            }
+        }
+
+        delete[] cfg_path;
+    }
+}
