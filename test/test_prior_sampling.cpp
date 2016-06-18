@@ -1822,3 +1822,168 @@ TEST_CASE("Testing fully parameterized model for one pair",
         delete[] cfg_path;
     }
 }
+
+TEST_CASE("Testing fully parameterized model for one pair with optimization",
+        "[SamplingPrior]") {
+
+    SECTION("Testing with optimizing") {
+        double height_shape = 1.0;
+        double height_scale = 0.1;
+        double size_shape = 10.0;
+        double size_scale = 0.0001;
+        double u_shape = 1.0;
+        double u_scale = 0.5;
+        double u_offset = 0.5;
+        double mult_shape = 10.0;
+        double mult_scale = 0.1;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            weight: 0.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: false\n";
+        os << "    constrain_mutation_rates: false\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shape << "\n";
+        os << "                    scale: " << size_scale << "\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    offset: " << u_offset << "\n";
+        os << "                    shape: " << u_shape << "\n";
+        os << "                    scale: " << u_scale << "\n";
+        os << "        time_multiplier:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult_shape << "\n";
+        os << "                    scale: " << mult_scale << "\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "9876";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        SampleSummarizer<double> height_summary = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> size_summary1 = prior_sample.summarize<double>("pop_size_kya");
+        SampleSummarizer<double> size_summary2 = prior_sample.summarize<double>("pop_size_fas");
+        SampleSummarizer<double> size_summary3 = prior_sample.summarize<double>("pop_size_root_kya");
+        SampleSummarizer<double> u_summary = prior_sample.summarize<double>("u_kya");
+        SampleSummarizer<double> mult_summary = prior_sample.summarize<double>("time_multiplier_kya");
+
+        REQUIRE(height_summary.sample_size() == 50001);
+        REQUIRE(size_summary1.sample_size() == 50001);
+        REQUIRE(size_summary2.sample_size() == 50001);
+        REQUIRE(size_summary3.sample_size() == 50001);
+        REQUIRE(u_summary.sample_size() == 50001);
+        REQUIRE(mult_summary.sample_size() == 50001);
+
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(size_summary1.mean() == Approx(size_shape * size_scale).epsilon(0.01));
+        REQUIRE(size_summary1.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
+        REQUIRE(size_summary2.mean() == Approx(size_shape * size_scale).epsilon(0.01));
+        REQUIRE(size_summary2.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
+        REQUIRE(size_summary3.mean() == Approx(size_shape * size_scale).epsilon(0.01));
+        REQUIRE(size_summary3.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
+        REQUIRE(u_summary.mean() == Approx((u_shape * u_scale) + u_offset).epsilon(0.01));
+        REQUIRE(u_summary.variance() == Approx(u_shape * u_scale * u_scale).epsilon(0.01));
+        REQUIRE(mult_summary.mean() == Approx(mult_shape * mult_scale).epsilon(0.01));
+        REQUIRE(mult_summary.variance() == Approx(mult_shape * mult_scale * mult_scale).epsilon(0.01));
+
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.sample_size() == 50001);
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
+
+        std::vector<double> u_sample = prior_sample.get<double>("u_kya");
+        std::vector<double> v_sample = prior_sample.get<double>("v_kya");
+        for (size_t i = 0; i < u_sample.size(); ++i) {
+            double u = u_sample.at(i);
+            double v = v_sample.at(i);
+            REQUIRE(v == Approx(u / ((2.0 * u) - 1.0)));
+        }
+
+        std::vector<double> size_sample1 = prior_sample.get<double>("pop_size_kya");
+        std::vector<double> size_sample2 = prior_sample.get<double>("pop_size_fas");
+        std::vector<double> size_sample3 = prior_sample.get<double>("pop_size_root_kya");
+        for (size_t i = 0; i < size_sample1.size(); ++i) {
+            if (i > 99) {
+                REQUIRE(size_sample1.at(i) != size_sample2.at(i));
+                REQUIRE(size_sample1.at(i) != size_sample3.at(i));
+                REQUIRE(size_sample2.at(i) != size_sample3.at(i));
+            }
+        }
+
+        delete[] cfg_path;
+    }
+}
