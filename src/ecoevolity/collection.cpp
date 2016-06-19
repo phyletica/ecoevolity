@@ -510,7 +510,7 @@ void ComparisonPopulationTreeCollection::mcmc(
 
         // Check if the chain has gone astray
         ECOEVOLITY_DEBUG(
-            if (gen % 1 == 0) {
+            if ((gen + 1) % (sample_frequency * 10) == 0) {
                 double chain_ln_likelihood = this->log_likelihood_.get_value();
                 this->make_trees_dirty();
                 this->compute_log_likelihood_and_prior(true);
