@@ -95,7 +95,7 @@ class ComparisonPopulationTreeCollection {
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void ignore_data() {
-            for (unsigned int i = 0; i < this->trees_.size();  ++i) {
+            for (unsigned int i = 0; i < this->trees_.size(); ++i) {
                 this->trees_.at(i).ignore_data();
             }
         }
