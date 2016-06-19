@@ -1988,7 +1988,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
     }
 }
 
-TEST_CASE("Testing DPP with 2 pairs", "[SamplingPriorX]") {
+TEST_CASE("Testing DPP with 2 pairs", "[SamplingPrior]") {
 
     SECTION("Testing alpha fixed to 1.0") {
         double height_shape = 10.0;
