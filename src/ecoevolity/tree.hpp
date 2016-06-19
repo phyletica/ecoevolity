@@ -151,6 +151,9 @@ class PopulationTree {
         void use_data() {
             this->ignore_data_ = false;
         }
+        bool ignoring_data() const {
+            return this->ignore_data_;
+        }
 
         void provide_number_of_constant_sites(
                 unsigned int number_all_red,
