@@ -555,7 +555,10 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             ++tree_idx) {
         std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
         std::vector<double> ln_category_likelihoods;
+        std::vector<double> ln_tree_likelihoods;
         ln_category_likelihoods.reserve(other_height_indices.size() +
+                this->get_number_of_auxiliary_categories());
+        ln_tree_likelihoods.reserve(other_height_indices.size() +
                 this->get_number_of_auxiliary_categories());
 
         // store height associated with this tree
@@ -567,6 +570,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                 if (! comparisons.trees_.at(tree_idx).is_dirty()) {
                     double lnl = comparisons.trees_.at(tree_idx).get_log_likelihood_value();
                     ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
+                    ln_tree_likelihoods.push_back(lnl);
                     continue;
                 }
             }
@@ -575,6 +579,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             }
             double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
             ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
+            ln_tree_likelihoods.push_back(lnl);
         }
 
         std::vector<double> auxiliary_heights;
@@ -585,6 +590,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             comparisons.trees_.at(tree_idx).set_height(fresh_height);
             double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
             ln_category_likelihoods.push_back(lnl + ln_concentration_over_num_aux);
+            ln_tree_likelihoods.push_back(lnl);
         }
 
         // restore height associated with this tree
@@ -597,14 +603,14 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             comparisons.remap_tree(
                     tree_idx,
                     other_height_indices.at(prob_index),
-                    ln_category_likelihoods.at(prob_index));
+                    ln_tree_likelihoods.at(prob_index));
         }
         else {
             comparisons.map_tree_to_new_height(
                     tree_idx,
                     auxiliary_heights.at(prob_index -
                             other_height_indices.size()),
-                    ln_category_likelihoods.at(prob_index));
+                    ln_tree_likelihoods.at(prob_index));
         }
     }
     // Always accept, so returning inf
