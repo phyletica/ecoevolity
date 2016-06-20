@@ -109,8 +109,15 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         summary = prior_sample.summarize<double>("ln_likelihood");
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
+        summary = prior_sample.summarize<double>("ln_likelihood_kya");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "root_height_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "root_height_kya",
+                "ln_prior",
+                "ln_prior_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -231,8 +238,15 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         summary = prior_sample.summarize<double>("ln_likelihood");
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
+        summary = prior_sample.summarize<double>("ln_likelihood_kya");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "root_height_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "root_height_kya",
+                "ln_prior",
+                "ln_prior_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -355,8 +369,14 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         summary = prior_sample.summarize<double>("ln_likelihood");
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
+        summary = prior_sample.summarize<double>("ln_likelihood_kya");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "pop_size_root_kya"};
+        std::vector<std::string> columns_to_ignore = {"generation",
+            "ln_prior",
+            "ln_prior_kya",
+            "pop_size_root_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -475,7 +495,11 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
         REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
-        std::vector<std::string> columns_to_ignore = {"generation", "pop_size_root_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "pop_size_root_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -607,7 +631,12 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         REQUIRE(summary2.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
         SampleSummarizer<double> summary;
-        std::vector<std::string> columns_to_ignore = {"generation", "pop_size_kya", "pop_size_fas"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "pop_size_kya",
+                "pop_size_fas"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -740,7 +769,12 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         REQUIRE(summary2.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
         SampleSummarizer<double> summary;
-        std::vector<std::string> columns_to_ignore = {"generation", "pop_size_kya", "pop_size_fas"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "pop_size_kya",
+                "pop_size_fas"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -869,7 +903,13 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
         REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
-        std::vector<std::string> columns_to_ignore = {"generation", "pop_size_kya", "pop_size_fas", "pop_size_root_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "pop_size_kya",
+                "pop_size_fas",
+                "pop_size_root_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -998,7 +1038,13 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
         REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
-        std::vector<std::string> columns_to_ignore = {"generation", "pop_size_kya", "pop_size_fas", "pop_size_root_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "pop_size_kya",
+                "pop_size_fas",
+                "pop_size_root_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1125,7 +1171,12 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler without offset",
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "u_kya", "v_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "u_kya",
+                "v_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1254,7 +1305,12 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with offset",
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "u_kya", "v_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "u_kya",
+                "v_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1390,7 +1446,12 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with offset and o
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "u_kya", "v_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "u_kya",
+                "v_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1515,7 +1576,11 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightMultiplierScaler",
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "time_multiplier_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "time_multiplier_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1640,7 +1705,11 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightMultiplierScaler wit
         REQUIRE(summary.mean() == 0.0);
         REQUIRE(summary.variance() == 0.0);
 
-        std::vector<std::string> columns_to_ignore = {"generation", "time_multiplier_kya"};
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "time_multiplier_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -2130,6 +2199,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
 
         std::vector<std::string> columns_to_ignore = {
                 "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "ln_prior_pop1",
                 "number_of_events",
                 "root_height_kya",
                 "root_height_pop1",
@@ -2296,6 +2368,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
 
         std::vector<std::string> columns_to_ignore = {
                 "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "ln_prior_pop1",
                 "number_of_events",
                 "root_height_kya",
                 "root_height_pop1",
@@ -2462,6 +2537,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
 
         std::vector<std::string> columns_to_ignore = {
                 "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "ln_prior_pop1",
                 "number_of_events",
                 "root_height_kya",
                 "root_height_pop1",
@@ -2670,6 +2748,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
 
         std::vector<std::string> columns_to_ignore = {
                 "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "ln_prior_pop1",
                 "number_of_events",
                 "root_height_kya",
                 "root_height_pop1",

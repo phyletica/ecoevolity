@@ -903,7 +903,9 @@ void ComparisonPopulationTree::write_state_log_header(
     if (include_event_index) {
         out << "root_height_index" << suffix << delimiter;
     }
-    out << "root_height" << suffix << delimiter
+    out << "ln_likelihood" << suffix << delimiter
+        << "ln_prior" << suffix << delimiter
+        << "root_height" << suffix << delimiter
         << "time_multiplier" << suffix << delimiter
         << "u" << suffix << delimiter
         << "v" << suffix << delimiter
@@ -917,7 +919,9 @@ void ComparisonPopulationTree::write_state_log_header(
 void ComparisonPopulationTree::log_state(
         std::ostream& out,
         const std::string& delimiter) const {
-    out << this->get_height() << delimiter
+    out << this->log_likelihood_.get_value() << delimiter
+        << this->log_prior_density_.get_value() << delimiter
+        << this->get_height() << delimiter
         << this->get_node_height_multiplier() << delimiter
         << this->get_u() << delimiter
         << this->get_v() << delimiter

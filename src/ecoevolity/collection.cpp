@@ -249,6 +249,7 @@ void ComparisonPopulationTreeCollection::write_state_log_header(
         bool short_summary) const {
     out << "generation" << this->logging_delimiter_
         << "ln_likelihood" << this->logging_delimiter_
+        << "ln_prior" << this->logging_delimiter_
         << "number_of_events";
     if (this->using_dpp()) {
         out << this->logging_delimiter_ << "concentration";
@@ -273,6 +274,7 @@ void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
         bool short_summary) const {
     out << generation_index << this->logging_delimiter_
         << this->log_likelihood_.get_value() << this->logging_delimiter_
+        << this->log_prior_density_.get_value() << this->logging_delimiter_
         << this->get_number_of_events();
     if (this->using_dpp()) {
         out << this->logging_delimiter_ << this->get_concentration();
