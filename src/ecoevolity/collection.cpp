@@ -133,6 +133,21 @@ void ComparisonPopulationTreeCollection::make_trees_dirty() {
     }
 }
 
+std::vector<unsigned int> ComparisonPopulationTreeCollection::get_standardized_height_indices() const {
+    std::vector<unsigned int> standardized_indices;
+    standardized_indices.reserve(this->node_height_indices_.size());
+    std::map<unsigned int, unsigned int> standardizing_map;
+    unsigned int next_idx = 0;
+    for (auto const raw_idx: this->node_height_indices_) {
+        if (standardizing_map.count(raw_idx) == 0) {
+            standardizing_map[raw_idx] = next_idx;
+            ++next_idx;
+        }
+        standardized_indices.push_back(standardizing_map.at(raw_idx));
+    }
+    return standardized_indices;
+}
+
 unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
         unsigned int height_index) const {
     unsigned int count = 0;
@@ -266,12 +281,14 @@ void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
         out << std::endl;
         return;
     }
+    std::vector<unsigned int> standardized_height_indices =
+            this->get_standardized_height_indices();
     for (unsigned int tree_idx = 0;
             tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
         this->trees_.at(tree_idx).log_state(out,
-                this->get_height_index(tree_idx),
+                standardized_height_indices.at(tree_idx),
                 this->logging_delimiter_);
     }
     out << std::endl;

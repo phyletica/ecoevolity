@@ -145,6 +145,8 @@ class ComparisonPopulationTreeCollection {
             return this->node_height_indices_.at(tree_index);
         }
 
+        std::vector<unsigned int> get_standardized_height_indices() const;
+
         std::shared_ptr<PositiveRealParameter> get_height_parameter(
                 unsigned int height_index) const {
             return this->node_heights_.at(height_index);
