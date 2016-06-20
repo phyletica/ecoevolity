@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <cmath>
+#include <map>
 
 #include "assert.hpp"
 #include "error.hpp"
@@ -151,6 +152,35 @@ inline double get_dpp_gamma_scale(
             precision,
             buffer);
     return concentration / shape;
+}
+
+template <typename T>
+inline double get_dpp_log_prior_probability(
+        const std::vector<T>& partition,
+        double concentration) {
+    ECOEVOLITY_ASSERT(concentration > 0.0);
+    double log_concentration = std::log(concentration);
+    double log_p = 0.0;
+    T current_element;
+    std::map<T, unsigned int> subset_counts;
+    for (unsigned int i = 0; i < partition.size(); ++i) {
+        current_element = partition.at(i);
+        if (subset_counts.count(current_element) < 1) {
+            log_p += (log_concentration - std::log(concentration + i));
+            subset_counts[current_element] = 1;
+            continue;
+        }
+        log_p += (std::log(subset_counts[current_element]) - std::log(concentration + i));
+        ++subset_counts[current_element];
+    }
+    return log_p;
+}
+
+inline double get_dpp_log_prior_probability(
+        const std::string& partition,
+        double concentration) {
+    std::vector<char> partition_vector(partition.begin(), partition.end());
+    return get_dpp_log_prior_probability<char>(partition_vector, concentration);
 }
 
 #endif
