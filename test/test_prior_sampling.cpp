@@ -2486,7 +2486,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPriorX]") {
+TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
 
     SECTION("Testing alpha fixed to 1.0") {
         double height_shape = 10.0;
