@@ -567,3 +567,27 @@ TEST_CASE("Testing get_dpp_log_prior_probability with {0,0,1,0,2} alpha=1.0",
         REQUIRE(get_dpp_log_prior_probability(partition, concentration) == Approx(expected_prob));
     }
 }
+
+TEST_CASE("Testing nonstandardized partitions for get_dpp_log_prior_probability",
+        "[math_util]") {
+    double concentration = 1.0;
+    double expected_prob = std::log(2.0/120.0);
+    SECTION("Testing standardized") {
+    }
+    SECTION("Testing non-standardized partitions") {
+        std::vector<unsigned int> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_dpp_log_prior_probability<unsigned int>(partition, concentration) == Approx(expected_prob));
+        std::vector<unsigned int> partition1 = {2, 2, 1, 2, 0};
+        REQUIRE(get_dpp_log_prior_probability<unsigned int>(partition, concentration) ==
+                get_dpp_log_prior_probability<unsigned int>(partition1, concentration));
+        std::vector<unsigned int> partition2 = {1, 1, 0, 1, 2};
+        REQUIRE(get_dpp_log_prior_probability<unsigned int>(partition, concentration) ==
+                get_dpp_log_prior_probability<unsigned int>(partition2, concentration));
+        std::vector<unsigned int> partition3 = {1, 1, 2, 1, 0};
+        REQUIRE(get_dpp_log_prior_probability<unsigned int>(partition, concentration) ==
+                get_dpp_log_prior_probability<unsigned int>(partition3, concentration));
+        std::vector<unsigned int> partition4 = {7, 7, 5, 7, 3};
+        REQUIRE(get_dpp_log_prior_probability<unsigned int>(partition, concentration) ==
+                get_dpp_log_prior_probability<unsigned int>(partition4, concentration));
+    }
+}
