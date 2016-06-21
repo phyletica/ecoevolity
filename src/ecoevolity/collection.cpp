@@ -68,12 +68,18 @@ void ComparisonPopulationTreeCollection::store_state() {
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i).store_state();
     }
+    if (this->using_dpp()) {
+        this->concentration_->store();
+    }
 }
 void ComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i).restore_state();
+    }
+    if (this->using_dpp()) {
+        this->concentration_->restore();
     }
 }
 void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
@@ -93,6 +99,16 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
     }
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
+    }
+    if (this->using_dpp()) {
+        ///////////////////////////////////////////////////////////////////////
+        // This is taken care of within DirichletProcessGibbsSampler
+        // Does not seem to affect ConcentrationScaler (surprisingly) 
+        // lnp += get_dpp_log_prior_probability<unsigned int>(
+        //         this->node_height_indices_,
+        //         this->get_concentration());
+        ///////////////////////////////////////////////////////////////////////
+        lnp += this->concentration_->relative_prior_ln_pdf();
     }
 
     this->log_likelihood_.set_value(lnl);
