@@ -46,6 +46,20 @@ class Node: public BaseNode<Node>{
         Node(std::string label, double height) : BaseClass(label, height) { }
 };
 
+class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
+    private:
+        typedef BaseNode<GeneTreeSimNode> BaseClass;
+
+    public:
+        int state;
+        double p[2][2];
+        GeneTreeSimNode() { }
+        GeneTreeSimNode(std::string label) : BaseClass(label) { }
+        GeneTreeSimNode(double height) : BaseClass(height) { }
+        GeneTreeSimNode(std::string label, double height)
+            : BaseClass(label, height) { }
+};
+
 class PopulationNode: public BaseNode<PopulationNode>{
     private:
         typedef BaseNode<PopulationNode> BaseClass;
