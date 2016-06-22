@@ -223,6 +223,18 @@ unsigned int ComparisonPopulationTreeCollection::get_number_of_partners(
     return count - 1;
 }
 
+std::vector<unsigned int> ComparisonPopulationTreeCollection::get_shared_event_indices() const {
+    std::vector<unsigned int> shared_indices;
+    for (unsigned int event_idx = 0;
+            event_idx < this->get_number_of_events();
+            ++event_idx) {
+        if (this->get_number_of_trees_mapped_to_height(event_idx) > 1) {
+            shared_indices.push_back(event_idx);
+        }
+    }
+    return shared_indices;
+}
+
 void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
         unsigned int height_index,
