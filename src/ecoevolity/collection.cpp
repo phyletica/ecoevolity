@@ -86,7 +86,7 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
     double lnl = 0.0;
     double lnp = 0.0;
     if (compute_partials) {
-        if ((this->use_multithreading_) && (this->trees_.size() > 1)) {
+        if (this->number_of_threads_ > 1) {
             this->compute_tree_partials_threaded();
         }
         else {
@@ -122,20 +122,39 @@ void ComparisonPopulationTreeCollection::compute_tree_partials() {
 }
 
 void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
-    this->compute_tree_partials();
     // TODO: get multithreading working
-    // std::vector<std::thread> threads;
-    // threads.reserve(this->trees_.size());
+    unsigned int tree_index = 0;
+    unsigned int max_tree_index = this->trees_.size() - 1;
+    unsigned int thread_count = 0;
+    while (tree_index <= max_tree_index) {
+        std::vector<std::thread> threads;
+        threads.reserve(this->number_of_threads_ - 1);
+        // Launch number_of_threads - 1 threads
+        for (unsigned int i = 0; i < this->number_of_threads_ - 1; ++i) {
+            if (tree_index > max_tree_index) {
+                break;
+            }
+            threads.push_back(std::thread(
+                        &ComparisonPopulationTree::compute_log_likelihood_and_prior,
+                        this->trees_.at(tree_index)));
+            ++tree_index;
+        }
+        
+        // Use the main thread as the last thread
+        if (tree_index <= max_tree_index) {
+            this->trees_.at(tree_index).compute_log_likelihood_and_prior();
+            ++tree_index;
+            ++thread_count;
+        }
 
-    // for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-    //     threads.push_back(std::thread(
-    //                 &ComparisonPopulationTree::compute_log_likelihood_and_prior,
-    //                 this->trees_.at(i)));
-    // }
-
-    // for (unsigned int i = 0; i < threads.size(); ++i) {
-    //     threads.at(i).join()
-    // }
+        // Join the launched threads
+        for (auto &t : threads) {
+            t.join();
+            ++thread_count;
+        }
+    }
+    // Make sure we calculated the likelihood of all the trees 
+    ECOEVOLITY_ASSERT(thread_count == this->trees_.size());
 }
 
 void ComparisonPopulationTreeCollection::make_trees_clean() {

@@ -46,7 +46,7 @@ class ComparisonPopulationTreeCollection {
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
         std::string operator_log_path_ = "ecoevolity-operator-run-1.log";
-        bool use_multithreading_ = false;
+        unsigned int number_of_threads_ = 0;
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
 
@@ -94,6 +94,15 @@ class ComparisonPopulationTreeCollection {
         void restore_state();
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
+        void set_number_of_threads(unsigned int n) {
+            if (n > this->trees_.size()) {
+                n = this->trees_.size();
+            }
+            this->number_of_threads_ = n;
+        }
+        unsigned int get_number_of_threads() const {
+            return this->number_of_threads_;
+        }
         void ignore_data() {
             for (unsigned int i = 0; i < this->trees_.size(); ++i) {
                 this->trees_.at(i).ignore_data();
