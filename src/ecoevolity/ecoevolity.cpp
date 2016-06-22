@@ -50,6 +50,18 @@ int ecoevolity_main(int argc, char * argv[]) {
             .dest("ignore_data")
             .help("Ignore data to sample from the prior distribution. Default: "
                   "Use data to sample from the posterior distribution");
+    parser.add_option("--nthreads")
+            .action("store")
+            .type("unsigned int")
+            .dest("nthreads")
+            .set_default("1")
+            .help("Number of threads to use for likelihood calculations. "
+                  "Default: 1 (i.e., no multithreading). The maximum is the "
+                  "number of comparisons in the analysis. If a number larger "
+                  "than the number of comparisons is specified, the number of "
+                  "threads equal to the number of comparisons will be used. If "
+                  "you are using the '--ignore-data' option, its often fastest "
+                  "to NOT use multithreading.");
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();
@@ -73,6 +85,8 @@ int ecoevolity_main(int argc, char * argv[]) {
     else {
         std::cout << "Using data in order to sample from the posterior distribution..." << std::endl;
     }
+
+    unsigned int nthreads = options.get("nthreads");
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
@@ -105,6 +119,9 @@ int ecoevolity_main(int argc, char * argv[]) {
     else {
         comparisons.use_data();
     }
+
+    comparisons.set_number_of_threads(nthreads);
+    std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
 
     time_t start;
     time_t finish;
