@@ -183,7 +183,8 @@ inline double get_dpp_log_prior_probability(
     return get_dpp_log_prior_probability<char>(partition_vector, concentration);
 }
 
-// Recursion is much slower than dynamic programming.
+// Recursion is much slower (~ 1000 times slower!) than dynamic programming
+// approach below.
 // inline unsigned long long stirling2_recurse(int n, int k) {
 //     ECOEVOLITY_ASSERT((n > 0) && (k > 0) && (n >= k));
 //     if (n == 0 || k == 1 || k == n) {
