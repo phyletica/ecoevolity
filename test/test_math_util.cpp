@@ -591,3 +591,42 @@ TEST_CASE("Testing nonstandardized partitions for get_dpp_log_prior_probability"
                 get_dpp_log_prior_probability<unsigned int>(partition4, concentration));
     }
 }
+
+TEST_CASE("Testing stirling number functions", "[math_util]") {
+    SECTION("Testing stirling2") {
+        REQUIRE(stirling2(1, 1) == 1);
+        REQUIRE(stirling2(2, 1) == 1);
+        REQUIRE(stirling2(2, 2) == 1);
+        REQUIRE(stirling2(3, 1) == 1);
+        REQUIRE(stirling2(3, 2) == 3);
+        REQUIRE(stirling2(3, 3) == 1);
+        REQUIRE(stirling2(4, 1) == 1);
+        REQUIRE(stirling2(4, 2) == 7);
+        REQUIRE(stirling2(4, 3) == 6);
+        REQUIRE(stirling2(4, 4) == 1);
+        REQUIRE(stirling2(5, 1) == 1);
+        REQUIRE(stirling2(5, 2) == 15);
+        REQUIRE(stirling2(5, 3) == 25);
+        REQUIRE(stirling2(5, 4) == 10);
+        REQUIRE(stirling2(5, 5) == 1);
+        REQUIRE(stirling2(9, 3) == 3025);
+    }
+    SECTION("Testing stirling2_float") {
+        REQUIRE(stirling2_float(1, 1) == 1);
+        REQUIRE(stirling2_float(2, 1) == 1);
+        REQUIRE(stirling2_float(2, 2) == 1);
+        REQUIRE(stirling2_float(3, 1) == 1);
+        REQUIRE(stirling2_float(3, 2) == 3);
+        REQUIRE(stirling2_float(3, 3) == 1);
+        REQUIRE(stirling2_float(4, 1) == 1);
+        REQUIRE(stirling2_float(4, 2) == 7);
+        REQUIRE(stirling2_float(4, 3) == 6);
+        REQUIRE(stirling2_float(4, 4) == 1);
+        REQUIRE(stirling2_float(5, 1) == 1);
+        REQUIRE(stirling2_float(5, 2) == 15);
+        REQUIRE(stirling2_float(5, 3) == 25);
+        REQUIRE(stirling2_float(5, 4) == 10);
+        REQUIRE(stirling2_float(5, 5) == 1);
+        REQUIRE(stirling2_float(9, 3) == 3025);
+    }
+}

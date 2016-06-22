@@ -183,4 +183,37 @@ inline double get_dpp_log_prior_probability(
     return get_dpp_log_prior_probability<char>(partition_vector, concentration);
 }
 
+// Recursion is much slower than dynamic programming.
+// inline unsigned long long stirling2_recurse(int n, int k) {
+//     ECOEVOLITY_ASSERT((n > 0) && (k > 0) && (n >= k));
+//     if (n == 0 || k == 1 || k == n) {
+//         return 1;
+//     }
+//     return stirling2_recurse(n - 1, k - 1) + k * stirling2_recurse(n - 1, k);
+// }
+
+template <typename T>
+inline T stirling2_base(int n, int k) {
+    ECOEVOLITY_ASSERT((n > 0) && (k > 0) && (n >= k));
+    int maxj = n-k;
+
+    std::vector<T> s_numbers (maxj + 1, 1);
+
+    for (int i = 2; i <= k; ++i) {
+        for(int j = 1; j <= maxj; ++j) {
+            s_numbers.at(j) += i * s_numbers.at(j-1);
+        }
+    }
+
+    return s_numbers.at(maxj);
+}
+
+inline unsigned long long stirling2(int n, int k) {
+    return stirling2_base<unsigned long long>(n, k);
+}
+
+inline long double stirling2_float(int n, int k) {
+    return stirling2_base<long double>(n, k);
+}
+
 #endif
