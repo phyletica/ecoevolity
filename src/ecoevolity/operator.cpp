@@ -629,4 +629,20 @@ std::string ReversibleJumpSampler::get_name() const {
 double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons) const {
     throw EcoevolityNotImplementedError("rjMCMC not implemented yet");
+
+    const int nnodes = comparisons.get_number_of_trees();
+    const int nevents = comparisons.get_number_of_events();
+    const bool in_general_state = (nnodes == nevents);
+    const bool in_shared_state = (nevents == 1);
+    const bool add_event = ((! in_general_state) &&
+            (in_shared_state || (rng.uniform_real() < 0.5)));
+    if (add_event) {
+        std::vector<unsigned int> shared_indices =
+                comparisons.get_shared_event_indices();
+        unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
+        unsigned int event_index = shared_indices.at(i);
+    }
+    else {
+    }
+
 }

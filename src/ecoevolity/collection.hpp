@@ -150,6 +150,8 @@ class ComparisonPopulationTreeCollection {
         unsigned int get_number_of_partners(
                 unsigned int tree_index) const;
 
+        std::vector<unsigned int> get_shared_event_indices() const;
+
         unsigned int get_height_index(unsigned int tree_index) const {
             return this->node_height_indices_.at(tree_index);
         }
