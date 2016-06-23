@@ -120,6 +120,37 @@ class RandomNumberGenerator {
             return probabilities.size() - 1;
         }
 
+        inline std::vector<unsigned int> random_subset_indices(
+                unsigned int number_of_elements,
+                unsigned int subset_size) {
+            ECOEVOLITY_ASSERT((number_of_elements > 0) &&
+                              (subset_size > 0) &&
+                              (number_of_elements >= subset_size));
+            std::vector<unsigned int> indices;
+            indices.reserve(subset_size);
+            if (subset_size == number_of_elements) {
+                for (unsigned int i = 0; i < number_of_elements; ++i) {
+                    indices.push_back(i);
+                }
+                return indices;
+            }
+
+            unsigned int total = 0;
+            double u;
+
+            while (indices.size() < subset_size) {
+                u = this->uniform_real();
+                if (((number_of_elements - total) * u) >= (subset_size - indices.size())) {
+                    ++total;
+                }
+                else {
+                    indices.push_back(total);
+                    ++total;
+                }
+            }
+            return indices;
+        }
+
         inline std::string random_string(
                 unsigned int length,
                 std::vector<char> char_pool = {
