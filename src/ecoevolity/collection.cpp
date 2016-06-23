@@ -65,15 +65,15 @@ void ComparisonPopulationTreeCollection::init_trees(
 void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
+    // TODO: shared height parameters are being stored multiple times below.
+    // This doesn't hurt anything, and probably has little affect on
+    // efficiency.
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i).store_state();
     }
     if (this->using_dpp()) {
         this->concentration_->store();
     }
-    // TODO: move height storing here? currently done by trees (duplicating
-    // effort for shared heights).
-    // TODO: need to store height indices
     this->stored_node_height_indices_ = this->node_height_indices_;
 }
 void ComparisonPopulationTreeCollection::restore_state() {
@@ -85,7 +85,6 @@ void ComparisonPopulationTreeCollection::restore_state() {
     if (this->using_dpp()) {
         this->concentration_->restore();
     }
-
     this->node_height_indices_ = this->stored_node_height_indices_;
 }
 
@@ -244,8 +243,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_shared_event_i
 
 void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
-        unsigned int height_index,
-        double log_likelihood) {
+        unsigned int height_index) {
     if (! (this->get_height_index(tree_index) == height_index)) {
         unsigned int num_partners = this->get_number_of_partners(tree_index);
         unsigned int old_height_index = this->get_height_index(tree_index);
@@ -256,14 +254,19 @@ void ComparisonPopulationTreeCollection::remap_tree(
             this->remove_height(old_height_index);
         }
     }
+}
+void ComparisonPopulationTreeCollection::remap_tree(
+        unsigned int tree_index,
+        unsigned int height_index,
+        double log_likelihood) {
+    this->remap_tree(tree_index, height_index);
     this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
     this->trees_.at(tree_index).make_clean();
 }
 
 void ComparisonPopulationTreeCollection::map_tree_to_new_height(
         unsigned int tree_index,
-        double height,
-        double log_likelihood) {
+        double height) {
     unsigned int num_partners = this->get_number_of_partners(tree_index);
     unsigned int old_height_index = this->get_height_index(tree_index);
     std::vector<unsigned int> mapped_tree_indices = {tree_index};
@@ -271,8 +274,26 @@ void ComparisonPopulationTreeCollection::map_tree_to_new_height(
     if (num_partners == 0) {
         this->remove_height(old_height_index);
     }
+}
+
+void ComparisonPopulationTreeCollection::map_tree_to_new_height(
+        unsigned int tree_index,
+        double height,
+        double log_likelihood) {
+    this->map_tree_to_new_height(tree_index, height);
     this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
     this->trees_.at(tree_index).make_clean();
+}
+
+void ComparisonPopulationTreeCollection::map_trees_to_new_height(
+        const std::vector<unsigned int>& tree_indices,
+        double height) {
+    ECOEVOLITY_ASSERT(tree_indices.size() > 0);
+    this->map_tree_to_new_height(tree_indices.at(0), height);
+    unsigned int new_height_index = this->get_height_index(tree_indices.at(0));
+    for (unsigned int i = 1; i < tree_indices.size(); ++i) {
+        this->remap_tree(tree_indices.at(i), new_height_index);
+    }
 }
 
 void ComparisonPopulationTreeCollection::remove_height(
@@ -563,6 +584,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                 op.accept(this->operator_schedule_);
             }
             else {
+                ECOEVOLITY_ASSERT(op.get_name() != "DirichletProcessGibbsSampler");
                 op.reject(this->operator_schedule_);
                 this->restore_state();
             }
