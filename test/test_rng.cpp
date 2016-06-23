@@ -221,3 +221,201 @@ TEST_CASE("Testing random_string", "[RandomNumberGenerator]") {
         REQUIRE(p == Approx(e).epsilon(0.001));
     }
 }
+
+TEST_CASE("Testing random_subset_indices 1 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 1;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 2 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 2;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 3 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 3;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 4 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 4;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 5 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 5;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 6 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 6;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 7 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 7;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 8 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 8;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_subset_indices 9 from 10", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 10;
+        unsigned int subset_size = 9;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(1234);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.001));
+        }
+    }
+}
