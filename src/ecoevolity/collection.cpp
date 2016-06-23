@@ -71,6 +71,10 @@ void ComparisonPopulationTreeCollection::store_state() {
     if (this->using_dpp()) {
         this->concentration_->store();
     }
+    // TODO: move height storing here? currently done by trees (duplicating
+    // effort for shared heights).
+    // TODO: need to store height indices
+    this->stored_node_height_indices_ = this->node_height_indices_;
 }
 void ComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
@@ -81,7 +85,10 @@ void ComparisonPopulationTreeCollection::restore_state() {
     if (this->using_dpp()) {
         this->concentration_->restore();
     }
+
+    this->node_height_indices_ = this->stored_node_height_indices_;
 }
+
 void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
     double lnl = 0.0;
     double lnp = 0.0;
