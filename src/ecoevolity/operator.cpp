@@ -634,15 +634,51 @@ double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
     const int nevents = comparisons.get_number_of_events();
     const bool in_general_state = (nnodes == nevents);
     const bool in_shared_state = (nevents == 1);
-    const bool add_event = ((! in_general_state) &&
+    const bool split_event = ((! in_general_state) &&
             (in_shared_state || (rng.uniform_real() < 0.5)));
-    if (add_event) {
+    if (split_event) {
         std::vector<unsigned int> shared_indices =
                 comparisons.get_shared_event_indices();
         unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
         unsigned int event_index = shared_indices.at(i);
+        double event_height = comparisons.get_height(event_index);
+        double lower_bound = comparisons.get_nearest_smaller_height(event_index);
+        double new_height = rng.uniform_real(lower_bound, event_height);
+        std::vector<unsigned int> tree_indices = comparisons.get_indices_of_mapped_trees(event_index);
+        unsigned int num_mapped_nodes = tree_indices.size();
+        const std::vector<double>& split_size_probs = 
+                this->get_split_subset_size_probabilities(num_mapped_nodes);
+
+        unsigned int subset_size = rng.weighted_index(split_size_probs) + 1;
+        ECOEVOLITY_ASSERT((subset_size > 0) && (subset_size < num_mapped_nodes));
+
+        std::vector<unsigned int> random_indices = rng.random_subset_indices(
+                num_mapped_nodes,
+                subset_size);
+        std::vector<unsigned int> subset_indices;
+        subset_indices.reserve(subset_size);
+        for (auto const random_idx: random_indices) {
+            subset_indices.push_back(tree_indices.at(random_i));
+        }
     }
     else {
     }
+}
 
+const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabilities(
+        unsigned int number_of_nodes_in_event) {
+    unsigned int n = number_of_nodes_in_event;
+    if (this->split_subset_size_probs_.count(n) > 0) {
+        return this->split_subset_size_probs_.at(n);
+    }
+    double ln_n_factorial = std::lgamma(n + 1);
+    double ln_stirling_num = std::log(stirling2_float(number_of_nodes_in_event, 2));
+    this->split_subset_size_probs_[n];
+    this->split_subset_size_probs_.at(n).reserve(n - 1);
+    for (unsigned int k = 1; k <= n - 1; ++k) {
+        double ln_n_choose_k = ln_n_factorial - std::lgamma(k + 1) - std::lgamma(n - k + 1);
+        double prob_k = std::exp(ln_n_choose_k - ln_stirling_num);
+        this->split_subset_size_probs_.at(n).push_back(prob_k);
+    }
+    return this->split_subset_size_probs_.at(n);
 }

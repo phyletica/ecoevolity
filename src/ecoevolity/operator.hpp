@@ -568,6 +568,11 @@ class ReversibleJumpSampler : public ModelOperator {
 
     using ModelOperator::propose;
 
+    protected:
+        std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
+        void populate_split_subset_size_probabilities(
+                unsigned int number_of_nodes_in_event);
+
     public:
         ReversibleJumpSampler() : ModelOperator() { }
         ReversibleJumpSampler(double weight) : ModelOperator(weight) { }
