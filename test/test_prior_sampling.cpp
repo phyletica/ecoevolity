@@ -5029,11 +5029,11 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPriorX]") {
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
         REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        /* REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01)); */
+        /* REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01)); */
         REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        /* REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01)); */
+        /* REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01)); */
 
         std::vector<int> nevents = prior_sample.get<int>("number_of_events");
         std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
