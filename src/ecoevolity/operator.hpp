@@ -45,7 +45,8 @@ class Operator {
 		enum OperatorTypeEnum {
             tree_operator = 1,
             time_operator = 2,
-            model_operator = 3
+            model_operator = 3,
+            rj_operator = 4
         };
 
         virtual Operator::OperatorTypeEnum get_type() const = 0;
@@ -569,7 +570,8 @@ class ReversibleJumpSampler : public ModelOperator {
     using ModelOperator::propose;
 
     protected:
-        std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
+        std::map<unsigned int, std::vector<long double> > split_subset_size_probs_;
+        std::map<unsigned int, long double> ln_number_of_possible_splits_;
         void populate_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
 
@@ -579,6 +581,8 @@ class ReversibleJumpSampler : public ModelOperator {
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;
+
+        Operator::OperatorTypeEnum get_type() const;
 
         /**
          * @brief   Propose a new state.

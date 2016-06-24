@@ -74,7 +74,6 @@ void ComparisonPopulationTreeCollection::store_state() {
     if (this->using_dpp()) {
         this->concentration_->store();
     }
-    this->stored_node_height_indices_ = this->node_height_indices_;
 }
 void ComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
@@ -85,7 +84,6 @@ void ComparisonPopulationTreeCollection::restore_state() {
     if (this->using_dpp()) {
         this->concentration_->restore();
     }
-    this->node_height_indices_ = this->stored_node_height_indices_;
 }
 
 void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
@@ -255,6 +253,7 @@ void ComparisonPopulationTreeCollection::remap_tree(
         }
     }
 }
+
 void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
         unsigned int height_index,
@@ -590,6 +589,33 @@ void ComparisonPopulationTreeCollection::mcmc(
             }
             this->make_trees_clean();
             op.optimize(this->operator_schedule_, acceptance_probability);
+        }
+        else if (op.get_type() == Operator::OperatorTypeEnum::rj_operator) {
+            for (unsigned int tree_idx = 0;
+                    tree_idx < this->get_number_of_trees();
+                    ++tree_idx) {
+                double hastings_ratio = op.propose(rng, *this);
+                this->compute_log_likelihood_and_prior(true);
+                double likelihood_ratio = 
+                    this->log_likelihood_.get_value() -
+                    this->log_likelihood_.get_stored_value();
+                double prior_ratio = 
+                    this->log_prior_density_.get_value() -
+                    this->log_prior_density_.get_stored_value();
+                double acceptance_probability =
+                        likelihood_ratio + 
+                        prior_ratio +
+                        hastings_ratio;
+                double u = rng.uniform_real();
+                if (u < std::exp(acceptance_probability)) {
+                    op.accept(this->operator_schedule_);
+                }
+                else {
+                    op.reject(this->operator_schedule_, *this);
+                }
+                this->make_trees_clean();
+                op.optimize(this->operator_schedule_, acceptance_probability);
+            }
         }
         else {
             state_log_stream.close();
