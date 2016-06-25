@@ -705,7 +705,6 @@ double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
 
         const bool in_general_state_after = (comparisons.get_number_of_trees() ==
                 comparisons.get_number_of_events());
-        const bool in_shared_state_after = (comparisons.get_number_of_events() == 1);
         // Account for probability of choosing to split
         // This is 1.0 (or zero on log scale) except for these two corner
         // cases:
@@ -769,8 +768,6 @@ double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
             this->ln_number_of_possible_splits_.at(nnodes_in_merged_event) +
             std::log(new_merged_event_height - lower_bound));
 
-    const bool in_general_state_after = (comparisons.get_number_of_trees() ==
-            comparisons.get_number_of_events());
     const bool in_shared_state_after = (comparisons.get_number_of_events() == 1);
     // Account for probability of choosing to merge
     // This is 1.0 (or zero on log scale) except for these two corner
