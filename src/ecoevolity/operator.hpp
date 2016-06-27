@@ -593,7 +593,11 @@ class ReversibleJumpSampler : public ModelOperator {
          *
          * @return  Log of Hastings Ratio.
          */
-        double propose(RandomNumberGenerator& rng,
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons);
+        virtual double propose_jump_to_prior(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons);
+        virtual double propose_jump_to_gap(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons);
 
         void reject_and_restore(const OperatorSchedule& os,
@@ -601,6 +605,23 @@ class ReversibleJumpSampler : public ModelOperator {
 
         const std::vector<double>& get_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
+
+        void write_split_probabilities(std::ostream& out) const {
+            for (auto const & set_size_probs: this->split_subset_size_probs_) {
+                out << "Set size: " << set_size_probs.first << "\n";
+                double ln_ways_to_split = this->ln_number_of_possible_splits_.at(set_size_probs.first);
+                double ways_to_split = std::exp(ln_ways_to_split);
+                out << "\tlog number of ways to split: " << ln_ways_to_split << "\n";
+                out << "\tnumber of ways to split: " << ways_to_split << "\n";
+                out << "\tprobability of split subset sizes:\n";
+                unsigned int split_size = 1;
+                for (auto const & split_size_prob: set_size_probs.second) {
+                    out << "\t\t" << split_size << ": " << split_size_prob << "\n";
+                    ++split_size;
+                }
+            }
+        }
+
 };
 
 #endif
