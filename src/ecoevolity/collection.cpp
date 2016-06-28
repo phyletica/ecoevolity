@@ -67,9 +67,6 @@ void ComparisonPopulationTreeCollection::init_trees(
 void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
-    // TODO: shared height parameters are being stored multiple times below.
-    // This doesn't hurt anything, and probably has little affect on
-    // efficiency.
     for (unsigned int t = 0; t < this->trees_.size(); ++t) {
         this->trees_.at(t).store_state();
     }
@@ -762,9 +759,6 @@ void ComparisonPopulationTreeCollection::mcmc(
 
                 /* std::cout << "State proposed:\n"; */
                 /* this->log_state(std::cout, gen + 1); */
-
-                /* std::cout << "log hastings: " << hastings_ratio << "\n"; */
-                /* std::cout << "hastings: " << std::exp(hastings_ratio) << "\n"; */
 
                 double likelihood_ratio = 
                     this->log_likelihood_.get_value() -
