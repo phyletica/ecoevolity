@@ -637,6 +637,17 @@ double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
 
 double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons) {
+    throw EcoevolityNotImplementedError(
+            "The reversible 'jump to prior' move is currently not "
+            "implemented");
+    // TODO:
+    // This currently only works for an exponential distribution on node
+    // heights (the jacobian needs to be solved for a gamma distribution), and
+    // it seems to have some bad corner cases (e.g., with only two comparisons,
+    // this gets accepted every time).
+    // It needs work/debugging. For now, we will just use the 'jump to gap'
+    // move, which might perform better anyway, especially if the prior on
+    // heights is misspecified.
     const unsigned int nnodes = comparisons.get_number_of_trees();
     const unsigned int nevents = comparisons.get_number_of_events();
     const bool in_general_state_before = (nnodes == nevents);
@@ -670,7 +681,7 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
         comparisons.map_trees_to_new_height(subset_indices, new_height);
 
         // TODO: check this
-        double ln_jacobian = std::log(mean_height) + new_height / mean_height;
+        double ln_jacobian = std::log(mean_height) + (new_height / mean_height);
 
         // The probability of forward split move (just proposed) is the product
         // of the probabilites of
@@ -736,9 +747,9 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
 
     // The probability of the forward merge move is the product of the
     // probability of
-    //   1) randomly selecting the height to merge from among all events
+    //   1) randomly selecting the height to move from among all events
     //          = 1 / (number of events before proposal)
-    //   2) randomly selecting the target to move to
+    //   2) randomly selecting the target to merge with
     //          = 1 / (number of events before proposal - 1)
     // p(forward merge) = 1 / (number of events before proposal * (number of events before proposal - 1))
     //

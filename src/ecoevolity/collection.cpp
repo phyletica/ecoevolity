@@ -779,12 +779,10 @@ void ComparisonPopulationTreeCollection::mcmc(
                 double u = rng.uniform_real();
                 if (u < std::exp(acceptance_probability)) {
                     op.accept(this->operator_schedule_);
-                    /* std::cout << "accept!\n"; */
                 }
                 else {
                     op.reject(this->operator_schedule_);
                     this->restore_model_state();
-                    /* std::cout << "reject!\n"; */
                 }
                 this->make_trees_clean();
                 op.optimize(this->operator_schedule_, acceptance_probability);
