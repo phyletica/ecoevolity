@@ -5002,7 +5002,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPriorX]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "1234";
+        char arg2[] = "29475945";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);

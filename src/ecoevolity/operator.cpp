@@ -632,15 +632,11 @@ Operator::OperatorTypeEnum ReversibleJumpSampler::get_type() const {
 
 double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons) {
-    return this->propose_jump_to_prior(rng, comparisons);
+    return this->propose_jump_to_gap(rng, comparisons);
 }
 
 double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons) {
-
-    comparisons.stored_node_heights_ = comparisons.node_heights_;
-    comparisons.stored_node_height_indices_ = comparisons.node_height_indices_;
-
     const unsigned int nnodes = comparisons.get_number_of_trees();
     const unsigned int nevents = comparisons.get_number_of_events();
     const bool in_general_state_before = (nnodes == nevents);
@@ -744,7 +740,7 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
     //          = 1 / (number of events before proposal)
     //   2) randomly selecting the target to move to
     //          = 1 / (number of events before proposal - 1)
-    // p(reverse merge) = 1 / (number of events before proposal * (number of events before proposal - 1))
+    // p(forward merge) = 1 / (number of events before proposal * (number of events before proposal - 1))
     //
     // The probability of reverse split move is the product of the probabilites of
     //   1) choosing the merged shared event to split
@@ -754,11 +750,11 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
     //          = 1 / (2 * stirling2(n, 2))
     //          = 1 / (2^n - 2)
     // So the prob of the reverse split move is
-    // p(split move) =  1 / (number of shared events after the proposal * (2^n - 2))
+    // p(reverse split move) =  1 / (number of shared events after the proposal * (2^n - 2))
     //                  1 / (number of shared events after the proposal * 2 * stirling2(n, 2))
     //
     // So, the Hasting ratio for the proposed split move is:
-    // p(reverse merge) / p(proposed split) = 
+    // p(reverse split) / p(proposed merge) = 
     //     (number of events after the proposal) * (number of events before proposal - 1)
     //     ------------------------------------------------------------------------------
     //          (number of shared events after the proposal * 2 * stirling2(n, 2))
@@ -784,10 +780,6 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
 
 double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons) {
-
-    comparisons.stored_node_heights_ = comparisons.node_heights_;
-    comparisons.stored_node_height_indices_ = comparisons.node_height_indices_;
-
     const unsigned int nnodes = comparisons.get_number_of_trees();
     const unsigned int nevents = comparisons.get_number_of_events();
     const bool in_general_state_before = (nnodes == nevents);
@@ -954,21 +946,4 @@ const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabil
     }
     ECOEVOLITY_ASSERT_APPROX_EQUAL(total, 1.0);
     return this->split_subset_size_probs_.at(n);
-}
-
-void ReversibleJumpSampler::reject_and_restore(const OperatorSchedule& os,
-        ComparisonPopulationTreeCollection& comparisons) {
-    this->reject(os);
-    comparisons.node_heights_ = comparisons.stored_node_heights_;
-    comparisons.node_height_indices_ = comparisons.stored_node_height_indices_;
-    for (auto const & ht: comparisons.node_heights_) {
-        ht->restore();
-    }
-    for (unsigned int tree_idx = 0;
-         tree_idx < comparisons.get_number_of_trees();
-         ++tree_idx) {
-        comparisons.trees_.at(tree_idx).set_height_parameter(comparisons.get_height_parameter(comparisons.get_height_index(tree_idx)));
-    }
-    comparisons.log_likelihood_.restore();
-    comparisons.log_prior_density_.restore();
 }

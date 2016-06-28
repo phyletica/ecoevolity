@@ -39,7 +39,7 @@ class ComparisonPopulationTreeCollection {
     protected:
         std::vector<ComparisonPopulationTree> trees_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
-        std::vector< std::shared_ptr<PositiveRealParameter> > stored_node_heights_;
+        std::vector<double> stored_node_heights_;
         std::vector<unsigned int> node_height_indices_;
         std::vector<unsigned int> stored_node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
@@ -110,6 +110,8 @@ class ComparisonPopulationTreeCollection {
         virtual ~ComparisonPopulationTreeCollection() { }
         void store_state();
         void restore_state();
+        void store_model_state();
+        void restore_model_state();
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void set_number_of_threads(unsigned int n) {

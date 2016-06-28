@@ -83,10 +83,6 @@ class Operator {
         void accept(const OperatorSchedule& os);
 
         void reject(const OperatorSchedule& os);
-        virtual void reject_and_restore(const OperatorSchedule& os,
-                ComparisonPopulationTreeCollection& comparisons) {
-            this->reject(os);
-        }
 
         unsigned int get_number_rejected() const {
             return this->number_rejected_;
@@ -598,9 +594,6 @@ class ReversibleJumpSampler : public ModelOperator {
         virtual double propose_jump_to_prior(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons);
         virtual double propose_jump_to_gap(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
-
-        void reject_and_restore(const OperatorSchedule& os,
                 ComparisonPopulationTreeCollection& comparisons);
 
         const std::vector<double>& get_split_subset_size_probabilities(
