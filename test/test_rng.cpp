@@ -222,6 +222,28 @@ TEST_CASE("Testing random_string", "[RandomNumberGenerator]") {
     }
 }
 
+TEST_CASE("Testing random_subset_indices 1 from 2", "[RandomNumberGenerator]") {
+    SECTION("Testing random sampling") {
+        unsigned int number_of_elements = 2;
+        unsigned int subset_size = 1;
+        unsigned int nreps = 100000;
+        RandomNumberGenerator rng(872349);
+        std::vector<unsigned int> counts(number_of_elements, 0);
+
+        std::vector<unsigned int> indices;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            indices = rng.random_subset_indices(number_of_elements, subset_size);
+            for (auto const idx: indices) {
+                ++counts.at(idx);
+            }
+        }
+
+        for (auto const cnt: counts) {
+            REQUIRE(cnt / (double)(nreps * subset_size) == Approx(1.0/number_of_elements).epsilon(0.002));
+        }
+    }
+}
+
 TEST_CASE("Testing random_subset_indices 1 from 10", "[RandomNumberGenerator]") {
     SECTION("Testing random sampling") {
         unsigned int number_of_elements = 10;
