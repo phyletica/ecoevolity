@@ -884,7 +884,7 @@ double ComparisonPopulationTree::get_child_population_size(
 }
 
 // Node height sharing needs to be dealt with in next level up in
-// class hierarchy
+// class hierarchy (ComparisonPopulationTreeCollection)
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
     d += this->compute_log_prior_density_of_mutation_rates();
@@ -893,6 +893,20 @@ double ComparisonPopulationTree::compute_log_prior_density() {
     d += this->compute_log_prior_density_of_coalescence_rates();
     this->log_prior_density_.set_value(d);
     return d;
+}
+
+// Node height (re)storing is managed by ComparisonPopulationTree.
+void ComparisonPopulationTree::store_parameters() {
+    this->store_u();
+    this->store_node_height_multiplier();
+    this->store_all_coalescence_rates();
+    // this->store_all_heights();
+}
+void ComparisonPopulationTree::restore_parameters() {
+    this->restore_u();
+    this->restore_node_height_multiplier();
+    this->restore_all_coalescence_rates();
+    // this->restore_all_heights();
 }
 
 void ComparisonPopulationTree::write_state_log_header(

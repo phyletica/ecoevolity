@@ -4594,7 +4594,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
 }
 
 TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
-        "[SamplingPriorX]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing nthreads 2") {
         double height_shape = 10.0;
@@ -4919,6 +4919,950 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
 
         REQUIRE((model_counts.at("000") / (double)expected_sample_size) == Approx(0.367).epsilon(0.01));
         REQUIRE((model_counts.at("012") / (double)expected_sample_size) == Approx(0.163).epsilon(0.01));
+
+        // Make sure the rest of the prior sample is as expected
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
+
+    SECTION("Testing rjMCMC with 2 pairs") {
+        double height_shape = 10.0;
+        double height_scale = 0.1;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 100000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: true\n";
+        os << "    constrain_mutation_rates: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        u_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "29475945";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = 10001;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        std::vector<int> nevents = prior_sample.get<int>("number_of_events");
+        std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
+        std::vector<int> event_indices2 = prior_sample.get<int>("root_height_index_pop1");
+        std::vector<double> heights1 = prior_sample.get<double>("root_height_kya");
+        std::vector<double> heights2 = prior_sample.get<double>("root_height_pop1");
+
+        int nshared = 0;
+        int total = 0;
+        for (size_t i = 0; i < nevents.size(); ++i) {
+            REQUIRE((nevents.at(i) == 1 || nevents.at(i) == 2));
+            REQUIRE((event_indices1.at(i) == 0 || event_indices1.at(i) == 1));
+            REQUIRE((event_indices2.at(i) == 0 || event_indices2.at(i) == 1));
+            if (nevents.at(i) == 1) {
+                ++nshared;
+                REQUIRE(event_indices1.at(i) == event_indices2.at(i));
+                REQUIRE(heights1.at(i) == heights2.at(i));
+            }
+            else {
+                REQUIRE(event_indices1.at(i) != event_indices2.at(i));
+                REQUIRE(heights1.at(i) != heights2.at(i));
+            }
+            ++total;
+        }
+        REQUIRE(total == expected_sample_size);
+        REQUIRE((nshared / (double)expected_sample_size) == Approx(0.5).epsilon(0.01));
+
+        // Make sure the rest of the prior sample is as expected
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
+
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "ln_prior_pop1",
+                "number_of_events",
+                "root_height_kya",
+                "root_height_pop1",
+                "root_height_index_kya",
+                "root_height_index_pop1"
+        };
+        SampleSummarizer<double> summary;
+        for (auto const &kv: prior_sample.data) {
+            bool test = true;
+            for (auto const &p: columns_to_ignore) {
+                if (kv.first == p) {
+                    test = false;
+                }
+            }
+            if (test) {
+                summary = prior_sample.summarize<double>(kv.first);
+                REQUIRE(summary.variance() == 0.0);
+            }
+        }
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
+
+    SECTION("Testing rjMCMC with 3 pairs") {
+        double height_shape = 10.0;
+        double height_scale = 0.1;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 100000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: true\n";
+        os << "    constrain_mutation_rates: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        u_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "1234";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = 10001;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        std::vector<int> nevents = prior_sample.get<int>("number_of_events");
+        std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
+        std::vector<int> event_indices2 = prior_sample.get<int>("root_height_index_pop1");
+        std::vector<int> event_indices3 = prior_sample.get<int>("root_height_index_pop1b");
+        std::vector<double> heights1 = prior_sample.get<double>("root_height_kya");
+        std::vector<double> heights2 = prior_sample.get<double>("root_height_pop1");
+        std::vector<double> heights3 = prior_sample.get<double>("root_height_pop1b");
+
+        std::map<std::string, int> model_counts = {
+                {"000", 0},
+                {"001", 0},
+                {"010", 0},
+                {"011", 0},
+                {"012", 0}
+        };
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0}
+        };
+        for (size_t i = 0; i < nevents.size(); ++i) {
+            std::ostringstream stream;
+            stream << event_indices1.at(i);
+            stream << event_indices2.at(i);
+            stream << event_indices3.at(i);
+            std::string model_str = stream.str();
+            REQUIRE(model_counts.count(model_str) == 1);
+            REQUIRE(nevent_counts.count(nevents.at(i)) == 1);
+            ++model_counts[model_str];
+            ++nevent_counts[nevents.at(i)];
+            if (nevents.at(i) == 1) {
+                REQUIRE(event_indices1.at(i) == event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices3.at(i));
+                REQUIRE(heights1.at(i) == heights2.at(i));
+                REQUIRE(heights1.at(i) == heights3.at(i));
+            }
+            else if (nevents.at(i) == 3) {
+                REQUIRE(event_indices1.at(i) != event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices3.at(i));
+                REQUIRE(heights1.at(i) != heights2.at(i));
+                REQUIRE(heights1.at(i) != heights3.at(i));
+                REQUIRE(heights2.at(i) != heights3.at(i));
+            }
+        }
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+
+        for (std::string m: {"000", "001", "010", "011", "012"}) {
+            REQUIRE((model_counts.at(m) / (double)expected_sample_size) == Approx(1.0/model_counts.size()).epsilon(0.01));
+        }
+
+        // Make sure the rest of the prior sample is as expected
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
+
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "ln_prior",
+                "ln_prior_kya",
+                "ln_prior_pop1",
+                "number_of_events",
+                "root_height_kya",
+                "root_height_pop1",
+                "root_height_pop1b",
+                "root_height_index_kya",
+                "root_height_index_pop1",
+                "root_height_index_pop1b"
+        };
+        SampleSummarizer<double> summary;
+        for (auto const &kv: prior_sample.data) {
+            bool test = true;
+            for (auto const &p: columns_to_ignore) {
+                if (kv.first == p) {
+                    test = false;
+                }
+            }
+            if (test) {
+                summary = prior_sample.summarize<double>(kv.first);
+                REQUIRE(summary.variance() == 0.0);
+            }
+        }
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
+
+    SECTION("Testing rjMCMC with 6 pairs") {
+        double height_shape = 10.0;
+        double height_scale = 0.1;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 1000000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: true\n";
+        os << "    constrain_mutation_rates: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        u_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname5.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "1234";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = 100001;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
+        SampleSummarizer<double> height_summary4 = prior_sample.summarize<double>("root_height_pop1c");
+        SampleSummarizer<double> height_summary5 = prior_sample.summarize<double>("root_height_pop1d");
+        SampleSummarizer<double> height_summary6 = prior_sample.summarize<double>("root_height_pop1e");
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary4.sample_size() == expected_sample_size);
+        REQUIRE(height_summary4.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.sample_size() == expected_sample_size);
+        REQUIRE(height_summary5.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.sample_size() == expected_sample_size);
+        REQUIRE(height_summary6.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+
+        std::vector<int> nevents = prior_sample.get<int>("number_of_events");
+        std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
+        std::vector<int> event_indices2 = prior_sample.get<int>("root_height_index_pop1");
+        std::vector<int> event_indices3 = prior_sample.get<int>("root_height_index_pop1b");
+        std::vector<int> event_indices4 = prior_sample.get<int>("root_height_index_pop1c");
+        std::vector<int> event_indices5 = prior_sample.get<int>("root_height_index_pop1d");
+        std::vector<int> event_indices6 = prior_sample.get<int>("root_height_index_pop1e");
+        std::vector<double> heights1 = prior_sample.get<double>("root_height_kya");
+        std::vector<double> heights2 = prior_sample.get<double>("root_height_pop1");
+        std::vector<double> heights3 = prior_sample.get<double>("root_height_pop1b");
+        std::vector<double> heights4 = prior_sample.get<double>("root_height_pop1c");
+        std::vector<double> heights5 = prior_sample.get<double>("root_height_pop1d");
+        std::vector<double> heights6 = prior_sample.get<double>("root_height_pop1e");
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0},
+                {4, 0},
+                {5, 0},
+                {6, 0}
+        };
+        for (size_t i = 0; i < nevents.size(); ++i) {
+            std::ostringstream stream;
+            stream << event_indices1.at(i);
+            stream << event_indices2.at(i);
+            stream << event_indices3.at(i);
+            stream << event_indices4.at(i);
+            stream << event_indices5.at(i);
+            stream << event_indices6.at(i);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            REQUIRE(nevent_counts.count(nevents.at(i)) == 1);
+            ++nevent_counts[nevents.at(i)];
+            if (nevents.at(i) == 1) {
+                REQUIRE(event_indices1.at(i) == event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices3.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices4.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices5.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices6.at(i));
+                REQUIRE(heights1.at(i) == heights2.at(i));
+                REQUIRE(heights1.at(i) == heights3.at(i));
+                REQUIRE(heights1.at(i) == heights4.at(i));
+                REQUIRE(heights1.at(i) == heights5.at(i));
+                REQUIRE(heights1.at(i) == heights6.at(i));
+            }
+            else if (nevents.at(i) == 6) {
+                REQUIRE(event_indices1.at(i) != event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices4.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices4.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices3.at(i) != event_indices4.at(i));
+                REQUIRE(event_indices3.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices3.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices4.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices4.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices5.at(i) != event_indices6.at(i));
+                REQUIRE(heights1.at(i) != heights2.at(i));
+                REQUIRE(heights1.at(i) != heights3.at(i));
+                REQUIRE(heights1.at(i) != heights4.at(i));
+                REQUIRE(heights1.at(i) != heights5.at(i));
+                REQUIRE(heights1.at(i) != heights6.at(i));
+                REQUIRE(heights2.at(i) != heights3.at(i));
+                REQUIRE(heights2.at(i) != heights4.at(i));
+                REQUIRE(heights2.at(i) != heights5.at(i));
+                REQUIRE(heights2.at(i) != heights6.at(i));
+                REQUIRE(heights3.at(i) != heights4.at(i));
+                REQUIRE(heights3.at(i) != heights5.at(i));
+                REQUIRE(heights3.at(i) != heights6.at(i));
+                REQUIRE(heights4.at(i) != heights5.at(i));
+                REQUIRE(heights4.at(i) != heights6.at(i));
+                REQUIRE(heights5.at(i) != heights6.at(i));
+            }
+        }
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+
+        REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
+
+        for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
+            REQUIRE((model_counts.at(m) / (double)expected_sample_size) == Approx(1.0/bell_float(6)).epsilon(0.002));
+        }
+        for (auto const & kv: nevent_counts) {
+            REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(6, kv.first)/bell_float(6)).epsilon(0.002));
+        }
+
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[SamplingPrior]") {
+
+    SECTION("Testing rjMCMC with 3 pairs") {
+        double height_shape = 10.0;
+        double height_scale = 0.001;
+        double size1_shape = 10.0;
+        double size1_scale = 0.0001;
+        double size2_shape = 2.0;
+        double size2_scale = 0.001;
+        double size3_shape = 5.0;
+        double size3_scale = 0.0005;
+        double u1_shape = 2.0;
+        double u1_scale = 1.0;
+        double u1_offset = 0.5;
+        double u2_shape = 1.0;
+        double u2_scale = 0.5;
+        double u2_offset = 0.5;
+        double u3_shape = 2.0;
+        double u3_scale = 1.5;
+        double u3_offset = 0.5;
+        double mult2_shape = 100.0;
+        double mult2_scale = 0.005;
+        double mult3_shape = 100.0;
+        double mult3_scale = 0.02;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 2000000\n";
+        os << "    sample_frequency: 100\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    constrain_population_sizes: false\n";
+        os << "    constrain_mutation_rates: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size1_shape << "\n";
+        os << "                    scale: " << size1_scale << "\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << u1_shape << "\n";
+        os << "                    scale: " << u1_scale << "\n";
+        os << "                    offset: " << u1_offset << "\n";
+        os << "        time_multiplier:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size2_shape << "\n";
+        os << "                    scale: " << size2_scale << "\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << u2_shape << "\n";
+        os << "                    scale: " << u2_scale << "\n";
+        os << "                    offset: " << u2_offset << "\n";
+        os << "        time_multiplier:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult2_shape << "\n";
+        os << "                    scale: " << mult2_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size3_shape << "\n";
+        os << "                    scale: " << size3_scale << "\n";
+        os << "        u_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << u3_shape << "\n";
+        os << "                    scale: " << u3_scale << "\n";
+        os << "                    offset: " << u3_offset << "\n";
+        os << "        time_multiplier:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult3_shape << "\n";
+        os << "                    scale: " << mult3_scale << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "243897222";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = 20001;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        SampleSummarizer<double> size1_summary_a = prior_sample.summarize<double>("pop_size_kya");
+        SampleSummarizer<double> size1_summary_b = prior_sample.summarize<double>("pop_size_fas");
+        SampleSummarizer<double> size1_summary_c = prior_sample.summarize<double>("pop_size_root_kya");
+        SampleSummarizer<double> size2_summary_a = prior_sample.summarize<double>("pop_size_pop1");
+        SampleSummarizer<double> size2_summary_b = prior_sample.summarize<double>("pop_size_pop2");
+        SampleSummarizer<double> size2_summary_c = prior_sample.summarize<double>("pop_size_root_pop1");
+        SampleSummarizer<double> size3_summary_a = prior_sample.summarize<double>("pop_size_pop1b");
+        SampleSummarizer<double> size3_summary_b = prior_sample.summarize<double>("pop_size_pop2b");
+        SampleSummarizer<double> size3_summary_c = prior_sample.summarize<double>("pop_size_root_pop1b");
+
+        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        SampleSummarizer<double> u1_summary = prior_sample.summarize<double>("u_kya");
+        SampleSummarizer<double> u2_summary = prior_sample.summarize<double>("u_pop1");
+        SampleSummarizer<double> u3_summary = prior_sample.summarize<double>("u_pop1b");
+        REQUIRE(u1_summary.sample_size() == expected_sample_size);
+        REQUIRE(u2_summary.sample_size() == expected_sample_size);
+        REQUIRE(u3_summary.sample_size() == expected_sample_size);
+        REQUIRE(u1_summary.mean() ==     Approx((u1_shape * u1_scale) + u1_offset).epsilon(0.01));
+        REQUIRE(u2_summary.mean() ==     Approx((u2_shape * u2_scale) + u2_offset).epsilon(0.01));
+        REQUIRE(u3_summary.mean() ==     Approx((u3_shape * u3_scale) + u3_offset).epsilon(0.01));
+        REQUIRE(u1_summary.variance() == Approx(u1_shape * u1_scale * u1_scale).epsilon(0.01));
+        REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.01));
+        REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.01));
+
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("time_multiplier_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("time_multiplier_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("time_multiplier_pop1b");
+        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult1_summary.mean() == 1.0);
+        REQUIRE(mult1_summary.variance() == 0.0);
+        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
+        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
+
+        REQUIRE_THROWS(prior_sample.summarize<double>("concentration"));
+
+        std::vector<int> nevents = prior_sample.get<int>("number_of_events");
+        std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
+        std::vector<int> event_indices2 = prior_sample.get<int>("root_height_index_pop1");
+        std::vector<int> event_indices3 = prior_sample.get<int>("root_height_index_pop1b");
+        std::vector<double> heights1 = prior_sample.get<double>("root_height_kya");
+        std::vector<double> heights2 = prior_sample.get<double>("root_height_pop1");
+        std::vector<double> heights3 = prior_sample.get<double>("root_height_pop1b");
+
+        std::map<std::string, int> model_counts = {
+                {"000", 0},
+                {"001", 0},
+                {"010", 0},
+                {"011", 0},
+                {"012", 0}
+        };
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0}
+        };
+        for (size_t i = 0; i < nevents.size(); ++i) {
+            std::ostringstream stream;
+            stream << event_indices1.at(i);
+            stream << event_indices2.at(i);
+            stream << event_indices3.at(i);
+            std::string model_str = stream.str();
+            REQUIRE(model_counts.count(model_str) == 1);
+            REQUIRE(nevent_counts.count(nevents.at(i)) == 1);
+            ++model_counts[model_str];
+            ++nevent_counts[nevents.at(i)];
+            if (nevents.at(i) == 1) {
+                REQUIRE(event_indices1.at(i) == event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices3.at(i));
+                REQUIRE(heights1.at(i) == heights2.at(i));
+                REQUIRE(heights1.at(i) == heights3.at(i));
+            }
+            else if (nevents.at(i) == 3) {
+                REQUIRE(event_indices1.at(i) != event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices3.at(i));
+                REQUIRE(heights1.at(i) != heights2.at(i));
+                REQUIRE(heights1.at(i) != heights3.at(i));
+                REQUIRE(heights2.at(i) != heights3.at(i));
+            }
+        }
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)expected_sample_size) == Approx(1.0/bell_float(3)).epsilon(0.005));
+        }
+        for (auto const & kv: nevent_counts) {
+            REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.002));
+        }
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");

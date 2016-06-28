@@ -217,4 +217,21 @@ inline long double stirling2_float(int n, int k) {
     return stirling2_base<long double>(n, k);
 }
 
+template <typename T>
+inline T bell_number_base(int n) {
+    T b = 0;
+    for (int i = 0; i < n; ++i) {
+        b += stirling2_base<T>(n, (i + 1));
+    }
+    return b;
+}
+
+inline unsigned long long bell_number(int n) {
+    return bell_number_base<unsigned long long>(n);
+}
+
+inline long double bell_float(int n) {
+    return bell_number_base<long double>(n);
+}
+
 #endif

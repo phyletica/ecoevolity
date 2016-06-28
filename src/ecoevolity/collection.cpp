@@ -34,6 +34,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
             settings.get_operator_schedule_settings(),
             settings.using_dpp());
     this->init_trees(settings.get_comparison_settings(), rng);
+    this->stored_node_heights_.reserve(this->trees_.size());
+    this->stored_node_height_indices_.reserve(this->trees_.size());
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -65,8 +67,11 @@ void ComparisonPopulationTreeCollection::init_trees(
 void ComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
-    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        this->trees_.at(i).store_state();
+    for (unsigned int t = 0; t < this->trees_.size(); ++t) {
+        this->trees_.at(t).store_state();
+    }
+    for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
+        this->node_heights_.at(h)->store();
     }
     if (this->using_dpp()) {
         this->concentration_->store();
@@ -75,13 +80,61 @@ void ComparisonPopulationTreeCollection::store_state() {
 void ComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
-    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        this->trees_.at(i).restore_state();
+    for (unsigned int t = 0; t < this->trees_.size(); ++t) {
+        this->trees_.at(t).restore_state();
+    }
+    for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
+        this->node_heights_.at(h)->restore();
     }
     if (this->using_dpp()) {
         this->concentration_->restore();
     }
 }
+
+void ComparisonPopulationTreeCollection::store_model_state() {
+    this->log_likelihood_.store();
+    this->log_prior_density_.store();
+    this->stored_node_heights_.resize(this->get_number_of_events());
+    for (unsigned int h_idx = 0;
+            h_idx < this->get_number_of_events();
+            ++h_idx) {
+        this->stored_node_heights_.at(h_idx) = this->get_height(h_idx);
+    }
+    this->stored_node_height_indices_ = this->node_height_indices_;
+}
+
+void ComparisonPopulationTreeCollection::restore_model_state() {
+    ECOEVOLITY_ASSERT(
+            (this->node_heights_.size() <= this->stored_node_heights_.size() + 1)
+            &&
+            (this->node_heights_.size() >= this->stored_node_heights_.size() - 1)
+            );
+    this->log_likelihood_.restore();
+    this->log_prior_density_.restore();
+    if (this->node_heights_.size() < this->stored_node_heights_.size()) {
+        this->node_heights_.push_back(
+                std::make_shared<PositiveRealParameter>(
+                    this->node_height_prior_));
+    }
+    else if (this->node_heights_.size() > this->stored_node_heights_.size()){
+        this->node_heights_.pop_back();
+    }
+    for (unsigned int h_idx = 0;
+            h_idx < this->stored_node_heights_.size();
+            ++h_idx) {
+        this->node_heights_.at(h_idx)->set_value(
+                this->stored_node_heights_.at(h_idx));
+        this->node_heights_.at(h_idx)->store();
+    }
+    for (unsigned int t_idx = 0;
+            t_idx < this->get_number_of_trees();
+            ++t_idx) {
+        unsigned int orig_index = this->stored_node_height_indices_.at(t_idx);
+        this->node_height_indices_.at(t_idx) = orig_index;
+        this->trees_.at(t_idx).set_height_parameter(this->node_heights_.at(orig_index));
+    }
+}
+
 void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
     double lnl = 0.0;
     double lnp = 0.0;
@@ -183,6 +236,77 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_standardized_h
     return standardized_indices;
 }
 
+unsigned int ComparisonPopulationTreeCollection::get_largest_height_index() const {
+    unsigned int current_ht_idx = 0;
+    for (unsigned int h_idx = 1;
+            h_idx < this->get_number_of_events();
+            ++h_idx) {
+        if (this->get_height(h_idx) > this->get_height(current_ht_idx)) {
+            current_ht_idx = h_idx;
+        }
+    }
+    return current_ht_idx;
+}
+
+std::vector<unsigned int> ComparisonPopulationTreeCollection::get_height_indices_sans_largest() const {
+    std::vector<unsigned int> indices;
+    indices.reserve(this->get_number_of_events() - 1);
+    unsigned int largest_height_index = this->get_largest_height_index();
+    for (unsigned int i = 0; i < this->get_number_of_events(); ++i) {
+        if (i != largest_height_index) {
+            indices.push_back(i);
+        }
+    }
+    return indices;
+}
+
+double ComparisonPopulationTreeCollection::get_nearest_smaller_height(
+        unsigned int height_index) const {
+    double nearest_smaller_height = 0.0;
+    double ref_height = this->get_height(height_index);
+    for (unsigned int h_idx = 0; h_idx < this->node_heights_.size(); ++h_idx) {
+        if (h_idx == height_index) {
+            continue;
+        }
+        double candidate_height = this->get_height(h_idx);
+        if (candidate_height > ref_height) {
+            continue;
+        }
+        if ((ref_height - candidate_height) < (ref_height - nearest_smaller_height)) {
+            nearest_smaller_height = candidate_height;
+        }
+    }
+    return nearest_smaller_height;
+}
+
+unsigned int ComparisonPopulationTreeCollection::get_nearest_larger_height_index(
+        unsigned int height_index) const {
+    double ref_height = this->get_height(height_index);
+    double nearest_larger_height = std::numeric_limits<double>::max();
+    int current_nearest_idx = -1;
+    for (unsigned int h_idx = 0;
+            h_idx < this->get_number_of_events();
+            ++h_idx) {
+        if (h_idx == height_index) {
+            continue;
+        }
+        double candidate_height = this->get_height(h_idx);
+        if (candidate_height < ref_height) {
+            continue;
+        }
+        if ((candidate_height - ref_height) < (nearest_larger_height - ref_height)) {
+            nearest_larger_height = candidate_height;
+            current_nearest_idx = h_idx;
+        }
+    }
+    if (current_nearest_idx < 0) {
+        throw EcoevolityError(
+                "ComparisonPopulationTreeCollection::get_nearest_larger_height_index "
+                "was called with largest height index");
+    }
+    return current_nearest_idx;
+}
+
 unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
         unsigned int height_index) const {
     unsigned int count = 0;
@@ -214,6 +338,19 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_other_height_i
     return others;
 }
 
+std::vector<unsigned int> ComparisonPopulationTreeCollection::get_indices_of_mapped_trees(
+        unsigned int height_index) const {
+    std::vector<unsigned int> indices;
+    for (unsigned int tree_idx = 0;
+            tree_idx < this->get_number_of_trees();
+            ++tree_idx) {
+        if (this->get_height_index(tree_idx) == height_index) {
+            indices.push_back(tree_idx);
+        }
+    }
+    return indices;
+}
+
 unsigned int ComparisonPopulationTreeCollection::get_number_of_partners(
         unsigned int tree_index) const {
     unsigned int h_index = this->node_height_indices_.at(tree_index);
@@ -237,8 +374,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_shared_event_i
 
 void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
-        unsigned int height_index,
-        double log_likelihood) {
+        unsigned int height_index) {
     if (! (this->get_height_index(tree_index) == height_index)) {
         unsigned int num_partners = this->get_number_of_partners(tree_index);
         unsigned int old_height_index = this->get_height_index(tree_index);
@@ -249,14 +385,33 @@ void ComparisonPopulationTreeCollection::remap_tree(
             this->remove_height(old_height_index);
         }
     }
+}
+
+void ComparisonPopulationTreeCollection::remap_tree(
+        unsigned int tree_index,
+        unsigned int height_index,
+        double log_likelihood) {
+    this->remap_tree(tree_index, height_index);
     this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
     this->trees_.at(tree_index).make_clean();
 }
 
+unsigned int ComparisonPopulationTreeCollection::remap_trees(
+        const std::vector<unsigned int>& tree_indices,
+        unsigned int height_index) {
+    ECOEVOLITY_ASSERT(tree_indices.size() > 0);
+    unsigned int current_target_index = height_index;
+    for (auto const tree_idx: tree_indices) {
+        this->remap_tree(tree_idx, current_target_index);
+        // unsigned int current_target_index = this->get_height_index(tree_indices.at(0));
+        current_target_index = this->get_height_index(tree_idx);
+    }
+    return current_target_index;
+}
+
 void ComparisonPopulationTreeCollection::map_tree_to_new_height(
         unsigned int tree_index,
-        double height,
-        double log_likelihood) {
+        double height) {
     unsigned int num_partners = this->get_number_of_partners(tree_index);
     unsigned int old_height_index = this->get_height_index(tree_index);
     std::vector<unsigned int> mapped_tree_indices = {tree_index};
@@ -264,14 +419,41 @@ void ComparisonPopulationTreeCollection::map_tree_to_new_height(
     if (num_partners == 0) {
         this->remove_height(old_height_index);
     }
+}
+
+void ComparisonPopulationTreeCollection::map_tree_to_new_height(
+        unsigned int tree_index,
+        double height,
+        double log_likelihood) {
+    this->map_tree_to_new_height(tree_index, height);
     this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
     this->trees_.at(tree_index).make_clean();
+}
+
+unsigned int ComparisonPopulationTreeCollection::map_trees_to_new_height(
+        const std::vector<unsigned int>& tree_indices,
+        double height) {
+    ECOEVOLITY_ASSERT(tree_indices.size() > 0);
+    this->map_tree_to_new_height(tree_indices.at(0), height);
+    unsigned int new_height_index = this->get_height_index(tree_indices.at(0));
+    for (unsigned int i = 1; i < tree_indices.size(); ++i) {
+        this->remap_tree(tree_indices.at(i), new_height_index);
+    }
+    return new_height_index;
+}
+
+unsigned int ComparisonPopulationTreeCollection::merge_height(
+        unsigned int height_index,
+        unsigned int target_height_index) {
+    std::vector<unsigned int> mapped_trees = this->get_indices_of_mapped_trees(height_index);
+    unsigned int final_index = this->remap_trees(mapped_trees, target_height_index);
+    return final_index;
 }
 
 void ComparisonPopulationTreeCollection::remove_height(
         unsigned int height_index) {
     ECOEVOLITY_ASSERT(this->get_number_of_trees_mapped_to_height(height_index) == 0);
-    ECOEVOLITY_ASSERT(this->node_heights_.at(height_index).use_count() < 2);
+    // ECOEVOLITY_ASSERT(this->node_heights_.at(height_index).use_count() < 2);
     this->node_heights_.erase(this->node_heights_.begin() + height_index);
     for (unsigned int i = 0; i < this->node_height_indices_.size(); ++i) {
         ECOEVOLITY_ASSERT(this->node_height_indices_.at(i) != height_index);
@@ -556,11 +738,53 @@ void ComparisonPopulationTreeCollection::mcmc(
                 op.accept(this->operator_schedule_);
             }
             else {
+                ECOEVOLITY_ASSERT(op.get_name() != "DirichletProcessGibbsSampler");
                 op.reject(this->operator_schedule_);
                 this->restore_state();
             }
             this->make_trees_clean();
             op.optimize(this->operator_schedule_, acceptance_probability);
+        }
+        else if (op.get_type() == Operator::OperatorTypeEnum::rj_operator) {
+            for (unsigned int tree_idx = 0;
+                    tree_idx < this->get_number_of_trees();
+                    ++tree_idx) {
+
+                /* std::cout << "State before RJ:\n"; */
+                /* this->log_state(std::cout, gen + 1); */
+
+                this->store_model_state();
+                double hastings_ratio = op.propose(rng, *this);
+                this->compute_log_likelihood_and_prior(true);
+
+                /* std::cout << "State proposed:\n"; */
+                /* this->log_state(std::cout, gen + 1); */
+
+                double likelihood_ratio = 
+                    this->log_likelihood_.get_value() -
+                    this->log_likelihood_.get_stored_value();
+                double prior_ratio = 
+                    this->log_prior_density_.get_value() -
+                    this->log_prior_density_.get_stored_value();
+                double acceptance_probability =
+                        likelihood_ratio + 
+                        prior_ratio +
+                        hastings_ratio;
+                double u = rng.uniform_real();
+                if (u < std::exp(acceptance_probability)) {
+                    op.accept(this->operator_schedule_);
+                }
+                else {
+                    op.reject(this->operator_schedule_);
+                    this->restore_model_state();
+                }
+                this->make_trees_clean();
+                op.optimize(this->operator_schedule_, acceptance_probability);
+
+                /* std::cout << "State after RJ:\n"; */
+                /* this->log_state(std::cout, gen + 1); */
+
+            }
         }
         else {
             state_log_stream.close();

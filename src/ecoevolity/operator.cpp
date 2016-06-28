@@ -262,7 +262,7 @@ Operator::OperatorTypeEnum ConcentrationScaler::get_type() const {
 }
 
 double ConcentrationScaler::propose(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) const {
+        ComparisonPopulationTreeCollection& comparisons) {
     double v = comparisons.get_concentration();
     double hastings;
     this->update(rng, v, hastings);
@@ -544,7 +544,7 @@ std::string DirichletProcessGibbsSampler::get_name() const {
 }
 
 double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) const {
+        ComparisonPopulationTreeCollection& comparisons) {
 
     const double ln_concentration_over_num_aux = std::log(
             comparisons.get_concentration() /
@@ -626,23 +626,335 @@ std::string ReversibleJumpSampler::get_name() const {
     return "ReversibleJumpSampler";
 }
 
-double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) const {
-    throw EcoevolityNotImplementedError("rjMCMC not implemented yet");
+Operator::OperatorTypeEnum ReversibleJumpSampler::get_type() const {
+    return Operator::OperatorTypeEnum::rj_operator;
+}
 
-    const int nnodes = comparisons.get_number_of_trees();
-    const int nevents = comparisons.get_number_of_events();
-    const bool in_general_state = (nnodes == nevents);
-    const bool in_shared_state = (nevents == 1);
-    const bool add_event = ((! in_general_state) &&
-            (in_shared_state || (rng.uniform_real() < 0.5)));
-    if (add_event) {
+double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons) {
+    return this->propose_jump_to_gap(rng, comparisons);
+}
+
+double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons) {
+    throw EcoevolityNotImplementedError(
+            "The reversible 'jump to prior' move is currently not "
+            "implemented");
+    // TODO:
+    // This currently only works for an exponential distribution on node
+    // heights (the jacobian needs to be solved for a gamma distribution), and
+    // it seems to have some bad corner cases (e.g., with only two comparisons,
+    // this gets accepted every time).
+    // It needs work/debugging. For now, we will just use the 'jump to gap'
+    // move, which might perform better anyway, especially if the prior on
+    // heights is misspecified.
+    const unsigned int nnodes = comparisons.get_number_of_trees();
+    const unsigned int nevents = comparisons.get_number_of_events();
+    const bool in_general_state_before = (nnodes == nevents);
+    const bool in_shared_state_before = (nevents == 1);
+    const bool split_event = ((! in_general_state_before) &&
+            (in_shared_state_before || (rng.uniform_real() < 0.5)));
+    double mean_height = comparisons.node_height_prior_->get_mean();
+    if (split_event) {
         std::vector<unsigned int> shared_indices =
                 comparisons.get_shared_event_indices();
         unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
         unsigned int event_index = shared_indices.at(i);
-    }
-    else {
-    }
+        double new_height = comparisons.node_height_prior_->draw(rng);
 
+        std::vector<unsigned int> tree_indices = comparisons.get_indices_of_mapped_trees(event_index);
+        unsigned int num_mapped_nodes = tree_indices.size();
+        const std::vector<double>& split_size_probs = 
+                this->get_split_subset_size_probabilities(num_mapped_nodes);
+
+        unsigned int subset_size = rng.weighted_index(split_size_probs) + 1;
+        ECOEVOLITY_ASSERT((subset_size > 0) && (subset_size < num_mapped_nodes));
+
+        std::vector<unsigned int> random_indices = rng.random_subset_indices(
+                num_mapped_nodes,
+                subset_size);
+        std::vector<unsigned int> subset_indices;
+        subset_indices.reserve(subset_size);
+        for (auto const random_idx: random_indices) {
+            subset_indices.push_back(tree_indices.at(random_idx));
+        }
+        comparisons.map_trees_to_new_height(subset_indices, new_height);
+
+        // TODO: check this
+        double ln_jacobian = std::log(mean_height) + (new_height / mean_height);
+
+        // The probability of forward split move (just proposed) is the product
+        // of the probabilites of
+        //   1) choosing the shared event to split
+        //          = 1 / number of shared events
+        //   2) randomly splitting the subset out of the 'n' nodes sharing the event
+        //          = 1 / (2 * stirling2(n, 2))
+        //          = 1 / (2^n - 2)
+        // So the prob of the forward split move is
+        // p(split move) =  1 / (number of shared events * (2^n - 2))
+        //                  1 / (number of shared events * 2 * stirling2(n, 2))
+        //
+        // The probability of the reverse move is the product of the
+        // probability of
+        //   1) randomly selecting the proposed (split) event from among all events.
+        //          = 1 / (number of events before proposal + 1)
+        //          = 1 / (number of events after the proposal)
+        //   2) randomly selecting the correct target to which to merge
+        //          = 1 / (number of events before the proposal)
+        //          = 1 / (number of events after the proposal - 1)
+        //
+        // So, the Hasting ratio for the proposed split move is:
+        // p(reverse merge) / p(proposed split) = 
+        //                 (number of shared events * 2 * stirling2(n, 2))
+        //    ----------------------------------------------------------------------------
+        //    (number of events after the proposal * number of events before the proposal)
+        double ln_hastings =
+                this->ln_number_of_possible_splits_.at(num_mapped_nodes) +
+                std::log(shared_indices.size()) -
+                (std::log(nevents + 1) + std::log(nevents));
+
+        const bool in_general_state_after = (comparisons.get_number_of_trees() ==
+                comparisons.get_number_of_events());
+        // Account for probability of choosing to split
+        // This is 1.0 (or zero on log scale) except for these two corner
+        // cases:
+        if (in_shared_state_before && (! in_general_state_after)) {
+            ln_hastings -= std::log(2.0);
+        }
+        else if (in_general_state_after && (! in_shared_state_before)) {
+            ln_hastings += std::log(2.0);
+        }
+        return ln_hastings + ln_jacobian;
+    }
+    // Merge move
+    std::vector<unsigned int> height_indices =  rng.random_subset_indices(nevents, 2);
+    unsigned int move_height_index = height_indices.at(0);
+    unsigned int target_height_index = height_indices.at(1);
+    if (rng.uniform_real() < 0.5) {
+        move_height_index = height_indices.at(1);
+        target_height_index = height_indices.at(0);
+    }
+    double removed_height = comparisons.get_height(move_height_index);
+    unsigned int new_merged_event_index = comparisons.merge_height(move_height_index, target_height_index);
+    unsigned int nnodes_in_merged_event = comparisons.get_number_of_trees_mapped_to_height(new_merged_event_index);
+    // Don't need the returned probability vector, but need to make sure we
+    // update the stored number of ways to make the reverse split of this
+    // number of nodes.
+    this->get_split_subset_size_probabilities(nnodes_in_merged_event);
+
+    // TODO: check this
+    double ln_jacobian = -removed_height / mean_height - std::log(mean_height);
+
+    // The probability of the forward merge move is the product of the
+    // probability of
+    //   1) randomly selecting the height to move from among all events
+    //          = 1 / (number of events before proposal)
+    //   2) randomly selecting the target to merge with
+    //          = 1 / (number of events before proposal - 1)
+    // p(forward merge) = 1 / (number of events before proposal * (number of events before proposal - 1))
+    //
+    // The probability of reverse split move is the product of the probabilites of
+    //   1) choosing the merged shared event to split
+    //          = 1 / number of shared events after the proposal
+    //   2) randomly splitting the subset out of the 'n' nodes in the merged
+    //   event (the number of nodes in the event after the proposal).
+    //          = 1 / (2 * stirling2(n, 2))
+    //          = 1 / (2^n - 2)
+    // So the prob of the reverse split move is
+    // p(reverse split move) =  1 / (number of shared events after the proposal * (2^n - 2))
+    //                  1 / (number of shared events after the proposal * 2 * stirling2(n, 2))
+    //
+    // So, the Hasting ratio for the proposed split move is:
+    // p(reverse split) / p(proposed merge) = 
+    //     (number of events after the proposal) * (number of events before proposal - 1)
+    //     ------------------------------------------------------------------------------
+    //          (number of shared events after the proposal * 2 * stirling2(n, 2))
+    ECOEVOLITY_ASSERT(comparisons.get_number_of_events() + 1 == nevents);
+    unsigned int nshared_after = comparisons.get_shared_event_indices().size();
+    double ln_hastings = std::log(nevents) + std::log(nevents - 1);
+    ln_hastings -= (
+            std::log(nshared_after) +
+            this->ln_number_of_possible_splits_.at(nnodes_in_merged_event));
+
+    const bool in_shared_state_after = (comparisons.get_number_of_events() == 1);
+    // Account for probability of choosing to merge
+    // This is 1.0 (or zero on log scale) except for these two corner
+    // cases:
+    if (in_general_state_before && (! in_shared_state_after)) {
+        ln_hastings -= std::log(2.0);
+    }
+    else if (in_shared_state_after && (! in_general_state_before)) {
+        ln_hastings += std::log(2.0);
+    }
+    return ln_hastings + ln_jacobian;
+}
+
+double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons) {
+    const unsigned int nnodes = comparisons.get_number_of_trees();
+    const unsigned int nevents = comparisons.get_number_of_events();
+    const bool in_general_state_before = (nnodes == nevents);
+    const bool in_shared_state_before = (nevents == 1);
+    const bool split_event = ((! in_general_state_before) &&
+            (in_shared_state_before || (rng.uniform_real() < 0.5)));
+    if (split_event) {
+        std::vector<unsigned int> shared_indices =
+                comparisons.get_shared_event_indices();
+        unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
+        unsigned int event_index = shared_indices.at(i);
+        double event_height = comparisons.get_height(event_index);
+        double lower_bound = comparisons.get_nearest_smaller_height(event_index);
+        double new_height = rng.uniform_real(lower_bound, event_height);
+
+        std::vector<unsigned int> tree_indices = comparisons.get_indices_of_mapped_trees(event_index);
+        unsigned int num_mapped_nodes = tree_indices.size();
+        const std::vector<double>& split_size_probs = 
+                this->get_split_subset_size_probabilities(num_mapped_nodes);
+
+        unsigned int subset_size = rng.weighted_index(split_size_probs) + 1;
+        ECOEVOLITY_ASSERT((subset_size > 0) && (subset_size < num_mapped_nodes));
+
+        std::vector<unsigned int> random_indices = rng.random_subset_indices(
+                num_mapped_nodes,
+                subset_size);
+        std::vector<unsigned int> subset_indices;
+        subset_indices.reserve(subset_size);
+        for (auto const random_idx: random_indices) {
+            subset_indices.push_back(tree_indices.at(random_idx));
+        }
+        comparisons.map_trees_to_new_height(subset_indices, new_height);
+
+        // TODO: check this
+        double ln_jacobian = 0.0;
+
+        // The probability of forward split move (just proposed) is the product of the probabilites of
+        //   1) choosing the shared event to split
+        //          = 1 / number of shared events
+        //   2) randomly splitting the subset out of the 'n' nodes sharing the event
+        //          = 1 / (2 * stirling2(n, 2))
+        //          = 1 / (2^n - 2)
+        //   3) drawing the new height uniformly between the height of the
+        //      shared event and the next younger height (or zero).
+        //          = 1 / (height - younger neighbor height)
+        //          = 1 / d
+        // So the prob of the forward split move is
+        // p(split move) =  1 / (number of shared events * (2^n - 2) * d)
+        //                  1 / (number of shared events * 2 * stirling2(n, 2) * d)
+        //
+        // The probability of the reverse move is simply the probability of
+        // randomly selecting the proposed (split) event from among all but the
+        // oldest event.
+        // p(reverse merge) = 1 / (number of events before proposal + 1 - 1)
+        //                  = 1 / (number of events before the proposal)
+        //
+        // So, the Hasting ratio for the proposed split move is:
+        // p(reverse merge) / p(proposed split) = 
+        //     (number of shared events * 2 * stirling2(n, 2) * d)
+        //     ---------------------------------------------------
+        //          (number of events before the proposal)
+        double ln_hastings =
+                this->ln_number_of_possible_splits_.at(num_mapped_nodes) +
+                std::log(shared_indices.size()) +
+                std::log(event_height - lower_bound) -
+                std::log(nevents);
+
+        const bool in_general_state_after = (comparisons.get_number_of_trees() ==
+                comparisons.get_number_of_events());
+        // Account for probability of choosing to split
+        // This is 1.0 (or zero on log scale) except for these two corner
+        // cases:
+        if (in_shared_state_before && (! in_general_state_after)) {
+            ln_hastings -= std::log(2.0);
+        }
+        else if (in_general_state_after && (! in_shared_state_before)) {
+            ln_hastings += std::log(2.0);
+        }
+        return ln_hastings + ln_jacobian;
+    }
+    // Merge move
+    std::vector<unsigned int> candidate_indices =
+            comparisons.get_height_indices_sans_largest();
+    unsigned int i = rng.uniform_int(0, candidate_indices.size() - 1);
+    unsigned int height_index = candidate_indices.at(i);
+    unsigned int target_height_index = comparisons.get_nearest_larger_height_index(height_index);
+    unsigned int new_merged_event_index = comparisons.merge_height(height_index, target_height_index);
+    unsigned int nnodes_in_merged_event = comparisons.get_number_of_trees_mapped_to_height(new_merged_event_index);
+    // Don't need the returned probability vector, but need to make sure we
+    // update the stored number of ways to make the reverse split of this
+    // number of nodes.
+    this->get_split_subset_size_probabilities(nnodes_in_merged_event);
+
+    // TODO: check this
+    double ln_jacobian = 0.0;
+
+    // The probability of the forward merge move is simply the probability of
+    // randomly selecting the height to merge from among all but the
+    // oldest height.
+    // p(reverse merge) = 1 / (number of events before proposal - 1)
+    //                  = 1 / (number of events after the proposal)
+    //
+    // The probability of reverse split move is the product of the probabilites of
+    //   1) choosing the merged shared event to split
+    //          = 1 / number of shared events after the proposal
+    //   2) randomly splitting the subset out of the 'n' nodes in the merged
+    //   event (the number of nodes in the event after the proposal).
+    //          = 1 / (2 * stirling2(n, 2))
+    //          = 1 / (2^n - 2)
+    //   3) drawing the original height uniformly between the height of the
+    //   merged event and the next younger height (or zero).
+    //          = 1 / (merged height - younger neighbor height)
+    //          = 1 / d
+    // So the prob of the reverse split move is
+    // p(split move) =  1 / (number of shared events after the proposal * (2^n - 2) * d)
+    //                  1 / (number of shared events after the proposal * 2 * stirling2(n, 2) * d)
+    //
+    // So, the Hasting ratio for the proposed split move is:
+    // p(reverse merge) / p(proposed split) = 
+    //                  (number of events after the proposal)
+    //     ----------------------------------------------------------------------
+    //     (number of shared events after the proposal * 2 * stirling2(n, 2) * d)
+    ECOEVOLITY_ASSERT(comparisons.get_number_of_events() + 1 == nevents);
+    unsigned int nshared_after = comparisons.get_shared_event_indices().size();
+    double new_merged_event_height = comparisons.get_height(new_merged_event_index);
+    double lower_bound = comparisons.get_nearest_smaller_height(new_merged_event_index);
+    double ln_hastings = std::log(comparisons.get_number_of_events());
+    ln_hastings -= (
+            std::log(nshared_after) +
+            this->ln_number_of_possible_splits_.at(nnodes_in_merged_event) +
+            std::log(new_merged_event_height - lower_bound));
+
+    const bool in_shared_state_after = (comparisons.get_number_of_events() == 1);
+    // Account for probability of choosing to merge
+    // This is 1.0 (or zero on log scale) except for these two corner
+    // cases:
+    if (in_general_state_before && (! in_shared_state_after)) {
+        ln_hastings -= std::log(2.0);
+    }
+    else if (in_shared_state_after && (! in_general_state_before)) {
+        ln_hastings += std::log(2.0);
+    }
+    return ln_hastings + ln_jacobian;
+}
+
+const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabilities(
+        unsigned int number_of_nodes_in_event) {
+    unsigned int n = number_of_nodes_in_event;
+    if (this->split_subset_size_probs_.count(n) > 0) {
+        return this->split_subset_size_probs_.at(n);
+    }
+    double ln_n_factorial = std::lgamma(n + 1);
+    double ln_twice_stirling_num = std::log(
+            stirling2_float(number_of_nodes_in_event, 2)) + std::log(2.0);
+    this->ln_number_of_possible_splits_[n] = ln_twice_stirling_num;
+    this->split_subset_size_probs_[n];
+    this->split_subset_size_probs_.at(n).reserve(n - 1);
+    double total = 0.0;
+    for (unsigned int k = 1; k <= n - 1; ++k) {
+        double ln_n_choose_k = ln_n_factorial - std::lgamma(k + 1) - std::lgamma(n - k + 1);
+        double prob_k = std::exp(ln_n_choose_k - ln_twice_stirling_num);
+        this->split_subset_size_probs_.at(n).push_back(prob_k);
+        total += prob_k;
+    }
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(total, 1.0);
+    return this->split_subset_size_probs_.at(n);
 }

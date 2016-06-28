@@ -34,11 +34,14 @@
 class ComparisonPopulationTreeCollection {
 
     friend class DirichletProcessGibbsSampler;
+    friend class ReversibleJumpSampler;
 
     protected:
         std::vector<ComparisonPopulationTree> trees_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
+        std::vector<double> stored_node_heights_;
         std::vector<unsigned int> node_height_indices_;
+        std::vector<unsigned int> stored_node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         std::shared_ptr<PositiveRealParameter> concentration_;
@@ -60,13 +63,28 @@ class ComparisonPopulationTreeCollection {
         void make_trees_dirty();
 
         void remap_tree(unsigned int tree_index,
+                        unsigned int height_index);
+        void remap_tree(unsigned int tree_index,
                         unsigned int height_index,
                         double log_likelihood);
+        unsigned int remap_trees(
+                const std::vector<unsigned int>& tree_indices,
+                unsigned int height_index);
 
+        unsigned int merge_height(
+                unsigned int height_index,
+                unsigned int target_height_index);
+
+        void map_tree_to_new_height(
+                unsigned int tree_index,
+                double height);
         void map_tree_to_new_height(
                 unsigned int tree_index,
                 double height,
                 double log_likelihood);
+        unsigned int map_trees_to_new_height(
+                const std::vector<unsigned int>& tree_indices,
+                double height);
 
         void add_height(
                 double height,
@@ -92,6 +110,8 @@ class ComparisonPopulationTreeCollection {
         virtual ~ComparisonPopulationTreeCollection() { }
         void store_state();
         void restore_state();
+        void store_model_state();
+        void restore_model_state();
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void set_number_of_threads(unsigned int n) {
@@ -136,7 +156,6 @@ class ComparisonPopulationTreeCollection {
             return this->trees_.at(tree_index);
         }
 
-
         unsigned int get_number_of_trees() const {
             return this->trees_.size();
         }
@@ -158,14 +177,28 @@ class ComparisonPopulationTreeCollection {
 
         std::vector<unsigned int> get_standardized_height_indices() const;
 
+        unsigned int get_largest_height_index() const;
+        std::vector<unsigned int> get_height_indices_sans_largest() const;
+
         std::shared_ptr<PositiveRealParameter> get_height_parameter(
                 unsigned int height_index) const {
             return this->node_heights_.at(height_index);
         }
 
-        double get_height(unsigned int tree_index) const {
-            return this->node_heights_.at(tree_index)->get_value();
+        double get_height(unsigned int height_index) const {
+            return this->node_heights_.at(height_index)->get_value();
         }
+        double get_height_of_tree(unsigned int tree_index) const {
+            return this->get_height(this->get_height_index(tree_index));
+        }
+
+        std::vector<unsigned int> get_indices_of_mapped_trees(
+                unsigned int height_index) const;
+
+        double get_nearest_smaller_height(
+                unsigned int height_index) const;
+        unsigned int get_nearest_larger_height_index(
+                unsigned int height_index) const;
 
         double get_concentration() const {
             return this->concentration_->get_value();

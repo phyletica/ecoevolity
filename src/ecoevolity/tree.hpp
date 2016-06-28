@@ -199,13 +199,13 @@ class PopulationTree {
         void store_state();
         void store_likelihood();
         void store_prior_density();
-        void store_parameters();
+        virtual void store_parameters();
         void store_all_coalescence_rates();
         virtual void store_all_heights();
         void restore_state();
         void restore_likelihood();
         void restore_prior_density();
-        void restore_parameters();
+        virtual void restore_parameters();
         void restore_all_coalescence_rates();
         virtual void restore_all_heights();
 
@@ -334,6 +334,8 @@ class ComparisonPopulationTree: public PopulationTree {
         void restore_all_heights() {
             this->restore_height();
         }
+        void store_parameters();
+        void restore_parameters();
 
         double compute_log_prior_density();
 
