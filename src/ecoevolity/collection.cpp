@@ -793,9 +793,15 @@ void ComparisonPopulationTreeCollection::mcmc(
         }
 
         if ((gen + 1) % sample_frequency == 0) {
-            this->operator_schedule_.write_operator_rates(operator_log_stream);
             this->log_state(state_log_stream, gen + 1);
-            this->log_state(std::cout, gen + 1, true);
+            if ((gen + 1) % (sample_frequency * 10) == 0) {
+                this->log_state(std::cout, gen + 1, true);
+                if ((gen + 1) % (sample_frequency * 100) == 0) {
+                    operator_log_stream << "generation " << gen + 1 << ":\n";
+                    this->operator_schedule_.write_operator_rates(operator_log_stream);
+                    this->operator_schedule_.write_operator_rates(std::cout);
+                }
+            }
         }
 
         // Check if the chain has gone astray
