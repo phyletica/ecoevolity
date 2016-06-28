@@ -630,3 +630,32 @@ TEST_CASE("Testing stirling number functions", "[math_util]") {
         REQUIRE(stirling2_float(9, 3) == 3025);
     }
 }
+
+TEST_CASE("Testing bell number functions", "[math_util]") {
+    SECTION("Testing bell_number") {
+        REQUIRE(bell_number(1) == 1);
+        REQUIRE(bell_number(2) == 2);
+        REQUIRE(bell_number(3) == 5);
+        REQUIRE(bell_number(4) == 15);
+        REQUIRE(bell_number(5) == 52);
+        REQUIRE(bell_number(6) == 203);
+        REQUIRE(bell_number(7) == 877);
+        REQUIRE(bell_number(8) == 4140);
+        REQUIRE(bell_number(9) == 21147);
+        REQUIRE(bell_number(10) == 115975);
+        REQUIRE(bell_number(15) == 1382958545);
+    }
+    SECTION("Testing bell_float") {
+        REQUIRE(bell_float(1) == 1);
+        REQUIRE(bell_float(2) == 2);
+        REQUIRE(bell_float(3) == 5);
+        REQUIRE(bell_float(4) == 15);
+        REQUIRE(bell_float(5) == 52);
+        REQUIRE(bell_float(6) == 203);
+        REQUIRE(bell_float(7) == 877);
+        REQUIRE(bell_float(8) == 4140);
+        REQUIRE(bell_float(9) == 21147);
+        REQUIRE(bell_float(10) == 115975);
+        REQUIRE(bell_float(15) == 1382958545);
+    }
+}
