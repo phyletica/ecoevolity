@@ -66,6 +66,16 @@ inline std::string get_indent(unsigned int level = 1) {
     return std::string(4 * level, ' ');
 }
 
+inline std::string center(const std::string& s, unsigned int page_width = 70) {
+    int w = (int)((page_width - s.length()) / 2);
+    std::string indent(w, ' ');
+    return indent + s;
+}
+
+inline std::string banner(char c, unsigned int page_width = 70) {
+    return std::string(page_width, c);
+}
+
 inline std::string rstrip(
         const std::string& s,
         const std::string& delimiters = " \f\n\r\t\v" ) {
