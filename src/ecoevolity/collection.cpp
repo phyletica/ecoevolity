@@ -846,3 +846,14 @@ void ComparisonPopulationTreeCollection::mcmc(
     state_log_stream.close();
     operator_log_stream.close();
 }
+
+void ComparisonPopulationTreeCollection::write_summary(
+        std::ostream& out,
+        unsigned int indent_level) const {
+    std::string margin = string_util::get_indent(indent_level);
+    std::string indent = string_util::get_indent(1);
+    out << "Summary of data from " << this->get_number_of_trees() << " comparisons:\n";
+    for (auto const & tree: this->trees_) {
+        tree.write_data_summary(out, indent_level + 1);
+    }
+}

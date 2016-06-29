@@ -109,6 +109,10 @@ class BiallelicData {
 
         void validate() const;
 
+        void write_summary(
+                std::ostream& out,
+                unsigned int indent_level = 0) const;
+
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;
         unsigned int number_of_constant_green_sites_removed_ = 0;

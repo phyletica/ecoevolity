@@ -353,6 +353,12 @@ class ComparisonPopulationTree: public PopulationTree {
         std::string get_state_string(
                 const std::string& delimiter = "\t",
                 unsigned int precision = 18) const;
+
+        void write_data_summary(
+                std::ostream& out,
+                unsigned int indent_level = 0) const {
+            this->data_.write_summary(out, indent_level);
+        }
 };
 
 #endif

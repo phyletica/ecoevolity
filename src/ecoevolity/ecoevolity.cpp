@@ -19,21 +19,20 @@
 
 #include "ecoevolity.hpp"
 
-std::string get_splash() {
+void write_splash(std::ostream& out) {
     std::string v = "Version ";
     v += PROJECT_DETAILED_VERSION;
-    std::ostringstream splash;
-    splash << string_util::banner('=') << "\n" 
-           << string_util::center(PROJECT_NAME) << "\n"
-           << string_util::center("Estimating evolutionary coevality") << "\n"
-           << string_util::center(v) << "\n"
-           << string_util::banner('=') << "\n";
-    return splash.str();
+    out << string_util::banner('=') << "\n" 
+        << string_util::center(PROJECT_NAME) << "\n"
+        << string_util::center("Estimating evolutionary coevality") << "\n"
+        << string_util::center(v) << "\n"
+        << string_util::banner('=') << "\n";
 }
 
 int ecoevolity_main(int argc, char * argv[]) {
 
-    std::cout << get_splash() << "\n";
+    write_splash(std::cout);
+    std::cout << "\n";
 
     const std::string usage = 
         "usage: %prog [--seed SEED] [--ignore-data] YAML-CONFIG-FILE";
@@ -122,7 +121,10 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     std::cout << "Parsing config file..." << std::endl;
     CollectionSettings settings = CollectionSettings(config_path);
-    std::cout << settings.to_string() << std::endl;
+
+    std::cout << "\n" << string_util::banner('-') << "\n";
+    settings.write_settings(std::cout);
+    std::cout << string_util::banner('-') << "\n\n";
 
     std::cout << "Configuring model..." << std::endl;
     ComparisonPopulationTreeCollection comparisons =
@@ -134,6 +136,10 @@ int ecoevolity_main(int argc, char * argv[]) {
     else {
         comparisons.use_data();
     }
+
+    std::cout << "\n" << string_util::banner('-') << "\n";
+    comparisons.write_summary(std::cout);
+    std::cout << string_util::banner('-') << "\n\n";
 
     comparisons.set_number_of_threads(nthreads);
     std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;

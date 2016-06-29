@@ -226,6 +226,10 @@ class ComparisonPopulationTreeCollection {
         void mcmc(RandomNumberGenerator& rng,
                 unsigned int chain_length,
                 unsigned int sample_frequency);
+
+        void write_summary(
+                std::ostream& out,
+                unsigned int indent_level = 0) const;
 };
 
 #endif
