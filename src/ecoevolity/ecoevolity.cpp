@@ -19,7 +19,22 @@
 
 #include "ecoevolity.hpp"
 
+std::string get_splash() {
+    std::string v = "Version ";
+    v += PROJECT_DETAILED_VERSION;
+    std::ostringstream splash;
+    splash << string_util::banner('=') << "\n" 
+           << string_util::center(PROJECT_NAME) << "\n"
+           << string_util::center("Estimating evolutionary coevality") << "\n"
+           << string_util::center(v) << "\n"
+           << string_util::banner('=') << "\n";
+    return splash.str();
+}
+
 int ecoevolity_main(int argc, char * argv[]) {
+
+    std::cout << get_splash() << "\n";
+
     const std::string usage = 
         "usage: %prog [--seed SEED] [--ignore-data] YAML-CONFIG-FILE";
 
@@ -29,14 +44,14 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     const std::string description =
         "Ecoevolity: Estimating evolutionary coevality";
-    const std::string epilog =
-        "Epilog goes here...";
+    // const std::string epilog =
+    //     "Epilog goes here...";
 
     optparse::OptionParser parser = optparse::OptionParser()
             .usage(usage)
             .version(version)
-            .description(description)
-            .epilog(epilog);
+            .description(description);
+            // .epilog(epilog);
 
     parser.set_defaults("ignore_data", "false");
 
@@ -60,8 +75,8 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "number of comparisons in the analysis. If a number larger "
                   "than the number of comparisons is specified, the number of "
                   "threads equal to the number of comparisons will be used. If "
-                  "you are using the '--ignore-data' option, its often fastest "
-                  "to NOT use multithreading.");
+                  "you are using the \'--ignore-data\' option, its often "
+                  "fastest to NOT use multi-threading.");
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();

@@ -32,6 +32,8 @@
 #include "settings.hpp"
 #include "collection.hpp"
 
+std::string get_splash();
+
 int ecoevolity_main(int argc, char * argv[]);
 
 #endif
