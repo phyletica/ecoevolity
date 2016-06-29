@@ -100,7 +100,7 @@ if (PROJECT_GIT_SHA1)
     set(PROJECT_SOURCE_IDENTIFIER
         "${PROJECT_GIT_BRANCH} ${PROJECT_GIT_SHA1_SHORT}: ${PROJECT_GIT_COMMIT_DATE}")
     set(PROJECT_DETAILED_VERSION
-        "${PROJECT_VERSION} ${PROJECT_SOURCE_IDENTIFIER}")
+        "${PROJECT_VERSION} (${PROJECT_SOURCE_IDENTIFIER})")
     set(PROJECT_SOURCE_IDENTIFIED 1)
 else()
     set(PROJECT_SOURCE_IDENTIFIED 0)
@@ -126,7 +126,7 @@ file(WRITE ${ECOEVOLITY_SOURCE_DIR}/version.hpp.in
 #cmakedefine PROJECT_SOURCE_IDENTIFIER      \"${PROJECT_SOURCE_IDENTIFIER}\"
 #cmakedefine PROJECT_VERSION                \"${PROJECT_VERSION}\"
 #cmakedefine PROJECT_DETAILED_VERSION       \"${PROJECT_DETAILED_VERSION}\"
-#define PROJECT_NAME                        \"Ecoevolity\"
+#define PROJECT_NAME                   \"Ecoevolity\"
 #endif
 ")
 configure_file(
