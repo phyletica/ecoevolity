@@ -621,7 +621,10 @@ void ComparisonPopulationTreeCollection::mcmc(
     this->log_state(state_log_stream, 0);
     this->log_state(std::cout, 0, true);
 
-    for (unsigned int gen = 0; gen < chain_length; ++gen) {
+    unsigned int gen;
+    unsigned int gen_of_last_state_log = 0;
+    unsigned int gen_of_last_operator_log = 0;
+    for (gen = 0; gen < chain_length; ++gen) {
         this->store_state();
         Operator& op = this->operator_schedule_.draw_operator(rng);
         if (op.get_type() == Operator::OperatorTypeEnum::tree_operator) {
@@ -794,12 +797,15 @@ void ComparisonPopulationTreeCollection::mcmc(
 
         if ((gen + 1) % sample_frequency == 0) {
             this->log_state(state_log_stream, gen + 1);
+            gen_of_last_state_log = gen;
+            // Log every 10th sample to std out
             if ((gen + 1) % (sample_frequency * 10) == 0) {
                 this->log_state(std::cout, gen + 1, true);
+                // Log operator performance every 100 samples
                 if ((gen + 1) % (sample_frequency * 100) == 0) {
                     operator_log_stream << "generation " << gen + 1 << ":\n";
                     this->operator_schedule_.write_operator_rates(operator_log_stream);
-                    this->operator_schedule_.write_operator_rates(std::cout);
+                    gen_of_last_operator_log = gen;
                 }
             }
         }
@@ -825,6 +831,18 @@ void ComparisonPopulationTreeCollection::mcmc(
             }
         )
     }
+    // Make sure last generation is reported
+    if (gen > (gen_of_last_state_log + 1)) {
+        this->log_state(state_log_stream, gen + 1);
+        this->log_state(std::cout, gen + 1, true);
+    }
+    if (gen > (gen_of_last_operator_log + 1)) {
+        operator_log_stream << "generation " << gen + 1 << ":\n";
+        this->operator_schedule_.write_operator_rates(operator_log_stream);
+    }
+    std::cout << "\nOperator stats:\n";
+    this->operator_schedule_.write_operator_rates(std::cout);
+    std::cout << "\n";
     state_log_stream.close();
     operator_log_stream.close();
 }
