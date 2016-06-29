@@ -73,12 +73,12 @@ std::string Operator::to_string(const OperatorSchedule& os) const {
         ss << this->get_weight() / os.get_total_weight() << "\t";
     }
     else {
-        ss << "\t";
+        ss << "nan\t";
     }
 
     double tuning = this->get_coercable_parameter_value();
     if (std::isnan(tuning)) {
-        ss << "\t";
+        ss << "none\t";
     }
     else {
         ss << tuning << "\t";
