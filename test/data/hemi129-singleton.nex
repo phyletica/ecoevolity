@@ -1,0 +1,46 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=15;
+    TAXLABELS
+        kya_GH37
+        kya_GH38
+        kya_GH39
+        kya_GH327
+        kya_GH328
+        kya_GH329
+        kya_GH330
+        kya_GH331
+        kya_GH341
+        kya_GH342
+        kya_GH343
+        kya_GH344
+        kya_GH345
+        kya_GH346
+        kya_GH347
+  ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=9;
+    FORMAT DATATYPE=STANDARD SYMBOLS="012" MISSING=? GAP=-;
+    MATRIX
+        kya_GH37     211222001
+        kya_GH38     220221001
+        kya_GH39     220212011
+        kya_GH327    220222001
+        kya_GH328    220222001
+        kya_GH329    220222001
+        kya_GH330    220222001
+        kya_GH331    12012200?
+        kya_GH341    220222101
+        kya_GH342    220222001
+        kya_GH343    22022200?
+        kya_GH344    220222101
+        kya_GH345    220222001
+        kya_GH346    220222001
+        kya_GH347    220222000
+    ;
+END;
+
+
