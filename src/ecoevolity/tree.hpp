@@ -97,7 +97,8 @@ class PopulationTree {
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
                 bool validate = true,
-                bool show_site_removal_warnings = false
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
                 );
         //~PopulationTree () { delete this->root_; }
 
@@ -109,7 +110,9 @@ class PopulationTree {
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
                 bool validate = true,
-                bool show_site_removal_warnings = false);
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
 
         void fold_patterns();
 
@@ -126,6 +129,10 @@ class PopulationTree {
 
         unsigned int get_degree_of_root() const {
             return this->root_->degree();
+        }
+
+        const std::vector<std::string>& get_population_labels() const {
+            return this->data_.get_population_labels();
         }
 
         void set_u(double u);
@@ -301,9 +308,15 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
                 bool validate = true,
-                bool show_site_removal_warnings = false);
-        ComparisonPopulationTree(const ComparisonSettings& settings,
-                RandomNumberGenerator& rng);
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
+        ComparisonPopulationTree(
+                const ComparisonSettings& settings,
+                RandomNumberGenerator& rng,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
         void set_child_population_size(unsigned int child_index, double size);
@@ -353,6 +366,12 @@ class ComparisonPopulationTree: public PopulationTree {
         std::string get_state_string(
                 const std::string& delimiter = "\t",
                 unsigned int precision = 18) const;
+
+        void write_data_summary(
+                std::ostream& out,
+                unsigned int indent_level = 0) const {
+            this->data_.write_summary(out, indent_level);
+        }
 };
 
 #endif

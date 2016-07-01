@@ -72,6 +72,9 @@ class BiallelicData {
         unsigned int get_population_index(std::string population_label) const;
         unsigned int get_population_index_from_seq_label(std::string seq_label) const;
         const std::string& get_population_label(unsigned int population_index) const;
+        const std::vector<std::string>& get_population_labels() const {
+            return this->population_labels_;
+        }
         const std::vector<std::string>& get_sequence_labels(unsigned int population_index) const;
         const std::string& get_path() const;
 
@@ -108,6 +111,10 @@ class BiallelicData {
         void get_empirical_mutation_rates(double& u, double& v) const;
 
         void validate() const;
+
+        void write_summary(
+                std::ostream& out,
+                unsigned int indent_level = 0) const;
 
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;

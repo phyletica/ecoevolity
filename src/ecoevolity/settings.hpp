@@ -1316,41 +1316,45 @@ class CollectionSettings {
             return this->operator_schedule_settings_;
         }
 
-        std::string to_string() const {
-            std::ostringstream ss;
-            ss << std::boolalpha;
+        void write_settings(std::ostream& out) const {
             std::string indent = string_util::get_indent(1);
+            out << std::boolalpha;
 
-            ss << "---\n"
-               << "event_model_prior:\n";
+            out << "---\n"
+                << "event_model_prior:\n";
             if (this->use_dpp_) {
-                ss << indent << "dirichlet_process:\n"
-                   << indent << indent << "parameters:\n"
-                   << indent << indent <<  indent <<"concentration:\n";
-                ss << this->concentration_settings_.to_string(4);
+                out << indent << "dirichlet_process:\n"
+                    << indent << indent << "parameters:\n"
+                    << indent << indent <<  indent <<"concentration:\n";
+                out << this->concentration_settings_.to_string(4);
             }
             else {
-                ss << indent << "uniform:\n";
+                out << indent << "uniform:\n";
             }
 
-            ss << "event_time_prior:\n";
-            ss << this->time_prior_settings_.to_string(1);
+            out << "event_time_prior:\n";
+            out << this->time_prior_settings_.to_string(1);
 
-            ss << "mcmc_settings:\n"
-               << indent << "chain_length: " << this->chain_length_ << "\n"
-               << indent << "sample_frequency: " << this->sample_frequency_ << "\n";
+            out << "mcmc_settings:\n"
+                << indent << "chain_length: " << this->chain_length_ << "\n"
+                << indent << "sample_frequency: " << this->sample_frequency_ << "\n";
 
-            // ss << "output_settings:\n"
-            //    << indent << "state_log_path: " << this->state_log_path_ << "\n"
-            //    << indent << "operator_log_path: " << this->operator_log_path_ << "\n";
+            // out << "output_settings:\n"
+            //     << indent << "state_log_path: " << this->state_log_path_ << "\n"
+            //     << indent << "operator_log_path: " << this->operator_log_path_ << "\n";
 
-            ss << "comparisons:\n";
+            out << "comparisons:\n";
             for (auto comp : this->comparisons_) {
-                ss << "- comparison:\n";
-                ss << comp.to_string(1);
+                out << "- comparison:\n";
+                out << comp.to_string(1);
             }
 
-            ss << this->operator_schedule_settings_.to_string();
+            out << this->operator_schedule_settings_.to_string();
+        }
+
+        std::string to_string() const {
+            std::ostringstream ss;
+            this->write_settings(ss);
             return ss.str();
         }
 

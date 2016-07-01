@@ -27,7 +27,8 @@ PopulationTree::PopulationTree(
         bool markers_are_dominant,
         bool constant_sites_removed,
         bool validate,
-        bool show_site_removal_warnings) {
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -35,7 +36,8 @@ PopulationTree::PopulationTree(
                markers_are_dominant,
                constant_sites_removed,
                validate,
-               show_site_removal_warnings);
+               strict_on_constant_sites,
+               strict_on_missing_sites);
 }
 
 void PopulationTree::init(
@@ -46,7 +48,8 @@ void PopulationTree::init(
         bool markers_are_dominant,
         bool constant_sites_removed,
         bool validate,
-        bool show_site_removal_warnings) {
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites) {
     this->data_.init(
             path,
             population_name_delimiter,
@@ -58,38 +61,68 @@ void PopulationTree::init(
         throw EcoevolityError("PopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
-    if (show_site_removal_warnings && (number_of_missing_patterns_removed > 0)) {
-        std::ostringstream message;
-        message << "\n#######################################################################\n"
-                <<   "##############################  WARNING  ##############################\n"
-                << this->data_.get_number_of_missing_sites_removed()
-                << " sites were removed from the alignment in:\n    \'"
-                << path << "\'\n"
-                << "due to at least one population with no data\n"
-                << "#######################################################################\n";
-        std::cerr << message.str() << std::endl;
+    if (number_of_missing_patterns_removed > 0) {
+        if (strict_on_missing_sites) {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "###############################  ERROR  ###############################\n"
+                    << this->data_.get_number_of_missing_sites_removed()
+                    << " sites from the alignment in:\n    \'"
+                    << path << "\'\n"
+                    << "have no data for at least one population.\n"
+                    << "#######################################################################\n";
+            throw EcoevolityMissingDataError(message.str(), path);
+        }
+        else {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "##############################  WARNING  ##############################\n"
+                    << this->data_.get_number_of_missing_sites_removed()
+                    << " sites will be ignored from the alignment in:\n    \'"
+                    << path << "\'\n"
+                    << "due to at least one population with no data.\n"
+                    << "#######################################################################\n";
+            std::cerr << message.str() << std::endl;
+        }
     }
     this->constant_sites_removed_ = constant_sites_removed;
     if (this->constant_sites_removed_) {
         // Have to make sure there are no missing sites
         unsigned int number_of_constant_patterns_removed = this->data_.remove_constant_patterns();
-        if (show_site_removal_warnings && (number_of_constant_patterns_removed > 0)) {
-            std::ostringstream message;
-            message << "\n#######################################################################\n"
-                    <<   "##############################  WARNING  ##############################\n"
-                    << this->data_.get_number_of_constant_sites_removed()
-                    << " constant sites were found in the alignment in:\n"
-                    << "    \'" << path << "\'\n"
-                    << "but you indicated that such sites were already removed with option:\n"
-                    << "    constant_sites_removed = true\n"
-                    << "These sites have been removed, so if you intended to remove them, but\n"
-                    << "missed them, all is well. However, if you intended for the constant\n"
-                    << "sites to be used in the likelihood calculations, you should set\n"
-                    << "\'constant_sites_removed\' to false for this alignment and re-run this\n"
-                    << "analysis.\n"
-                    << "#######################################################################\n";
-            // TODO: Should we throw an error instead?
-            std::cerr << message.str() << std::endl;
+        if (number_of_constant_patterns_removed > 0) {
+            if (strict_on_constant_sites) {
+                std::ostringstream message;
+                message << "\n#######################################################################\n"
+                        <<   "###############################  ERROR  ###############################\n"
+                        << this->data_.get_number_of_constant_sites_removed()
+                        << " constant sites were found in the alignment in:\n"
+                        << "    \'" << path << "\'\n"
+                        << "but you indicated that such sites were already removed with option:\n"
+                        << "    constant_sites_removed = true\n"
+                        << "If you intended to remove them, please do so and re-run the analysis.\n"
+                        << "If you intended for constant sites to be used in the likelihood\n"
+                        << "calculations, you should set \'constant_sites_removed\' to false for\n"
+                        << "this alignment and re-run the analysis.\n"
+                        << "#######################################################################\n";
+                throw EcoevolityConstantSitesError(message.str(), path);
+            }
+            else {
+                std::ostringstream message;
+                message << "\n#######################################################################\n"
+                        <<   "##############################  WARNING  ##############################\n"
+                        << this->data_.get_number_of_constant_sites_removed()
+                        << " constant sites were found in the alignment in:\n"
+                        << "    \'" << path << "\'\n"
+                        << "but you indicated that such sites were already removed with option:\n"
+                        << "    constant_sites_removed = true\n"
+                        << "These sites have been removed, so if you intended to remove them, but\n"
+                        << "missed them, all is well. However, if you intended for the constant\n"
+                        << "sites to be used in the likelihood calculations, you should set\n"
+                        << "\'constant_sites_removed\' to false for this alignment and re-run this\n"
+                        << "analysis.\n"
+                        << "#######################################################################\n";
+                std::cerr << message.str() << std::endl;
+            }
         }
     }
 
@@ -779,7 +812,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool markers_are_dominant,
         bool constant_sites_removed,
         bool validate,
-        bool show_site_removal_warnings) {
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -787,7 +821,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                markers_are_dominant,
                constant_sites_removed,
                validate,
-               show_site_removal_warnings);
+               strict_on_constant_sites,
+               strict_on_missing_sites);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
     }
@@ -795,15 +830,18 @@ ComparisonPopulationTree::ComparisonPopulationTree(
 }
 ComparisonPopulationTree::ComparisonPopulationTree(
         const ComparisonSettings& settings,
-        RandomNumberGenerator& rng) {
+        RandomNumberGenerator& rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites) {
     this->init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
                settings.genotypes_are_diploid(),
                settings.markers_are_dominant(),
                settings.constant_sites_removed(),
-               true,
-               true);
+               true, // validate
+               strict_on_constant_sites,
+               strict_on_missing_sites);
     if (settings.constrain_mutation_rates()) {
         this->constrain_mutation_rates();
         this->fold_patterns();
@@ -840,6 +878,28 @@ ComparisonPopulationTree::ComparisonPopulationTree(
             std::make_shared<PositiveRealParameter>(
                     settings.get_time_multiplier_settings(),
                     rng));
+    if (
+        (this->data_.get_number_of_populations() == 1) &&
+        (
+            (this->coalescence_rates_are_fixed()) ||
+            (this->coalescence_rates_are_constrained())
+        )
+    ) {
+        std::ostringstream message;
+        message << "\n#######################################################################\n"
+                <<   "###############################  ERROR  ###############################\n"
+                << "The alignment in:\n    \'"
+                << this->data_.get_path() << "\'\n"
+                << "contains only a single population, but you have fixed and/or "
+                << "constrained the population sizes for this comparison. The timing of "
+                << "population expansion/contraction cannot be estimated if the ancestral "
+                << "and descendant population sizes for this comparison are either "
+                << "fixed or constrained to be equal. Please update your configuration "
+                << "file to estimate the unconstrained population sizes for this "
+                << "comparison and re-run the analysis.\n"
+                << "#######################################################################\n";
+        throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
+    }
 }
 
 void ComparisonPopulationTree::set_child_coalescence_rate(

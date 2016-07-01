@@ -21,6 +21,7 @@
 #define ECOEVOLITY_COLLECTION_HPP
 
 #include <thread>
+#include <unordered_set>
 
 #include "data.hpp"
 #include "node.hpp"
@@ -55,7 +56,10 @@ class ComparisonPopulationTreeCollection {
 
         void init_trees(
                 const std::vector<ComparisonSettings> & comparison_settings,
-                RandomNumberGenerator & rng);
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
 
         void compute_tree_partials();
         void compute_tree_partials_threaded();
@@ -105,7 +109,9 @@ class ComparisonPopulationTreeCollection {
         ComparisonPopulationTreeCollection() { }
         ComparisonPopulationTreeCollection(
                 const CollectionSettings & settings,
-                RandomNumberGenerator & rng
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
                 );
         virtual ~ComparisonPopulationTreeCollection() { }
         void store_state();
@@ -226,6 +232,10 @@ class ComparisonPopulationTreeCollection {
         void mcmc(RandomNumberGenerator& rng,
                 unsigned int chain_length,
                 unsigned int sample_frequency);
+
+        void write_summary(
+                std::ostream& out,
+                unsigned int indent_level = 0) const;
 };
 
 #endif

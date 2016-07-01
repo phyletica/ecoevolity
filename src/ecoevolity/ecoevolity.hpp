@@ -32,7 +32,7 @@
 #include "settings.hpp"
 #include "collection.hpp"
 
-std::string get_splash();
+void write_splash(std::ostream& out);
 
 int ecoevolity_main(int argc, char * argv[]);
 

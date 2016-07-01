@@ -19,21 +19,20 @@
 
 #include "ecoevolity.hpp"
 
-std::string get_splash() {
+void write_splash(std::ostream& out) {
     std::string v = "Version ";
     v += PROJECT_DETAILED_VERSION;
-    std::ostringstream splash;
-    splash << string_util::banner('=') << "\n" 
-           << string_util::center(PROJECT_NAME) << "\n"
-           << string_util::center("Estimating evolutionary coevality") << "\n"
-           << string_util::center(v) << "\n"
-           << string_util::banner('=') << "\n";
-    return splash.str();
+    out << string_util::banner('=') << "\n" 
+        << string_util::center(PROJECT_NAME) << "\n"
+        << string_util::center("Estimating evolutionary coevality") << "\n"
+        << string_util::center(v) << "\n"
+        << string_util::banner('=') << "\n";
 }
 
 int ecoevolity_main(int argc, char * argv[]) {
 
-    std::cout << get_splash() << "\n";
+    write_splash(std::cout);
+    std::cout << "\n";
 
     const std::string usage = 
         "usage: %prog [--seed SEED] [--ignore-data] YAML-CONFIG-FILE";
@@ -77,6 +76,24 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "threads equal to the number of comparisons will be used. If "
                   "you are using the \'--ignore-data\' option, its often "
                   "fastest to NOT use multi-threading.");
+    parser.add_option("--relax-constant-sites")
+            .action("store_true")
+            .dest("relax_constant_sites")
+            .help("By default, if you specify \'constant_sites_removed = true\' "
+                  "and constant sites are found, Ecoevolity throws an error. "
+                  "With this option, Ecoevolity will automatically ignore the "
+                  "constant sites and only issue a warning (and correct for "
+                  "constant sites in the likelihood calculation). Please make sure "
+                  "you understand what you are doing when you use this option."
+                );
+    parser.add_option("--relax-missing-sites")
+            .action("store_true")
+            .dest("relax_missing_sites")
+            .help("By default, if a column is found for which there is no data "
+                  "for at least one population, Ecoevolity throws an error. "
+                  "With this option, Ecoevolity will automatically ignore such "
+                  "sites and only issue a warning."
+                );
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();
@@ -101,6 +118,9 @@ int ecoevolity_main(int argc, char * argv[]) {
         std::cout << "Using data in order to sample from the posterior distribution..." << std::endl;
     }
 
+    const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
+    const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
+
     unsigned int nthreads = options.get("nthreads");
 
     if (args.size() < 1) {
@@ -122,11 +142,18 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     std::cout << "Parsing config file..." << std::endl;
     CollectionSettings settings = CollectionSettings(config_path);
-    std::cout << settings.to_string() << std::endl;
+
+    std::cout << "\n" << string_util::banner('-') << "\n";
+    settings.write_settings(std::cout);
+    std::cout << string_util::banner('-') << "\n\n";
 
     std::cout << "Configuring model..." << std::endl;
     ComparisonPopulationTreeCollection comparisons =
-            ComparisonPopulationTreeCollection(settings, rng);
+            ComparisonPopulationTreeCollection(
+                    settings,
+                    rng,
+                    strict_on_constant_sites,
+                    strict_on_missing_sites);
 
     if (ignore_data) {
         comparisons.ignore_data();
@@ -134,6 +161,10 @@ int ecoevolity_main(int argc, char * argv[]) {
     else {
         comparisons.use_data();
     }
+
+    std::cout << "\n" << string_util::banner('-') << "\n";
+    comparisons.write_summary(std::cout);
+    std::cout << string_util::banner('-') << "\n\n";
 
     comparisons.set_number_of_threads(nthreads);
     std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;

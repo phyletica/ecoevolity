@@ -84,6 +84,24 @@ class EcoevolityBiallelicDataError: public EcoevolityBaseError {
                     file_name) { }
 };
 
+class EcoevolityConstantSitesError: public EcoevolityBaseError {
+    public:
+        EcoevolityConstantSitesError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityConstantSitesError", message,
+                    file_name) { }
+};
+
+class EcoevolityMissingDataError: public EcoevolityBaseError {
+    public:
+        EcoevolityMissingDataError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityMissingDataError", message,
+                    file_name) { }
+};
+
 class EcoevolityParsingError: public EcoevolityBaseError {
     public:
         EcoevolityParsingError(
@@ -150,6 +168,11 @@ class EcoevolityComparisonSettingError: public EcoevolityBaseError {
         EcoevolityComparisonSettingError(
                 const std::string & message) :
             EcoevolityBaseError("EcoevolityComparisonSettingError", message) { }
+
+        EcoevolityComparisonSettingError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityComparisonSettingError", message, file_name) { }
 };
 
 class EcoevolityCollectionSettingError: public EcoevolityBaseError {

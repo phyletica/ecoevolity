@@ -768,3 +768,40 @@ void BiallelicData::validate() const {
     }
     return;
 }
+
+void BiallelicData::write_summary(
+        std::ostream& out,
+        unsigned int indent_level) const {
+    std::string margin = string_util::get_indent(indent_level);
+    std::string indent = string_util::get_indent(1);
+    out << std::boolalpha 
+        << margin <<"Summary of data from \'" << this->get_path() << "\':\n"; 
+    if (this->genotypes_are_diploid()) {
+        out << margin << indent << "Genotypes: diploid\n";
+    }
+    else {
+        out << margin << indent << "Genotypes: haploid\n";
+    }
+    out << margin << indent
+            << "Markers are dominant? "
+            << this->markers_are_dominant() << "\n"
+        << margin << indent
+            << "Number of populations: "
+            << this->get_number_of_populations() << "\n"
+        << margin << indent
+            << "Number of sites: "
+            << this->get_number_of_sites() << "\n"
+        << margin << indent
+            << "Number of patterns: "
+            << this->get_number_of_patterns() << "\n"
+        << margin << indent
+            << "Patterns folded? "
+            << this->patterns_are_folded() << "\n"
+        << margin << indent
+            << "Population label (max # of alleles sampled):\n";
+    for (unsigned int i = 0; i < this->get_number_of_populations(); ++i) {
+        out << margin << indent << indent
+            << this->get_population_label(i)
+            << " (" << this->get_max_allele_count(i) << ")\n";
+    }
+}
