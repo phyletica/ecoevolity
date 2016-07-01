@@ -168,6 +168,11 @@ class EcoevolityComparisonSettingError: public EcoevolityBaseError {
         EcoevolityComparisonSettingError(
                 const std::string & message) :
             EcoevolityBaseError("EcoevolityComparisonSettingError", message) { }
+
+        EcoevolityComparisonSettingError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityComparisonSettingError", message, file_name) { }
 };
 
 class EcoevolityCollectionSettingError: public EcoevolityBaseError {

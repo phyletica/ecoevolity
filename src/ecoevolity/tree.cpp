@@ -102,7 +102,7 @@ void PopulationTree::init(
                         << "If you intended to remove them, please do so and re-run the analysis.\n"
                         << "If you intended for constant sites to be used in the likelihood\n"
                         << "calculations, you should set \'constant_sites_removed\' to false for\n"
-                        << "this alignment and re-run the analysis."
+                        << "this alignment and re-run the analysis.\n"
                         << "#######################################################################\n";
                 throw EcoevolityConstantSitesError(message.str(), path);
             }
@@ -878,6 +878,28 @@ ComparisonPopulationTree::ComparisonPopulationTree(
             std::make_shared<PositiveRealParameter>(
                     settings.get_time_multiplier_settings(),
                     rng));
+    if (
+        (this->data_.get_number_of_populations() == 1) &&
+        (
+            (this->coalescence_rates_are_fixed()) ||
+            (this->coalescence_rates_are_constrained())
+        )
+    ) {
+        std::ostringstream message;
+        message << "\n#######################################################################\n"
+                <<   "###############################  ERROR  ###############################\n"
+                << "The alignment in:\n    \'"
+                << this->data_.get_path() << "\'\n"
+                << "contains only a single population, but you have fixed and/or "
+                << "constrained the population sizes for this comparison. The timing of "
+                << "population expansion/contraction cannot be estimated if the ancestral "
+                << "and descendant population sizes for this comparison are either "
+                << "fixed or constrained to be equal. Please update your configuration "
+                << "file to estimate the unconstrained population sizes for this "
+                << "comparison and re-run the analysis.\n"
+                << "#######################################################################\n";
+        throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
+    }
 }
 
 void ComparisonPopulationTree::set_child_coalescence_rate(

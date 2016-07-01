@@ -21,6 +21,7 @@
 #define ECOEVOLITY_COLLECTION_HPP
 
 #include <thread>
+#include <unordered_set>
 
 #include "data.hpp"
 #include "node.hpp"

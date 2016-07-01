@@ -49,6 +49,7 @@ void ComparisonPopulationTreeCollection::init_trees(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites
         ) {
+    std::unordered_set<std::string> population_labels;
     double fresh_height;
     for (unsigned int tree_idx = 0;
             tree_idx < comparison_settings.size();
@@ -61,6 +62,19 @@ void ComparisonPopulationTreeCollection::init_trees(
                 strict_on_constant_sites,
                 strict_on_missing_sites
                 );
+        for (auto const& pop_label: new_tree.get_population_labels()) {
+            auto p = population_labels.insert(pop_label);
+            if (! p.second) {
+                std::ostringstream message;
+                message << "\n#######################################################################\n"
+                        <<   "###############################  ERROR  ###############################\n"
+                        << "Population label conflict. The population label:\n"
+                        << "\'" << pop_label << "\'\n"
+                        << "is used in multiple alignments.\n"
+                        << "#######################################################################\n";
+                throw EcoevolityCollectionSettingError(message.str());
+            }
+        }
         new_tree.set_node_height_prior(this->node_height_prior_);
         new_tree.set_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);

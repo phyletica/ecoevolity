@@ -131,6 +131,10 @@ class PopulationTree {
             return this->root_->degree();
         }
 
+        const std::vector<std::string>& get_population_labels() const {
+            return this->data_.get_population_labels();
+        }
+
         void set_u(double u);
         void update_u(double u);
         double get_u() const;
