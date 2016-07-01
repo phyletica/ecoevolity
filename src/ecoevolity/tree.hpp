@@ -97,7 +97,8 @@ class PopulationTree {
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
                 bool validate = true,
-                bool show_site_removal_warnings = false
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
                 );
         //~PopulationTree () { delete this->root_; }
 
@@ -109,7 +110,9 @@ class PopulationTree {
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
                 bool validate = true,
-                bool show_site_removal_warnings = false);
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
 
         void fold_patterns();
 
@@ -301,9 +304,15 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
                 bool validate = true,
-                bool show_site_removal_warnings = false);
-        ComparisonPopulationTree(const ComparisonSettings& settings,
-                RandomNumberGenerator& rng);
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
+        ComparisonPopulationTree(
+                const ComparisonSettings& settings,
+                RandomNumberGenerator& rng,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
 
         void set_child_coalescence_rate(unsigned int child_index, double rate);
         void set_child_population_size(unsigned int child_index, double size);

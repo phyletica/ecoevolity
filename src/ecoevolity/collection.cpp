@@ -22,7 +22,9 @@
 
 ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         const CollectionSettings & settings,
-        RandomNumberGenerator & rng
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
         ) {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -33,14 +35,20 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->operator_schedule_ = OperatorSchedule(
             settings.get_operator_schedule_settings(),
             settings.using_dpp());
-    this->init_trees(settings.get_comparison_settings(), rng);
+    this->init_trees(settings.get_comparison_settings(),
+            rng,
+            strict_on_constant_sites,
+            strict_on_missing_sites);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
-    const std::vector<ComparisonSettings> & comparison_settings,
-    RandomNumberGenerator & rng) {
+        const std::vector<ComparisonSettings> & comparison_settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) {
     double fresh_height;
     for (unsigned int tree_idx = 0;
             tree_idx < comparison_settings.size();
@@ -49,7 +57,10 @@ void ComparisonPopulationTreeCollection::init_trees(
         std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
         ComparisonPopulationTree new_tree = ComparisonPopulationTree(
                 comparison_settings.at(tree_idx),
-                rng);
+                rng,
+                strict_on_constant_sites,
+                strict_on_missing_sites
+                );
         new_tree.set_node_height_prior(this->node_height_prior_);
         new_tree.set_height_parameter(new_height_parameter);
         this->node_heights_.push_back(new_height_parameter);

@@ -55,7 +55,10 @@ class ComparisonPopulationTreeCollection {
 
         void init_trees(
                 const std::vector<ComparisonSettings> & comparison_settings,
-                RandomNumberGenerator & rng);
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
 
         void compute_tree_partials();
         void compute_tree_partials_threaded();
@@ -105,7 +108,9 @@ class ComparisonPopulationTreeCollection {
         ComparisonPopulationTreeCollection() { }
         ComparisonPopulationTreeCollection(
                 const CollectionSettings & settings,
-                RandomNumberGenerator & rng
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
                 );
         virtual ~ComparisonPopulationTreeCollection() { }
         void store_state();

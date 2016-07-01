@@ -76,6 +76,24 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "threads equal to the number of comparisons will be used. If "
                   "you are using the \'--ignore-data\' option, its often "
                   "fastest to NOT use multi-threading.");
+    parser.add_option("--relax-constant-sites")
+            .action("store_true")
+            .dest("relax_constant_sites")
+            .help("By default, if you specify \'constant_sites_removed = true\' "
+                  "and constant sites are found, Ecoevolity throws an error. "
+                  "With this option, Ecoevolity will automatically ignore the "
+                  "constant sites and only issue a warning (and correct for "
+                  "constant sites in the likelihood calculation). Please make sure "
+                  "you understand what you are doing when you use this option."
+                );
+    parser.add_option("--relax-missing-sites")
+            .action("store_true")
+            .dest("relax_missing_sites")
+            .help("By default, if a column is found for which there is no data "
+                  "for at least one population, Ecoevolity throws an error. "
+                  "With this option, Ecoevolity will automatically ignore such "
+                  "sites and only issue a warning."
+                );
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();
@@ -99,6 +117,9 @@ int ecoevolity_main(int argc, char * argv[]) {
     else {
         std::cout << "Using data in order to sample from the posterior distribution..." << std::endl;
     }
+
+    const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
+    const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
 
     unsigned int nthreads = options.get("nthreads");
 
@@ -128,7 +149,11 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     std::cout << "Configuring model..." << std::endl;
     ComparisonPopulationTreeCollection comparisons =
-            ComparisonPopulationTreeCollection(settings, rng);
+            ComparisonPopulationTreeCollection(
+                    settings,
+                    rng,
+                    strict_on_constant_sites,
+                    strict_on_missing_sites);
 
     if (ignore_data) {
         comparisons.ignore_data();

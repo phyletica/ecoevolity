@@ -84,6 +84,24 @@ class EcoevolityBiallelicDataError: public EcoevolityBaseError {
                     file_name) { }
 };
 
+class EcoevolityConstantSitesError: public EcoevolityBaseError {
+    public:
+        EcoevolityConstantSitesError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityConstantSitesError", message,
+                    file_name) { }
+};
+
+class EcoevolityMissingDataError: public EcoevolityBaseError {
+    public:
+        EcoevolityMissingDataError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityMissingDataError", message,
+                    file_name) { }
+};
+
 class EcoevolityParsingError: public EcoevolityBaseError {
     public:
         EcoevolityParsingError(
