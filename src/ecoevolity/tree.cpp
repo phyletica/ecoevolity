@@ -1040,42 +1040,102 @@ std::shared_ptr GeneTreeSimNode ComparisonPopulationTree::simulate_gene_tree(
     std::vector< std::shared_ptr<GeneTreeSimNode> > left_lineages;
     std::vector< std::shared_ptr<GeneTreeSimNode> > right_lineages;
     std::vector< std::shared_ptr<GeneTreeSimNode> > root_lineages;
-    std::vector<std::string> tip_labels = this->data_.get_sequence_labels(
+    std::vector<std::string> left_tip_labels;
+    std::vector<std::string> right_tip_labels;
+    left_tip_labels = this->data_.get_sequence_labels(
             this->data_.get_population_index(
                     this->root_->get_child(0)->get_label()));
-    left_lineages.reserve(tip_labels.size());
-    for (auto const & label: tip_labels) {
+    left_lineages.reserve(left_tip_labels.size());
+    for (auto const & label: left_tip_labels) {
         std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
                     label,
                     0.0);
             tip->fix_node_height();
             left_lineages.push_back(tip);
     }
+
     double top_of_pop_branch = this->get_height();
     double current_height = 0.0;
-    int k = left_lineages.size();
+    double last_left_coal_height = this->coalesce_in_branch(
+            left_lineages,
+            this->get_child_coalescence_rate(0),
+            current_height,
+            top_of_branch_height);
+
+    if (this->root_->get_number_of_children() > 1) {
+        right_tip_labels = this->data_.get_sequence_labels(
+                this->data_.get_population_index(
+                        this->root_->get_child(1)->get_label()));
+        right_lineages.reserve(right_tip_labels.size());
+        for (auto const & label: right_tip_labels) {
+            std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
+                        label,
+                        0.0);
+                tip->fix_node_height();
+                right_lineages.push_back(tip);
+        }
+
+        double last_right_coal_height = this->coalesce_in_branch(
+                right_lineages,
+                this->get_child_coalescence_rate(1),
+                current_height,
+                top_of_branch_height);
+    }
+
+    for (unsigned int i = 0; i < left_lineages.size(); ++i) {
+        root_lineages.push_back(left_lineages.at(i));
+        left_lineages.erase(left_lineages.begin() + i);
+    }
+    for (unsigned int i = 0; i < right_lineages.size(); ++i) {
+        root_lineages.push_back(right_lineages.at(i));
+        right_lineages.erase(right_lineages.begin() + i);
+    }
+    ECOEVOLITY_ASSERT(root_lineages.size() > 0);
+    if (root_lineages.size() == 1) {
+        return root_lineages.at(0);
+    }
+    double last_root_coal_height = this->coalesce_in_branch(
+            root_lineages,
+            this->get_root_coalescence_rate(),
+            top_of_branch_height,
+            std::numeric_limits<double>::infinity()
+            );
+    ECOEVOLITY_ASSERT(root_lineages.size() == 1);
+    return root_lineages.at(0);
+}
+
+double ComparisonPopulationTree::coalesce_in_branch(
+        std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
+        double coalescence_rate,
+        double bottom_of_branch_height = 0.0,
+        double top_of_branch_height = std::numeric_limits<double>::infinity()
+        ) {
+    ECOEVOLITY_ASSERT(lineages.size() > 0);
+    ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
+    double current_height = bottom_of_branch_height;
+    int k = lineages.size();
     while true {
         if (k == 1) {
-            ECOEVOLITY_ASSERT(left_lineages.size() == k);
-            break;
+            ECOEVOLITY_ASSERT(lineages.size() == k);
+            return current_height;
         }
         double scale = 2.0 / ( ((double)k) * (k - 1.0) *
-                this->get_child_coalescence_rate(0))
+                coalescence_rate)
         double wait = rng.gamma(1.0, scale);
         
-        if (current_height + wait >= top_of_pop_branch) {
-            break;
+        if (current_height + wait >= top_of_branch_height) {
+            return current_height;
         }
-        current_height += weight;
+        current_height += height;
         std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
                 current_height);
         for (int i = 0; i < 2; ++i) {
-            int idx = rng.uniform_int(0, left_lineages.size() - 1);
-            mrca.add_child(left_lineages.at(idx));
-            left_lineages.erase(left_lineages.begin() + idx);
+            int idx = rng.uniform_int(0, lineages.size() - 1);
+            mrca.add_child(lineages.at(idx));
+            lineages.erase(lineages.begin() + idx);
         }
-        left_lineages.push_back(mrca);
+        lineages.push_back(mrca);
         --k;
-        ECOEVOLITY_ASSERT(left_lineages.size() == k);
+        ECOEVOLITY_ASSERT(lineages.size() == k);
     }
 }
