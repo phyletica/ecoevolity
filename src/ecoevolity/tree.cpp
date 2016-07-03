@@ -1034,21 +1034,31 @@ std::string ComparisonPopulationTree::get_state_string(
     return ss.str();
 }
 
+// TODO: This is a hack. The more general solution would be a recursive method
+// of PopulationTree
 std::shared_ptr GeneTreeSimNode ComparisonPopulationTree::simulate_gene_tree(
+        const unsigned int pattern_index,
         RandomNumberGenerator& rng) const {
 
     std::vector< std::shared_ptr<GeneTreeSimNode> > left_lineages;
     std::vector< std::shared_ptr<GeneTreeSimNode> > right_lineages;
     std::vector< std::shared_ptr<GeneTreeSimNode> > root_lineages;
-    std::vector<std::string> left_tip_labels;
-    std::vector<std::string> right_tip_labels;
-    left_tip_labels = this->data_.get_sequence_labels(
+    std::vector<std::string> tip_labels;
+    unsigned int allele_count;
+    tip_labels = this->data_.get_sequence_labels(
             this->data_.get_population_index(
                     this->root_->get_child(0)->get_label()));
-    left_lineages.reserve(left_tip_labels.size());
-    for (auto const & label: left_tip_labels) {
+    allele_count = this->data_.get_allele_count(
+            pattern_index,
+            this->data_.get_population_index(
+                    this->root_->get_child(0)->get_label()));
+    if (this->markers_are_dominant()) {
+        allele_count *= 2;
+    }
+    left_lineages.reserve(allele_count);
+    for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
         std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                    label,
+                    tip_labels.at(i),
                     0.0);
             tip->fix_node_height();
             left_lineages.push_back(tip);
@@ -1063,13 +1073,20 @@ std::shared_ptr GeneTreeSimNode ComparisonPopulationTree::simulate_gene_tree(
             top_of_branch_height);
 
     if (this->root_->get_number_of_children() > 1) {
-        right_tip_labels = this->data_.get_sequence_labels(
+        tip_labels = this->data_.get_sequence_labels(
                 this->data_.get_population_index(
                         this->root_->get_child(1)->get_label()));
-        right_lineages.reserve(right_tip_labels.size());
-        for (auto const & label: right_tip_labels) {
+        allele_count = this->data_.get_allele_count(
+                pattern_index,
+                this->data_.get_population_index(
+                        this->root_->get_child(1)->get_label()));
+        if (this->markers_are_dominant()) {
+            allele_count *= 2;
+        }
+        right_lineages.reserve(allele_count);
+        for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
             std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                        label,
+                        tip_labels.at(i),
                         0.0);
                 tip->fix_node_height();
                 right_lineages.push_back(tip);
@@ -1138,4 +1155,44 @@ double ComparisonPopulationTree::coalesce_in_branch(
         --k;
         ECOEVOLITY_ASSERT(lineages.size() == k);
     }
+}
+
+unsigned int ComparisonPopulationTree::simulate_biallelic_data_set(
+        RandomNumberGenerator& rng) const {
+    // Looping over patterns to make sure simulated dataset has exact same
+    // sample configuration as the member dataset.
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->data_.get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int i = 0;
+                i < this->data_.get_pattern_weight(pattern_idx);
+                ++i) {
+            auto p = this->simulate_biallelic_site(
+                    pattern_idx,
+                    rng);
+            std::vector<unsigned int> red_allele_counts = p.first;
+            std::shared_ptr GeneTreeSimNode = p.second;
+            // reject constant sites if only variable sites
+        }
+    }
+}
+
+std::pair<std::vector<unsigned int>, std::shared_ptr GeneTreeSimNode>
+ComparisonPopulationTree::simulate_biallelic_site(
+        const unsigned int pattern_idx;
+        RandomNumberGenerator& rng) const {
+    double freq_0 = this->get_u() / (this->get_u() + this->get_v());
+
+
+    // Need to make this an actual tree instance (rather than node)?
+    std::shared_ptr GeneTreeSimNode gene_tree = this->simulate_gene_tree(pattern_idx, rng);
+    gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
+    gene_tree->simulate_binary_character(freq_0);
+
+    const std::vector<unsigned int>& allele_counts = this->data_.get_allele_counts(pattern_idx);
+    std::vector<unsigned int> red_allele_counts(allele_counts.size(), 0);
+    std::vector<int> last_allele(allele_counts.size(), -1);
+
+    // Run through gene tree and tally up counts
+    // could make this a method of GeneTreeSimNode and pass map of seq labels to pop_indices
 }
