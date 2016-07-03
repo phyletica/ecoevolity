@@ -1184,15 +1184,33 @@ ComparisonPopulationTree::simulate_biallelic_site(
     double freq_0 = this->get_u() / (this->get_u() + this->get_v());
 
 
-    // Need to make this an actual tree instance (rather than node)?
     std::shared_ptr GeneTreeSimNode gene_tree = this->simulate_gene_tree(pattern_idx, rng);
     gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
-    gene_tree->simulate_binary_character(freq_0);
+    gene_tree->simulate_binary_character(freq_0, rng);
 
-    const std::vector<unsigned int>& allele_counts = this->data_.get_allele_counts(pattern_idx);
-    std::vector<unsigned int> red_allele_counts(allele_counts.size(), 0);
-    std::vector<int> last_allele(allele_counts.size(), -1);
+    std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map;
+    for (auto const & seq_label: this->data_.get_sequence_labels()) {
+        seq_label_to_pop_index_map[seq_label] =
+                this->data_.get_population_index_from_seq_label(seq_label);
+    }
 
-    // Run through gene tree and tally up counts
-    // could make this a method of GeneTreeSimNode and pass map of seq labels to pop_indices
+    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
+    std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
+    std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
+    if (this->markers_are_dominant()) {
+        std::vector<int> last_allele(expected_allele_counts.size(), -1);
+        gene_tree->get_allele_counts(
+                seq_label_to_pop_index_map,
+                allele_counts,
+                red_allele_counts,
+                last_allele);
+    }
+    else {
+        gene_tree->get_allele_counts(
+                seq_label_to_pop_index_map,
+                allele_counts,
+                red_allele_counts);
+    }
+    ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
+    return std::make_pair(red_allele_counts, gene_tree);
 }

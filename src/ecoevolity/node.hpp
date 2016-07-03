@@ -49,15 +49,128 @@ class Node: public BaseNode<Node>{
 class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
     private:
         typedef BaseNode<GeneTreeSimNode> BaseClass;
+        int character_state_ = -1;
+        double p[2][2];
 
     public:
-        int state;
-        double p[2][2];
         GeneTreeSimNode() { }
         GeneTreeSimNode(std::string label) : BaseClass(label) { }
         GeneTreeSimNode(double height) : BaseClass(height) { }
         GeneTreeSimNode(std::string label, double height)
             : BaseClass(label, height) { }
+
+        int get_character_state() const {
+            return this->character_state_;
+        }
+        void set_character_state(int state) {
+            this->character_state_ = state;
+        }
+
+        void compute_branch_binary_transition_probabilities(
+                const double u,
+                const double v) {
+            double freq_0 = u / (u + v);
+            double freq_1 = 1.0 - freq_0;
+            double t = this->get_length();
+            double r = 1.0 - std::exp(-(u + v) * t);
+            this->p[1][0] = freq_0 * r;
+            this->p[1][1] = 1.0 - (freq_0 * r);
+            this->p[0][1] = freq_1 * r;
+            this->p[0][0] = 1.0 - (freq_1 * r);
+        }
+
+        void compute_binary_transition_probabilities(
+                const double u,
+                const double v) {
+            this->compute_branch_binary_transition_probabilities(u, v);
+            for (auto child_iter: this->children_) {
+                child_iter->compute_binary_transition_probabilities(u, v);
+            }
+        }
+
+        void draw_binary_character(
+                const double freq_0,
+                RandomNumberGenerator& rng) {
+            u = rng.uniform_real();
+            if (this->has_parent() && (this->parent_->get_character_state() > -1)) {
+                int i = this->parent_.get_character_state();
+                ECOEVOLITY_ASSERT((i == 0) || (i == 1));
+                if (u < this->p[i][0]) {
+                    this->set_character_state(0);
+                }
+                else {
+                    this->set_character_state(1);
+                }
+                return;
+            }
+            if (u < freq_0) {
+                this->set_character_state(0);
+            }
+            else {
+                this->set_character_state(1);
+            }
+        }
+
+        void simulate_binary_character(
+                const double freq_0,
+                RandomNumberGenerator& rng) {
+            this->draw_binary_character(freq_0, rng);
+            for (auto child_iter: this->children_) {
+                child_iter->simulate_binary_character(freq_0, rng);
+            }
+
+        }
+
+        void get_allele_counts(
+                const std::unordered_map<std::string, unsigned int>& tip_label_to_population_index_map,
+                std::vector<unsigned int>& allele_counts,
+                std::vector<unsigned int>& red_allele_counts) const {
+            // Need to check that indices in map are the same as 0->size-1 in
+            // both allele_counts and red_allele_counts
+            if (this->is_leaf()) {
+                unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
+                ++allele_counts.at(pop_idx);
+                if (this->get_character_state() == 1) {
+                    ++red_allele_counts.at(pop_idx);
+                }
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_allele_counts(
+                        tip_label_to_population_index_map,
+                        allele_counts,
+                        red_allele_counts,
+                        markers_are_dominant);
+            }
+        }
+
+        void get_allele_counts(
+                const std::unordered_map<std::string, unsigned int>& tip_label_to_population_index_map,
+                std::vector<unsigned int>& allele_counts,
+                std::vector<unsigned int>& red_allele_counts,
+                std::vector<unsigned int>& last_allele) const {
+            // Need to check that indices in map are the same as 0->size-1 in
+            // both allele_counts and red_allele_counts
+            if (this->is_leaf()) {
+                unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
+                if (last_allele.at(pop_idx) < 0) {
+                    last_allele.at(pop_idx) = this.get_character_state();
+                    return;
+                }
+                if ((last_allele.at(pop_idx) == 1) || (this->get_character_state() == 1)) {
+                    ++red_allele_counts.at(pop_idx);
+                }
+                ++allele_counts.at(pop_idx);
+                last_allele.at(pop_idx) = -1;
+                return;
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_allele_counts(
+                        tip_label_to_population_index_map,
+                        allele_counts,
+                        red_allele_counts,
+                        markers_are_dominant);
+            }
+        }
 };
 
 class PopulationNode: public BaseNode<PopulationNode>{
