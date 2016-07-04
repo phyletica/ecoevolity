@@ -90,6 +90,10 @@ class BiallelicData {
         bool has_mirrored_patterns() const;
         bool patterns_are_folded() const;
 
+        static bool pattern_is_constant(
+                const std::vector<unsigned int>& allele_counts,
+                const std::vector<unsigned int>& red_allele_counts) const;
+
         void get_pattern_index(
                 bool& was_found,
                 unsigned int& pattern_index,

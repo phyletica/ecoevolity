@@ -1157,22 +1157,40 @@ double ComparisonPopulationTree::coalesce_in_branch(
     }
 }
 
-unsigned int ComparisonPopulationTree::simulate_biallelic_data_set(
+void ComparisonPopulationTree::simulate_biallelic_data_set(
         RandomNumberGenerator& rng) const {
+    BiallelicData sim_data = this->data_.get_empty_copy()
     // Looping over patterns to make sure simulated dataset has exact same
-    // sample configuration as the member dataset.
+    // sample configuration (i.e., the same pattern of missing data) as the
+    // member dataset.
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
             ++pattern_idx) {
         for (unsigned int i = 0;
                 i < this->data_.get_pattern_weight(pattern_idx);
                 ++i) {
-            auto p = this->simulate_biallelic_site(
-                    pattern_idx,
-                    rng);
-            std::vector<unsigned int> red_allele_counts = p.first;
-            std::shared_ptr GeneTreeSimNode = p.second;
-            // reject constant sites if only variable sites
+            bool filtering_contant_sites = true;
+            while (filtering_contant_sites) {
+                auto p = this->simulate_biallelic_site(
+                        pattern_idx,
+                        rng);
+                std::vector<unsigned int> red_allele_counts = p.first;
+                std::shared_ptr GeneTreeSimNode = p.second;
+                std::vector<unsigned int>allele_counts = this->data_.get_allele_counts(pattern_idx);
+                if ((this->constant_sites_removed_) &&
+                    (this->data_.pattern_is_constant(allele_counts, red_allele_counts))) {
+                    if (red_allele_counts == allele_counts) {
+                        ++sim_data.number_of_constant_red_sites_removed_;
+                    }
+                    else {
+                        ++sim_data.number_of_constant_green_sites_removed_;
+                    }
+                    continue;
+                }
+                // Have a site to keep
+                // Add it to dataset (hack BiallelicData or new class?)
+                sim_data.add_pattern(allele_counts, red_allele_counts);
+            }
         }
     }
 }

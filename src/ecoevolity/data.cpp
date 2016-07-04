@@ -415,6 +415,26 @@ void BiallelicData::update_has_constant_patterns() {
     return;
 }
 
+static bool BiallelicData::pattern_is_constant(
+        const std::vector<unsigned int>& allele_counts,
+        const std::vector<unsigned int>& red_allele_counts) const {
+    ECOEVOLITY_ASSERT(allele_counts.size() == red_allele_counts.size());
+    bool all_green = true;
+    bool all_red = true;
+    for (unsigned int i = 0; i < allele_counts.size(); ++i) {
+        if (red_allele_counts.at(i) > 0) {
+            all_green = false;
+        }
+        if (red_allele_counts.at(i) < allele_counts.at(i)) {
+            all_red = false;
+        }
+        if ((! all_green) && (! all_red)) {
+            break;
+        }
+    }
+    return (all_red || all_green);
+}
+
 void BiallelicData::update_has_missing_population_patterns() {
     this->has_missing_population_patterns_ = false;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
