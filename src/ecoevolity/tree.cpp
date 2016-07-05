@@ -1193,6 +1193,9 @@ void ComparisonPopulationTree::simulate_biallelic_data_set(
             }
         }
     }
+    // Can return BiallelicData or write to stream/path
+    // What about gene trees? Write to stream/path (don't want to store/return
+    // giant vector)
 }
 
 std::pair<std::vector<unsigned int>, std::shared_ptr GeneTreeSimNode>
