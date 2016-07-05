@@ -381,6 +381,21 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
+        std::string to_parentheses() const {
+            std::ostringstream s;
+            if (this->is_leaf()) {
+                s << this->get_label()
+            }
+            else {
+                s << "(";
+                for (auto child_iter: this->children_) {
+                    s << "," << this->to_parentheses();
+                }
+                s << ")";
+            }
+            s << ":" << this->get_length();
+            return s.str();
+        }
 };
 
 #endif

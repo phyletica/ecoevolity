@@ -58,6 +58,7 @@ class BiallelicData {
         // ~BiallelicData();
         
         //Methods
+        BiallelicData get_empty_copy() const;
         const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
         const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
 
@@ -91,14 +92,14 @@ class BiallelicData {
         bool patterns_are_folded() const;
 
         static bool pattern_is_constant(
-                const std::vector<unsigned int>& allele_counts,
-                const std::vector<unsigned int>& red_allele_counts) const;
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts) const;
 
         void get_pattern_index(
                 bool& was_found,
                 unsigned int& pattern_index,
-                const std::vector<unsigned int> red_allele_counts,
-                const std::vector<unsigned int> allele_counts) const;
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts) const;
 
         const std::vector< std::vector<unsigned int> > get_mirrored_pattern(unsigned int pattern_index) const;
 
@@ -116,6 +117,11 @@ class BiallelicData {
 
         void validate() const;
 
+        bool add_site(
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts,
+                bool filtering_contant_sites = true);
+
         void write_summary(
                 std::ostream& out,
                 unsigned int indent_level = 0) const;
@@ -130,7 +136,8 @@ class BiallelicData {
         bool has_constant_patterns_ = false;
         bool has_mirrored_patterns_ = true;
         bool patterns_are_folded_ = false;
-        std::string path_;
+        bool appendable_ = false;
+        std::string path_ = "";
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
         std::vector<unsigned int> pattern_weights_;

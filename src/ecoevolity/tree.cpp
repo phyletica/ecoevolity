@@ -1126,7 +1126,7 @@ double ComparisonPopulationTree::coalesce_in_branch(
         double coalescence_rate,
         double bottom_of_branch_height = 0.0,
         double top_of_branch_height = std::numeric_limits<double>::infinity()
-        ) {
+        ) const {
     ECOEVOLITY_ASSERT(lineages.size() > 0);
     ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
     double current_height = bottom_of_branch_height;
@@ -1134,14 +1134,14 @@ double ComparisonPopulationTree::coalesce_in_branch(
     while true {
         if (k == 1) {
             ECOEVOLITY_ASSERT(lineages.size() == k);
-            return current_height;
+            break;
         }
         double scale = 2.0 / ( ((double)k) * (k - 1.0) *
                 coalescence_rate)
         double wait = rng.gamma(1.0, scale);
         
         if (current_height + wait >= top_of_branch_height) {
-            return current_height;
+            break;
         }
         current_height += height;
         std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
@@ -1155,11 +1155,19 @@ double ComparisonPopulationTree::coalesce_in_branch(
         --k;
         ECOEVOLITY_ASSERT(lineages.size() == k);
     }
+    return current_height
 }
 
-void ComparisonPopulationTree::simulate_biallelic_data_set(
-        RandomNumberGenerator& rng) const {
-    BiallelicData sim_data = this->data_.get_empty_copy()
+BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
+        RandomNumberGenerator& rng,
+        bool validate) const {
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    const bool filtering_constant_sites = this->constant_sites_removed_;
+    std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map;
+    for (auto const & seq_label: this->data_.get_sequence_labels()) {
+        seq_label_to_pop_index_map[seq_label] =
+                this->data_.get_population_index_from_seq_label(seq_label);
+    }
     // Looping over patterns to make sure simulated dataset has exact same
     // sample configuration (i.e., the same pattern of missing data) as the
     // member dataset.
@@ -1169,51 +1177,41 @@ void ComparisonPopulationTree::simulate_biallelic_data_set(
         for (unsigned int i = 0;
                 i < this->data_.get_pattern_weight(pattern_idx);
                 ++i) {
-            bool filtering_contant_sites = true;
-            while (filtering_contant_sites) {
-                auto p = this->simulate_biallelic_site(
+            bool site_added = false;
+            while (! site_added) {
+                auto pattern_tree = this->simulate_biallelic_site(
                         pattern_idx,
+                        seq_label_to_pop_index_map,
                         rng);
-                std::vector<unsigned int> red_allele_counts = p.first;
-                std::shared_ptr GeneTreeSimNode = p.second;
-                std::vector<unsigned int>allele_counts = this->data_.get_allele_counts(pattern_idx);
-                if ((this->constant_sites_removed_) &&
-                    (this->data_.pattern_is_constant(allele_counts, red_allele_counts))) {
-                    if (red_allele_counts == allele_counts) {
-                        ++sim_data.number_of_constant_red_sites_removed_;
-                    }
-                    else {
-                        ++sim_data.number_of_constant_green_sites_removed_;
-                    }
-                    continue;
-                }
-                // Have a site to keep
-                // Add it to dataset (hack BiallelicData or new class?)
-                sim_data.add_pattern(allele_counts, red_allele_counts);
+                auto pattern = pattern_tree.first;
+                std::vector<unsigned int> red_allele_counts = pattern.first;
+                std::vector<unsigned int> allele_counts = pattern.second;
+                std::shared_ptr GeneTreeSimNode = pattern_tree.second;
+                site_added = sim_data.add_site(red_allele_counts,
+                        allele_counts,
+                        filtering_contant_sites);
             }
         }
     }
-    // Can return BiallelicData or write to stream/path
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
     // What about gene trees? Write to stream/path (don't want to store/return
     // giant vector)
+    return sim_data;
 }
 
-std::pair<std::vector<unsigned int>, std::shared_ptr GeneTreeSimNode>
+std::pair< std::pair<std::vector<unsigned int>, std::vector<unsigned int> >, std::shared_ptr GeneTreeSimNode>
 ComparisonPopulationTree::simulate_biallelic_site(
         const unsigned int pattern_idx;
+        std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map,
         RandomNumberGenerator& rng) const {
     double freq_0 = this->get_u() / (this->get_u() + this->get_v());
-
 
     std::shared_ptr GeneTreeSimNode gene_tree = this->simulate_gene_tree(pattern_idx, rng);
     gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
     gene_tree->simulate_binary_character(freq_0, rng);
-
-    std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map;
-    for (auto const & seq_label: this->data_.get_sequence_labels()) {
-        seq_label_to_pop_index_map[seq_label] =
-                this->data_.get_population_index_from_seq_label(seq_label);
-    }
 
     const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
     std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
@@ -1233,5 +1231,7 @@ ComparisonPopulationTree::simulate_biallelic_site(
                 red_allele_counts);
     }
     ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
-    return std::make_pair(red_allele_counts, gene_tree);
+    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
+            std::make_pair(red_allele_counts, allele_counts);
+    return std::make_pair(pattern, gene_tree);
 }

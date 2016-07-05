@@ -125,8 +125,6 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 const std::unordered_map<std::string, unsigned int>& tip_label_to_population_index_map,
                 std::vector<unsigned int>& allele_counts,
                 std::vector<unsigned int>& red_allele_counts) const {
-            // Need to check that indices in map are the same as 0->size-1 in
-            // both allele_counts and red_allele_counts
             if (this->is_leaf()) {
                 unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
                 ++allele_counts.at(pop_idx);
@@ -138,8 +136,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 child_iter->get_allele_counts(
                         tip_label_to_population_index_map,
                         allele_counts,
-                        red_allele_counts,
-                        markers_are_dominant);
+                        red_allele_counts);
             }
         }
 
@@ -148,8 +145,6 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 std::vector<unsigned int>& allele_counts,
                 std::vector<unsigned int>& red_allele_counts,
                 std::vector<unsigned int>& last_allele) const {
-            // Need to check that indices in map are the same as 0->size-1 in
-            // both allele_counts and red_allele_counts
             if (this->is_leaf()) {
                 unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
                 if (last_allele.at(pop_idx) < 0) {
@@ -168,7 +163,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                         tip_label_to_population_index_map,
                         allele_counts,
                         red_allele_counts,
-                        markers_are_dominant);
+                        last_allele);
             }
         }
 };
