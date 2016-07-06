@@ -1710,4 +1710,18 @@ TEST_CASE("Test to_parentheses with Node", "[NodeX]") {
         p = root->to_parentheses();
         REQUIRE(p == "((A:0.8,B:0.8,D:0.8):0.2,C:1,(E:0.3,F:0.3):0.7):0");
     }
+
+    SECTION("Testing singleton") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+
+        std::string p = root->to_parentheses();
+        REQUIRE(p == "root:0");
+
+        std::shared_ptr<Node> a = std::make_shared<Node>("A");
+
+        root->add_child(a);
+
+        p = root->to_parentheses();
+        REQUIRE(p == "(A:1):0");
+    }
 }
