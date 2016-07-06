@@ -93,7 +93,7 @@ class BiallelicData {
 
         static bool pattern_is_constant(
                 const std::vector<unsigned int>& red_allele_counts,
-                const std::vector<unsigned int>& allele_counts) const;
+                const std::vector<unsigned int>& allele_counts);
 
         void get_pattern_index(
                 bool& was_found,
@@ -121,6 +121,8 @@ class BiallelicData {
                 const std::vector<unsigned int>& red_allele_counts,
                 const std::vector<unsigned int>& allele_counts,
                 bool filtering_contant_sites = true);
+
+        void update_pattern_booleans();
 
         void write_summary(
                 std::ostream& out,
@@ -153,7 +155,6 @@ class BiallelicData {
         void update_has_constant_patterns();
         void update_has_mirrored_patterns();
         void update_patterns_are_folded();
-        void update_pattern_booleans();
         void remove_first_constant_pattern(
                 bool& was_removed,
                 unsigned int& removed_index);

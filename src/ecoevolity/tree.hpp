@@ -367,13 +367,14 @@ class ComparisonPopulationTree: public PopulationTree {
                 const std::string& delimiter = "\t",
                 unsigned int precision = 18) const;
 
-        std::shared_ptr GeneTreeSimNode simulate_gene_tree(
+        std::shared_ptr<GeneTreeSimNode> simulate_gene_tree(
                 const unsigned int pattern_index,
                 RandomNumberGenerator& rng) const;
 
         double coalesce_in_branch(
                 std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
                 double coalescence_rate,
+                RandomNumberGenerator& rng,
                 double bottom_of_branch_height = 0.0,
                 double top_of_branch_height = std::numeric_limits<double>::infinity()
                 ) const;
@@ -382,9 +383,11 @@ class ComparisonPopulationTree: public PopulationTree {
                 RandomNumberGenerator& rng,
                 bool validate = true) const;
 
-        std::pair< std::pair<std::vector<unsigned int>, std::vector<unsigned int> >, std::shared_ptr GeneTreeSimNode>
+        std::pair<
+                std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
+                std::shared_ptr<GeneTreeSimNode> >
         simulate_biallelic_site(
-                const unsigned int pattern_idx;
+                const unsigned int pattern_idx,
                 std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map,
                 RandomNumberGenerator& rng) const;
 

@@ -91,9 +91,9 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
         void draw_binary_character(
                 const double freq_0,
                 RandomNumberGenerator& rng) {
-            u = rng.uniform_real();
+            double u = rng.uniform_real();
             if (this->has_parent() && (this->parent_->get_character_state() > -1)) {
-                int i = this->parent_.get_character_state();
+                int i = this->parent_->get_character_state();
                 ECOEVOLITY_ASSERT((i == 0) || (i == 1));
                 if (u < this->p[i][0]) {
                     this->set_character_state(0);
@@ -144,11 +144,11 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 const std::unordered_map<std::string, unsigned int>& tip_label_to_population_index_map,
                 std::vector<unsigned int>& allele_counts,
                 std::vector<unsigned int>& red_allele_counts,
-                std::vector<unsigned int>& last_allele) const {
+                std::vector<int>& last_allele) const {
             if (this->is_leaf()) {
                 unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
                 if (last_allele.at(pop_idx) < 0) {
-                    last_allele.at(pop_idx) = this.get_character_state();
+                    last_allele.at(pop_idx) = this->get_character_state();
                     return;
                 }
                 if ((last_allele.at(pop_idx) == 1) || (this->get_character_state() == 1)) {

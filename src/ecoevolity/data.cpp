@@ -473,9 +473,9 @@ void BiallelicData::update_has_constant_patterns() {
     return;
 }
 
-static bool BiallelicData::pattern_is_constant(
+bool BiallelicData::pattern_is_constant(
         const std::vector<unsigned int>& red_allele_counts,
-        const std::vector<unsigned int>& allele_counts) const {
+        const std::vector<unsigned int>& allele_counts) {
     ECOEVOLITY_ASSERT(allele_counts.size() == red_allele_counts.size());
     bool all_green = true;
     bool all_red = true;
