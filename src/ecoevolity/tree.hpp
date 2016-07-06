@@ -371,13 +371,13 @@ class ComparisonPopulationTree: public PopulationTree {
                 const unsigned int pattern_index,
                 RandomNumberGenerator& rng) const;
 
-        double coalesce_in_branch(
+        static double coalesce_in_branch(
                 std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
                 double coalescence_rate,
                 RandomNumberGenerator& rng,
                 double bottom_of_branch_height = 0.0,
                 double top_of_branch_height = std::numeric_limits<double>::infinity()
-                ) const;
+                );
 
         BiallelicData simulate_biallelic_data_set(
                 RandomNumberGenerator& rng,

@@ -1132,7 +1132,7 @@ double ComparisonPopulationTree::coalesce_in_branch(
         RandomNumberGenerator& rng,
         double bottom_of_branch_height,
         double top_of_branch_height
-        ) const {
+        ) {
     ECOEVOLITY_ASSERT(lineages.size() > 0);
     ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
     double current_height = bottom_of_branch_height;

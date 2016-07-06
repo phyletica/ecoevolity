@@ -1677,7 +1677,7 @@ TEST_CASE("Test coalescence rate fixing", "[PopulationNode]") {
     }
 }
 
-TEST_CASE("Test to_parentheses with Node", "[NodeX]") {
+TEST_CASE("Test to_parentheses with Node", "[Node]") {
 
     SECTION("Testing newick string") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
