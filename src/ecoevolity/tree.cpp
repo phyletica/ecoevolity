@@ -228,8 +228,8 @@ void PopulationTree::compute_top_of_branch_partials(
             node.get_allele_count(),
             this->u_->get_value(),
             this->get_v(),
-            node.get_coalescence_rate(),
-            node.get_length() * this->node_height_multiplier_->get_value(),
+            node.get_coalescence_rate() / this->get_rate_multiplier(),
+            node.get_length() * this->get_rate_multiplier(),
             node.get_bottom_pattern_probs());
     node.copy_top_pattern_probs(m);
 }
@@ -336,7 +336,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
             N,
             this->u_->get_value(),
             this->get_v(),
-            this->root_->get_coalescence_rate());
+            this->root_->get_coalescence_rate() / this->get_rate_multiplier());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
     // ECOEVOLITY_DEBUG(
@@ -408,7 +408,7 @@ void PopulationTree::compute_pattern_likelihoods() {
     }
     double all_green_pattern_likelihood = this->compute_pattern_likelihood(-1);
     double all_red_pattern_likelihood = all_green_pattern_likelihood;
-    if (! this->mutation_rates_are_constrained()) {
+    if (! this->u_v_rates_are_constrained()) {
         all_red_pattern_likelihood = this->compute_pattern_likelihood(-2);
     }
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_likelihood);
@@ -534,7 +534,7 @@ double PopulationTree::get_stored_log_likelihood_value() const {
 }
 
 void PopulationTree::fold_patterns() {
-    if (! this->mutation_rates_are_constrained()) {
+    if (! this->u_v_rates_are_constrained()) {
         std::cerr << 
             "WARNING: Site patterns are being folded when foward/backward\n" <<
             "         mutation rates are not constrained." << std::endl;
@@ -567,7 +567,7 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter
 }
 
 void PopulationTree::set_u(double u) {
-    if (this->mutation_rates_are_fixed()) {
+    if (this->u_v_rates_are_fixed()) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
@@ -579,7 +579,7 @@ void PopulationTree::set_u(double u) {
     this->make_dirty();
 }
 void PopulationTree::update_u(double u) {
-    if (this->mutation_rates_are_fixed()) {
+    if (this->u_v_rates_are_fixed()) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
@@ -605,28 +605,28 @@ void PopulationTree::restore_u() {
     this->make_dirty();
 }
 
-void PopulationTree::set_node_height_multiplier(double m) {
-    if (this->node_height_multiplier_is_fixed()) {
+void PopulationTree::set_rate_multiplier(double m) {
+    if (this->rate_multiplier_is_fixed()) {
         return;
     }
-    this->node_height_multiplier_->set_value(m);
+    this->rate_multiplier_->set_value(m);
     this->make_dirty();
 }
-void PopulationTree::update_node_height_multiplier(double m) {
-    if (this->node_height_multiplier_is_fixed()) {
+void PopulationTree::update_rate_multiplier(double m) {
+    if (this->rate_multiplier_is_fixed()) {
         return;
     }
-    this->node_height_multiplier_->update_value(m);
+    this->rate_multiplier_->update_value(m);
     this->make_dirty();
 }
-double PopulationTree::get_node_height_multiplier() const {
-    return this->node_height_multiplier_->get_value();
+double PopulationTree::get_rate_multiplier() const {
+    return this->rate_multiplier_->get_value();
 }
-void PopulationTree::store_node_height_multiplier() {
-    this->node_height_multiplier_->store();
+void PopulationTree::store_rate_multiplier() {
+    this->rate_multiplier_->store();
 }
-void PopulationTree::restore_node_height_multiplier() {
-    this->node_height_multiplier_->restore();
+void PopulationTree::restore_rate_multiplier() {
+    this->rate_multiplier_->restore();
     this->make_dirty();
 }
 
@@ -634,12 +634,12 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
 }
 
-void PopulationTree::set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
-    this->node_height_multiplier_ = h;
+void PopulationTree::set_rate_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
+    this->rate_multiplier_ = h;
     this->make_dirty();
 }
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_node_height_multiplier_parameter() const {
-    return this->node_height_multiplier_;
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_rate_multiplier_parameter() const {
+    return this->rate_multiplier_;
 }
 
 void PopulationTree::set_root_coalescence_rate(double rate) {
@@ -692,7 +692,7 @@ void PopulationTree::store_prior_density() {
 }
 void PopulationTree::store_parameters() {
     this->store_u();
-    this->store_node_height_multiplier();
+    this->store_rate_multiplier();
     this->store_all_coalescence_rates();
     this->store_all_heights();
 }
@@ -718,7 +718,7 @@ void PopulationTree::restore_prior_density() {
 }
 void PopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_node_height_multiplier();
+    this->restore_rate_multiplier();
     this->restore_all_coalescence_rates();
     this->restore_all_heights();
 }
@@ -743,25 +743,25 @@ void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistributi
     this->u_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->node_height_multiplier_->set_prior(prior);
+void PopulationTree::set_rate_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+    this->rate_multiplier_->set_prior(prior);
     this->make_dirty();
 }
 
 double PopulationTree::compute_log_prior_density() {
     double d = 0.0;
-    d += this->compute_log_prior_density_of_mutation_rates();
-    d += this->compute_log_prior_density_of_node_height_multiplier();
+    d += this->compute_log_prior_density_of_u_v_rates();
+    d += this->compute_log_prior_density_of_rate_multiplier();
     d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_coalescence_rates();
     this->log_prior_density_.set_value(d);
     return d;
 }
-double PopulationTree::compute_log_prior_density_of_mutation_rates() const {
+double PopulationTree::compute_log_prior_density_of_u_v_rates() const {
     return this->u_->relative_prior_ln_pdf();
 }
-double PopulationTree::compute_log_prior_density_of_node_height_multiplier() const {
-    return this->node_height_multiplier_->relative_prior_ln_pdf();
+double PopulationTree::compute_log_prior_density_of_rate_multiplier() const {
+    return this->rate_multiplier_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_node_heights() const {
     return this->root_->calculate_ln_relative_node_height_prior_density();
@@ -842,8 +842,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites);
-    if (settings.constrain_mutation_rates()) {
-        this->constrain_mutation_rates();
+    if (settings.constrain_u_v_rates()) {
+        this->constrain_u_v_rates();
         this->fold_patterns();
     }
     this->set_population_size_prior(
@@ -862,8 +862,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     }
     
     this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
-    if (settings.constrain_mutation_rates()) {
-        this->constrain_mutation_rates();
+    if (settings.constrain_u_v_rates()) {
+        this->constrain_u_v_rates();
     }
     else {
         PositiveRealParameter u = PositiveRealParameter(
@@ -871,12 +871,12 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                 rng);
         this->set_u(u.get_value());
         if (u.is_fixed()) {
-            this->fix_mutation_rates();
+            this->fix_u_v_rates();
         }
     }
-    this->set_node_height_multiplier_parameter(
+    this->set_rate_multiplier_parameter(
             std::make_shared<PositiveRealParameter>(
-                    settings.get_time_multiplier_settings(),
+                    settings.get_rate_multiplier_settings(),
                     rng));
     if (
         (this->data_.get_number_of_populations() == 1) &&
@@ -952,8 +952,8 @@ double ComparisonPopulationTree::get_child_population_size(
 // class hierarchy (ComparisonPopulationTreeCollection)
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
-    d += this->compute_log_prior_density_of_mutation_rates();
-    d += this->compute_log_prior_density_of_node_height_multiplier();
+    d += this->compute_log_prior_density_of_u_v_rates();
+    d += this->compute_log_prior_density_of_rate_multiplier();
     // d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_coalescence_rates();
     this->log_prior_density_.set_value(d);
@@ -963,13 +963,13 @@ double ComparisonPopulationTree::compute_log_prior_density() {
 // Node height (re)storing is managed by ComparisonPopulationTree.
 void ComparisonPopulationTree::store_parameters() {
     this->store_u();
-    this->store_node_height_multiplier();
+    this->store_rate_multiplier();
     this->store_all_coalescence_rates();
     // this->store_all_heights();
 }
 void ComparisonPopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_node_height_multiplier();
+    this->restore_rate_multiplier();
     this->restore_all_coalescence_rates();
     // this->restore_all_heights();
 }
@@ -985,7 +985,7 @@ void ComparisonPopulationTree::write_state_log_header(
     out << "ln_likelihood" << suffix << delimiter
         << "ln_prior" << suffix << delimiter
         << "root_height" << suffix << delimiter
-        << "time_multiplier" << suffix << delimiter
+        << "rate_multiplier" << suffix << delimiter
         << "u" << suffix << delimiter
         << "v" << suffix << delimiter
         << "pop_size" << suffix << delimiter;
@@ -1001,7 +1001,7 @@ void ComparisonPopulationTree::log_state(
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_height() << delimiter
-        << this->get_node_height_multiplier() << delimiter
+        << this->get_rate_multiplier() << delimiter
         << this->get_u() << delimiter
         << this->get_v() << delimiter
         << this->get_child_population_size(0) << delimiter;

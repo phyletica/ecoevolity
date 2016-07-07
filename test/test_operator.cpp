@@ -883,11 +883,11 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
     }
 }
 
-TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultiplierScaler]") {
+TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(928374);
-        std::shared_ptr<Operator> op = std::make_shared<ComparisonHeightMultiplierScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<ComparisonRateMultiplierScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
@@ -899,11 +899,11 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
         std::string nex_path = "data/hemi129.nex";
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
-        tree.fix_mutation_rates();
+        tree.fix_u_v_rates();
         tree.fix_coalescence_rates();
-        tree.set_node_height_multiplier(1.0);
-        tree.set_node_height_multiplier_prior(prior);
-        tree.estimate_node_height_multiplier();
+        tree.set_rate_multiplier(1.0);
+        tree.set_rate_multiplier_prior(prior);
+        tree.estimate_rate_multiplier();
         tree.ignore_data();
 
         tree.make_dirty();
@@ -920,9 +920,9 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
         for (unsigned int i = 0; i < 100000; ++i) {
             Operator& o = os.draw_operator(rng);
             tree.store_state();
-            double old_v = tree.get_node_height_multiplier();
+            double old_v = tree.get_rate_multiplier();
             double hastings = o.propose(rng, tree);
-            double new_v = tree.get_node_height_multiplier();
+            double new_v = tree.get_rate_multiplier();
             REQUIRE(tree.is_dirty());
             tree.compute_log_likelihood_and_prior();
             double prior_ratio = tree.get_log_prior_density_value() -
@@ -940,7 +940,7 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_node_height_multiplier();
+            double x = tree.get_rate_multiplier();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -968,7 +968,7 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(928374);
-        std::shared_ptr<Operator> op = std::make_shared<ComparisonHeightMultiplierScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<ComparisonRateMultiplierScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         // os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
@@ -980,11 +980,11 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
         std::string nex_path = "data/hemi129.nex";
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
-        tree.fix_mutation_rates();
+        tree.fix_u_v_rates();
         tree.fix_coalescence_rates();
-        tree.set_node_height_multiplier(1.0);
-        tree.set_node_height_multiplier_prior(prior);
-        tree.estimate_node_height_multiplier();
+        tree.set_rate_multiplier(1.0);
+        tree.set_rate_multiplier_prior(prior);
+        tree.estimate_rate_multiplier();
         tree.ignore_data();
 
         tree.make_dirty();
@@ -1001,9 +1001,9 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
         for (unsigned int i = 0; i < 100000; ++i) {
             Operator& o = os.draw_operator(rng);
             tree.store_state();
-            double old_v = tree.get_node_height_multiplier();
+            double old_v = tree.get_rate_multiplier();
             double hastings = o.propose(rng, tree);
-            double new_v = tree.get_node_height_multiplier();
+            double new_v = tree.get_rate_multiplier();
             REQUIRE(tree.is_dirty());
             tree.compute_log_likelihood_and_prior();
             double prior_ratio = tree.get_log_prior_density_value() -
@@ -1021,7 +1021,7 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_node_height_multiplier();
+            double x = tree.get_rate_multiplier();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -1048,11 +1048,11 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
     }
 }
 
-// TEST_CASE("Testing MutationRateMover", "[MutationRateMover]") {
+// TEST_CASE("Testing UMover", "[UMover]") {
 // 
 //     SECTION("Testing gamma(10.0, 0.001) prior and no optimizing") {
 //         RandomNumberGenerator rng = RandomNumberGenerator(9284);
-//         std::shared_ptr<Operator> op = std::make_shared<MutationRateMover>(1.0, 0.1);
+//         std::shared_ptr<Operator> op = std::make_shared<UMover>(1.0, 0.1);
 //         OperatorSchedule os = OperatorSchedule();
 //         os.turn_off_auto_optimize();
 //         // os.turn_on_auto_optimize();
@@ -1065,8 +1065,8 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
 //         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
 //         REQUIRE(tree.get_degree_of_root() == 2);
 //         tree.fix_coalescence_rates();
-//         tree.fix_node_height_multiplier();
-//         tree.estimate_mutation_rates();
+//         tree.fix_rate_multiplier();
+//         tree.estimate_u_v_rates();
 //         tree.set_u_prior(prior);
 //         tree.set_u(1.0);
 //         tree.ignore_data();
@@ -1075,8 +1075,8 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
 //         tree.compute_log_likelihood_and_prior();
 //         REQUIRE(! tree.is_dirty());
 // 
-//         REQUIRE(! tree.mutation_rates_are_constrained());
-//         REQUIRE(! tree.mutation_rates_are_fixed());
+//         REQUIRE(! tree.u_v_rates_are_constrained());
+//         REQUIRE(! tree.u_v_rates_are_fixed());
 //     
 //         unsigned int n = 0;
 //         double mean = 0.0;
@@ -1134,11 +1134,11 @@ TEST_CASE("Testing ComparisonHeightMultiplierScaler", "[ComparisonHeightMultipli
 //     }
 // }
 
-TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
+TEST_CASE("Testing UScaler", "[UScaler]") {
 
     SECTION("Testing offset gamma(10.0, 0.05, 0.5) prior and no optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(9284);
-        std::shared_ptr<Operator> op = std::make_shared<MutationRateScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<UScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
@@ -1151,8 +1151,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_coalescence_rates();
-        tree.fix_node_height_multiplier();
-        tree.estimate_mutation_rates();
+        tree.fix_rate_multiplier();
+        tree.estimate_u_v_rates();
         tree.set_u_prior(prior);
         tree.set_u(1.0);
         tree.ignore_data();
@@ -1161,8 +1161,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
 
-        REQUIRE(! tree.mutation_rates_are_constrained());
-        REQUIRE(! tree.mutation_rates_are_fixed());
+        REQUIRE(! tree.u_v_rates_are_constrained());
+        REQUIRE(! tree.u_v_rates_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -1221,7 +1221,7 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
 
     SECTION("Testing offset gamma(10.0, 0.05, 0.5) prior with optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(9284);
-        std::shared_ptr<Operator> op = std::make_shared<MutationRateScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<UScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         // os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
@@ -1234,8 +1234,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_coalescence_rates();
-        tree.fix_node_height_multiplier();
-        tree.estimate_mutation_rates();
+        tree.fix_rate_multiplier();
+        tree.estimate_u_v_rates();
         tree.set_u_prior(prior);
         tree.set_u(1.0);
         tree.ignore_data();
@@ -1244,8 +1244,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
 
-        REQUIRE(! tree.mutation_rates_are_constrained());
-        REQUIRE(! tree.mutation_rates_are_fixed());
+        REQUIRE(! tree.u_v_rates_are_constrained());
+        REQUIRE(! tree.u_v_rates_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -1304,7 +1304,7 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
 
     SECTION("Testing offset exp(2.0, 0.5) prior with optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(9284);
-        std::shared_ptr<Operator> op = std::make_shared<MutationRateScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<UScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         // os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
@@ -1317,8 +1317,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_coalescence_rates();
-        tree.fix_node_height_multiplier();
-        tree.estimate_mutation_rates();
+        tree.fix_rate_multiplier();
+        tree.estimate_u_v_rates();
         tree.set_u_prior(prior);
         tree.set_u(1.0);
         tree.ignore_data();
@@ -1327,8 +1327,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
 
-        REQUIRE(! tree.mutation_rates_are_constrained());
-        REQUIRE(! tree.mutation_rates_are_fixed());
+        REQUIRE(! tree.u_v_rates_are_constrained());
+        REQUIRE(! tree.u_v_rates_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -1400,11 +1400,11 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
 /*         cfg_stream << "    population_name_delimiter: '_'\n"; */
 /*         cfg_stream << "    population_name_is_prefix: true\n"; */
 /*         cfg_stream << "    constant_sites_removed: true\n"; */
-/*         cfg_stream << "    use_empirical_mutation_rate_starting_values: false\n"; */
+/*         cfg_stream << "    use_empirical_u_rate_starting_value: false\n"; */
 /*         cfg_stream << "    constrain_population_sizes: true\n"; */
-/*         cfg_stream << "    constrain_mutation_rates: true\n"; */
+/*         cfg_stream << "    constrain_u_v_rates: true\n"; */
 /*         cfg_stream << "    parameters:\n"; */
-/*         cfg_stream << "        time_multiplier:\n"; */
+/*         cfg_stream << "        rate_multiplier:\n"; */
 /*         cfg_stream << "            value: 1.0\n"; */
 /*         cfg_stream << "            estimate: false\n"; */
 /*         cfg_stream << "        u_rate:\n"; */

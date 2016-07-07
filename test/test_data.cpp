@@ -3046,7 +3046,7 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
         double u;
         double v;
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(5.0/12.0));
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         // Verified these values in SNAPP
         REQUIRE(u == Approx(1.2));
         REQUIRE(v == Approx(0.8571429));
@@ -3060,7 +3060,7 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
         double u;
         double v;
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(12.0/23.0));
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         // Verified these values in SNAPP
         REQUIRE(u == Approx(0.9583333));
         REQUIRE(v == Approx(1.045455));
@@ -3074,7 +3074,7 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
         double u;
         double v;
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(12.0/23.0));
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         // Verified these values in SNAPP
         REQUIRE(u == Approx(0.9583333));
         REQUIRE(v == Approx(1.045455));
@@ -3091,14 +3091,14 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
         //     # of zeros / all cells except ?
         // the denominator is the count of all cells in the alignement except
         // "?"; this includes "-".
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(0.9642857142857143));
         REQUIRE(v == Approx(1.0384615384615383));
 
         bd.remove_constant_patterns();
         bd.remove_missing_population_patterns();
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(11.0/19.0));
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(0.8636364));
         REQUIRE(v == Approx(1.1875));
     }
@@ -3114,14 +3114,14 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
         //     # of zeros / all cells except ?
         // the denominator is the count of all cells in the alignement except
         // "?"; this includes "-".
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(0.8181818181818181));
         REQUIRE(v == Approx(1.2857142857142858));
 
         bd.remove_constant_patterns();
         bd.remove_missing_population_patterns();
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(7.0/13.0));
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(0.9285714));
         REQUIRE(v == Approx(1.083333));
     }
@@ -3132,14 +3132,14 @@ TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(0.3548387096774194));
         double u;
         double v;
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(1.409090909090909));
         REQUIRE(v == Approx(0.775));
 
         bd.remove_constant_patterns();
         bd.remove_missing_population_patterns();
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(0.48863636363636365));
-        bd.get_empirical_mutation_rates(u, v);
+        bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(1.0232558139534884));
         REQUIRE(v == Approx(0.9777777777777777));
     }

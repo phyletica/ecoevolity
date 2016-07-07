@@ -41,7 +41,7 @@ class PopulationTree {
         std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<ExponentialDistribution>(1.0),
                 1.0);
-        std::shared_ptr<PositiveRealParameter> node_height_multiplier_ = std::make_shared<PositiveRealParameter>(
+        std::shared_ptr<PositiveRealParameter> rate_multiplier_ = std::make_shared<PositiveRealParameter>(
                 1.0,
                 true);
         std::vector<double> pattern_likelihoods_;
@@ -57,7 +57,7 @@ class PopulationTree {
         int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool coalescence_rates_are_constrained_ = false;
-        bool mutation_rates_are_constrained_ = false;
+        bool u_v_rates_are_constrained_ = false;
         bool is_dirty_ = true;
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
@@ -142,11 +142,11 @@ class PopulationTree {
         void store_u();
         void restore_u();
 
-        void set_node_height_multiplier(double m);
-        void update_node_height_multiplier(double m);
-        double get_node_height_multiplier() const;
-        void store_node_height_multiplier();
-        void restore_node_height_multiplier();
+        void set_rate_multiplier(double m);
+        void update_rate_multiplier(double m);
+        double get_rate_multiplier() const;
+        void store_rate_multiplier();
+        void restore_rate_multiplier();
 
         bool is_dirty() const;
         void make_dirty();
@@ -168,8 +168,8 @@ class PopulationTree {
 
         std::shared_ptr<PositiveRealParameter> get_u_parameter() const;
 
-        void set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h);
-        std::shared_ptr<PositiveRealParameter> get_node_height_multiplier_parameter() const;
+        void set_rate_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h);
+        std::shared_ptr<PositiveRealParameter> get_rate_multiplier_parameter() const;
 
         void set_root_coalescence_rate(double rate);
         void set_coalescence_rate(double rate);
@@ -196,8 +196,8 @@ class PopulationTree {
         double get_stored_log_likelihood_value() const;
 
         virtual double compute_log_prior_density();
-        double compute_log_prior_density_of_mutation_rates() const;
-        double compute_log_prior_density_of_node_height_multiplier() const;
+        double compute_log_prior_density_of_u_v_rates() const;
+        double compute_log_prior_density_of_rate_multiplier() const;
         double compute_log_prior_density_of_node_heights() const;
         double compute_log_prior_density_of_coalescence_rates() const;
         double get_log_prior_density_value() const;
@@ -231,9 +231,9 @@ class PopulationTree {
             return this->u_->prior;
         }
 
-        void set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
-        std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_multiplier_prior() const {
-            return this->node_height_multiplier_->prior;
+        void set_rate_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_rate_multiplier_prior() const {
+            return this->rate_multiplier_->prior;
         }
 
         void fix_coalescence_rates() {
@@ -246,27 +246,27 @@ class PopulationTree {
             return this->root_->all_coalescence_rates_are_fixed();
         }
 
-        void fix_mutation_rates() {
+        void fix_u_v_rates() {
             this->u_->fix();
         }
-        void estimate_mutation_rates() {
-            if (this->mutation_rates_are_constrained_) {
+        void estimate_u_v_rates() {
+            if (this->u_v_rates_are_constrained_) {
                 throw EcoevolityError("Cannot estimate constrained mutation rates");
             }
             this->u_->estimate();
         }
-        bool mutation_rates_are_fixed() const {
+        bool u_v_rates_are_fixed() const {
             return this->u_->is_fixed();
         }
 
-        void fix_node_height_multiplier() {
-            this->node_height_multiplier_->fix();
+        void fix_rate_multiplier() {
+            this->rate_multiplier_->fix();
         }
-        void estimate_node_height_multiplier() {
-            this->node_height_multiplier_->estimate();
+        void estimate_rate_multiplier() {
+            this->rate_multiplier_->estimate();
         }
-        bool node_height_multiplier_is_fixed() {
-            return this->node_height_multiplier_->is_fixed();
+        bool rate_multiplier_is_fixed() {
+            return this->rate_multiplier_->is_fixed();
         }
 
         void constrain_coalescence_rates() {
@@ -276,14 +276,14 @@ class PopulationTree {
         bool coalescence_rates_are_constrained() const {
             return this->coalescence_rates_are_constrained_;
         }
-        void constrain_mutation_rates() {
-            this->mutation_rates_are_constrained_ = true;
+        void constrain_u_v_rates() {
+            this->u_v_rates_are_constrained_ = true;
             this->u_->set_value(1.0);
             this->u_->fix();
             this->make_dirty();
         }
-        bool mutation_rates_are_constrained() const {
-            return this->mutation_rates_are_constrained_;
+        bool u_v_rates_are_constrained() const {
+            return this->u_v_rates_are_constrained_;
         }
 
         unsigned int get_number_of_likelihood_calculations() {

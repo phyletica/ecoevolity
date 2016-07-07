@@ -280,10 +280,10 @@ std::string ConcentrationScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// MutationRateMover methods
+// UMover methods
 //////////////////////////////////////////////////////////////////////////////
 
-double MutationRateMover::propose(
+double UMover::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
     double red_freq = tree.get_v() / (tree.get_u() + tree.get_v());
@@ -297,20 +297,20 @@ double MutationRateMover::propose(
     return hastings; 
 }
 
-std::string MutationRateMover::target_parameter() const {
+std::string UMover::target_parameter() const {
     return "mutation rate";
 }
 
-std::string MutationRateMover::get_name() const {
-    return "MutationRateMover";
+std::string UMover::get_name() const {
+    return "UMover";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// MutationRateScaler methods
+// UScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-double MutationRateScaler::propose(
+double UScaler::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
     double val = tree.get_u();
@@ -324,35 +324,35 @@ double MutationRateScaler::propose(
     return hastings;
 }
 
-std::string MutationRateScaler::target_parameter() const {
+std::string UScaler::target_parameter() const {
     return "mutation rate";
 }
 
-std::string MutationRateScaler::get_name() const {
-    return "MutationRateScaler";
+std::string UScaler::get_name() const {
+    return "UScaler";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ComparisonHeightMultiplierScaler methods
+// ComparisonRateMultiplierScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-double ComparisonHeightMultiplierScaler::propose(
+double ComparisonRateMultiplierScaler::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    double v = tree.get_node_height_multiplier();
+    double v = tree.get_rate_multiplier();
     double hastings;
     this->update(rng, v, hastings);
-    tree.set_node_height_multiplier(v);
+    tree.set_rate_multiplier(v);
     return hastings;
 }
 
-std::string ComparisonHeightMultiplierScaler::target_parameter() const {
+std::string ComparisonRateMultiplierScaler::target_parameter() const {
     return "node height multiplier";
 }
 
-std::string ComparisonHeightMultiplierScaler::get_name() const {
-    return "ComparisonHeightMultiplierScaler";
+std::string ComparisonRateMultiplierScaler::get_name() const {
+    return "ComparisonRateMultiplierScaler";
 }
 
 

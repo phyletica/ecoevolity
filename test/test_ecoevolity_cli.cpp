@@ -68,7 +68,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -77,7 +77,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -86,9 +86,9 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-constant.nex\n";
@@ -106,7 +106,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -125,7 +125,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -147,7 +147,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -241,7 +241,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -250,7 +250,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -259,9 +259,9 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-constant.nex\n";
@@ -279,7 +279,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -298,7 +298,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -320,7 +320,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -417,7 +417,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -426,7 +426,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -435,9 +435,9 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-missing.nex\n";
@@ -455,7 +455,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -474,7 +474,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -496,7 +496,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -590,7 +590,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -599,7 +599,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -608,9 +608,9 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-missing.nex\n";
@@ -628,7 +628,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -647,7 +647,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -669,7 +669,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -767,7 +767,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -776,7 +776,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -785,9 +785,9 @@ TEST_CASE("Testing constrained singleton error",
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    constrain_population_sizes: true\n";
@@ -806,7 +806,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -825,7 +825,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -847,7 +847,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -941,7 +941,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -950,7 +950,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -959,9 +959,9 @@ TEST_CASE("Testing fixed singleton error",
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -980,7 +980,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -999,7 +999,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -1021,7 +1021,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -1114,7 +1114,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightMultiplierScaler:\n";
+        os << "        ComparisonRateMultiplierScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1123,7 +1123,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        MutationRateScaler:\n";
+        os << "        UScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
@@ -1132,9 +1132,9 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \"_\"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_mutation_rate_starting_values: false\n";
+        os << "    use_empirical_u_rate_starting_value: false\n";
         os << "    constrain_population_sizes: false\n";
-        os << "    constrain_mutation_rates: false\n";
+        os << "    constrain_u_v_rates: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -1152,7 +1152,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -1171,7 +1171,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -1193,7 +1193,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        time_multiplier:\n";
+        os << "        rate_multiplier:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";

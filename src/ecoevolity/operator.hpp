@@ -361,16 +361,16 @@ class ConcentrationScaler : public ScaleOperator {
 
 // TODO:
 // NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use MutationRateScaler).
-class MutationRateMover : public ComparisonTreeWindowOperator {
+// (or just use UScaler).
+class UMover : public ComparisonTreeWindowOperator {
 
     using ComparisonTreeWindowOperator::propose;
 
     public:
-        MutationRateMover() : ComparisonTreeWindowOperator() { }
-        MutationRateMover(double weight) : ComparisonTreeWindowOperator(weight) { }
-        MutationRateMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
-        virtual ~MutationRateMover() { }
+        UMover() : ComparisonTreeWindowOperator() { }
+        UMover(double weight) : ComparisonTreeWindowOperator(weight) { }
+        UMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
+        virtual ~UMover() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -381,15 +381,15 @@ class MutationRateMover : public ComparisonTreeWindowOperator {
         std::string get_name() const;
 };
 
-class MutationRateScaler : public ComparisonTreeScaleOperator {
+class UScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
 
     public:
-        MutationRateScaler() : ComparisonTreeScaleOperator() { }
-        MutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        MutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~MutationRateScaler() { }
+        UScaler() : ComparisonTreeScaleOperator() { }
+        UScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        UScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~UScaler() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -400,15 +400,15 @@ class MutationRateScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
-class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
+class ComparisonRateMultiplierScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
 
     public:
-        ComparisonHeightMultiplierScaler() : ComparisonTreeScaleOperator() { }
-        ComparisonHeightMultiplierScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ComparisonHeightMultiplierScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ComparisonHeightMultiplierScaler() { }
+        ComparisonRateMultiplierScaler() : ComparisonTreeScaleOperator() { }
+        ComparisonRateMultiplierScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ComparisonRateMultiplierScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~ComparisonRateMultiplierScaler() { }
 
         double propose(
                 RandomNumberGenerator& rng,

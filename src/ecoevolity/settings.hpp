@@ -499,7 +499,7 @@ class ComparisonSettings {
         std::string path_;
         PositiveRealParameterSettings population_size_settings_;
         PositiveRealParameterSettings u_settings_;
-        PositiveRealParameterSettings time_multiplier_settings_;
+        PositiveRealParameterSettings rate_multiplier_settings_;
 
         char population_name_delimiter_ = '_';
         bool population_name_is_prefix_ = true;
@@ -507,21 +507,21 @@ class ComparisonSettings {
         bool markers_are_dominant_ = false;
         bool constant_sites_removed_ = true;
 
-        bool use_empirical_mutation_rate_starting_values_ = false;
+        bool use_empirical_u_rate_starting_value_ = false;
         bool constrain_population_sizes_ = false;
-        bool constrain_mutation_rates_ = true;
+        bool constrain_u_v_rates_ = true;
 
         void make_consistent() {
-            if (this->constrain_mutation_rates_) {
-                this->use_empirical_mutation_rate_starting_values_ = false;
+            if (this->constrain_u_v_rates_) {
+                this->use_empirical_u_rate_starting_value_ = false;
                 this->u_settings_.prior_settings_.nullify();
                 this->u_settings_.value_ = 1.0;
                 this->u_settings_.is_fixed_ = true;
             }
         }
 
-        void init_empirical_mutation_rate_starting_values() {
-            if (this->use_empirical_mutation_rate_starting_values_) {
+        void init_empirical_u_rate_starting_value() {
+            if (this->use_empirical_u_rate_starting_value_) {
                 BiallelicData d = BiallelicData(
                         this->path_,
                         this->population_name_delimiter_,
@@ -531,7 +531,7 @@ class ComparisonSettings {
                         true);
                 double u;
                 double v;
-                d.get_empirical_mutation_rates(u, v);
+                d.get_empirical_u_v_rates(u, v);
                 this->u_settings_.value_ = u;
             }
         }
@@ -555,8 +555,8 @@ class ComparisonSettings {
                 else if (parameter->first.as<std::string>() == "u_rate") {
                     this->u_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
-                else if (parameter->first.as<std::string>() == "time_multiplier") {
-                    this->time_multiplier_settings_ = PositiveRealParameterSettings(parameter->second);
+                else if (parameter->first.as<std::string>() == "rate_multiplier") {
+                    this->rate_multiplier_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
                 else {
                     std::string message = "Unrecognized comparison parameter: " +
@@ -602,14 +602,14 @@ class ComparisonSettings {
                 else if (arg->first.as<std::string>() == "constant_sites_removed") {
                     this->constant_sites_removed_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "use_empirical_mutation_rate_starting_values") {
-                    this->use_empirical_mutation_rate_starting_values_ = arg->second.as<bool>();
+                else if (arg->first.as<std::string>() == "use_empirical_u_rate_starting_value") {
+                    this->use_empirical_u_rate_starting_value_ = arg->second.as<bool>();
                 }
                 else if (arg->first.as<std::string>() == "constrain_population_sizes") {
                     this->constrain_population_sizes_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "constrain_mutation_rates") {
-                    this->constrain_mutation_rates_ = arg->second.as<bool>();
+                else if (arg->first.as<std::string>() == "constrain_u_v_rates") {
+                    this->constrain_u_v_rates_ = arg->second.as<bool>();
                 }
                 else if (arg->first.as<std::string>() == "parameters") {
                     this->parse_parameter_settings(arg->second);
@@ -625,7 +625,7 @@ class ComparisonSettings {
             }
             this->make_consistent();
             if (! global_defaults) {
-                this->init_empirical_mutation_rate_starting_values();
+                this->init_empirical_u_rate_starting_value();
             }
         }
 
@@ -635,28 +635,28 @@ class ComparisonSettings {
                 const std::string& path,
                 const PositiveRealParameterSettings& population_size_settings,
                 const PositiveRealParameterSettings& u_settings,
-                const PositiveRealParameterSettings& time_multiplier_settings,
+                const PositiveRealParameterSettings& rate_multiplier_settings,
                 char population_name_delimiter = '_',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool use_empirical_mutation_rate_starting_values = false,
+                bool use_empirical_u_rate_starting_value = false,
                 bool constrain_population_sizes = false,
-                bool constrain_mutation_rates = true) {
+                bool constrain_u_v_rates = true) {
 
             this->path_ = path;
             this->population_size_settings_ = population_size_settings;
             this->u_settings_ = u_settings;
-            this->time_multiplier_settings_ = time_multiplier_settings;
+            this->rate_multiplier_settings_ = rate_multiplier_settings;
             this->population_name_delimiter_ = population_name_delimiter;
             this->population_name_is_prefix_ = population_name_is_prefix;
             this->genotypes_are_diploid_ = genotypes_are_diploid;
             this->markers_are_dominant_ = markers_are_dominant;
             this->constant_sites_removed_ = constant_sites_removed;
-            this->use_empirical_mutation_rate_starting_values_ = use_empirical_mutation_rate_starting_values;
+            this->use_empirical_u_rate_starting_value_ = use_empirical_u_rate_starting_value;
             this->constrain_population_sizes_ = constrain_population_sizes;
-            this->constrain_mutation_rates_ = constrain_mutation_rates;
+            this->constrain_u_v_rates_ = constrain_u_v_rates;
             this->make_consistent();
 
             // TODO:
@@ -664,7 +664,7 @@ class ComparisonSettings {
             // more awkward than it's worth to defer it.
             // Make a copy operator for BiallelicData and parse and store here, then
             // can copy it in get_instance method
-            this->init_empirical_mutation_rate_starting_values();
+            this->init_empirical_u_rate_starting_value();
         }
         ComparisonSettings(
                 const YAML::Node& comparison_node,
@@ -675,18 +675,18 @@ class ComparisonSettings {
 
         virtual ~ComparisonSettings() { }
         ComparisonSettings& operator=(const ComparisonSettings& other) {
-            this->path_                                         = other.path_;
-            this->population_size_settings_                     = other.population_size_settings_;
-            this->u_settings_                                   = other.u_settings_;
-            this->time_multiplier_settings_                     = other.time_multiplier_settings_;
-            this->population_name_delimiter_                    = other.population_name_delimiter_;
-            this->population_name_is_prefix_                    = other.population_name_is_prefix_;
-            this->genotypes_are_diploid_                        = other.genotypes_are_diploid_;
-            this->markers_are_dominant_                         = other.markers_are_dominant_;
-            this->constant_sites_removed_                       = other.constant_sites_removed_;
-            this->use_empirical_mutation_rate_starting_values_  = other.use_empirical_mutation_rate_starting_values_;
-            this->constrain_population_sizes_                   = other.constrain_population_sizes_;
-            this->constrain_mutation_rates_                     = other.constrain_mutation_rates_;
+            this->path_                                = other.path_;
+            this->population_size_settings_            = other.population_size_settings_;
+            this->u_settings_                          = other.u_settings_;
+            this->rate_multiplier_settings_            = other.rate_multiplier_settings_;
+            this->population_name_delimiter_           = other.population_name_delimiter_;
+            this->population_name_is_prefix_           = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_               = other.genotypes_are_diploid_;
+            this->markers_are_dominant_                = other.markers_are_dominant_;
+            this->constant_sites_removed_              = other.constant_sites_removed_;
+            this->use_empirical_u_rate_starting_value_ = other.use_empirical_u_rate_starting_value_;
+            this->constrain_population_sizes_          = other.constrain_population_sizes_;
+            this->constrain_u_v_rates_            = other.constrain_u_v_rates_;
             return * this;
         }
 
@@ -708,14 +708,14 @@ class ComparisonSettings {
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;
         }
-        bool constrain_mutation_rates() const {
-            return this->constrain_mutation_rates_;
+        bool constrain_u_v_rates() const {
+            return this->constrain_u_v_rates_;
         }
         bool constrain_population_sizes() const {
             return this->constrain_population_sizes_;
         }
-        bool use_empirical_mutation_rate_starting_values() const {
-            return this->use_empirical_mutation_rate_starting_values_;
+        bool use_empirical_u_rate_starting_value() const {
+            return this->use_empirical_u_rate_starting_value_;
         }
         const PositiveRealParameterSettings& get_population_size_settings() const {
             return this->population_size_settings_;
@@ -723,8 +723,8 @@ class ComparisonSettings {
         const PositiveRealParameterSettings& get_u_settings() const {
             return this->u_settings_;
         }
-        const PositiveRealParameterSettings& get_time_multiplier_settings() const {
-            return this->time_multiplier_settings_;
+        const PositiveRealParameterSettings& get_rate_multiplier_settings() const {
+            return this->rate_multiplier_settings_;
         }
 
         std::string to_string(unsigned int indent_level = 0) const {
@@ -738,9 +738,9 @@ class ComparisonSettings {
             ss << margin << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
             ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
             ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
-            ss << margin << "use_empirical_mutation_rate_starting_values: " << this->use_empirical_mutation_rate_starting_values_ << "\n";
+            ss << margin << "use_empirical_u_rate_starting_value: " << this->use_empirical_u_rate_starting_value_ << "\n";
             ss << margin << "constrain_population_sizes: " << this->constrain_population_sizes_ << "\n";
-            ss << margin << "constrain_mutation_rates: " << this->constrain_mutation_rates_ << "\n";
+            ss << margin << "constrain_u_v_rates: " << this->constrain_u_v_rates_ << "\n";
             ss << margin << "parameters:\n";
 
             ss << margin << indent << "population_size:\n";
@@ -749,8 +749,8 @@ class ComparisonSettings {
             ss << margin << indent << "u_rate:\n";
             ss << this->u_settings_.to_string(indent_level + 2);
 
-            ss << margin << indent << "time_multiplier:\n";
-            ss << this->time_multiplier_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "rate_multiplier:\n";
+            ss << this->rate_multiplier_settings_.to_string(indent_level + 2);
 
             return ss.str();
         }
@@ -992,13 +992,13 @@ class OperatorScheduleSettings {
                 1.0, 0.5);
         ScaleOperatorSettings comparison_height_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings comparison_height_multiplier_scaler_settings_ = ScaleOperatorSettings(
+        ScaleOperatorSettings comparison_rate_multiplier_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
         ScaleOperatorSettings root_population_size_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
         ScaleOperatorSettings child_population_size_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
+        ScaleOperatorSettings u_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
 
     public:
@@ -1010,10 +1010,10 @@ class OperatorScheduleSettings {
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
             this->comparison_height_scaler_settings_ = other.comparison_height_scaler_settings_;
-            this->comparison_height_multiplier_scaler_settings_ = other.comparison_height_multiplier_scaler_settings_;
+            this->comparison_rate_multiplier_scaler_settings_ = other.comparison_rate_multiplier_scaler_settings_;
             this->root_population_size_scaler_settings_ = other.root_population_size_scaler_settings_;
             this->child_population_size_scaler_settings_ = other.child_population_size_scaler_settings_;
-            this->mutation_rate_scaler_settings_ = other.mutation_rate_scaler_settings_;
+            this->u_scaler_settings_ = other.u_scaler_settings_;
             return * this;
         }
 
@@ -1032,8 +1032,8 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_comparison_height_scaler_settings() const {
             return this->comparison_height_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_comparison_height_multiplier_scaler_settings() const {
-            return this->comparison_height_multiplier_scaler_settings_;
+        const ScaleOperatorSettings& get_comparison_rate_multiplier_scaler_settings() const {
+            return this->comparison_rate_multiplier_scaler_settings_;
         }
         const ScaleOperatorSettings& get_root_population_size_scaler_settings() const {
             return this->root_population_size_scaler_settings_;
@@ -1041,8 +1041,8 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_child_population_size_scaler_settings() const {
             return this->child_population_size_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_mutation_rate_scaler_settings() const {
-            return this->mutation_rate_scaler_settings_;
+        const ScaleOperatorSettings& get_u_scaler_settings() const {
+            return this->u_scaler_settings_;
         }
 
         void update_from_config(const YAML::Node& operator_node) {
@@ -1113,13 +1113,13 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "ComparisonHeightMultiplierScaler") {
+                else if (op->first.as<std::string>() == "ComparisonRateMultiplierScaler") {
                     try {
-                        this->comparison_height_multiplier_scaler_settings_.update_from_config(op->second);
+                        this->comparison_rate_multiplier_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing ComparisonHeightMultiplierScaler settings\n";
+                                  << "Problem parsing ComparisonRateMultiplierScaler settings\n";
                         throw;
                     }
                 }
@@ -1143,13 +1143,13 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "MutationRateScaler") {
+                else if (op->first.as<std::string>() == "UScaler") {
                     try {
-                        this->mutation_rate_scaler_settings_.update_from_config(op->second);
+                        this->u_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing MutationRateScaler settings\n";
+                                  << "Problem parsing UScaler settings\n";
                         throw;
                     }
                 }
@@ -1177,14 +1177,14 @@ class OperatorScheduleSettings {
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonHeightScaler:\n";
             ss << this->comparison_height_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "ComparisonHeightMultiplierScaler:\n";
-            ss << this->comparison_height_multiplier_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "ComparisonRateMultiplierScaler:\n";
+            ss << this->comparison_rate_multiplier_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "RootPopulationSizeScaler:\n";
             ss << this->root_population_size_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ChildPopulationSizeScaler:\n";
             ss << this->child_population_size_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "MutationRateScaler:\n";
-            ss << this->mutation_rate_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "UScaler:\n";
+            ss << this->u_scaler_settings_.to_string(indent_level + 3);
             return ss.str();
         }
 };
@@ -1235,7 +1235,7 @@ class CollectionSettings {
             this->default_time_prior_ = other.default_time_prior_;
             this->default_population_size_prior_ = other.default_population_size_prior_;
             this->default_u_prior_ = other.default_u_prior_;
-            this->default_time_multiplier_prior_ = other.default_time_multiplier_prior_;
+            this->default_rate_multiplier_prior_ = other.default_rate_multiplier_prior_;
             this->state_log_path_ = other.state_log_path_;
             this->operator_log_path_ = other.operator_log_path_;
             return * this;
@@ -1270,10 +1270,10 @@ class CollectionSettings {
             return this->comparisons_.size();
         }
 
-        unsigned int get_number_of_comparisons_with_free_time_multiplier() const {
+        unsigned int get_number_of_comparisons_with_free_rate_multiplier() const {
             unsigned int nfree = 0;
             for (const ComparisonSettings& comparison : this->comparisons_) {
-                if (! comparison.time_multiplier_settings_.is_fixed()) {
+                if (! comparison.rate_multiplier_settings_.is_fixed()) {
                     ++nfree;
                 }
             }
@@ -1381,7 +1381,7 @@ class CollectionSettings {
         ContinuousDistributionSettings default_time_prior_;
         ContinuousDistributionSettings default_population_size_prior_;
         ContinuousDistributionSettings default_u_prior_;
-        ContinuousDistributionSettings default_time_multiplier_prior_;
+        ContinuousDistributionSettings default_rate_multiplier_prior_;
 
         void init_default_priors() {
             std::unordered_map<std::string, double> default_parameters;
@@ -1403,7 +1403,7 @@ class CollectionSettings {
             default_parameters.clear();
             default_parameters["shape"] = 1000.0;
             default_parameters["scale"] = 0.001;
-            this->default_time_multiplier_prior_ = ContinuousDistributionSettings(
+            this->default_rate_multiplier_prior_ = ContinuousDistributionSettings(
                     "gamma_distribution",
                     default_parameters);
         }
@@ -1455,8 +1455,8 @@ class CollectionSettings {
             // Set default time prior
             this->time_prior_settings_ = this->default_time_prior_;
             // Set default time multiplier
-            this->global_comparison_settings_.time_multiplier_settings_.value_ = 1.0;
-            this->global_comparison_settings_.time_multiplier_settings_.is_fixed_ = true;
+            this->global_comparison_settings_.rate_multiplier_settings_.value_ = 1.0;
+            this->global_comparison_settings_.rate_multiplier_settings_.is_fixed_ = true;
             ///////////////////////////////////////////////////////////////////
 
             if (! top_level_node["comparisons"]) {
@@ -1553,11 +1553,11 @@ class CollectionSettings {
             if (this->comparisons_.size() < 2) {
                 this->operator_schedule_settings_.model_operator_settings_.set_weight(0.0);
             }
-            if (this->get_number_of_comparisons_with_free_time_multiplier() < 1) {
-                this->operator_schedule_settings_.comparison_height_multiplier_scaler_settings_.set_weight(0.0);
+            if (this->get_number_of_comparisons_with_free_rate_multiplier() < 1) {
+                this->operator_schedule_settings_.comparison_rate_multiplier_scaler_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_u_rate() < 1) {
-                this->operator_schedule_settings_.mutation_rate_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.u_scaler_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
                 this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
@@ -1567,9 +1567,9 @@ class CollectionSettings {
 
         void update_default_comparison_priors() {
             for (auto&& comp : this->comparisons_) {
-                if ((! comp.time_multiplier_settings_.is_fixed()) &&
-                        (comp.time_multiplier_settings_.prior_settings_.get_name() == "none")) {
-                    comp.time_multiplier_settings_.prior_settings_ = this->default_time_multiplier_prior_;
+                if ((! comp.rate_multiplier_settings_.is_fixed()) &&
+                        (comp.rate_multiplier_settings_.prior_settings_.get_name() == "none")) {
+                    comp.rate_multiplier_settings_.prior_settings_ = this->default_rate_multiplier_prior_;
                 }
                 if ((! comp.u_settings_.is_fixed()) &&
                         (comp.u_settings_.prior_settings_.get_name() == "none")) {

@@ -705,7 +705,7 @@ double BiallelicData::get_proportion_of_red_alleles() const {
     return (double) red_count / (double) total_count;
 }
 
-void BiallelicData::get_empirical_mutation_rates(double& u, double& v) const {
+void BiallelicData::get_empirical_u_v_rates(double& u, double& v) const {
     double p_red = this->get_proportion_of_red_alleles();
     u = 1.0 / (2.0 * p_red);
     v = 1.0 / (2.0 * (1.0 - p_red));
