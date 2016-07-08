@@ -1064,11 +1064,11 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
             left_lineages.push_back(tip);
     }
 
-    double top_of_branch_height = this->get_height();
+    double top_of_branch_height = this->get_height() * this->get_rate_multiplier();
     double current_height = 0.0;
     double last_left_coal_height = this->coalesce_in_branch(
             left_lineages,
-            this->get_child_coalescence_rate(0),
+            this->get_child_coalescence_rate(0) / this->get_rate_multiplier(),
             rng,
             current_height,
             top_of_branch_height
@@ -1096,7 +1096,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
 
         double last_right_coal_height = this->coalesce_in_branch(
                 right_lineages,
-                this->get_child_coalescence_rate(1),
+                this->get_child_coalescence_rate(1) / this->get_rate_multiplier(),
                 rng,
                 current_height,
                 top_of_branch_height
@@ -1117,7 +1117,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
     }
     double last_root_coal_height = this->coalesce_in_branch(
             root_lineages,
-            this->get_root_coalescence_rate(),
+            this->get_root_coalescence_rate() / this->get_rate_multiplier(),
             rng,
             top_of_branch_height,
             std::numeric_limits<double>::infinity()
