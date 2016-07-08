@@ -1444,3 +1444,438 @@ TEST_CASE("Testing hemi129.nex weirdness 2", "[ComparisonPopulationTree]") {
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
+
+TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 1.0",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 2;
+        double theta = 1.0;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 3.7",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 2;
+        double theta = 3.7;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 2 lineages and theta of 0.17",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 2;
+        double theta = 0.17;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 1.0",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 3;
+        double theta = 1.0;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 1.47",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 3;
+        double theta = 1.47;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.005));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 3 lineages and theta of 0.17",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 3;
+        double theta = 0.17;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.0005));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 1.0",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 10;
+        double theta = 1.0;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 1.47",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 10;
+        double theta = 1.47;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.005));
+        REQUIRE(mn >= 0.0);
+    }
+}
+
+TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 0.17",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing coalesce_in_branch") {
+
+        unsigned int nlineages = 10;
+        double theta = 0.17;
+        double coalescence_rate = 2.0 / theta;
+
+        std::vector<std::shared_ptr<GeneTreeSimNode> > lineages;
+        lineages.reserve(nlineages);
+
+        double expected_mean = theta * (1.0 - (1.0 / nlineages));
+        double expected_variance = expected_mean * expected_mean;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(5431);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            lineages.clear();
+            for (unsigned int k = 0; k < nlineages; ++k) {
+                lineages.push_back(std::make_shared<GeneTreeSimNode>(0.0));
+            }
+            double x = ComparisonPopulationTree::coalesce_in_branch(
+                    lineages,
+                    coalescence_rate,
+                    rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+
+        REQUIRE(lineages.size() == 1);
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.0005));
+        REQUIRE(mn >= 0.0);
+    }
+}

@@ -1033,3 +1033,219 @@ std::string ComparisonPopulationTree::get_state_string(
     this->log_state(ss, delimiter);
     return ss.str();
 }
+
+// TODO: This is a hack. The more general solution would be a recursive method
+// of PopulationTree
+std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
+        const unsigned int pattern_index,
+        RandomNumberGenerator& rng) const {
+
+    std::vector< std::shared_ptr<GeneTreeSimNode> > left_lineages;
+    std::vector< std::shared_ptr<GeneTreeSimNode> > right_lineages;
+    std::vector< std::shared_ptr<GeneTreeSimNode> > root_lineages;
+    std::vector<std::string> tip_labels;
+    unsigned int allele_count;
+    tip_labels = this->data_.get_sequence_labels(
+            this->data_.get_population_index(
+                    this->root_->get_child(0)->get_label()));
+    allele_count = this->data_.get_allele_count(
+            pattern_index,
+            this->data_.get_population_index(
+                    this->root_->get_child(0)->get_label()));
+    if (this->data_.markers_are_dominant()) {
+        allele_count *= 2;
+    }
+    left_lineages.reserve(allele_count);
+    for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
+        std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
+                    tip_labels.at(tip_idx),
+                    0.0);
+            tip->fix_node_height();
+            left_lineages.push_back(tip);
+    }
+
+    double top_of_branch_height = this->get_height();
+    double current_height = 0.0;
+    double last_left_coal_height = this->coalesce_in_branch(
+            left_lineages,
+            this->get_child_coalescence_rate(0),
+            rng,
+            current_height,
+            top_of_branch_height
+            );
+
+    if (this->root_->get_number_of_children() > 1) {
+        tip_labels = this->data_.get_sequence_labels(
+                this->data_.get_population_index(
+                        this->root_->get_child(1)->get_label()));
+        allele_count = this->data_.get_allele_count(
+                pattern_index,
+                this->data_.get_population_index(
+                        this->root_->get_child(1)->get_label()));
+        if (this->data_.markers_are_dominant()) {
+            allele_count *= 2;
+        }
+        right_lineages.reserve(allele_count);
+        for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
+            std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
+                        tip_labels.at(tip_idx),
+                        0.0);
+                tip->fix_node_height();
+                right_lineages.push_back(tip);
+        }
+
+        double last_right_coal_height = this->coalesce_in_branch(
+                right_lineages,
+                this->get_child_coalescence_rate(1),
+                rng,
+                current_height,
+                top_of_branch_height
+                );
+    }
+
+    for (unsigned int i = 0; i < left_lineages.size(); ++i) {
+        root_lineages.push_back(left_lineages.at(i));
+        left_lineages.erase(left_lineages.begin() + i);
+    }
+    for (unsigned int i = 0; i < right_lineages.size(); ++i) {
+        root_lineages.push_back(right_lineages.at(i));
+        right_lineages.erase(right_lineages.begin() + i);
+    }
+    ECOEVOLITY_ASSERT(root_lineages.size() > 0);
+    if (root_lineages.size() == 1) {
+        return root_lineages.at(0);
+    }
+    double last_root_coal_height = this->coalesce_in_branch(
+            root_lineages,
+            this->get_root_coalescence_rate(),
+            rng,
+            top_of_branch_height,
+            std::numeric_limits<double>::infinity()
+            );
+    ECOEVOLITY_ASSERT(root_lineages.size() == 1);
+    return root_lineages.at(0);
+}
+
+double ComparisonPopulationTree::coalesce_in_branch(
+        std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
+        double coalescence_rate,
+        RandomNumberGenerator& rng,
+        double bottom_of_branch_height,
+        double top_of_branch_height
+        ) {
+    ECOEVOLITY_ASSERT(lineages.size() > 0);
+    ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
+    double current_height = bottom_of_branch_height;
+    unsigned int k = lineages.size();
+    while (true) {
+        if (k == 1) {
+            ECOEVOLITY_ASSERT(lineages.size() == k);
+            break;
+        }
+        double scale = 2.0 / ( ((double)k) * (k - 1.0) *
+                coalescence_rate);
+        double wait = rng.gamma(1.0, scale);
+        
+        if ((current_height + wait) >= top_of_branch_height) {
+            break;
+        }
+        current_height += wait;
+        std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
+                current_height);
+        for (int i = 0; i < 2; ++i) {
+            int idx = rng.uniform_int(0, lineages.size() - 1);
+            mrca->add_child(lineages.at(idx));
+            lineages.erase(lineages.begin() + idx);
+        }
+        lineages.push_back(mrca);
+        --k;
+        ECOEVOLITY_ASSERT(lineages.size() == k);
+    }
+    return current_height;
+}
+
+BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
+        RandomNumberGenerator& rng,
+        bool validate) const {
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    const bool filtering_constant_sites = this->constant_sites_removed_;
+    std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map;
+    for (unsigned int pop_idx = 0;
+            pop_idx < this->data_.get_number_of_populations();
+            ++pop_idx) {
+        for (auto seq_label: this->data_.get_sequence_labels(pop_idx)) {
+            ECOEVOLITY_ASSERT(
+                this->data_.get_population_index_from_seq_label(seq_label) ==
+                pop_idx);
+            seq_label_to_pop_index_map[seq_label] = pop_idx;
+        }
+    }
+    // Looping over patterns to make sure simulated dataset has exact same
+    // sample configuration (i.e., the same pattern of missing data) as the
+    // member dataset.
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->data_.get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int i = 0;
+                i < this->data_.get_pattern_weight(pattern_idx);
+                ++i) {
+            bool site_added = false;
+            while (! site_added) {
+                auto pattern_tree = this->simulate_biallelic_site(
+                        pattern_idx,
+                        seq_label_to_pop_index_map,
+                        rng);
+                auto pattern = pattern_tree.first;
+                std::vector<unsigned int> red_allele_counts = pattern.first;
+                std::vector<unsigned int> allele_counts = pattern.second;
+                std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
+                site_added = sim_data.add_site(red_allele_counts,
+                        allele_counts,
+                        filtering_constant_sites);
+            }
+        }
+    }
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
+    // What about gene trees? Write to stream/path (don't want to store/return
+    // giant vector)
+    return sim_data;
+}
+
+std::pair<
+        std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
+        std::shared_ptr<GeneTreeSimNode> >
+ComparisonPopulationTree::simulate_biallelic_site(
+        const unsigned int pattern_idx,
+        std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map,
+        RandomNumberGenerator& rng) const {
+    double freq_0 = this->get_u() / (this->get_u() + this->get_v());
+
+    std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(pattern_idx, rng);
+    gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
+    gene_tree->simulate_binary_character(freq_0, rng);
+
+    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
+    std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
+    std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
+    if (this->data_.markers_are_dominant()) {
+        std::vector<int> last_allele(expected_allele_counts.size(), -1);
+        gene_tree->get_allele_counts(
+                seq_label_to_pop_index_map,
+                allele_counts,
+                red_allele_counts,
+                last_allele);
+    }
+    else {
+        gene_tree->get_allele_counts(
+                seq_label_to_pop_index_map,
+                allele_counts,
+                red_allele_counts);
+    }
+    ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
+    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
+            std::make_pair(red_allele_counts, allele_counts);
+    return std::make_pair(pattern, gene_tree);
+}
