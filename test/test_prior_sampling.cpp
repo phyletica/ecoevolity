@@ -6201,7 +6201,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
 }
 
 TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
-        "[SamplingPriorX]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
         double height_shape = 10.0;
@@ -6527,7 +6527,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully parameterized",
-        "[SamplingPriorX]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;

@@ -496,21 +496,21 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
         REQUIRE(t.get_degree_of_root() == 2);
 
-        REQUIRE(! std::isnan(t.get_root_coalescence_rate()));
-        REQUIRE(! std::isnan(t.get_child_coalescence_rate(0)));
-        REQUIRE(! std::isnan(t.get_child_coalescence_rate(1)));
+        REQUIRE(! std::isnan(t.get_root_population_size()));
+        REQUIRE(! std::isnan(t.get_child_population_size(0)));
+        REQUIRE(! std::isnan(t.get_child_population_size(1)));
         REQUIRE(t.get_u() == Approx(1.2));
         REQUIRE(t.get_v() == Approx(0.8571429));
         REQUIRE(t.get_u_parameter()->is_fixed() == true);
-        REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
-        REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
-        REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
-        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(0));
-        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(1));
-        REQUIRE(t.get_child_coalescence_rate_parameter(0) != t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_root_population_size_parameter()->is_fixed() == false);
+        REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == false);
+        REQUIRE(t.get_child_population_size_parameter(1)->is_fixed() == false);
+        REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(0));
+        REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(1));
+        REQUIRE(t.get_child_population_size_parameter(0) != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_rate_multiplier_parameter()->is_fixed() == true);
         REQUIRE(t.u_v_rates_are_fixed() == true);
-        REQUIRE(t.coalescence_rates_are_fixed() == false);
+        REQUIRE(t.population_sizes_are_fixed() == false);
         REQUIRE(t.rate_multiplier_is_fixed() == true);
 
         REQUIRE(! t.get_u_prior());
@@ -584,21 +584,21 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
         REQUIRE(t.get_degree_of_root() == 2);
 
-        REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
-        REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
-        REQUIRE(t.get_child_coalescence_rate(1) == Approx(10.0));
+        REQUIRE(t.get_root_population_size() == Approx(2.0/10.0));
+        REQUIRE(t.get_child_population_size(0) == Approx(2.0/10.0));
+        REQUIRE(t.get_child_population_size(1) == Approx(2.0/10.0));
         REQUIRE(t.get_u() == 1.0);
         REQUIRE(t.get_v() == 1.0);
         REQUIRE(t.get_u_parameter()->is_fixed() == true);
-        REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == true);
-        REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == true);
-        REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == true);
-        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(0));
-        REQUIRE(t.get_root_coalescence_rate_parameter() != t.get_child_coalescence_rate_parameter(1));
-        REQUIRE(t.get_child_coalescence_rate_parameter(0) != t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_root_population_size_parameter()->is_fixed() == true);
+        REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == true);
+        REQUIRE(t.get_child_population_size_parameter(1)->is_fixed() == true);
+        REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(0));
+        REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(1));
+        REQUIRE(t.get_child_population_size_parameter(0) != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_rate_multiplier_parameter()->is_fixed() == true);
         REQUIRE(t.u_v_rates_are_fixed() == true);
-        REQUIRE(t.coalescence_rates_are_fixed() == true);
+        REQUIRE(t.population_sizes_are_fixed() == true);
         REQUIRE(t.rate_multiplier_is_fixed() == true);
 
         REQUIRE(! t.get_u_prior());
@@ -693,21 +693,21 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         ComparisonPopulationTree t = ComparisonPopulationTree(settings, rng);
         REQUIRE(t.get_degree_of_root() == 2);
 
-        REQUIRE(t.get_root_coalescence_rate() == Approx(10.0));
-        REQUIRE(t.get_child_coalescence_rate(0) == Approx(10.0));
-        REQUIRE(t.get_child_coalescence_rate(1) == Approx(10.0));
+        REQUIRE(t.get_root_population_size() == Approx(2.0/10.0));
+        REQUIRE(t.get_child_population_size(0) == Approx(2.0/10.0));
+        REQUIRE(t.get_child_population_size(1) == Approx(2.0/10.0));
         REQUIRE(t.get_u() == 1.0);
         REQUIRE(t.get_v() == 1.0);
         REQUIRE(t.get_u_parameter()->is_fixed() == false);
-        REQUIRE(t.get_root_coalescence_rate_parameter()->is_fixed() == false);
-        REQUIRE(t.get_child_coalescence_rate_parameter(0)->is_fixed() == false);
-        REQUIRE(t.get_child_coalescence_rate_parameter(1)->is_fixed() == false);
-        REQUIRE(t.get_root_coalescence_rate_parameter() == t.get_child_coalescence_rate_parameter(0));
-        REQUIRE(t.get_root_coalescence_rate_parameter() == t.get_child_coalescence_rate_parameter(1));
-        REQUIRE(t.get_child_coalescence_rate_parameter(0) == t.get_child_coalescence_rate_parameter(1));
+        REQUIRE(t.get_root_population_size_parameter()->is_fixed() == false);
+        REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == false);
+        REQUIRE(t.get_child_population_size_parameter(1)->is_fixed() == false);
+        REQUIRE(t.get_root_population_size_parameter() == t.get_child_population_size_parameter(0));
+        REQUIRE(t.get_root_population_size_parameter() == t.get_child_population_size_parameter(1));
+        REQUIRE(t.get_child_population_size_parameter(0) == t.get_child_population_size_parameter(1));
         REQUIRE(t.get_rate_multiplier_parameter()->is_fixed() == false);
         REQUIRE(t.u_v_rates_are_fixed() == false);
-        REQUIRE(t.coalescence_rates_are_fixed() == false);
+        REQUIRE(t.population_sizes_are_fixed() == false);
         REQUIRE(t.rate_multiplier_is_fixed() == false);
 
         REQUIRE(t.get_u_prior()->to_string() == "gamma(shape = 10, scale = 0.1)");

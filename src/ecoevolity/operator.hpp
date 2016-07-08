@@ -420,28 +420,6 @@ class ComparisonRateMultiplierScaler : public ComparisonTreeScaleOperator {
 };
 
 
-// TODO:
-// NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use ChildPopulationSizeScaler).
-class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        ChildCoalescenceRateScaler() : ComparisonTreeScaleOperator() { }
-        ChildCoalescenceRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ChildCoalescenceRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ChildCoalescenceRateScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
-
 class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
@@ -461,28 +439,6 @@ class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
-
-// TODO:
-// NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use RootPopulationSizeScaler).
-class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        RootCoalescenceRateScaler() : ComparisonTreeScaleOperator() { }
-        RootCoalescenceRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        RootCoalescenceRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~RootCoalescenceRateScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
 
 class RootPopulationSizeScaler : public ComparisonTreeScaleOperator {
 

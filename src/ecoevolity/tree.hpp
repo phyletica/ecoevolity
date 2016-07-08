@@ -56,7 +56,7 @@ class PopulationTree {
         int provided_number_of_constant_red_sites_ = -1;
         int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
-        bool coalescence_rates_are_constrained_ = false;
+        bool population_sizes_are_constrained_ = false;
         bool u_v_rates_are_constrained_ = false;
         bool is_dirty_ = true;
         bool ignore_data_ = false;
@@ -171,13 +171,10 @@ class PopulationTree {
         void set_rate_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h);
         std::shared_ptr<PositiveRealParameter> get_rate_multiplier_parameter() const;
 
-        void set_root_coalescence_rate(double rate);
-        void set_coalescence_rate(double rate);
         void set_root_population_size(double size);
         void set_population_size(double size);
-        double get_root_coalescence_rate() const;
-        std::shared_ptr<CoalescenceRateParameter> get_root_coalescence_rate_parameter() const;
         double get_root_population_size() const;
+        std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const;
 
         double get_likelihood_correction(bool force = false);
 
@@ -199,7 +196,7 @@ class PopulationTree {
         double compute_log_prior_density_of_u_v_rates() const;
         double compute_log_prior_density_of_rate_multiplier() const;
         double compute_log_prior_density_of_node_heights() const;
-        double compute_log_prior_density_of_coalescence_rates() const;
+        double compute_log_prior_density_of_population_sizes() const;
         double get_log_prior_density_value() const;
         double get_stored_log_prior_density_value() const;
 
@@ -207,13 +204,13 @@ class PopulationTree {
         void store_likelihood();
         void store_prior_density();
         virtual void store_parameters();
-        void store_all_coalescence_rates();
+        void store_all_population_sizes();
         virtual void store_all_heights();
         void restore_state();
         void restore_likelihood();
         void restore_prior_density();
         virtual void restore_parameters();
-        void restore_all_coalescence_rates();
+        void restore_all_population_sizes();
         virtual void restore_all_heights();
 
         void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
@@ -236,14 +233,14 @@ class PopulationTree {
             return this->rate_multiplier_->prior;
         }
 
-        void fix_coalescence_rates() {
-            this->root_->fix_all_coalescence_rates();
+        void fix_population_sizes() {
+            this->root_->fix_all_population_sizes();
         }
-        void estimate_coalescence_rates() {
-            this->root_->estimate_all_coalescence_rates();
+        void estimate_population_sizes() {
+            this->root_->estimate_all_population_sizes();
         }
-        bool coalescence_rates_are_fixed() const {
-            return this->root_->all_coalescence_rates_are_fixed();
+        bool population_sizes_are_fixed() const {
+            return this->root_->all_population_sizes_are_fixed();
         }
 
         void fix_u_v_rates() {
@@ -269,12 +266,12 @@ class PopulationTree {
             return this->rate_multiplier_->is_fixed();
         }
 
-        void constrain_coalescence_rates() {
-            this->coalescence_rates_are_constrained_ = true;
-            this->root_->set_all_coalescence_rate_parameters();
+        void constrain_population_sizes() {
+            this->population_sizes_are_constrained_ = true;
+            this->root_->set_all_population_size_parameters();
         }
-        bool coalescence_rates_are_constrained() const {
-            return this->coalescence_rates_are_constrained_;
+        bool population_sizes_are_constrained() const {
+            return this->population_sizes_are_constrained_;
         }
         void constrain_u_v_rates() {
             this->u_v_rates_are_constrained_ = true;
@@ -318,16 +315,13 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool strict_on_missing_sites = false
                 );
 
-        void set_child_coalescence_rate(unsigned int child_index, double rate);
         void set_child_population_size(unsigned int child_index, double size);
-        void update_child_coalescence_rate(unsigned int child_index, double rate);
-        double get_child_coalescence_rate(unsigned int child_index) const;
-        void store_child_coalescence_rate(unsigned int child_index);
-        void restore_child_coalescence_rate(unsigned int child_index);
-        std::shared_ptr<CoalescenceRateParameter> get_child_coalescence_rate_parameter(
-                unsigned int child_index) const;
-
+        void update_child_population_size(unsigned int child_index, double size);
         double get_child_population_size(unsigned int child_index) const;
+        void store_child_population_size(unsigned int child_index);
+        void restore_child_population_size(unsigned int child_index);
+        std::shared_ptr<PositiveRealParameter> get_child_population_size_parameter(
+                unsigned int child_index) const;
 
         void set_height(double height) {this->set_root_height(height);}
         void update_height(double height) {this->update_root_height(height);}
@@ -373,7 +367,7 @@ class ComparisonPopulationTree: public PopulationTree {
 
         static double coalesce_in_branch(
                 std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
-                double coalescence_rate,
+                double population_size,
                 RandomNumberGenerator& rng,
                 double bottom_of_branch_height = 0.0,
                 double top_of_branch_height = std::numeric_limits<double>::infinity()

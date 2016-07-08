@@ -228,7 +228,7 @@ void PopulationTree::compute_top_of_branch_partials(
             node.get_allele_count(),
             this->u_->get_value(),
             this->get_v(),
-            node.get_coalescence_rate() / this->get_rate_multiplier(),
+            node.get_population_size() * this->get_rate_multiplier(),
             node.get_length() * this->get_rate_multiplier(),
             node.get_bottom_pattern_probs());
     node.copy_top_pattern_probs(m);
@@ -336,7 +336,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
             N,
             this->u_->get_value(),
             this->get_v(),
-            this->root_->get_coalescence_rate() / this->get_rate_multiplier());
+            this->root_->get_population_size() * this->get_rate_multiplier());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
     // ECOEVOLITY_DEBUG(
@@ -642,39 +642,24 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_rate_multiplier_param
     return this->rate_multiplier_;
 }
 
-void PopulationTree::set_root_coalescence_rate(double rate) {
-    if (this->coalescence_rates_are_fixed()) {
-        return;
-    }
-    this->root_->set_coalescence_rate(rate);
-}
-void PopulationTree::set_coalescence_rate(double rate) {
-    if (this->coalescence_rates_are_fixed()) {
-        return;
-    }
-    this->root_->set_all_coalescence_rates(rate);
-}
 void PopulationTree::set_root_population_size(double size) {
-    if (this->coalescence_rates_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->set_population_size(size);
 }
 void PopulationTree::set_population_size(double size) {
-    if (this->coalescence_rates_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->set_all_population_sizes(size);
 }
 
-double PopulationTree::get_root_coalescence_rate() const {
-    return this->root_->get_coalescence_rate();
-}
 double PopulationTree::get_root_population_size() const {
     return this->root_->get_population_size();
 }
-std::shared_ptr<CoalescenceRateParameter> PopulationTree::get_root_coalescence_rate_parameter() const {
-    return this->root_->get_coalescence_rate_parameter();
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_population_size_parameter() const {
+    return this->root_->get_population_size_parameter();
 }
 
 void PopulationTree::store_state() {
@@ -693,11 +678,11 @@ void PopulationTree::store_prior_density() {
 void PopulationTree::store_parameters() {
     this->store_u();
     this->store_rate_multiplier();
-    this->store_all_coalescence_rates();
+    this->store_all_population_sizes();
     this->store_all_heights();
 }
-void PopulationTree::store_all_coalescence_rates() {
-    this->root_->store_all_coalescence_rates();
+void PopulationTree::store_all_population_sizes() {
+    this->root_->store_all_population_sizes();
 }
 void PopulationTree::store_all_heights() {
     this->root_->store_all_heights();
@@ -719,11 +704,11 @@ void PopulationTree::restore_prior_density() {
 void PopulationTree::restore_parameters() {
     this->restore_u();
     this->restore_rate_multiplier();
-    this->restore_all_coalescence_rates();
+    this->restore_all_population_sizes();
     this->restore_all_heights();
 }
-void PopulationTree::restore_all_coalescence_rates() {
-    this->root_->restore_all_coalescence_rates();
+void PopulationTree::restore_all_population_sizes() {
+    this->root_->restore_all_population_sizes();
 }
 void PopulationTree::restore_all_heights() {
     this->root_->restore_all_heights();
@@ -753,7 +738,7 @@ double PopulationTree::compute_log_prior_density() {
     d += this->compute_log_prior_density_of_u_v_rates();
     d += this->compute_log_prior_density_of_rate_multiplier();
     d += this->compute_log_prior_density_of_node_heights();
-    d += this->compute_log_prior_density_of_coalescence_rates();
+    d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
     return d;
 }
@@ -766,8 +751,8 @@ double PopulationTree::compute_log_prior_density_of_rate_multiplier() const {
 double PopulationTree::compute_log_prior_density_of_node_heights() const {
     return this->root_->calculate_ln_relative_node_height_prior_density();
 }
-double PopulationTree::compute_log_prior_density_of_coalescence_rates() const {
-    return this->root_->calculate_ln_relative_coalescence_rate_prior_density();
+double PopulationTree::compute_log_prior_density_of_population_sizes() const {
+    return this->root_->calculate_ln_relative_population_size_prior_density();
 }
 
 double PopulationTree::get_log_prior_density_value() const {
@@ -849,16 +834,14 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     this->set_population_size_prior(
             settings.get_population_size_settings().get_prior_settings().get_instance());
     if (settings.constrain_population_sizes()) {
-        this->constrain_coalescence_rates();
+        this->constrain_population_sizes();
     }
     PositiveRealParameter p = PositiveRealParameter(
             settings.get_population_size_settings(),
             rng);
-    this->set_coalescence_rate(
-            CoalescenceRateParameter::get_rate_from_population_size(
-                    p.get_value()));
+    this->set_population_size(p.get_value());
     if (settings.get_population_size_settings().is_fixed()) {
-        this->fix_coalescence_rates();
+        this->fix_population_sizes();
     }
     
     this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
@@ -881,8 +864,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     if (
         (this->data_.get_number_of_populations() == 1) &&
         (
-            (this->coalescence_rates_are_fixed()) ||
-            (this->coalescence_rates_are_constrained())
+            (this->population_sizes_are_fixed()) ||
+            (this->population_sizes_are_constrained())
         )
     ) {
         std::ostringstream message;
@@ -902,50 +885,37 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     }
 }
 
-void ComparisonPopulationTree::set_child_coalescence_rate(
-        unsigned int child_index,
-        double rate) {
-    if (this->coalescence_rates_are_fixed()) {
-        return;
-    }
-    this->root_->get_child(child_index)->set_coalescence_rate(rate);
-}
 void ComparisonPopulationTree::set_child_population_size(
         unsigned int child_index,
         double size) {
-    if (this->coalescence_rates_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->get_child(child_index)->set_population_size(size);
 }
-void ComparisonPopulationTree::update_child_coalescence_rate(
+void ComparisonPopulationTree::update_child_population_size(
         unsigned int child_index,
-        double rate) {
-    if (this->coalescence_rates_are_fixed()) {
+        double size) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
-    this->root_->get_child(child_index)->update_coalescence_rate(rate);
+    this->root_->get_child(child_index)->update_population_size(size);
 }
-double ComparisonPopulationTree::get_child_coalescence_rate(
-        unsigned int child_index) const {
-    return this->root_->get_child(child_index)->get_coalescence_rate();
-}
-void ComparisonPopulationTree::store_child_coalescence_rate(
-        unsigned int child_index) {
-    this->root_->get_child(child_index)->store_coalescence_rate();
-}
-void ComparisonPopulationTree::restore_child_coalescence_rate(
-        unsigned int child_index) {
-    this->root_->get_child(child_index)->restore_coalescence_rate();
-}
-std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_coalescence_rate_parameter(
-        unsigned int child_index) const {
-    return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
-}
-
 double ComparisonPopulationTree::get_child_population_size(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_population_size();
+}
+void ComparisonPopulationTree::store_child_population_size(
+        unsigned int child_index) {
+    this->root_->get_child(child_index)->store_population_size();
+}
+void ComparisonPopulationTree::restore_child_population_size(
+        unsigned int child_index) {
+    this->root_->get_child(child_index)->restore_population_size();
+}
+std::shared_ptr<PositiveRealParameter> ComparisonPopulationTree::get_child_population_size_parameter(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size_parameter();
 }
 
 // Node height sharing needs to be dealt with in next level up in
@@ -955,7 +925,7 @@ double ComparisonPopulationTree::compute_log_prior_density() {
     d += this->compute_log_prior_density_of_u_v_rates();
     d += this->compute_log_prior_density_of_rate_multiplier();
     // d += this->compute_log_prior_density_of_node_heights();
-    d += this->compute_log_prior_density_of_coalescence_rates();
+    d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
     return d;
 }
@@ -964,13 +934,13 @@ double ComparisonPopulationTree::compute_log_prior_density() {
 void ComparisonPopulationTree::store_parameters() {
     this->store_u();
     this->store_rate_multiplier();
-    this->store_all_coalescence_rates();
+    this->store_all_population_sizes();
     // this->store_all_heights();
 }
 void ComparisonPopulationTree::restore_parameters() {
     this->restore_u();
     this->restore_rate_multiplier();
-    this->restore_all_coalescence_rates();
+    this->restore_all_population_sizes();
     // this->restore_all_heights();
 }
 
@@ -1068,7 +1038,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
     double current_height = 0.0;
     double last_left_coal_height = this->coalesce_in_branch(
             left_lineages,
-            this->get_child_coalescence_rate(0) / this->get_rate_multiplier(),
+            this->get_child_population_size(0) * this->get_rate_multiplier(),
             rng,
             current_height,
             top_of_branch_height
@@ -1096,7 +1066,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
 
         double last_right_coal_height = this->coalesce_in_branch(
                 right_lineages,
-                this->get_child_coalescence_rate(1) / this->get_rate_multiplier(),
+                this->get_child_population_size(1) * this->get_rate_multiplier(),
                 rng,
                 current_height,
                 top_of_branch_height
@@ -1105,19 +1075,19 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
 
     for (unsigned int i = 0; i < left_lineages.size(); ++i) {
         root_lineages.push_back(left_lineages.at(i));
-        left_lineages.erase(left_lineages.begin() + i);
     }
+    left_lineages.clear();
     for (unsigned int i = 0; i < right_lineages.size(); ++i) {
         root_lineages.push_back(right_lineages.at(i));
-        right_lineages.erase(right_lineages.begin() + i);
     }
+    right_lineages.clear();
     ECOEVOLITY_ASSERT(root_lineages.size() > 0);
     if (root_lineages.size() == 1) {
         return root_lineages.at(0);
     }
     double last_root_coal_height = this->coalesce_in_branch(
             root_lineages,
-            this->get_root_coalescence_rate() / this->get_rate_multiplier(),
+            this->get_root_population_size() * this->get_rate_multiplier(),
             rng,
             top_of_branch_height,
             std::numeric_limits<double>::infinity()
@@ -1128,7 +1098,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
 
 double ComparisonPopulationTree::coalesce_in_branch(
         std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
-        double coalescence_rate,
+        double population_size,
         RandomNumberGenerator& rng,
         double bottom_of_branch_height,
         double top_of_branch_height
@@ -1142,8 +1112,7 @@ double ComparisonPopulationTree::coalesce_in_branch(
             ECOEVOLITY_ASSERT(lineages.size() == k);
             break;
         }
-        double scale = 2.0 / ( ((double)k) * (k - 1.0) *
-                coalescence_rate);
+        double scale = population_size / (((double)k) * (k - 1.0));
         double wait = rng.gamma(1.0, scale);
         
         if ((current_height + wait) >= top_of_branch_height) {

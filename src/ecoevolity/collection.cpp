@@ -663,8 +663,8 @@ void ComparisonPopulationTreeCollection::mcmc(
                 // Check to see if we updated a fixed parameter. If so, do
                 // nothing and continue to next tree (to avoid counting toward
                 // operator acceptance ratio).
-                if ((op.target_parameter() == "coalescence rate") &&
-                        (this->trees_.at(tree_idx).coalescence_rates_are_fixed())) {
+                if ((op.target_parameter() == "population size") &&
+                        (this->trees_.at(tree_idx).population_sizes_are_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }

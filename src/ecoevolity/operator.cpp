@@ -357,37 +357,6 @@ std::string ComparisonRateMultiplierScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ChildCoalescenceRateScaler methods
-//////////////////////////////////////////////////////////////////////////////
-
-double ChildCoalescenceRateScaler::propose(
-        RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    int pop_idx = rng.uniform_int(0, tree.get_leaf_node_count() - 1);
-    double rate = tree.get_child_coalescence_rate(pop_idx);
-
-    double hastings;
-    this->update(rng, rate, hastings);
-
-    // avoid zero division to get population size
-    if (rate <= 0.0) {
-        return -std::numeric_limits<double>::infinity();
-    }
-
-    tree.set_child_coalescence_rate(pop_idx, rate);
-    return hastings;
-}
-
-std::string ChildCoalescenceRateScaler::target_parameter() const {
-    return "coalescence rate";
-}
-
-std::string ChildCoalescenceRateScaler::get_name() const {
-    return "ChildCoalescenceRateScaler";
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
 // ChildPopulationSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
@@ -410,42 +379,11 @@ double ChildPopulationSizeScaler::propose(
 }
 
 std::string ChildPopulationSizeScaler::target_parameter() const {
-    return "coalescence rate";
+    return "population size";
 }
 
 std::string ChildPopulationSizeScaler::get_name() const {
     return "ChildPopulationSizeScaler";
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-// RootCoalescenceRateScaler methods
-//////////////////////////////////////////////////////////////////////////////
-
-double RootCoalescenceRateScaler::propose(
-        RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    double rate = tree.get_root_coalescence_rate();
-
-    double hastings;
-    this->update(rng, rate, hastings);
-
-    // avoid zero division to get population size
-    if (rate <= 0.0) {
-        return -std::numeric_limits<double>::infinity();
-    }
-
-    tree.set_root_coalescence_rate(rate);
-
-    return hastings;
-}
-
-std::string RootCoalescenceRateScaler::target_parameter() const {
-    return "coalescence rate";
-}
-
-std::string RootCoalescenceRateScaler::get_name() const {
-    return "RootCoalescenceRateScaler";
 }
 
 
@@ -472,7 +410,7 @@ double RootPopulationSizeScaler::propose(
 }
 
 std::string RootPopulationSizeScaler::target_parameter() const {
-    return "coalescence rate";
+    return "population size";
 }
 
 std::string RootPopulationSizeScaler::get_name() const {
