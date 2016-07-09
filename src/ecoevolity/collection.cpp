@@ -668,13 +668,13 @@ void ComparisonPopulationTreeCollection::mcmc(
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op.target_parameter() == "mutation rate") &&
+                if ((op.target_parameter() == "u rate") &&
                         (this->trees_.at(tree_idx).u_v_rates_are_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op.target_parameter() == "rate multiplier") &&
-                        (this->trees_.at(tree_idx).rate_multiplier_is_fixed())) {
+                if ((op.target_parameter() == "mutation rate") &&
+                        (this->trees_.at(tree_idx).mutation_rate_is_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }

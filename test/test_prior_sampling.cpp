@@ -38,7 +38,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -66,7 +66,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -167,7 +167,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -195,7 +195,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -295,7 +295,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -326,7 +326,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -425,7 +425,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -456,7 +456,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -548,7 +548,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -579,7 +579,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -686,7 +686,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -717,7 +717,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -824,7 +824,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -855,7 +855,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -959,7 +959,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -990,7 +990,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -1094,7 +1094,7 @@ TEST_CASE("Testing sampling from prior with UScaler without offset",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1125,7 +1125,7 @@ TEST_CASE("Testing sampling from prior with UScaler without offset",
         os << "                gamma_distribution:\n";
         os << "                    shape: " << shape << "\n";
         os << "                    scale: " << scale << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -1227,7 +1227,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1259,7 +1259,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset",
         os << "                    offset: " << offset << "\n";
         os << "                    shape: " << shape << "\n";
         os << "                    scale: " << scale << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -1361,7 +1361,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset and optimizing",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1393,7 +1393,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset and optimizing",
         os << "                    offset: " << offset << "\n";
         os << "                    shape: " << shape << "\n";
         os << "                    scale: " << scale << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -1469,7 +1469,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset and optimizing",
     }
 }
 
-TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler",
+TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
@@ -1501,7 +1501,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1529,7 +1529,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler",
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -1564,10 +1564,10 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler",
 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
-        std::vector<double> samples = prior_sample.get<double>("rate_multiplier_kya");
+        std::vector<double> samples = prior_sample.get<double>("mutation_rate_kya");
         REQUIRE(samples.size() == 10001);
 
-        SampleSummarizer<double> summary = prior_sample.summarize<double>("rate_multiplier_kya");
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("mutation_rate_kya");
         REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
         REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
@@ -1580,7 +1580,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler",
                 "generation",
                 "ln_prior",
                 "ln_prior_kya",
-                "rate_multiplier_kya"};
+                "mutation_rate_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1598,7 +1598,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler",
     }
 }
 
-TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler with optimizing",
+TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler with optimizing",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
@@ -1630,7 +1630,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler with 
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1658,7 +1658,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler with 
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -1693,10 +1693,10 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler with 
 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
-        std::vector<double> samples = prior_sample.get<double>("rate_multiplier_kya");
+        std::vector<double> samples = prior_sample.get<double>("mutation_rate_kya");
         REQUIRE(samples.size() == 10001);
 
-        SampleSummarizer<double> summary = prior_sample.summarize<double>("rate_multiplier_kya");
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("mutation_rate_kya");
         REQUIRE(summary.mean() == Approx(shape * scale).epsilon(0.01));
         REQUIRE(summary.variance() == Approx(shape * scale * scale).epsilon(0.01));
 
@@ -1709,7 +1709,7 @@ TEST_CASE("Testing sampling from prior with ComparisonRateMultiplierScaler with 
                 "generation",
                 "ln_prior",
                 "ln_prior_kya",
-                "rate_multiplier_kya"};
+                "mutation_rate_kya"};
         for (auto const &kv: prior_sample.data) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
@@ -1766,7 +1766,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1801,7 +1801,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "                    offset: " << u_offset << "\n";
         os << "                    shape: " << u_shape << "\n";
         os << "                    scale: " << u_scale << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -1842,7 +1842,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         SampleSummarizer<double> size_summary2 = prior_sample.summarize<double>("pop_size_fas");
         SampleSummarizer<double> size_summary3 = prior_sample.summarize<double>("pop_size_root_kya");
         SampleSummarizer<double> u_summary = prior_sample.summarize<double>("u_kya");
-        SampleSummarizer<double> mult_summary = prior_sample.summarize<double>("rate_multiplier_kya");
+        SampleSummarizer<double> mult_summary = prior_sample.summarize<double>("mutation_rate_kya");
 
         REQUIRE(height_summary.sample_size() == 50001);
         REQUIRE(size_summary1.sample_size() == 50001);
@@ -1931,7 +1931,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -1966,7 +1966,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "                    offset: " << u_offset << "\n";
         os << "                    shape: " << u_shape << "\n";
         os << "                    scale: " << u_scale << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -2007,7 +2007,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         SampleSummarizer<double> size_summary2 = prior_sample.summarize<double>("pop_size_fas");
         SampleSummarizer<double> size_summary3 = prior_sample.summarize<double>("pop_size_root_kya");
         SampleSummarizer<double> u_summary = prior_sample.summarize<double>("u_kya");
-        SampleSummarizer<double> mult_summary = prior_sample.summarize<double>("rate_multiplier_kya");
+        SampleSummarizer<double> mult_summary = prior_sample.summarize<double>("mutation_rate_kya");
 
         REQUIRE(height_summary.sample_size() == 50001);
         REQUIRE(size_summary1.sample_size() == 50001);
@@ -2094,7 +2094,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -2122,7 +2122,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -2263,7 +2263,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -2291,7 +2291,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -2432,7 +2432,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -2460,7 +2460,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -2602,7 +2602,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -2630,7 +2630,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -2819,7 +2819,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -2847,7 +2847,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -3036,7 +3036,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -3064,7 +3064,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -3305,7 +3305,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -3343,7 +3343,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -3362,7 +3362,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -3384,7 +3384,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -3485,9 +3485,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);
@@ -3617,7 +3617,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -3645,7 +3645,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -3844,7 +3844,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -3872,7 +3872,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -4071,7 +4071,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -4099,7 +4099,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -4319,7 +4319,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -4357,7 +4357,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -4376,7 +4376,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -4398,7 +4398,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -4503,9 +4503,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);
@@ -4655,7 +4655,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -4693,7 +4693,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -4712,7 +4712,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -4734,7 +4734,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -4839,9 +4839,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);
@@ -4961,7 +4961,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -4989,7 +4989,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -5127,7 +5127,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -5155,7 +5155,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -5339,7 +5339,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -5367,7 +5367,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "        u_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
@@ -5602,7 +5602,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -5640,7 +5640,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -5659,7 +5659,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -5681,7 +5681,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -5782,9 +5782,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);
@@ -5925,7 +5925,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -5963,7 +5963,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -5982,7 +5982,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -6004,7 +6004,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -6109,9 +6109,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);
@@ -6262,7 +6262,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -6300,7 +6300,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -6319,7 +6319,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -6341,7 +6341,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -6436,9 +6436,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);
@@ -6578,7 +6578,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonRateMultiplierScaler:\n";
+        os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
@@ -6616,7 +6616,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "                    shape: " << u1_shape << "\n";
         os << "                    scale: " << u1_scale << "\n";
         os << "                    offset: " << u1_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
@@ -6635,7 +6635,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "                    shape: " << u2_shape << "\n";
         os << "                    scale: " << u2_scale << "\n";
         os << "                    offset: " << u2_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -6657,7 +6657,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "                    shape: " << u3_shape << "\n";
         os << "                    scale: " << u3_scale << "\n";
         os << "                    offset: " << u3_offset << "\n";
-        os << "        rate_multiplier:\n";
+        os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
@@ -6752,9 +6752,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         REQUIRE(u2_summary.variance() == Approx(u2_shape * u2_scale * u2_scale).epsilon(0.05));
         REQUIRE(u3_summary.variance() == Approx(u3_shape * u3_scale * u3_scale).epsilon(0.05));
 
-        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("rate_multiplier_kya");
-        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("rate_multiplier_pop1");
-        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("rate_multiplier_pop1b");
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
         REQUIRE(mult1_summary.sample_size() == expected_sample_size);
         REQUIRE(mult2_summary.sample_size() == expected_sample_size);
         REQUIRE(mult3_summary.sample_size() == expected_sample_size);

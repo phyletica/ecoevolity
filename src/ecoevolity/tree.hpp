@@ -38,10 +38,11 @@ class PopulationTree {
         MatrixExponentiator matrix_exponentiator;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
+        double ploidy_ 2.0;
         std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<ExponentialDistribution>(1.0),
                 1.0);
-        std::shared_ptr<PositiveRealParameter> rate_multiplier_ = std::make_shared<PositiveRealParameter>(
+        std::shared_ptr<PositiveRealParameter> mutation_rate_ = std::make_shared<PositiveRealParameter>(
                 1.0,
                 true);
         std::vector<double> pattern_likelihoods_;
@@ -98,7 +99,8 @@ class PopulationTree {
                 bool constant_sites_removed = true,
                 bool validate = true,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
                 );
         //~PopulationTree () { delete this->root_; }
 
@@ -111,7 +113,8 @@ class PopulationTree {
                 bool constant_sites_removed = true,
                 bool validate = true,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
                 );
 
         void fold_patterns();
@@ -135,6 +138,13 @@ class PopulationTree {
             return this->data_.get_population_labels();
         }
 
+        void set_ploidy(double ploidy) {
+            this->ploidy_ = ploidy;
+        }
+        double get_ploidy() const {
+            return this->ploidy_;
+        }
+
         void set_u(double u);
         void update_u(double u);
         double get_u() const;
@@ -142,11 +152,11 @@ class PopulationTree {
         void store_u();
         void restore_u();
 
-        void set_rate_multiplier(double m);
-        void update_rate_multiplier(double m);
-        double get_rate_multiplier() const;
-        void store_rate_multiplier();
-        void restore_rate_multiplier();
+        void set_mutation_rate(double m);
+        void update_mutation_rate(double m);
+        double get_mutation_rate() const;
+        void store_mutation_rate();
+        void restore_mutation_rate();
 
         bool is_dirty() const;
         void make_dirty();
@@ -168,8 +178,8 @@ class PopulationTree {
 
         std::shared_ptr<PositiveRealParameter> get_u_parameter() const;
 
-        void set_rate_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h);
-        std::shared_ptr<PositiveRealParameter> get_rate_multiplier_parameter() const;
+        void set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h);
+        std::shared_ptr<PositiveRealParameter> get_mutation_rate_parameter() const;
 
         void set_root_population_size(double size);
         void set_population_size(double size);
@@ -194,7 +204,7 @@ class PopulationTree {
 
         virtual double compute_log_prior_density();
         double compute_log_prior_density_of_u_v_rates() const;
-        double compute_log_prior_density_of_rate_multiplier() const;
+        double compute_log_prior_density_of_mutation_rate() const;
         double compute_log_prior_density_of_node_heights() const;
         double compute_log_prior_density_of_population_sizes() const;
         double get_log_prior_density_value() const;
@@ -228,9 +238,9 @@ class PopulationTree {
             return this->u_->prior;
         }
 
-        void set_rate_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
-        std::shared_ptr<ContinuousProbabilityDistribution> get_rate_multiplier_prior() const {
-            return this->rate_multiplier_->prior;
+        void set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_mutation_rate_prior() const {
+            return this->mutation_rate_->prior;
         }
 
         void fix_population_sizes() {
@@ -248,7 +258,7 @@ class PopulationTree {
         }
         void estimate_u_v_rates() {
             if (this->u_v_rates_are_constrained_) {
-                throw EcoevolityError("Cannot estimate constrained mutation rates");
+                throw EcoevolityError("Cannot estimate constrained u/v rates");
             }
             this->u_->estimate();
         }
@@ -256,14 +266,14 @@ class PopulationTree {
             return this->u_->is_fixed();
         }
 
-        void fix_rate_multiplier() {
-            this->rate_multiplier_->fix();
+        void fix_mutation_rate() {
+            this->mutation_rate_->fix();
         }
-        void estimate_rate_multiplier() {
-            this->rate_multiplier_->estimate();
+        void estimate_mutation_rate() {
+            this->mutation_rate_->estimate();
         }
-        bool rate_multiplier_is_fixed() {
-            return this->rate_multiplier_->is_fixed();
+        bool mutation_rate_is_fixed() {
+            return this->mutation_rate_->is_fixed();
         }
 
         void constrain_population_sizes() {
@@ -306,7 +316,8 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool constant_sites_removed = true,
                 bool validate = true,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
                 );
         ComparisonPopulationTree(
                 const ComparisonSettings& settings,

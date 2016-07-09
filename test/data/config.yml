@@ -34,7 +34,7 @@ operator_settings:
         ComparisonHeightScaler:
             scale: 0.3
             weight: 3.0
-        ComparisonRateMultiplierScaler:
+        ComparisonMutationRateScaler:
             scale: 0.5
             weight: 2.0
         RootPopulationSizeScaler:
@@ -48,6 +48,7 @@ operator_settings:
             weight: 0.5
 
 global_comparison_settings:
+    ploidy: 2
     genotypes_are_diploid: true
     markers_are_dominant: false
     population_name_delimiter: "_"
@@ -73,7 +74,7 @@ global_comparison_settings:
                     shape: 10.0
                     scale: 0.1
 
-        rate_multiplier:
+        mutation_rate:
             value: 1.0
             estimate: false
 
@@ -97,7 +98,7 @@ comparisons:
     population_name_delimiter: "-"
     population_name_is_prefix: false
     parameters:
-        rate_multiplier:
+        mutation_rate:
             estimate: true
             prior:
                 gamma_distribution:

@@ -3037,7 +3037,7 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
 }
 
 
-TEST_CASE("Testing empirical mutation rates", "[BiallelicData]") {
+TEST_CASE("Testing empirical u/v rates", "[BiallelicData]") {
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
         BiallelicData bd(nex_path);

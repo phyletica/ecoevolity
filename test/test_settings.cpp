@@ -445,7 +445,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 true,
                 "none",
                 no_prior_parameters);
-        PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
+        PositiveRealParameterSettings mutation_rate = PositiveRealParameterSettings(
                 1.0,
                 true,
                 "none",
@@ -455,7 +455,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 nex_path,
                 pop_size,
                 u,
-                multiplier,
+                mutation_rate,
                 '_',
                 true,
                 true,
@@ -468,6 +468,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         std::string s = settings.to_string(0);
         std::string e =  "";
         e += "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        e += "ploidy: 2\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
         e += "population_name_delimiter: '_'\n";
@@ -486,7 +487,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "    u_rate:\n";
         e += "        value: 1.2\n";
         e += "        estimate: false\n";
-        e += "    rate_multiplier:\n";
+        e += "    mutation_rate:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
         REQUIRE(s == e);
@@ -508,14 +509,14 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(0));
         REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_child_population_size_parameter(0) != t.get_child_population_size_parameter(1));
-        REQUIRE(t.get_rate_multiplier_parameter()->is_fixed() == true);
+        REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
         REQUIRE(t.u_v_rates_are_fixed() == true);
         REQUIRE(t.population_sizes_are_fixed() == false);
-        REQUIRE(t.rate_multiplier_is_fixed() == true);
+        REQUIRE(t.mutation_rate_is_fixed() == true);
 
         REQUIRE(! t.get_u_prior());
         REQUIRE(t.get_population_size_prior()->to_string() == "gamma(shape = 10, scale = 0.0001)");
-        REQUIRE(! t.get_rate_multiplier_prior());
+        REQUIRE(! t.get_mutation_rate_prior());
     }
 
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex likelihood") {
@@ -536,7 +537,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 false,
                 "gamma_distribution",
                 u_prior_parameters);
-        PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
+        PositiveRealParameterSettings mutation_rate = PositiveRealParameterSettings(
                 1.0,
                 true,
                 "none",
@@ -546,7 +547,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 nex_path,
                 pop_size,
                 u,
-                multiplier,
+                mutation_rate,
                 '_',
                 true,
                 true,
@@ -559,6 +560,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         std::string s = settings.to_string(0);
         std::string e =  "";
         e += "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        e += "ploidy: 2\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
         e += "population_name_delimiter: '_'\n";
@@ -574,7 +576,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "    u_rate:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
-        e += "    rate_multiplier:\n";
+        e += "    mutation_rate:\n";
         e += "        value: 1\n";
         e += "        estimate: false\n";
         REQUIRE(s == e);
@@ -596,14 +598,14 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(0));
         REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_child_population_size_parameter(0) != t.get_child_population_size_parameter(1));
-        REQUIRE(t.get_rate_multiplier_parameter()->is_fixed() == true);
+        REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
         REQUIRE(t.u_v_rates_are_fixed() == true);
         REQUIRE(t.population_sizes_are_fixed() == true);
-        REQUIRE(t.rate_multiplier_is_fixed() == true);
+        REQUIRE(t.mutation_rate_is_fixed() == true);
 
         REQUIRE(! t.get_u_prior());
         REQUIRE(! t.get_population_size_prior());
-        REQUIRE(! t.get_rate_multiplier_prior());
+        REQUIRE(! t.get_mutation_rate_prior());
 
         t.set_root_height(0.01);
         double l = t.compute_log_likelihood();
@@ -634,7 +636,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 false,
                 "gamma_distribution",
                 u_prior_parameters);
-        PositiveRealParameterSettings multiplier = PositiveRealParameterSettings(
+        PositiveRealParameterSettings mutation_rate = PositiveRealParameterSettings(
                 1.0,
                 false,
                 "uniform_distribution",
@@ -644,7 +646,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 nex_path,
                 pop_size,
                 u,
-                multiplier,
+                mutation_rate,
                 '_',
                 true,
                 true,
@@ -657,6 +659,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         std::string s = settings.to_string(0);
         std::string e =  "";
         e += "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        e += "ploidy: 2\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
         e += "population_name_delimiter: '_'\n";
@@ -679,7 +682,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "            gamma_distribution:\n";
         e += "                shape: 10\n";
         e += "                scale: 0.1\n";
-        e += "    rate_multiplier:\n";
+        e += "    mutation_rate:\n";
         e += "        value: 1\n";
         e += "        estimate: true\n";
         e += "        prior:\n";
@@ -705,14 +708,14 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size_parameter() == t.get_child_population_size_parameter(0));
         REQUIRE(t.get_root_population_size_parameter() == t.get_child_population_size_parameter(1));
         REQUIRE(t.get_child_population_size_parameter(0) == t.get_child_population_size_parameter(1));
-        REQUIRE(t.get_rate_multiplier_parameter()->is_fixed() == false);
+        REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == false);
         REQUIRE(t.u_v_rates_are_fixed() == false);
         REQUIRE(t.population_sizes_are_fixed() == false);
-        REQUIRE(t.rate_multiplier_is_fixed() == false);
+        REQUIRE(t.mutation_rate_is_fixed() == false);
 
         REQUIRE(t.get_u_prior()->to_string() == "gamma(shape = 10, scale = 0.1)");
         REQUIRE(t.get_population_size_prior()->to_string() == "exp(lambda = 1)");
-        REQUIRE(t.get_rate_multiplier_prior()->to_string() == "uniform(0.9, 1.1)");
+        REQUIRE(t.get_mutation_rate_prior()->to_string() == "uniform(0.9, 1.1)");
 
         t.set_root_height(0.01);
         double l = t.compute_log_likelihood();
@@ -738,6 +741,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -755,7 +759,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
@@ -771,7 +775,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -790,7 +794,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 1);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 1);
     }
@@ -829,6 +833,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -846,11 +851,12 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -868,7 +874,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
@@ -884,7 +890,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -903,7 +909,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
@@ -937,6 +943,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -954,11 +961,12 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -976,7 +984,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
@@ -992,7 +1000,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -1011,7 +1019,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
@@ -1061,6 +1069,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/hemi129.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -1078,11 +1087,12 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -1100,7 +1110,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
@@ -1116,7 +1126,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -1135,7 +1145,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
@@ -1268,6 +1278,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: false\n";
         e += "    markers_are_dominant: true\n";
         e += "    population_name_delimiter: '-'\n";
@@ -1289,11 +1300,12 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "                exponential_distribution:\n";
         e += "                    rate: 2\n";
         e += "                    offset: 0.5\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: false\n";
         e += "    markers_are_dominant: true\n";
         e += "    population_name_delimiter: '-'\n";
@@ -1315,7 +1327,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "                exponential_distribution:\n";
         e += "                    rate: 2\n";
         e += "                    offset: 0.5\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
@@ -1331,7 +1343,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.3\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -1350,7 +1362,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
@@ -1371,7 +1383,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         cfg_stream << "    constrain_population_sizes: true\n";
         cfg_stream << "    constrain_u_v_rates: false\n";
         cfg_stream << "    parameters:\n";
-        cfg_stream << "        rate_multiplier:\n";
+        cfg_stream << "        mutation_rate:\n";
         cfg_stream << "            estimate: true\n";
         cfg_stream << "        u_rate:\n";
         cfg_stream << "            value: 0.9\n";
@@ -1415,6 +1427,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: false\n";
         e += "    markers_are_dominant: true\n";
         e += "    population_name_delimiter: '-'\n";
@@ -1434,7 +1447,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "                gamma_distribution:\n";
         e += "                    shape: 100\n";
         e += "                    scale: 0.01\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                gamma_distribution:\n";
@@ -1442,6 +1455,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "                    scale: 0.001\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: false\n";
         e += "    markers_are_dominant: true\n";
         e += "    population_name_delimiter: '-'\n";
@@ -1461,7 +1475,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "                gamma_distribution:\n";
         e += "                    shape: 100\n";
         e += "                    scale: 0.01\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                gamma_distribution:\n";
@@ -1480,7 +1494,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.3\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -1499,7 +1513,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 0);
     }
@@ -1532,6 +1546,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "comparisons:\n";
         e += "- comparison:\n";
         e += "    path: data/data3.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -1556,11 +1571,12 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "                gamma_distribution:\n";
         e += "                    shape: 10\n";
         e += "                    scale: 0.1\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/data1.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '_'\n";
@@ -1580,11 +1596,12 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "                gamma_distribution:\n";
         e += "                    shape: 10\n";
         e += "                    scale: 0.1\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/data2.nex\n";
+        e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
         e += "    population_name_delimiter: '-'\n";
@@ -1605,7 +1622,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        u_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
-        e += "        rate_multiplier:\n";
+        e += "        mutation_rate:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                gamma_distribution:\n";
@@ -1624,7 +1641,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 3\n";
         e += "            scale: 0.3\n";
-        e += "        ComparisonRateMultiplierScaler:\n";
+        e += "        ComparisonMutationRateScaler:\n";
         e += "            weight: 2\n";
         e += "            scale: 0.5\n";
         e += "        RootPopulationSizeScaler:\n";
@@ -1643,7 +1660,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         REQUIRE(settings.get_chain_length() == 2000000);
         REQUIRE(settings.get_sample_frequency() == 2000);
         REQUIRE(settings.get_number_of_comparisons() == 3);
-        REQUIRE(settings.get_number_of_comparisons_with_free_rate_multiplier() == 1);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 1);
         REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }

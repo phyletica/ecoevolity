@@ -16,7 +16,7 @@ TEST_CASE("Testing simple likelihood of PopulationTree", "[PopulationTree]") {
         PopulationTree tree(nex_path, '_', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
 
@@ -43,7 +43,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
         PopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
@@ -72,7 +72,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
         PopulationTree tree(nex_path, '_', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-7099.716015109998));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -102,7 +102,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[P
         PopulationTree tree(nex_path, '_', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-6986.120524781545));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -130,7 +130,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
         PopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.0);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
@@ -159,7 +159,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
         PopulationTree tree(nex_path, '_', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.0);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-7256.501742344454));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -189,7 +189,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[Po
         PopulationTree tree(nex_path, '_', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.0);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-7223.362711937651));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -215,7 +215,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
         PopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.2);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
@@ -244,7 +244,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
         PopulationTree tree(nex_path, '_', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.2);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-7304.180743441677));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -274,7 +274,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[Po
         PopulationTree tree(nex_path, '_', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.2);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-7405.145951634711));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -303,7 +303,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-327.7437811413033));
@@ -334,7 +334,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-6472.856486972301));
@@ -366,7 +366,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant
         PopulationTree tree(nex_path, '_', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-6494.774924871097));
@@ -394,7 +394,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-265.0023534261969));
@@ -425,7 +425,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         PopulationTree tree(nex_path, '_', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-10163.468886613919));
@@ -457,7 +457,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant
         PopulationTree tree(nex_path, '_', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-10999.288193543642));
@@ -487,7 +487,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_population_size(2.0/111.1);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
@@ -512,7 +512,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_population_size(2.0/111.1);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-8158.88094671241));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -538,7 +538,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominan
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
-        tree.set_population_size(2.0/111.1);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-8034.250341980543));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
@@ -562,7 +562,7 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
         REQUIRE(tree.get_degree_of_root() == 2);
         REQUIRE(tree.get_root().get_label() == "root-pop1");
         tree.set_height(0.01);
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
 
@@ -675,17 +675,17 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_root_population_size(2.0/10.0);
+        tree.set_root_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_child_population_size(0, 2.0/10.0);
+        tree.set_child_population_size(0, 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_child_population_size(1, 2.0/10.0);
+        tree.set_child_population_size(1, 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
@@ -698,7 +698,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5806.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1343.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
         tree.store_state();
@@ -709,8 +709,8 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5806.5500949166799));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5806.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1343.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1343.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
 
         tree.restore_state();
@@ -721,15 +721,15 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5806.5500949166799));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5806.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1343.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1343.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
         REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5806.5500949166799));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5806.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1343.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1343.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.store_state();
@@ -746,8 +746,8 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5806.5500949166799));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5806.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1343.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1343.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
 
 
@@ -757,16 +757,16 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_u() == 10.0);
         REQUIRE(tree.get_v() == Approx(10.0/19.0));
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/10.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5815.55009491668));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5806.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1352.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1343.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
 
 
@@ -780,45 +780,45 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5806.0764107061532));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5815.55009491668));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1343.5063584563902));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1352.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
 
 
         tree.store_state();
-        tree.set_population_size(2.0/111.1);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         REQUIRE(tree.get_height() == 0.03);
         REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
-        REQUIRE(tree.get_root_population_size() == 2.0/111.1);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/111.1);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/111.1);
+        REQUIRE(tree.get_root_population_size() == 2.0/(111.1 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(111.1 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(111.1 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-411.14224740528493));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5806.0764107061532));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-43.531691105116927));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1343.5063584563902));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
 
         tree.store_state();
         tree.constrain_u_v_rates();
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_height(0.2);
         REQUIRE(tree.get_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/10.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.5500949166799));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-411.14224740528493));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-43.531691105116927));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
 
 
@@ -827,16 +827,16 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/10.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-5805.5500949166799));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.9800426669165));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
 
 
@@ -845,63 +845,63 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/10.0);
+        REQUIRE(tree.get_mutation_rate() == 1.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-1935.1833649722266));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-5805.5500949166799));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-447.66001422230551));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
 
         tree.store_state();
-        tree.estimate_rate_multiplier();
-        REQUIRE(! tree.rate_multiplier_is_fixed());
-        tree.set_rate_multiplier(1.0);
+        tree.estimate_mutation_rate();
+        REQUIRE(! tree.mutation_rate_is_fixed());
+        tree.set_mutation_rate(1.0);
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
-        tree.set_rate_multiplier_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
+        tree.set_mutation_rate_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
         REQUIRE(tree.get_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/10.0);
+        REQUIRE(tree.get_mutation_rate() == 1.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.9593415223676));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1935.1833649722266));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
 
         tree.store_state();
-        tree.set_rate_multiplier(2.0);
+        tree.set_mutation_rate(2.0);
         tree.set_height(0.1);
-        tree.set_root_population_size(2.0/20.0);
-        tree.set_child_population_size(0, 2.0/20.0);
-        tree.set_child_population_size(1, 2.0/20.0);
+        tree.set_root_population_size(2.0/(20.0 * 2 * tree.get_ploidy()));
+        tree.set_child_population_size(0, 2.0/(20.0 * 2 * tree.get_ploidy()));
+        tree.set_child_population_size(1, 2.0/(20.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.get_height() == 0.1);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 2.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/20.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/20.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/20.0);
+        REQUIRE(tree.get_mutation_rate() == 2.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(20.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(20.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(20.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-944.95934152236759));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.9593415223676));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-207.43599077244659));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
 
         tree.restore_state();
@@ -909,15 +909,15 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_height() == 0.1);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(0) == 2.0/10.0);
-        REQUIRE(tree.get_child_population_size(1) == 2.0/10.0);
+        REQUIRE(tree.get_mutation_rate() == 1.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
+        REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-1934.9593415223676));
-        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1934.9593415223676));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
 
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -959,7 +959,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
@@ -1030,7 +1030,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_u() == 10.0);
         REQUIRE(tree.get_v() == Approx(10.0/19.0));
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1057,11 +1057,11 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 
 
         tree.store_state();
-        tree.set_population_size(2.0/111.1);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
-        REQUIRE(tree.get_root_population_size() == 2.0/111.1);
+        REQUIRE(tree.get_root_population_size() == 2.0/(111.1 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1073,12 +1073,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 
         tree.store_state();
         tree.constrain_u_v_rates();
-        tree.set_population_size(2.0/10.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_root_height(0.2);
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1094,7 +1094,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1110,8 +1110,8 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
+        REQUIRE(tree.get_mutation_rate() == 1.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1122,18 +1122,18 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
 
         tree.store_state();
-        tree.estimate_rate_multiplier();
-        REQUIRE(! tree.rate_multiplier_is_fixed());
-        tree.set_rate_multiplier(1.0);
+        tree.estimate_mutation_rate();
+        REQUIRE(! tree.mutation_rate_is_fixed());
+        tree.set_mutation_rate(1.0);
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
-        tree.set_rate_multiplier_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
+        tree.set_mutation_rate_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
+        REQUIRE(tree.get_mutation_rate() == 1.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1144,14 +1144,14 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
 
         tree.store_state();
-        tree.set_rate_multiplier(2.0);
+        tree.set_mutation_rate(2.0);
         tree.set_root_height(0.1);
-        tree.set_population_size(2.0/20.0);
+        tree.set_population_size(2.0/(20.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 2.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/20.0);
+        REQUIRE(tree.get_mutation_rate() == 2.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(20.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1165,8 +1165,8 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == 1.0);
         REQUIRE(tree.get_u() == 1.0);
-        REQUIRE(tree.get_rate_multiplier() == 1.0);
-        REQUIRE(tree.get_root_population_size() == 2.0/10.0);
+        REQUIRE(tree.get_mutation_rate() == 1.0);
+        REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
         REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
@@ -1916,7 +1916,7 @@ TEST_CASE("Testing simulate_gene_tree", "[ComparisonPopulationTree]") {
 
         std::string nex_path = "data/singleton-n2.nex";
         ComparisonPopulationTree tree(nex_path, '_', true, false, false);
-        tree.estimate_rate_multiplier();
+        tree.estimate_mutation_rate();
 
         tree.set_root_population_size(theta);
         tree.set_child_population_size(0, theta);
@@ -1925,7 +1925,7 @@ TEST_CASE("Testing simulate_gene_tree", "[ComparisonPopulationTree]") {
 
         tree.set_u(1.0);
 
-        tree.set_rate_multiplier(1.0);
+        tree.set_mutation_rate(1.0);
 
         RandomNumberGenerator rng = RandomNumberGenerator(54321);
 
@@ -1965,7 +1965,7 @@ TEST_CASE("Testing simulate_gene_tree", "[ComparisonPopulationTree]") {
         REQUIRE(variance == Approx(expected_variance).epsilon(0.0005));
         REQUIRE(mn >= 0.0);
 
-        tree.set_rate_multiplier(mu);
+        tree.set_mutation_rate(mu);
         tree.set_root_population_size(4*Ne);
         tree.set_child_population_size(0, 4*Ne);
         tree.set_height(0.1 / mu);

@@ -400,15 +400,15 @@ class UScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
-class ComparisonRateMultiplierScaler : public ComparisonTreeScaleOperator {
+class ComparisonMutationRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
 
     public:
-        ComparisonRateMultiplierScaler() : ComparisonTreeScaleOperator() { }
-        ComparisonRateMultiplierScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ComparisonRateMultiplierScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ComparisonRateMultiplierScaler() { }
+        ComparisonMutationRateScaler() : ComparisonTreeScaleOperator() { }
+        ComparisonMutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ComparisonMutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~ComparisonMutationRateScaler() { }
 
         double propose(
                 RandomNumberGenerator& rng,

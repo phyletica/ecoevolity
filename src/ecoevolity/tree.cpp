@@ -28,7 +28,8 @@ PopulationTree::PopulationTree(
         bool constant_sites_removed,
         bool validate,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        double ploidy) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -37,7 +38,8 @@ PopulationTree::PopulationTree(
                constant_sites_removed,
                validate,
                strict_on_constant_sites,
-               strict_on_missing_sites);
+               strict_on_missing_sites,
+               ploidy);
 }
 
 void PopulationTree::init(
@@ -49,7 +51,14 @@ void PopulationTree::init(
         bool constant_sites_removed,
         bool validate,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        double ploidy) {
+    if (genotypes_are_diploid && (ploidy != 2.0)) {
+        throw EcoevolityBiallelicDataError(
+                "Genotypes cannot be diploid if ploidy is not 2",
+                path);
+    }
+    this->set_ploidy(ploidy);
     this->data_.init(
             path,
             population_name_delimiter,
@@ -228,8 +237,8 @@ void PopulationTree::compute_top_of_branch_partials(
             node.get_allele_count(),
             this->u_->get_value(),
             this->get_v(),
-            node.get_population_size() * this->get_rate_multiplier(),
-            node.get_length() * this->get_rate_multiplier(),
+            2 * this->get_ploidy() * node.get_population_size() * this->get_mutation_rate(),
+            node.get_length() * this->get_mutation_rate(),
             node.get_bottom_pattern_probs());
     node.copy_top_pattern_probs(m);
 }
@@ -336,7 +345,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
             N,
             this->u_->get_value(),
             this->get_v(),
-            this->root_->get_population_size() * this->get_rate_multiplier());
+            2 * this->get_ploidy() * this->root_->get_population_size() * this->get_mutation_rate());
     std::vector<double> xcol = q.find_orthogonal_vector();
 
     // ECOEVOLITY_DEBUG(
@@ -535,9 +544,7 @@ double PopulationTree::get_stored_log_likelihood_value() const {
 
 void PopulationTree::fold_patterns() {
     if (! this->u_v_rates_are_constrained()) {
-        std::cerr << 
-            "WARNING: Site patterns are being folded when foward/backward\n" <<
-            "         mutation rates are not constrained." << std::endl;
+        std::cerr << "WARNING: Site patterns are being folded when u/v rates are not constrained." << std::endl;
     }
     this->data_.fold_patterns();
     this->make_dirty();
@@ -605,28 +612,28 @@ void PopulationTree::restore_u() {
     this->make_dirty();
 }
 
-void PopulationTree::set_rate_multiplier(double m) {
-    if (this->rate_multiplier_is_fixed()) {
+void PopulationTree::set_mutation_rate(double m) {
+    if (this->mutation_rate_is_fixed()) {
         return;
     }
-    this->rate_multiplier_->set_value(m);
+    this->mutation_rate_->set_value(m);
     this->make_dirty();
 }
-void PopulationTree::update_rate_multiplier(double m) {
-    if (this->rate_multiplier_is_fixed()) {
+void PopulationTree::update_mutation_rate(double m) {
+    if (this->mutation_rate_is_fixed()) {
         return;
     }
-    this->rate_multiplier_->update_value(m);
+    this->mutation_rate_->update_value(m);
     this->make_dirty();
 }
-double PopulationTree::get_rate_multiplier() const {
-    return this->rate_multiplier_->get_value();
+double PopulationTree::get_mutation_rate() const {
+    return this->mutation_rate_->get_value();
 }
-void PopulationTree::store_rate_multiplier() {
-    this->rate_multiplier_->store();
+void PopulationTree::store_mutation_rate() {
+    this->mutation_rate_->store();
 }
-void PopulationTree::restore_rate_multiplier() {
-    this->rate_multiplier_->restore();
+void PopulationTree::restore_mutation_rate() {
+    this->mutation_rate_->restore();
     this->make_dirty();
 }
 
@@ -634,12 +641,12 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
 }
 
-void PopulationTree::set_rate_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
-    this->rate_multiplier_ = h;
+void PopulationTree::set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h) {
+    this->mutation_rate_ = h;
     this->make_dirty();
 }
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_rate_multiplier_parameter() const {
-    return this->rate_multiplier_;
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_mutation_rate_parameter() const {
+    return this->mutation_rate_;
 }
 
 void PopulationTree::set_root_population_size(double size) {
@@ -677,7 +684,7 @@ void PopulationTree::store_prior_density() {
 }
 void PopulationTree::store_parameters() {
     this->store_u();
-    this->store_rate_multiplier();
+    this->store_mutation_rate();
     this->store_all_population_sizes();
     this->store_all_heights();
 }
@@ -703,7 +710,7 @@ void PopulationTree::restore_prior_density() {
 }
 void PopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_rate_multiplier();
+    this->restore_mutation_rate();
     this->restore_all_population_sizes();
     this->restore_all_heights();
 }
@@ -728,15 +735,15 @@ void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistributi
     this->u_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_rate_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->rate_multiplier_->set_prior(prior);
+void PopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+    this->mutation_rate_->set_prior(prior);
     this->make_dirty();
 }
 
 double PopulationTree::compute_log_prior_density() {
     double d = 0.0;
     d += this->compute_log_prior_density_of_u_v_rates();
-    d += this->compute_log_prior_density_of_rate_multiplier();
+    d += this->compute_log_prior_density_of_mutation_rate();
     d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
@@ -745,8 +752,8 @@ double PopulationTree::compute_log_prior_density() {
 double PopulationTree::compute_log_prior_density_of_u_v_rates() const {
     return this->u_->relative_prior_ln_pdf();
 }
-double PopulationTree::compute_log_prior_density_of_rate_multiplier() const {
-    return this->rate_multiplier_->relative_prior_ln_pdf();
+double PopulationTree::compute_log_prior_density_of_mutation_rate() const {
+    return this->mutation_rate_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_node_heights() const {
     return this->root_->calculate_ln_relative_node_height_prior_density();
@@ -798,7 +805,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool constant_sites_removed,
         bool validate,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        double ploidy) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -807,7 +815,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                constant_sites_removed,
                validate,
                strict_on_constant_sites,
-               strict_on_missing_sites);
+               strict_on_missing_sites,
+               ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
     }
@@ -826,7 +835,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                settings.constant_sites_removed(),
                true, // validate
                strict_on_constant_sites,
-               strict_on_missing_sites);
+               strict_on_missing_sites,
+               settings.get_ploidy());
     if (settings.constrain_u_v_rates()) {
         this->constrain_u_v_rates();
         this->fold_patterns();
@@ -857,9 +867,9 @@ ComparisonPopulationTree::ComparisonPopulationTree(
             this->fix_u_v_rates();
         }
     }
-    this->set_rate_multiplier_parameter(
+    this->set_mutation_rate_parameter(
             std::make_shared<PositiveRealParameter>(
-                    settings.get_rate_multiplier_settings(),
+                    settings.get_mutation_rate_settings(),
                     rng));
     if (
         (this->data_.get_number_of_populations() == 1) &&
@@ -923,7 +933,7 @@ std::shared_ptr<PositiveRealParameter> ComparisonPopulationTree::get_child_popul
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
     d += this->compute_log_prior_density_of_u_v_rates();
-    d += this->compute_log_prior_density_of_rate_multiplier();
+    d += this->compute_log_prior_density_of_mutation_rate();
     // d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
@@ -933,13 +943,13 @@ double ComparisonPopulationTree::compute_log_prior_density() {
 // Node height (re)storing is managed by ComparisonPopulationTree.
 void ComparisonPopulationTree::store_parameters() {
     this->store_u();
-    this->store_rate_multiplier();
+    this->store_mutation_rate();
     this->store_all_population_sizes();
     // this->store_all_heights();
 }
 void ComparisonPopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_rate_multiplier();
+    this->restore_mutation_rate();
     this->restore_all_population_sizes();
     // this->restore_all_heights();
 }
@@ -955,7 +965,7 @@ void ComparisonPopulationTree::write_state_log_header(
     out << "ln_likelihood" << suffix << delimiter
         << "ln_prior" << suffix << delimiter
         << "root_height" << suffix << delimiter
-        << "rate_multiplier" << suffix << delimiter
+        << "mutation_rate" << suffix << delimiter
         << "u" << suffix << delimiter
         << "v" << suffix << delimiter
         << "pop_size" << suffix << delimiter;
@@ -971,7 +981,7 @@ void ComparisonPopulationTree::log_state(
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_height() << delimiter
-        << this->get_rate_multiplier() << delimiter
+        << this->get_mutation_rate() << delimiter
         << this->get_u() << delimiter
         << this->get_v() << delimiter
         << this->get_child_population_size(0) << delimiter;
@@ -1034,11 +1044,11 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
             left_lineages.push_back(tip);
     }
 
-    double top_of_branch_height = this->get_height() * this->get_rate_multiplier();
+    double top_of_branch_height = this->get_height() * this->get_mutation_rate();
     double current_height = 0.0;
     double last_left_coal_height = this->coalesce_in_branch(
             left_lineages,
-            this->get_child_population_size(0) * this->get_rate_multiplier(),
+            2 * this->get_ploidy() * this->get_child_population_size(0) * this->get_mutation_rate(),
             rng,
             current_height,
             top_of_branch_height
@@ -1066,7 +1076,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
 
         double last_right_coal_height = this->coalesce_in_branch(
                 right_lineages,
-                this->get_child_population_size(1) * this->get_rate_multiplier(),
+                2 * this->get_ploidy() * this->get_child_population_size(1) * this->get_mutation_rate(),
                 rng,
                 current_height,
                 top_of_branch_height
@@ -1087,7 +1097,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
     }
     double last_root_coal_height = this->coalesce_in_branch(
             root_lineages,
-            this->get_root_population_size() * this->get_rate_multiplier(),
+            2 * this->get_ploidy() * this->get_root_population_size() * this->get_mutation_rate(),
             rng,
             top_of_branch_height,
             std::numeric_limits<double>::infinity()

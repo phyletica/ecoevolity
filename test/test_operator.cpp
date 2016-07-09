@@ -535,11 +535,11 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
     }
 }
 
-TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierScaler]") {
+TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(928374);
-        std::shared_ptr<Operator> op = std::make_shared<ComparisonRateMultiplierScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<ComparisonMutationRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
@@ -553,9 +553,9 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_u_v_rates();
         tree.fix_population_sizes();
-        tree.set_rate_multiplier(1.0);
-        tree.set_rate_multiplier_prior(prior);
-        tree.estimate_rate_multiplier();
+        tree.set_mutation_rate(1.0);
+        tree.set_mutation_rate_prior(prior);
+        tree.estimate_mutation_rate();
         tree.ignore_data();
 
         tree.make_dirty();
@@ -572,9 +572,9 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
         for (unsigned int i = 0; i < 100000; ++i) {
             Operator& o = os.draw_operator(rng);
             tree.store_state();
-            double old_v = tree.get_rate_multiplier();
+            double old_v = tree.get_mutation_rate();
             double hastings = o.propose(rng, tree);
-            double new_v = tree.get_rate_multiplier();
+            double new_v = tree.get_mutation_rate();
             REQUIRE(tree.is_dirty());
             tree.compute_log_likelihood_and_prior();
             double prior_ratio = tree.get_log_prior_density_value() -
@@ -592,7 +592,7 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_rate_multiplier();
+            double x = tree.get_mutation_rate();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -620,7 +620,7 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         RandomNumberGenerator rng = RandomNumberGenerator(928374);
-        std::shared_ptr<Operator> op = std::make_shared<ComparisonRateMultiplierScaler>(1.0, 0.5);
+        std::shared_ptr<Operator> op = std::make_shared<ComparisonMutationRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         // os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
@@ -634,9 +634,9 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_u_v_rates();
         tree.fix_population_sizes();
-        tree.set_rate_multiplier(1.0);
-        tree.set_rate_multiplier_prior(prior);
-        tree.estimate_rate_multiplier();
+        tree.set_mutation_rate(1.0);
+        tree.set_mutation_rate_prior(prior);
+        tree.estimate_mutation_rate();
         tree.ignore_data();
 
         tree.make_dirty();
@@ -653,9 +653,9 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
         for (unsigned int i = 0; i < 100000; ++i) {
             Operator& o = os.draw_operator(rng);
             tree.store_state();
-            double old_v = tree.get_rate_multiplier();
+            double old_v = tree.get_mutation_rate();
             double hastings = o.propose(rng, tree);
-            double new_v = tree.get_rate_multiplier();
+            double new_v = tree.get_mutation_rate();
             REQUIRE(tree.is_dirty());
             tree.compute_log_likelihood_and_prior();
             double prior_ratio = tree.get_log_prior_density_value() -
@@ -673,7 +673,7 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_rate_multiplier();
+            double x = tree.get_mutation_rate();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -717,7 +717,7 @@ TEST_CASE("Testing ComparisonRateMultiplierScaler", "[ComparisonRateMultiplierSc
 //         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
 //         REQUIRE(tree.get_degree_of_root() == 2);
 //         tree.fix_population_sizes();
-//         tree.fix_rate_multiplier();
+//         tree.fix_mutation_rate();
 //         tree.estimate_u_v_rates();
 //         tree.set_u_prior(prior);
 //         tree.set_u(1.0);
@@ -803,7 +803,7 @@ TEST_CASE("Testing UScaler", "[UScaler]") {
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
-        tree.fix_rate_multiplier();
+        tree.fix_mutation_rate();
         tree.estimate_u_v_rates();
         tree.set_u_prior(prior);
         tree.set_u(1.0);
@@ -886,7 +886,7 @@ TEST_CASE("Testing UScaler", "[UScaler]") {
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
-        tree.fix_rate_multiplier();
+        tree.fix_mutation_rate();
         tree.estimate_u_v_rates();
         tree.set_u_prior(prior);
         tree.set_u(1.0);
@@ -969,7 +969,7 @@ TEST_CASE("Testing UScaler", "[UScaler]") {
         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
-        tree.fix_rate_multiplier();
+        tree.fix_mutation_rate();
         tree.estimate_u_v_rates();
         tree.set_u_prior(prior);
         tree.set_u(1.0);
