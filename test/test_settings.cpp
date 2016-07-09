@@ -608,6 +608,8 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(! t.get_mutation_rate_prior());
 
         t.set_root_height(0.01);
+        t.estimate_population_sizes();
+        t.set_population_size(2.0 / (10.0 * 4.0));
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
         REQUIRE(t.get_degree_of_root() == 2);
@@ -718,6 +720,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_mutation_rate_prior()->to_string() == "uniform(0.9, 1.1)");
 
         t.set_root_height(0.01);
+        t.set_population_size(2.0 / (10.0 * 4.0));
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
         REQUIRE(t.get_degree_of_root() == 2);

@@ -5692,7 +5692,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "20984375";
+        char arg2[] = "58961";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6015,7 +6015,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "50698";
+        char arg2[] = "5715166";
         char arg3[] = "--ignore-data";
         char arg4[] = "--nthreads";
         char arg5[] = "2";
@@ -6831,7 +6831,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(1.0/bell_float(3)).epsilon(0.005));
         }
         for (auto const & kv: nevent_counts) {
-            REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.002));
+            REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.005));
         }
 
         // Make sure the rest of the prior sample is as expected
