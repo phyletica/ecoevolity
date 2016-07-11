@@ -325,6 +325,18 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false
                 );
+        void comparison_init(
+                std::string path, 
+                char population_name_delimiter = '_',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
+                );
 
         void set_child_population_size(unsigned int child_index, double size);
         void update_child_population_size(unsigned int child_index, double size);

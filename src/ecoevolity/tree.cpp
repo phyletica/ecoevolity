@@ -807,6 +807,28 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         double ploidy) {
+    this->comparison_init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+}
+void ComparisonPopulationTree::comparison_init(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -818,7 +840,9 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                strict_on_missing_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
-        throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
+        throw EcoevolityComparisonSettingError(
+                "ComparisonPopulationTree() does not support more than 2 populations",
+                path);
     }
     this->root_->set_label("root-" + this->root_->get_child(0)->get_label());
 }
@@ -827,7 +851,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites) {
-    this->init(settings.get_path(),
+    this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
                settings.genotypes_are_diploid(),

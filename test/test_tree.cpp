@@ -1901,7 +1901,8 @@ TEST_CASE("Testing coalesce_in_branch for 10 lineages and theta of 0.17",
     }
 }
 
-TEST_CASE("Testing simulate_gene_tree", "[ComparisonPopulationTree]") {
+TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
+        "[ComparisonPopulationTree]") {
 
     SECTION("Testing singleton") {
         unsigned int Ne = 100000;
