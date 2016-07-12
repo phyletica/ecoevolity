@@ -53,7 +53,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -182,7 +182,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -310,7 +310,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -440,7 +440,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -563,7 +563,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -701,7 +701,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -839,7 +839,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -974,7 +974,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1109,7 +1109,7 @@ TEST_CASE("Testing sampling from prior with UScaler without offset",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1242,7 +1242,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1376,7 +1376,7 @@ TEST_CASE("Testing sampling from prior with UScaler with offset and optimizing",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1516,7 +1516,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1645,7 +1645,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler with op
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1781,7 +1781,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1946,7 +1946,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -2109,7 +2109,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -2278,7 +2278,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -2447,7 +2447,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -2617,7 +2617,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -2834,7 +2834,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -3051,7 +3051,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -3320,7 +3320,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -3632,7 +3632,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -3859,7 +3859,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -4086,7 +4086,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -4334,7 +4334,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -4670,7 +4670,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -4976,7 +4976,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -5142,7 +5142,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -5354,7 +5354,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -5617,7 +5617,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -5940,7 +5940,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -6277,7 +6277,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -6593,7 +6593,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";

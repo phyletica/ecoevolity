@@ -92,7 +92,7 @@ class PopulationTree {
         PopulationTree() { }
         PopulationTree(
                 std::string path, 
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
@@ -106,7 +106,7 @@ class PopulationTree {
 
         void init(
                 std::string path, 
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
@@ -309,7 +309,7 @@ class ComparisonPopulationTree: public PopulationTree {
         ComparisonPopulationTree() { }
         ComparisonPopulationTree(
                 std::string path, 
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
@@ -327,7 +327,7 @@ class ComparisonPopulationTree: public PopulationTree {
                 );
         void comparison_init(
                 std::string path, 
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,

@@ -42,9 +42,9 @@ void BiallelicData::init(
         bool markers_are_dominant,
         bool validate) {
     char pop_name_delimiter = population_name_delimiter;
-    if (population_name_delimiter == '_') {
-        pop_name_delimiter = ' ';
-    }
+    // if (population_name_delimiter == '_') {
+    //     pop_name_delimiter = ' ';
+    // }
     this->genotypes_are_diploid_ = genotypes_are_diploid;
     this->markers_are_dominant_ = markers_are_dominant;
     this->path_ = path;

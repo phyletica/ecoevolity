@@ -247,7 +247,7 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(10.0, 0.1);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_root_population_size(1.0);
@@ -321,7 +321,7 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(10.0, 0.1);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_root_population_size(1.0);
@@ -398,7 +398,7 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(10.0, 0.1);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.constrain_population_sizes();
@@ -472,7 +472,7 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(10.0, 0.1);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.constrain_population_sizes();
@@ -549,7 +549,7 @@ TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(10.0, 0.1);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_u_v_rates();
         tree.fix_population_sizes();
@@ -630,7 +630,7 @@ TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(10.0, 0.1);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_u_v_rates();
         tree.fix_population_sizes();
@@ -714,7 +714,7 @@ TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler
 //         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<OffsetGammaDistribution>(10.0, 0.05, 0.5);
 // 
 //         std::string nex_path = "data/hemi129.nex";
-//         ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+//         ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
 //         REQUIRE(tree.get_degree_of_root() == 2);
 //         tree.fix_population_sizes();
 //         tree.fix_mutation_rate();
@@ -800,7 +800,7 @@ TEST_CASE("Testing UScaler", "[UScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<OffsetGammaDistribution>(10.0, 0.05, 0.5);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
@@ -883,7 +883,7 @@ TEST_CASE("Testing UScaler", "[UScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<OffsetGammaDistribution>(10.0, 0.05, 0.5);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
@@ -966,7 +966,7 @@ TEST_CASE("Testing UScaler", "[UScaler]") {
         std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<OffsetExponentialDistribution>(2.0, 0.5);
 
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();

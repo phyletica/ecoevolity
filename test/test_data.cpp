@@ -123,7 +123,7 @@ TEST_CASE("Testing diploid standard data with 012 as dominant", "[BiallelicData]
 
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex as dominant") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 }
 
@@ -199,22 +199,22 @@ TEST_CASE("Testing standard haploid with a 2 genotype", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-012.nex") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, false), NxsException);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), NxsException);
     }
 
     SECTION("Testing data/haploid-standard-012.nex as diploid") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true), NxsException);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true), NxsException);
     }
 
     SECTION("Testing data/haploid-standard-012.nex as dominant") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, false, true), NxsException);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), NxsException);
     }
 
     SECTION("Testing data/haploid-standard-012.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 }
 
@@ -236,7 +236,7 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard.nex") {
         std::string nex_path = "data/haploid-standard.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
@@ -327,7 +327,7 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard.nex as dominant") {
         std::string nex_path = "data/haploid-standard.nex";
-        BiallelicData bd(nex_path, '_', true, false, true);
+        BiallelicData bd(nex_path, ' ', true, false, true);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
@@ -382,12 +382,12 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/haploid-standard.nex as diploid") {
         std::string nex_path = "data/haploid-standard.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, false), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError);
     }
 }
 
@@ -409,12 +409,12 @@ TEST_CASE("Testing standard diploid dominant", "[BiallelicData]") {
 
     SECTION("Testing data/diploid-standard-dominant.nex as dominant") {
         std::string nex_path = "data/diploid-standard-dominant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/diploid-standard-dominant.nex as dominant and haploid") {
         std::string nex_path = "data/diploid-standard-dominant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, false, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
     }
 }
 
@@ -436,7 +436,7 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
 
     SECTION("Testing data/diploid-standard-dominant.nex as NOT dominant") {
         std::string nex_path = "data/diploid-standard-dominant.nex";
-        BiallelicData bd(nex_path, '_', true, true, false);
+        BiallelicData bd(nex_path, ' ', true, true, false);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 7);
@@ -772,7 +772,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-constant.nex") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 6);
@@ -896,7 +896,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-constant.nex as dominant") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        BiallelicData bd(nex_path, '_', true, false, true);
+        BiallelicData bd(nex_path, ' ', true, false, true);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 6);
@@ -1002,12 +1002,12 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-constant.nex as diploid") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, false), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/haploid-standard-constant.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 }
 
@@ -1017,7 +1017,7 @@ TEST_CASE("Testing for constant dominant diploid site patterns", "[BiallelicData
 
     SECTION("Testing data/diploid-standard-constant-dominant.nex as dominant") {
         std::string nex_path = "data/diploid-standard-constant-dominant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 }
 
@@ -1025,7 +1025,7 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-missing.nex") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
@@ -1152,7 +1152,7 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
 
     SECTION("Testing data/haploid-standard-missing.nex") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        BiallelicData bd(nex_path, '_', true, false, true);
+        BiallelicData bd(nex_path, ' ', true, false, true);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
@@ -1261,7 +1261,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
 
     SECTION("Testing data/haploid-standard-missing.nex") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
@@ -1441,7 +1441,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
 
     SECTION("Testing data/haploid-standard-missing.nex") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        BiallelicData bd(nex_path, '_', true, false, true);
+        BiallelicData bd(nex_path, ' ', true, false, true);
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
@@ -1603,12 +1603,12 @@ TEST_CASE("Testing for constant AND missing dominant haploid site patterns", "[B
 
     SECTION("Testing data/haploid-standard-missing.nex as diploid") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, false), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/haploid-standard-missing.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 }
 
@@ -1976,12 +1976,12 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
 
     SECTION("Testing data/diploid-dna.nex as haploid") {
         std::string nex_path = "data/diploid-dna.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, false), EcoevolityInvalidCharacterError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), EcoevolityInvalidCharacterError);
     }
 
     SECTION("Testing data/diploid-dna.nex as dominant") {
         std::string nex_path = "data/diploid-dna.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing folding of data/diploid-dna.nex") {
@@ -2553,17 +2553,17 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
 
     SECTION("Testing data/diploid-dna-constant-missing-nohets.nex as dominant") {
         std::string nex_path = "data/diploid-dna-constant-missing-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-nohets.nex as dominant and haploid") {
         std::string nex_path = "data/diploid-dna-constant-missing-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, '_', true, false, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-nohets.nex as haploid") {
         std::string nex_path = "data/diploid-dna-constant-missing-nohets.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_number_of_populations() == 3);
         REQUIRE(bd.get_number_of_patterns() == 9);
         REQUIRE(bd.get_number_of_sites() == 9);
@@ -3054,7 +3054,7 @@ TEST_CASE("Testing empirical u/v rates", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard.nex") {
         std::string nex_path = "data/haploid-standard.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         bd.remove_constant_patterns();
         bd.remove_missing_population_patterns();
         double u;
@@ -3068,7 +3068,7 @@ TEST_CASE("Testing empirical u/v rates", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard.nex as dominant") {
         std::string nex_path = "data/haploid-standard.nex";
-        BiallelicData bd(nex_path, '_', true, false, true);
+        BiallelicData bd(nex_path, ' ', true, false, true);
         bd.remove_constant_patterns();
         bd.remove_missing_population_patterns();
         double u;
@@ -3082,7 +3082,7 @@ TEST_CASE("Testing empirical u/v rates", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-constant.nex") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(14.0/27.0));
         double u;
         double v;
@@ -3105,7 +3105,7 @@ TEST_CASE("Testing empirical u/v rates", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-missing.nex") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        BiallelicData bd(nex_path, '_', true, false);
+        BiallelicData bd(nex_path, ' ', true, false);
         REQUIRE(bd.get_proportion_of_red_alleles() == Approx(0.6111111111111112));
         double u;
         double v;
@@ -3142,5 +3142,159 @@ TEST_CASE("Testing empirical u/v rates", "[BiallelicData]") {
         bd.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(1.0232558139534884));
         REQUIRE(v == Approx(0.9777777777777777));
+    }
+}
+
+TEST_CASE("Testing quoted underscores", "[BiallelicData]") {
+
+    SECTION("Testing quoted underscores") {
+        std::string nex_path = "data/haploid-standard-quoted-underscores.nex";
+        BiallelicData bd(nex_path, '_', true, false);
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        std::vector<unsigned int> expected_wts = {1,2,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(4);
+        expected_allele_counts[0] = {2, 3};
+        expected_allele_counts[1] = {2, 2};
+        expected_allele_counts[2] = {2, 3};
+        expected_allele_counts[3] = {2, 3};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(4);
+        expected_red_counts[0] = {1, 3};
+        expected_red_counts[1] = {1, 1};
+        expected_red_counts[2] = {0, 1};
+        expected_red_counts[3] = {1, 2};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1_a", "pop1_b"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2_c", "pop2_d", "pop2_e"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+
+        // Folding
+        unsigned int number_removed = bd.fold_patterns();
+        REQUIRE(number_removed == 0);
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+
+        expected_red_counts[0] = {1, 0};
+        expected_red_counts[3] = {1, 1};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+    }
+}
+
+TEST_CASE("Testing quoted spaces", "[BiallelicData]") {
+
+    SECTION("Testing quoted spaces") {
+        std::string nex_path = "data/haploid-standard-quoted-spaces.nex";
+        BiallelicData bd(nex_path, ' ', true, false);
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        std::vector<unsigned int> expected_wts = {1,2,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(4);
+        expected_allele_counts[0] = {2, 3};
+        expected_allele_counts[1] = {2, 2};
+        expected_allele_counts[2] = {2, 3};
+        expected_allele_counts[3] = {2, 3};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(4);
+        expected_red_counts[0] = {1, 3};
+        expected_red_counts[1] = {1, 1};
+        expected_red_counts[2] = {0, 1};
+        expected_red_counts[3] = {1, 2};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+
+        // Folding
+        unsigned int number_removed = bd.fold_patterns();
+        REQUIRE(number_removed == 0);
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+
+        expected_red_counts[0] = {1, 0};
+        expected_red_counts[3] = {1, 1};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
     }
 }

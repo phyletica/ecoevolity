@@ -456,7 +456,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 pop_size,
                 u,
                 mutation_rate,
-                '_',
+                ' ',
                 true,
                 true,
                 false,
@@ -471,7 +471,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "ploidy: 2\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
-        e += "population_name_delimiter: '_'\n";
+        e += "population_name_delimiter: ' '\n";
         e += "population_name_is_prefix: true\n";
         e += "constant_sites_removed: true\n";
         e += "use_empirical_u_rate_starting_value: true\n";
@@ -548,7 +548,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 pop_size,
                 u,
                 mutation_rate,
-                '_',
+                ' ',
                 true,
                 true,
                 false,
@@ -563,7 +563,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "ploidy: 2\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
-        e += "population_name_delimiter: '_'\n";
+        e += "population_name_delimiter: ' '\n";
         e += "population_name_is_prefix: true\n";
         e += "constant_sites_removed: true\n";
         e += "use_empirical_u_rate_starting_value: false\n";
@@ -649,7 +649,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 pop_size,
                 u,
                 mutation_rate,
-                '_',
+                ' ',
                 true,
                 true,
                 false,
@@ -664,7 +664,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "ploidy: 2\n";
         e += "genotypes_are_diploid: true\n";
         e += "markers_are_dominant: false\n";
-        e += "population_name_delimiter: '_'\n";
+        e += "population_name_delimiter: ' '\n";
         e += "population_name_is_prefix: true\n";
         e += "constant_sites_removed: true\n";
         e += "use_empirical_u_rate_starting_value: false\n";
@@ -747,7 +747,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -839,7 +839,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -862,7 +862,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -949,7 +949,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -972,7 +972,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -1075,7 +1075,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -1098,7 +1098,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -1552,7 +1552,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";
@@ -1582,7 +1582,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "    ploidy: 2\n";
         e += "    genotypes_are_diploid: true\n";
         e += "    markers_are_dominant: false\n";
-        e += "    population_name_delimiter: '_'\n";
+        e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
         e += "    use_empirical_u_rate_starting_value: false\n";

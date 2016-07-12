@@ -13,7 +13,7 @@ TEST_CASE("Testing simple likelihood of PopulationTree", "[PopulationTree]") {
 
     SECTION("Testing constructor and likelihood calc") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
-        PopulationTree tree(nex_path, '_', true, true);
+        PopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -40,7 +40,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -69,7 +69,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, false);
+        PopulationTree tree(nex_path, ' ', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -99,7 +99,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[P
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, true);
+        PopulationTree tree(nex_path, ' ', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -127,7 +127,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.0);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -156,7 +156,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, false);
+        PopulationTree tree(nex_path, ' ', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.0);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -186,7 +186,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[Po
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, true);
+        PopulationTree tree(nex_path, ' ', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.0);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -212,7 +212,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.2);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -241,7 +241,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, false);
+        PopulationTree tree(nex_path, ' ', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.2);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -271,7 +271,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[Po
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, true);
+        PopulationTree tree(nex_path, ' ', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.2);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -300,7 +300,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -331,7 +331,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, false);
+        PopulationTree tree(nex_path, ' ', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -363,7 +363,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, true);
+        PopulationTree tree(nex_path, ' ', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -391,7 +391,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -422,7 +422,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, false);
+        PopulationTree tree(nex_path, ' ', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -454,7 +454,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, true);
+        PopulationTree tree(nex_path, ' ', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -483,7 +483,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
@@ -508,7 +508,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, false);
+        PopulationTree tree(nex_path, ' ', true, false, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
@@ -534,7 +534,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominan
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/aflp_25.nex";
-        PopulationTree tree(nex_path, '_', true, false, true);
+        PopulationTree tree(nex_path, ' ', true, false, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.03);
         tree.set_u(10.0/19.0);
@@ -558,7 +558,7 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
 
     SECTION("Testing constructor and likelihood calc") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         REQUIRE(tree.get_root().get_label() == "root-pop1");
         tree.set_height(0.01);
@@ -577,7 +577,7 @@ TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
 
     SECTION("Testing constructor and prior calc") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
-        PopulationTree tree(nex_path, '_', true, true);
+        PopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
 
         tree.set_root_height(0.1);
@@ -644,7 +644,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
     SECTION("Testing state manipulation") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
 
         REQUIRE(tree.is_dirty());
@@ -928,7 +928,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 
     SECTION("Testing state manipulation") {
         std::string nex_path = "data/hemi129.nex";
-        PopulationTree tree(nex_path, '_', true, true, false);
+        PopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
 
         REQUIRE(tree.is_dirty());
@@ -1197,7 +1197,7 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
         std::string nex_path = "data/haploid-standard-full-constant.nex";
         PopulationTree t_included(
                 nex_path, // path
-                '_',      // pop name delimiter
+                ' ',      // pop name delimiter
                 true,     // pop name is prefix
                 false,    // genotypes are diploid
                 false,    // markers are dominant
@@ -1206,7 +1206,7 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
         PopulationTree t_removed(
                 nex_path2, // path
-                '_',       // pop name delimiter
+                ' ',       // pop name delimiter
                 true,      // pop name is prefix
                 false,     // genotypes are diploid
                 false,     // markers are dominant
@@ -1214,7 +1214,7 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
                 true);     // validate
         PopulationTree t(
                 nex_path2, // path
-                '_',       // pop name delimiter
+                ' ',       // pop name delimiter
                 true,      // pop name is prefix
                 false,     // genotypes are diploid
                 false,     // markers are dominant
@@ -1250,7 +1250,7 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
 
         PopulationTree t_mistake(
                 nex_path2, // path
-                '_',       // pop name delimiter
+                ' ',       // pop name delimiter
                 true,      // pop name is prefix
                 false,     // genotypes are diploid
                 false,     // markers are dominant
@@ -1284,7 +1284,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 100.0, 200.0, 500.0)", "[Compar
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.01);
         tree.set_child_population_size(0, 2.0/(100.0 * 2 * tree.get_ploidy()));
@@ -1310,7 +1310,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.00506843962151613554, 2.0 / 0.00018
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(0.00506843962151613554);
         tree.set_population_size(0.00018955324120485613 / 4.0);
@@ -1333,7 +1333,7 @@ TEST_CASE("Testing hemi129.nex likelihood (9.08323190033687971e-09, 2.0 / 2.4797
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(9.08323190033687971e-09);
         tree.set_population_size(2.47975039926886321e-08 / 4.0);
@@ -1356,7 +1356,7 @@ TEST_CASE("Testing hemi129.nex likelihood (1.04921319733994759e-08, 2.0 / 2.7597
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.04921319733994759e-08);
         tree.set_population_size(2.75977168733651178e-10 / 4.0);
@@ -1379,7 +1379,7 @@ TEST_CASE("Testing hemi129.nex likelihood (1.012386610001351e-08, 2.0 / 5.750486
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.012386610001351e-08);
         tree.set_population_size(5.75048645855884647e-30 / 4.0);
@@ -1402,7 +1402,7 @@ TEST_CASE("Testing hemi129.nex likelihood (1.04856228318474786e-08, 2.0 / 4.4393
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.04856228318474786e-08);
         tree.set_population_size(4.43934332792563837e-305 / 4.0);
@@ -1427,7 +1427,7 @@ TEST_CASE("Testing hemi129.nex weirdness", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.012386610001351e-08);
         tree.set_child_population_size(0, 5.46641122085615013e-09 / 4.0);
@@ -1454,7 +1454,7 @@ TEST_CASE("Testing hemi129.nex weirdness 2", "[ComparisonPopulationTree]") {
 
     SECTION("Testing likelihood calc") {
         std::string nex_path = "data/hemi129.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, true, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
         REQUIRE(tree.get_degree_of_root() == 2);
         tree.set_root_height(1.036374107244057e-08);
         tree.set_child_population_size(0, 4.57999694763258361e-09 / 4.0);
@@ -1915,7 +1915,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
         double expected_variance = expected_mean * expected_mean;
 
         std::string nex_path = "data/singleton-n2.nex";
-        ComparisonPopulationTree tree(nex_path, '_', true, false, false);
+        ComparisonPopulationTree tree(nex_path, ' ', true, false, false);
         tree.estimate_mutation_rate();
 
         tree.set_root_population_size(Ne * mu);
@@ -1996,3 +1996,65 @@ TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
         REQUIRE(mn >= 0.0);
     }
 }
+
+/* TEST_CASE("Testing scaling of simulate_gene_tree for pair", */
+/*         "[ComparisonPopulationTreeX]") { */
+
+/*     SECTION("Testing pair") { */
+/*         unsigned int Ne_root = 100000; */
+/*         unsigned int Ne_0 = 200000; */
+/*         unsigned int Ne_1 = 50000; */
+/*         double mu = 1e-8; */
+/*         double theta_root = 4 * Ne_root * mu; */
+/*         double theta_0 = 4 * Ne_0 * mu; */
+/*         double theta_1 = 4 * Ne_1 * mu; */
+/*         double time = 1e7 */
+
+/*         double expected_mean_root = theta_root * (1.0 - (1.0 / 2)); */
+/*         double expected_variance_root = expected_mean_root * expected_mean_root; */
+/*         expected_mean_root += (time * mu); */
+
+/*         double expected_mean_0 = theta_0 * (1.0 - (1.0 / 5)); */
+/*         double expected_mean_1 = theta_1 * (1.0 - (1.0 / 5)); */
+
+/*         std::string nex_path = "data/hemi129-5-5.nex"; */
+/*         ComparisonPopulationTree tree(nex_path, ' ', true, false, false); */
+/*         tree.estimate_mutation_rate(); */
+
+/*         tree.set_root_population_size(Ne_root); */
+/*         tree.set_child_population_size(0, (Ne_0)); */
+/*         tree.set_child_population_size(0, (Ne_1)); */
+
+/*         tree.set_height(time); */
+
+/*         tree.set_u(1.0); */
+
+/*         tree.set_mutation_rate(mu); */
+
+/*         RandomNumberGenerator rng = RandomNumberGenerator(54321); */
+
+/*         std::shared_ptr<GeneTreeSimNode> gtree; */
+/*         SampleSummarizer<double> height_root; */
+/*         SampleSummarizer<double> height_0; */
+/*         SampleSummarizer<double> height_1; */
+/*         /1* SampleSummarizer<double> tree_length; *1/ */
+
+/*         for (unsigned int i = 0; i < 100000; ++i) { */
+/*             gtree = tree.simulate_gene_tree(0, rng); */
+/*             height_root.add_sample(gtree->get_height()); */
+/*             height_0.add_sample(gtree->get_child(0)->get_height()); */
+/*             height_1.add_sample(gtree->get_child(1)->get_height()); */
+/*             /1* tree_length.add_sample(gtree->get_clade_length()); *1/ */
+/*         } */
+
+/*         REQUIRE(gtree->is_root()); */
+/*         REQUIRE(gtree->get_number_of_children() == 2); */
+/*         REQUIRE(gtree->get_leaf_node_count() == 10); */
+/*         REQUIRE(height_root.mean() == Approx(expected_mean_root).epsilon(0.0005)); */
+/*         REQUIRE(height_root.variance() == Approx(expected_variance_root).epsilon(0.0005)); */
+
+/*         REQUIRE(height_0.mean == Approx(expected_mean_0).epsilon(0.0005)); */
+/*         REQUIRE(height_1.mean == Approx(expected_mean_1).epsilon(0.0005)); */
+
+/*     } */
+/* } */

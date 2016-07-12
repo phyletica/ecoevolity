@@ -51,7 +51,7 @@ global_comparison_settings:
     ploidy: 2
     genotypes_are_diploid: true
     markers_are_dominant: false
-    population_name_delimiter: "_"
+    population_name_delimiter: " "
     population_name_is_prefix: true
     constant_sites_removed: true
     use_empirical_u_rate_starting_value: false

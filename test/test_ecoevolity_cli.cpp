@@ -83,7 +83,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -256,7 +256,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -432,7 +432,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -605,7 +605,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -782,7 +782,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -956,7 +956,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";
@@ -1129,7 +1129,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \"_\"\n";
+        os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    use_empirical_u_rate_starting_value: false\n";

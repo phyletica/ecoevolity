@@ -501,7 +501,7 @@ class ComparisonSettings {
         PositiveRealParameterSettings u_settings_;
         PositiveRealParameterSettings mutation_rate_settings_;
 
-        char population_name_delimiter_ = '_';
+        char population_name_delimiter_ = ' ';
         bool population_name_is_prefix_ = true;
         bool genotypes_are_diploid_ = true;
         bool markers_are_dominant_ = false;
@@ -645,7 +645,7 @@ class ComparisonSettings {
                 const PositiveRealParameterSettings& population_size_settings,
                 const PositiveRealParameterSettings& u_settings,
                 const PositiveRealParameterSettings& mutation_rate_settings,
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
