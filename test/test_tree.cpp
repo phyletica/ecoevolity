@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "ecoevolity/tree.hpp"
+#include "ecoevolity/stats_util.hpp"
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -1997,64 +1998,108 @@ TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
     }
 }
 
-/* TEST_CASE("Testing scaling of simulate_gene_tree for pair", */
-/*         "[ComparisonPopulationTreeX]") { */
+TEST_CASE("Testing scaling of simulate_gene_tree for pair",
+        "[ComparisonPopulationTreeX]") {
 
-/*     SECTION("Testing pair") { */
-/*         unsigned int Ne_root = 100000; */
-/*         unsigned int Ne_0 = 200000; */
-/*         unsigned int Ne_1 = 50000; */
-/*         double mu = 1e-8; */
-/*         double theta_root = 4 * Ne_root * mu; */
-/*         double theta_0 = 4 * Ne_0 * mu; */
-/*         double theta_1 = 4 * Ne_1 * mu; */
-/*         double time = 1e7 */
+    SECTION("Testing pair") {
+        unsigned int Ne_root = 100000;
+        unsigned int Ne_0 = 200000;
+        unsigned int Ne_1 = 10000;
+        double mu = 1e-8;
+        double theta_root = 4 * Ne_root * mu;
+        double theta_0 = 4 * Ne_0 * mu;
+        double theta_1 = 4 * Ne_1 * mu;
+        double time = 2e7;
 
-/*         double expected_mean_root = theta_root * (1.0 - (1.0 / 2)); */
-/*         double expected_variance_root = expected_mean_root * expected_mean_root; */
-/*         expected_mean_root += (time * mu); */
+        double expected_mean_root = theta_root * (1.0 - (1.0 / 2));
+        double expected_variance_root = expected_mean_root * expected_mean_root;
+        expected_mean_root += (time * mu);
 
-/*         double expected_mean_0 = theta_0 * (1.0 - (1.0 / 5)); */
-/*         double expected_mean_1 = theta_1 * (1.0 - (1.0 / 5)); */
+        double expected_mean_0 = theta_0 * (1.0 - (1.0 / 10));
+        double expected_mean_1 = theta_1 * (1.0 - (1.0 / 10));
 
-/*         std::string nex_path = "data/hemi129-5-5.nex"; */
-/*         ComparisonPopulationTree tree(nex_path, ' ', true, false, false); */
-/*         tree.estimate_mutation_rate(); */
+        std::string nex_path = "data/hemi129-5-5.nex";
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+        tree.estimate_mutation_rate();
 
-/*         tree.set_root_population_size(Ne_root); */
-/*         tree.set_child_population_size(0, (Ne_0)); */
-/*         tree.set_child_population_size(0, (Ne_1)); */
+        tree.set_root_population_size(Ne_root);
+        tree.set_child_population_size(0, (Ne_0));
+        tree.set_child_population_size(1, (Ne_1));
 
-/*         tree.set_height(time); */
+        tree.set_height(time);
 
-/*         tree.set_u(1.0); */
+        tree.set_u(1.0);
 
-/*         tree.set_mutation_rate(mu); */
+        tree.set_mutation_rate(mu);
 
-/*         RandomNumberGenerator rng = RandomNumberGenerator(54321); */
+        RandomNumberGenerator rng = RandomNumberGenerator(54321);
 
-/*         std::shared_ptr<GeneTreeSimNode> gtree; */
-/*         SampleSummarizer<double> height_root; */
-/*         SampleSummarizer<double> height_0; */
-/*         SampleSummarizer<double> height_1; */
-/*         /1* SampleSummarizer<double> tree_length; *1/ */
+        std::shared_ptr<GeneTreeSimNode> gtree;
+        SampleSummarizer<double> height_root;
+        SampleSummarizer<double> height_0;
+        SampleSummarizer<double> height_1;
+        SampleSummarizer<double> tree_length;
 
-/*         for (unsigned int i = 0; i < 100000; ++i) { */
-/*             gtree = tree.simulate_gene_tree(0, rng); */
-/*             height_root.add_sample(gtree->get_height()); */
-/*             height_0.add_sample(gtree->get_child(0)->get_height()); */
-/*             height_1.add_sample(gtree->get_child(1)->get_height()); */
-/*             /1* tree_length.add_sample(gtree->get_clade_length()); *1/ */
-/*         } */
+        for (unsigned int i = 0; i < 100000; ++i) {
+            gtree = tree.simulate_gene_tree(0, rng);
+            REQUIRE(gtree->is_root());
+            REQUIRE(gtree->get_number_of_children() == 2);
+            REQUIRE(gtree->get_leaf_node_count() == 20);
+            height_root.add_sample(gtree->get_height());
+            double h0 = gtree->get_child(0)->get_height();
+            double h1 = gtree->get_child(1)->get_height();
+            if (h0 < h1) {
+                height_0.add_sample(h1);
+                height_1.add_sample(h0);
+            }
+            else {
+                height_0.add_sample(h0);
+                height_1.add_sample(h1);
+            }
+            tree_length.add_sample(gtree->get_clade_length());
+        }
 
-/*         REQUIRE(gtree->is_root()); */
-/*         REQUIRE(gtree->get_number_of_children() == 2); */
-/*         REQUIRE(gtree->get_leaf_node_count() == 10); */
-/*         REQUIRE(height_root.mean() == Approx(expected_mean_root).epsilon(0.0005)); */
-/*         REQUIRE(height_root.variance() == Approx(expected_variance_root).epsilon(0.0005)); */
+        REQUIRE(height_root.mean() == Approx(expected_mean_root).epsilon(0.0005));
+        REQUIRE(height_root.variance() == Approx(expected_variance_root).epsilon(0.0005));
 
-/*         REQUIRE(height_0.mean == Approx(expected_mean_0).epsilon(0.0005)); */
-/*         REQUIRE(height_1.mean == Approx(expected_mean_1).epsilon(0.0005)); */
+        REQUIRE(height_0.mean() == Approx(expected_mean_0).epsilon(0.00003));
+        REQUIRE(height_1.mean() == Approx(expected_mean_1).epsilon(0.00003));
 
-/*     } */
-/* } */
+
+        tree.set_mutation_rate(mu * 2.0);
+
+        SampleSummarizer<double> scale_height_root;
+        SampleSummarizer<double> scale_height_0;
+        SampleSummarizer<double> scale_height_1;
+        SampleSummarizer<double> scale_tree_length;
+
+        for (unsigned int i = 0; i < 100000; ++i) {
+            gtree = tree.simulate_gene_tree(0, rng);
+            gtree->scale(0.5);
+            REQUIRE(gtree->is_root());
+            REQUIRE(gtree->get_number_of_children() == 2);
+            REQUIRE(gtree->get_leaf_node_count() == 20);
+            scale_height_root.add_sample(gtree->get_height());
+            double h0 = gtree->get_child(0)->get_height();
+            double h1 = gtree->get_child(1)->get_height();
+            if (h0 < h1) {
+                scale_height_0.add_sample(h1);
+                scale_height_1.add_sample(h0);
+            }
+            else {
+                scale_height_0.add_sample(h0);
+                scale_height_1.add_sample(h1);
+            }
+            scale_tree_length.add_sample(gtree->get_clade_length());
+        }
+
+        REQUIRE(scale_height_root.mean() == Approx(expected_mean_root).epsilon(0.0005));
+        REQUIRE(scale_height_root.variance() == Approx(expected_variance_root).epsilon(0.0005));
+
+        REQUIRE(scale_height_0.mean() == Approx(expected_mean_0).epsilon(0.00003));
+        REQUIRE(scale_height_1.mean() == Approx(expected_mean_1).epsilon(0.00003));
+
+        REQUIRE(scale_tree_length.mean() == Approx(tree_length.mean()).epsilon(0.0001));
+        REQUIRE(scale_tree_length.variance() == Approx(tree_length.variance()).epsilon(0.0001));
+    }
+}

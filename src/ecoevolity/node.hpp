@@ -50,20 +50,45 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
     private:
         typedef BaseNode<GeneTreeSimNode> BaseClass;
         int character_state_ = -1;
+        unsigned int population_index_ = 0;
         double p[2][2];
 
     public:
         GeneTreeSimNode() { }
         GeneTreeSimNode(std::string label) : BaseClass(label) { }
         GeneTreeSimNode(double height) : BaseClass(height) { }
-        GeneTreeSimNode(std::string label, double height)
-            : BaseClass(label, height) { }
+        GeneTreeSimNode(unsigned int population_index) :
+            BaseClass(),
+            population_index_(population_index)
+            { }
+        GeneTreeSimNode(std::string label, double height) :
+            BaseClass(label, height)
+            { }
+        GeneTreeSimNode(unsigned int population_index, double height) :
+            BaseClass(height),
+            population_index_(population_index)
+            { }
+        GeneTreeSimNode(unsigned int population_index, std::string label) :
+            BaseClass(label),
+            population_index_(population_index)
+            { }
+        GeneTreeSimNode(unsigned int population_index, std::string label,
+                double height) :
+            BaseClass(label, height),
+            population_index_(population_index)
+            { }
 
         int get_character_state() const {
             return this->character_state_;
         }
         void set_character_state(int state) {
             this->character_state_ = state;
+        }
+        unsigned int get_population_index() const {
+            return this->population_index_;
+        }
+        void set_population_index(unsigned int index) {
+            this->population_index_ = index;
         }
 
         void compute_branch_binary_transition_probabilities(
@@ -122,11 +147,10 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
         }
 
         void get_allele_counts(
-                const std::unordered_map<std::string, unsigned int>& tip_label_to_population_index_map,
                 std::vector<unsigned int>& allele_counts,
                 std::vector<unsigned int>& red_allele_counts) const {
             if (this->is_leaf()) {
-                unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
+                unsigned int pop_idx = this->get_population_index();
                 ++allele_counts.at(pop_idx);
                 if (this->get_character_state() == 1) {
                     ++red_allele_counts.at(pop_idx);
@@ -134,19 +158,17 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
             }
             for (auto child_iter: this->children_) {
                 child_iter->get_allele_counts(
-                        tip_label_to_population_index_map,
                         allele_counts,
                         red_allele_counts);
             }
         }
 
         void get_allele_counts(
-                const std::unordered_map<std::string, unsigned int>& tip_label_to_population_index_map,
                 std::vector<unsigned int>& allele_counts,
                 std::vector<unsigned int>& red_allele_counts,
                 std::vector<int>& last_allele) const {
             if (this->is_leaf()) {
-                unsigned int pop_idx = tip_label_to_population_index_map.at(this->get_label());
+                unsigned int pop_idx = this->get_population_index();
                 if (last_allele.at(pop_idx) < 0) {
                     last_allele.at(pop_idx) = this->get_character_state();
                     return;
@@ -160,7 +182,6 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
             }
             for (auto child_iter: this->children_) {
                 child_iter->get_allele_counts(
-                        tip_label_to_population_index_map,
                         allele_counts,
                         red_allele_counts,
                         last_allele);

@@ -218,6 +218,13 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->make_all_dirty();
         }
 
+        void scale(double multiplier) {
+            this->set_height(this->get_height() * multiplier);
+            for (auto child_iter: this->children_) {
+                child_iter->scale(multiplier);
+            }
+        }
+
         std::shared_ptr<PositiveRealParameter> get_height_parameter() const {
             return this->height_;
         }
@@ -254,6 +261,19 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 return this->get_parent()->get_height() - this->get_height();
             }
             return 0.0;
+        }
+
+        void sum_clade_length(double & length) const  {
+            length += this->get_length();
+            for (auto child_iter: this->children_) {
+                child_iter->sum_clade_length(length);
+            }
+        }
+
+        double get_clade_length() const {
+            double l = 0.0;
+            this->sum_clade_length(l);
+            return l;
         }
 
         const std::string& get_label() const {

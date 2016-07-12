@@ -1047,11 +1047,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
     std::vector< std::shared_ptr<GeneTreeSimNode> > left_lineages;
     std::vector< std::shared_ptr<GeneTreeSimNode> > right_lineages;
     std::vector< std::shared_ptr<GeneTreeSimNode> > root_lineages;
-    std::vector<std::string> tip_labels;
     unsigned int allele_count;
-    tip_labels = this->data_.get_sequence_labels(
-            this->data_.get_population_index(
-                    this->root_->get_child(0)->get_label()));
     allele_count = this->data_.get_allele_count(
             pattern_index,
             this->data_.get_population_index(
@@ -1062,7 +1058,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
     left_lineages.reserve(allele_count);
     for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
         std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                    tip_labels.at(tip_idx),
+                    0,
                     0.0);
             tip->fix_node_height();
             left_lineages.push_back(tip);
@@ -1079,9 +1075,6 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
             );
 
     if (this->root_->get_number_of_children() > 1) {
-        tip_labels = this->data_.get_sequence_labels(
-                this->data_.get_population_index(
-                        this->root_->get_child(1)->get_label()));
         allele_count = this->data_.get_allele_count(
                 pattern_index,
                 this->data_.get_population_index(
@@ -1092,7 +1085,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
         right_lineages.reserve(allele_count);
         for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
             std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                        tip_labels.at(tip_idx),
+                        1,
                         0.0);
                 tip->fix_node_height();
                 right_lineages.push_back(tip);
@@ -1172,17 +1165,6 @@ BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
         bool validate) const {
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
-    std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map;
-    for (unsigned int pop_idx = 0;
-            pop_idx < this->data_.get_number_of_populations();
-            ++pop_idx) {
-        for (auto seq_label: this->data_.get_sequence_labels(pop_idx)) {
-            ECOEVOLITY_ASSERT(
-                this->data_.get_population_index_from_seq_label(seq_label) ==
-                pop_idx);
-            seq_label_to_pop_index_map[seq_label] = pop_idx;
-        }
-    }
     // Looping over patterns to make sure simulated dataset has exact same
     // sample configuration (i.e., the same pattern of missing data) as the
     // member dataset.
@@ -1196,7 +1178,6 @@ BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
             while (! site_added) {
                 auto pattern_tree = this->simulate_biallelic_site(
                         pattern_idx,
-                        seq_label_to_pop_index_map,
                         rng);
                 auto pattern = pattern_tree.first;
                 std::vector<unsigned int> red_allele_counts = pattern.first;
@@ -1222,7 +1203,6 @@ std::pair<
         std::shared_ptr<GeneTreeSimNode> >
 ComparisonPopulationTree::simulate_biallelic_site(
         const unsigned int pattern_idx,
-        std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map,
         RandomNumberGenerator& rng) const {
     double freq_0 = this->get_u() / (this->get_u() + this->get_v());
 
@@ -1236,14 +1216,12 @@ ComparisonPopulationTree::simulate_biallelic_site(
     if (this->data_.markers_are_dominant()) {
         std::vector<int> last_allele(expected_allele_counts.size(), -1);
         gene_tree->get_allele_counts(
-                seq_label_to_pop_index_map,
                 allele_counts,
                 red_allele_counts,
                 last_allele);
     }
     else {
         gene_tree->get_allele_counts(
-                seq_label_to_pop_index_map,
                 allele_counts,
                 red_allele_counts);
     }

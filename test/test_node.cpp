@@ -346,6 +346,8 @@ TEST_CASE("Test simple tree building with Node", "[Node]") {
         leaf4->add_parent(root_child2);
         leaf5->add_parent(root_child2);
 
+        REQUIRE(root->get_clade_length() == Approx(3.9));
+
         REQUIRE(root->degree() == 2);
         REQUIRE(root_child1->degree() == 4);
         REQUIRE(root_child1->get_number_of_children() == 3);

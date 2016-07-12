@@ -405,7 +405,6 @@ class ComparisonPopulationTree: public PopulationTree {
                 std::shared_ptr<GeneTreeSimNode> >
         simulate_biallelic_site(
                 const unsigned int pattern_idx,
-                std::unordered_map<std::string, unsigned int> seq_label_to_pop_index_map,
                 RandomNumberGenerator& rng) const;
 
         void write_data_summary(
