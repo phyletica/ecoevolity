@@ -237,8 +237,8 @@ void PopulationTree::compute_top_of_branch_partials(
             node.get_allele_count(),
             this->u_->get_value(),
             this->get_v(),
-            2 * this->get_ploidy() * node.get_population_size() * this->get_mutation_rate(),
-            node.get_length() * this->get_mutation_rate(),
+            this->get_node_theta(node),
+            this->get_node_length_in_subs_per_site(node),
             node.get_bottom_pattern_probs());
     node.copy_top_pattern_probs(m);
 }
@@ -345,7 +345,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
             N,
             this->u_->get_value(),
             this->get_v(),
-            2 * this->get_ploidy() * this->root_->get_population_size() * this->get_mutation_rate());
+            this->get_node_theta(*this->root_));
     std::vector<double> xcol = q.find_orthogonal_vector();
 
     // ECOEVOLITY_DEBUG(
@@ -1064,11 +1064,12 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
             left_lineages.push_back(tip);
     }
 
-    double top_of_branch_height = this->get_height() * this->get_mutation_rate();
+    double top_of_branch_height = this->get_node_length_in_subs_per_site(
+            *this->root_->get_child(0));
     double current_height = 0.0;
     double last_left_coal_height = this->coalesce_in_branch(
             left_lineages,
-            2 * this->get_ploidy() * this->get_child_population_size(0) * this->get_mutation_rate(),
+            this->get_node_theta(*this->root_->get_child(0)),
             rng,
             current_height,
             top_of_branch_height
@@ -1093,7 +1094,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
 
         double last_right_coal_height = this->coalesce_in_branch(
                 right_lineages,
-                2 * this->get_ploidy() * this->get_child_population_size(1) * this->get_mutation_rate(),
+                this->get_node_theta(*this->root_->get_child(1)),
                 rng,
                 current_height,
                 top_of_branch_height
@@ -1114,7 +1115,7 @@ std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
     }
     double last_root_coal_height = this->coalesce_in_branch(
             root_lineages,
-            2 * this->get_ploidy() * this->get_root_population_size() * this->get_mutation_rate(),
+            this->get_node_theta(*this->root_),
             rng,
             top_of_branch_height,
             std::numeric_limits<double>::infinity()

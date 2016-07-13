@@ -145,6 +145,15 @@ class PopulationTree {
             return this->ploidy_;
         }
 
+        double get_node_theta(const PopulationNode& node) const {
+            return (2 * this->get_ploidy() *
+                    node.get_population_size() *
+                    this->get_mutation_rate());
+        }
+        double get_node_length_in_subs_per_site(const PopulationNode& node) const {
+            return (node.get_length() * this->get_mutation_rate());
+        }
+
         void set_u(double u);
         void update_u(double u);
         double get_u() const;
