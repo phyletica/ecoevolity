@@ -171,11 +171,11 @@ class QMatrix : public AbstractMatrix {
         unsigned int n_;
 
     public:
-        QMatrix(unsigned int n, double u, double v, double coalescence_rate) {
+        QMatrix(unsigned int n, double u, double v, double population_size) {
             this->n_ = n;
             this->u_ = u;
             this->v_ = v;
-            this->coalescence_rate_ = coalescence_rate;
+            this->coalescence_rate_ = (2.0 / population_size);
         }
 
         unsigned int get_nrows() const {
@@ -989,10 +989,10 @@ class MatrixExponentiator {
                 unsigned int N,
                 double u,
                 double v,
-                double gamma,
+                double population_size,
                 double t,
                 const BiallelicPatternProbabilityMatrix& x) const {
-            QMatrix Q = QMatrix(N, u, v, gamma);
+            QMatrix Q = QMatrix(N, u, v, population_size);
 
             std::vector<double> prob_vector = x.get_pattern_prob_matrix();
             std::vector<double> xcol(prob_vector.size() + 1, 0.0);

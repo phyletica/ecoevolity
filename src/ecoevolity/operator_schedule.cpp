@@ -55,10 +55,10 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_comparison_height_multiplier_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<ComparisonHeightMultiplierScaler>(
-                settings.get_comparison_height_multiplier_scaler_settings().get_weight(),
-                settings.get_comparison_height_multiplier_scaler_settings().get_scale()
+    if (settings.get_comparison_mutation_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<ComparisonMutationRateScaler>(
+                settings.get_comparison_mutation_rate_scaler_settings().get_weight(),
+                settings.get_comparison_mutation_rate_scaler_settings().get_scale()
                 ));
     }
 
@@ -76,10 +76,10 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_mutation_rate_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<MutationRateScaler>(
-                settings.get_mutation_rate_scaler_settings().get_weight(),
-                settings.get_mutation_rate_scaler_settings().get_scale()
+    if (settings.get_u_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<UScaler>(
+                settings.get_u_scaler_settings().get_weight(),
+                settings.get_u_scaler_settings().get_scale()
                 ));
     }
 }

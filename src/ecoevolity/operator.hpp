@@ -361,16 +361,16 @@ class ConcentrationScaler : public ScaleOperator {
 
 // TODO:
 // NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use MutationRateScaler).
-class MutationRateMover : public ComparisonTreeWindowOperator {
+// (or just use UScaler).
+class UMover : public ComparisonTreeWindowOperator {
 
     using ComparisonTreeWindowOperator::propose;
 
     public:
-        MutationRateMover() : ComparisonTreeWindowOperator() { }
-        MutationRateMover(double weight) : ComparisonTreeWindowOperator(weight) { }
-        MutationRateMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
-        virtual ~MutationRateMover() { }
+        UMover() : ComparisonTreeWindowOperator() { }
+        UMover(double weight) : ComparisonTreeWindowOperator(weight) { }
+        UMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
+        virtual ~UMover() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -381,15 +381,15 @@ class MutationRateMover : public ComparisonTreeWindowOperator {
         std::string get_name() const;
 };
 
-class MutationRateScaler : public ComparisonTreeScaleOperator {
+class UScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
 
     public:
-        MutationRateScaler() : ComparisonTreeScaleOperator() { }
-        MutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        MutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~MutationRateScaler() { }
+        UScaler() : ComparisonTreeScaleOperator() { }
+        UScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        UScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~UScaler() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -400,15 +400,15 @@ class MutationRateScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
-class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
+class ComparisonMutationRateScaler : public ComparisonTreeScaleOperator {
 
     using ComparisonTreeScaleOperator::propose;
 
     public:
-        ComparisonHeightMultiplierScaler() : ComparisonTreeScaleOperator() { }
-        ComparisonHeightMultiplierScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ComparisonHeightMultiplierScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ComparisonHeightMultiplierScaler() { }
+        ComparisonMutationRateScaler() : ComparisonTreeScaleOperator() { }
+        ComparisonMutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+        ComparisonMutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+        virtual ~ComparisonMutationRateScaler() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -419,28 +419,6 @@ class ComparisonHeightMultiplierScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
-
-// TODO:
-// NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use ChildPopulationSizeScaler).
-class ChildCoalescenceRateScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        ChildCoalescenceRateScaler() : ComparisonTreeScaleOperator() { }
-        ChildCoalescenceRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ChildCoalescenceRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ChildCoalescenceRateScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
 
 class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
 
@@ -461,28 +439,6 @@ class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
         std::string get_name() const;
 };
 
-
-// TODO:
-// NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use RootPopulationSizeScaler).
-class RootCoalescenceRateScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        RootCoalescenceRateScaler() : ComparisonTreeScaleOperator() { }
-        RootCoalescenceRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        RootCoalescenceRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~RootCoalescenceRateScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
 
 class RootPopulationSizeScaler : public ComparisonTreeScaleOperator {
 

@@ -42,13 +42,13 @@ class BiallelicData {
         // Constructor
         BiallelicData() { }
         BiallelicData(std::string path,
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool validate = true);
         void init(const std::string path,
-                char population_name_delimiter = '_',
+                char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
@@ -58,6 +58,7 @@ class BiallelicData {
         // ~BiallelicData();
         
         //Methods
+        BiallelicData get_empty_copy() const;
         const std::vector<unsigned int>& get_red_allele_counts(unsigned int pattern_index) const;
         const std::vector<unsigned int>& get_allele_counts(unsigned int pattern_index) const;
 
@@ -90,11 +91,15 @@ class BiallelicData {
         bool has_mirrored_patterns() const;
         bool patterns_are_folded() const;
 
+        static bool pattern_is_constant(
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts);
+
         void get_pattern_index(
                 bool& was_found,
                 unsigned int& pattern_index,
-                const std::vector<unsigned int> red_allele_counts,
-                const std::vector<unsigned int> allele_counts) const;
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts) const;
 
         const std::vector< std::vector<unsigned int> > get_mirrored_pattern(unsigned int pattern_index) const;
 
@@ -108,9 +113,16 @@ class BiallelicData {
         unsigned int get_number_of_missing_sites_removed() const;
 
         double get_proportion_of_red_alleles() const;
-        void get_empirical_mutation_rates(double& u, double& v) const;
+        void get_empirical_u_v_rates(double& u, double& v) const;
 
         void validate() const;
+
+        bool add_site(
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts,
+                bool filtering_contant_sites = true);
+
+        void update_pattern_booleans();
 
         void write_summary(
                 std::ostream& out,
@@ -126,7 +138,8 @@ class BiallelicData {
         bool has_constant_patterns_ = false;
         bool has_mirrored_patterns_ = true;
         bool patterns_are_folded_ = false;
-        std::string path_;
+        bool appendable_ = false;
+        std::string path_ = "";
         std::vector< std::vector<unsigned int> > red_allele_counts_;
         std::vector< std::vector<unsigned int> > allele_counts_;
         std::vector<unsigned int> pattern_weights_;
@@ -142,7 +155,6 @@ class BiallelicData {
         void update_has_constant_patterns();
         void update_has_mirrored_patterns();
         void update_patterns_are_folded();
-        void update_pattern_booleans();
         void remove_first_constant_pattern(
                 bool& was_removed,
                 unsigned int& removed_index);

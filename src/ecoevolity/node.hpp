@@ -46,29 +46,172 @@ class Node: public BaseNode<Node>{
         Node(std::string label, double height) : BaseClass(label, height) { }
 };
 
+class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
+    private:
+        typedef BaseNode<GeneTreeSimNode> BaseClass;
+        int character_state_ = -1;
+        unsigned int population_index_ = 0;
+        double p[2][2];
+
+    public:
+        GeneTreeSimNode() { }
+        GeneTreeSimNode(std::string label) : BaseClass(label) { }
+        GeneTreeSimNode(double height) : BaseClass(height) { }
+        GeneTreeSimNode(unsigned int population_index) :
+            BaseClass(),
+            population_index_(population_index)
+            { }
+        GeneTreeSimNode(std::string label, double height) :
+            BaseClass(label, height)
+            { }
+        GeneTreeSimNode(unsigned int population_index, double height) :
+            BaseClass(height),
+            population_index_(population_index)
+            { }
+        GeneTreeSimNode(unsigned int population_index, std::string label) :
+            BaseClass(label),
+            population_index_(population_index)
+            { }
+        GeneTreeSimNode(unsigned int population_index, std::string label,
+                double height) :
+            BaseClass(label, height),
+            population_index_(population_index)
+            { }
+
+        int get_character_state() const {
+            return this->character_state_;
+        }
+        void set_character_state(int state) {
+            this->character_state_ = state;
+        }
+        unsigned int get_population_index() const {
+            return this->population_index_;
+        }
+        void set_population_index(unsigned int index) {
+            this->population_index_ = index;
+        }
+
+        void compute_branch_binary_transition_probabilities(
+                const double u,
+                const double v) {
+            double freq_0 = u / (u + v);
+            double freq_1 = 1.0 - freq_0;
+            double t = this->get_length();
+            double r = 1.0 - std::exp(-(u + v) * t);
+            this->p[1][0] = freq_0 * r;
+            this->p[1][1] = 1.0 - (freq_0 * r);
+            this->p[0][1] = freq_1 * r;
+            this->p[0][0] = 1.0 - (freq_1 * r);
+        }
+
+        void compute_binary_transition_probabilities(
+                const double u,
+                const double v) {
+            this->compute_branch_binary_transition_probabilities(u, v);
+            for (auto child_iter: this->children_) {
+                child_iter->compute_binary_transition_probabilities(u, v);
+            }
+        }
+
+        void draw_binary_character(
+                const double freq_0,
+                RandomNumberGenerator& rng) {
+            double u = rng.uniform_real();
+            if (this->has_parent() && (this->parent_->get_character_state() > -1)) {
+                int i = this->parent_->get_character_state();
+                ECOEVOLITY_ASSERT((i == 0) || (i == 1));
+                if (u < this->p[i][0]) {
+                    this->set_character_state(0);
+                }
+                else {
+                    this->set_character_state(1);
+                }
+                return;
+            }
+            if (u < freq_0) {
+                this->set_character_state(0);
+            }
+            else {
+                this->set_character_state(1);
+            }
+        }
+
+        void simulate_binary_character(
+                const double freq_0,
+                RandomNumberGenerator& rng) {
+            this->draw_binary_character(freq_0, rng);
+            for (auto child_iter: this->children_) {
+                child_iter->simulate_binary_character(freq_0, rng);
+            }
+
+        }
+
+        void get_allele_counts(
+                std::vector<unsigned int>& allele_counts,
+                std::vector<unsigned int>& red_allele_counts) const {
+            if (this->is_leaf()) {
+                unsigned int pop_idx = this->get_population_index();
+                ++allele_counts.at(pop_idx);
+                if (this->get_character_state() == 1) {
+                    ++red_allele_counts.at(pop_idx);
+                }
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_allele_counts(
+                        allele_counts,
+                        red_allele_counts);
+            }
+        }
+
+        void get_allele_counts(
+                std::vector<unsigned int>& allele_counts,
+                std::vector<unsigned int>& red_allele_counts,
+                std::vector<int>& last_allele) const {
+            if (this->is_leaf()) {
+                unsigned int pop_idx = this->get_population_index();
+                if (last_allele.at(pop_idx) < 0) {
+                    last_allele.at(pop_idx) = this->get_character_state();
+                    return;
+                }
+                if ((last_allele.at(pop_idx) == 1) || (this->get_character_state() == 1)) {
+                    ++red_allele_counts.at(pop_idx);
+                }
+                ++allele_counts.at(pop_idx);
+                last_allele.at(pop_idx) = -1;
+                return;
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_allele_counts(
+                        allele_counts,
+                        red_allele_counts,
+                        last_allele);
+            }
+        }
+};
+
 class PopulationNode: public BaseNode<PopulationNode>{
     private:
         typedef BaseNode<PopulationNode> BaseClass;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
-        std::shared_ptr<CoalescenceRateParameter> coalescence_rate_ = std::make_shared<CoalescenceRateParameter>(10.0);
+        std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(0.001);
 
-        void add_ln_relative_coalescence_rate_prior_density(
+        void add_ln_relative_population_size_prior_density(
                 double& density,
-                std::vector< std::shared_ptr<CoalescenceRateParameter> >& parameters) const {
+                std::vector< std::shared_ptr<PositiveRealParameter> >& parameters) const {
             bool parameter_found = false;
             for (auto parameter_iter : parameters) {
-                if (parameter_iter == this->coalescence_rate_) {
+                if (parameter_iter == this->population_size_) {
                     parameter_found = true;
                     break;
                 }
             }
             if (! parameter_found) {
-                density += this->coalescence_rate_->relative_prior_ln_pdf();
-                parameters.push_back(this->coalescence_rate_);
+                density += this->population_size_->relative_prior_ln_pdf();
+                parameters.push_back(this->population_size_);
             }
             for (unsigned int i = 0; i < this->children_.size(); ++i) {
-                this->children_.at(i)->add_ln_relative_coalescence_rate_prior_density(density, parameters);
+                this->children_.at(i)->add_ln_relative_population_size_prior_density(density, parameters);
             }
         }
 
@@ -220,138 +363,124 @@ class PopulationNode: public BaseNode<PopulationNode>{
                     probability);
         }
 
-        double get_coalescence_rate() const {
-            return this->coalescence_rate_->get_value();
-        }
         double get_population_size() const {
-            return this->coalescence_rate_->get_population_size();
+            return this->population_size_->get_value();
         }
-        std::shared_ptr<CoalescenceRateParameter> get_coalescence_rate_parameter() const {
-            return this->coalescence_rate_;
+        std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const {
+            return this->population_size_;
         }
-        void set_coalescence_rate_parameter(std::shared_ptr<CoalescenceRateParameter> rate) {
-            this->coalescence_rate_ = rate;
+        void set_population_size_parameter(std::shared_ptr<PositiveRealParameter> size) {
+            this->population_size_ = size;
             this->make_all_dirty();
         }
-        void set_all_coalescence_rate_parameters(std::shared_ptr<CoalescenceRateParameter> rate) {
-            this->coalescence_rate_ = rate;
+        void set_all_population_size_parameters(std::shared_ptr<PositiveRealParameter> size) {
+            this->population_size_ = size;
             this->make_dirty();
             for (auto child_iter: this->children_) {
-                child_iter->set_all_coalescence_rate_parameters(rate);
+                child_iter->set_all_population_size_parameters(size);
             }
         }
-        void set_all_coalescence_rate_parameters() {
-            std::shared_ptr<CoalescenceRateParameter> rate = this->coalescence_rate_;
+        void set_all_population_size_parameters() {
+            std::shared_ptr<PositiveRealParameter> size = this->population_size_;
             this->make_dirty();
             for (auto child_iter: this->children_) {
-                child_iter->set_all_coalescence_rate_parameters(rate);
+                child_iter->set_all_population_size_parameters(size);
             }
         }
 
-        void set_coalescence_rate(double rate) {
-            this->coalescence_rate_->set_value(rate);
-            this->make_all_dirty();
-        }
-        void set_all_coalescence_rates(double rate) {
-            this->coalescence_rate_->set_value(rate);
-            this->make_dirty();
-            for (auto child_iter: this->children_) {
-                child_iter->set_all_coalescence_rates(rate);
-            }
-        }
         void set_population_size(double size) {
-            this->coalescence_rate_->set_population_size(size);
+            this->population_size_->set_value(size);
             this->make_all_dirty();
         }
         void set_all_population_sizes(double size) {
-            this->coalescence_rate_->set_population_size(size);
+            this->population_size_->set_value(size);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_population_sizes(size);
             }
         }
-        void update_coalescence_rate(double rate) {
-            this->coalescence_rate_->update_value(rate);
+        void update_population_size(double size) {
+            this->population_size_->update_value(size);
             this->make_all_dirty();
         }
-        void update_all_coalescence_rates(double rate) {
-            this->coalescence_rate_->update_value(rate);
+        void update_all_population_sizes(double size) {
+            this->population_size_->update_value(size);
             this->make_dirty();
             for (auto child_iter: this->children_) {
-                child_iter->update_all_coalescence_rates(rate);
+                child_iter->update_all_population_sizes(size);
             }
         }
 
-        void store_coalescence_rate() {
-            this->coalescence_rate_->store();
+        void store_population_size() {
+            this->population_size_->store();
         }
-        void restore_coalescence_rate() {
-            this->coalescence_rate_->restore();
+        void restore_population_size() {
+            this->population_size_->restore();
             this->make_all_dirty();
         }
-        void store_all_coalescence_rates() {
-            this->coalescence_rate_->store();
+        void store_all_population_sizes() {
+            this->population_size_->store();
             for (auto child_iter: this->children_) {
-                child_iter->store_all_coalescence_rates();
+                child_iter->store_all_population_sizes();
             }
         }
-        void restore_all_coalescence_rates() {
-            this->coalescence_rate_->restore();
+        void restore_all_population_sizes() {
+            this->population_size_->restore();
             this->make_dirty();
             for (auto child_iter: this->children_) {
-                child_iter->restore_all_coalescence_rates();
+                child_iter->restore_all_population_sizes();
             }
         }
 
         void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-            this->coalescence_rate_->set_prior(prior);
+            this->population_size_->set_prior(prior);
             this->make_all_dirty();
         }
         void set_all_population_size_priors(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-            this->coalescence_rate_->set_prior(prior);
+            this->population_size_->set_prior(prior);
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->set_all_population_size_priors(prior);
             }
         }
 
-        void fix_coalescence_rate() {
-            this->coalescence_rate_->fix();
+        void fix_population_size() {
+            this->population_size_->fix();
         }
-        void fix_all_coalescence_rates() {
-            this->coalescence_rate_->fix();
+        void fix_all_population_sizes() {
+            this->population_size_->fix();
             for (auto child_iter: this->children_) {
-                child_iter->fix_all_coalescence_rates();
+                child_iter->fix_all_population_sizes();
             }
         }
-        void estimate_coalescence_rate() {
-            this->coalescence_rate_->estimate();
+        void estimate_population_size() {
+            this->population_size_->estimate();
         }
-        void estimate_all_coalescence_rates() {
-            this->coalescence_rate_->estimate();
+        void estimate_all_population_sizes() {
+            this->population_size_->estimate();
             for (auto child_iter: this->children_) {
-                child_iter->estimate_all_coalescence_rates();
+                child_iter->estimate_all_population_sizes();
             }
         }
 
-        double calculate_ln_relative_coalescence_rate_prior_density() const {
+        double calculate_ln_relative_population_size_prior_density() const {
             double d = 0.0;
-            std::vector< std::shared_ptr<CoalescenceRateParameter> > parameters;
+            std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
             parameters.reserve(this->get_node_count());
-            this->add_ln_relative_coalescence_rate_prior_density(d, parameters);
+            this->add_ln_relative_population_size_prior_density(d, parameters);
             return d;
         }
 
-        bool coalescence_rate_is_fixed() const {
-            return this->coalescence_rate_->is_fixed();
+        bool population_size_is_fixed() const {
+            return this->population_size_->is_fixed();
         }
 
-        bool all_coalescence_rates_are_fixed() const {
-            if (! this->coalescence_rate_is_fixed()) {
+        bool all_population_sizes_are_fixed() const {
+            if (! this->population_size_is_fixed()) {
                 return false;
             }
             for (auto child_iter: this->children_) {
-                if (! child_iter->all_coalescence_rates_are_fixed()) {
+                if (! child_iter->all_population_sizes_are_fixed()) {
                     return false;
                 }
             }

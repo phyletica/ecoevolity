@@ -346,6 +346,8 @@ TEST_CASE("Test simple tree building with Node", "[Node]") {
         leaf4->add_parent(root_child2);
         leaf5->add_parent(root_child2);
 
+        REQUIRE(root->get_clade_length() == Approx(3.9));
+
         REQUIRE(root->degree() == 2);
         REQUIRE(root_child1->degree() == 4);
         REQUIRE(root_child1->get_number_of_children() == 3);
@@ -1482,7 +1484,7 @@ TEST_CASE("Test node height prior", "[Node]") {
     }
 }
 
-TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
+TEST_CASE("Test node height and population size priors", "[PopulationNode]") {
 
     SECTION("Testing prior") {
         std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 1.0);
@@ -1508,7 +1510,7 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         root->set_all_node_height_priors(prior);
         root->set_all_population_size_priors(prior);
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(-0.2*8));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(-0.001*8));
 
         leaf1->fix_node_height();
         leaf2->fix_node_height();
@@ -1517,14 +1519,14 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         leaf5->fix_node_height();
 
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-2.1));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(-0.2*8));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(-0.001*8));
 
 
         std::shared_ptr<GammaDistribution> prior2 = std::make_shared<GammaDistribution>(1.0, 0.01);
         root->set_all_node_height_priors(prior2);
         root->set_all_population_size_priors(prior2);
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-196.18448944203573));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(-15.39482981401191*8));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(4.5051701859880913*8));
 
         leaf1->estimate_node_height();
         leaf2->estimate_node_height();
@@ -1533,18 +1535,18 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         leaf5->estimate_node_height();
 
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-173.15863851209528));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(-15.39482981401191*8));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(4.5051701859880913*8));
 
-        root->set_all_coalescence_rates(100.0);
+        root->set_all_population_sizes(0.02);
 
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-173.15863851209528));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909*8));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(2.6051701859880909*8));
 
-        root->set_all_coalescence_rate_parameters();
+        root->set_all_population_size_parameters();
         root_child1->set_height_parameter(root_child2->get_height_parameter());
 
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-97.76380869808338));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(2.6051701859880909));
 
         leaf1->fix_node_height();
         leaf2->fix_node_height();
@@ -1553,7 +1555,7 @@ TEST_CASE("Test node height and coalescence rate priors", "[PopulationNode]") {
         leaf5->fix_node_height();
 
         REQUIRE(root->calculate_ln_relative_node_height_prior_density() == Approx(-120.78965962802383));
-        REQUIRE(root->calculate_ln_relative_coalescence_rate_prior_density() == Approx(2.6051701859880909));
+        REQUIRE(root->calculate_ln_relative_population_size_prior_density() == Approx(2.6051701859880909));
     }
 }
 
@@ -1617,9 +1619,9 @@ TEST_CASE("Test node height fixing", "[Node]") {
     }
 }
 
-TEST_CASE("Test coalescence rate fixing", "[PopulationNode]") {
+TEST_CASE("Test population size fixing", "[PopulationNode]") {
 
-    SECTION("Testing fixing of coalescence rate parameters") {
+    SECTION("Testing fixing of pop size parameters") {
         std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 1.0);
         std::shared_ptr<PopulationNode> root_child1 = std::make_shared<PopulationNode>("root child 1", 0.8);
         std::shared_ptr<PopulationNode> root_child2 = std::make_shared<PopulationNode>("root child 2", 0.3);
@@ -1639,40 +1641,89 @@ TEST_CASE("Test coalescence rate fixing", "[PopulationNode]") {
         leaf4->add_parent(root_child2);
         leaf5->add_parent(root_child2);
 
-        REQUIRE(root->coalescence_rate_is_fixed() == false);
-        REQUIRE(root->all_coalescence_rates_are_fixed() == false);
+        REQUIRE(root->population_size_is_fixed() == false);
+        REQUIRE(root->all_population_sizes_are_fixed() == false);
 
-        root->fix_all_coalescence_rates();
+        root->fix_all_population_sizes();
 
-        REQUIRE(root->coalescence_rate_is_fixed() == true);
-        REQUIRE(root->all_coalescence_rates_are_fixed() == true);
+        REQUIRE(root->population_size_is_fixed() == true);
+        REQUIRE(root->all_population_sizes_are_fixed() == true);
 
-        root->estimate_all_coalescence_rates();
+        root->estimate_all_population_sizes();
 
-        REQUIRE(root->coalescence_rate_is_fixed() == false);
-        REQUIRE(root->all_coalescence_rates_are_fixed() == false);
+        REQUIRE(root->population_size_is_fixed() == false);
+        REQUIRE(root->all_population_sizes_are_fixed() == false);
 
-        root_child1->fix_coalescence_rate();
+        root_child1->fix_population_size();
 
-        REQUIRE(root_child1->coalescence_rate_is_fixed() == true);
-        REQUIRE(root_child1->all_coalescence_rates_are_fixed() == false);
-        REQUIRE(leaf1->coalescence_rate_is_fixed() == false);
-        REQUIRE(leaf2->coalescence_rate_is_fixed() == false);
-        REQUIRE(leaf3->coalescence_rate_is_fixed() == false);
+        REQUIRE(root_child1->population_size_is_fixed() == true);
+        REQUIRE(root_child1->all_population_sizes_are_fixed() == false);
+        REQUIRE(leaf1->population_size_is_fixed() == false);
+        REQUIRE(leaf2->population_size_is_fixed() == false);
+        REQUIRE(leaf3->population_size_is_fixed() == false);
 
-        root_child1->fix_all_coalescence_rates();
+        root_child1->fix_all_population_sizes();
 
-        REQUIRE(root_child1->coalescence_rate_is_fixed() == true);
-        REQUIRE(root_child1->all_coalescence_rates_are_fixed() == true);
-        REQUIRE(leaf1->coalescence_rate_is_fixed() == true);
-        REQUIRE(leaf2->coalescence_rate_is_fixed() == true);
-        REQUIRE(leaf3->coalescence_rate_is_fixed() == true);
+        REQUIRE(root_child1->population_size_is_fixed() == true);
+        REQUIRE(root_child1->all_population_sizes_are_fixed() == true);
+        REQUIRE(leaf1->population_size_is_fixed() == true);
+        REQUIRE(leaf2->population_size_is_fixed() == true);
+        REQUIRE(leaf3->population_size_is_fixed() == true);
 
-        leaf2->estimate_coalescence_rate();
-        REQUIRE(root_child1->coalescence_rate_is_fixed() == true);
-        REQUIRE(root_child1->all_coalescence_rates_are_fixed() == false);
-        REQUIRE(leaf1->coalescence_rate_is_fixed() == true);
-        REQUIRE(leaf2->coalescence_rate_is_fixed() == false);
-        REQUIRE(leaf3->coalescence_rate_is_fixed() == true);
+        leaf2->estimate_population_size();
+        REQUIRE(root_child1->population_size_is_fixed() == true);
+        REQUIRE(root_child1->all_population_sizes_are_fixed() == false);
+        REQUIRE(leaf1->population_size_is_fixed() == true);
+        REQUIRE(leaf2->population_size_is_fixed() == false);
+        REQUIRE(leaf3->population_size_is_fixed() == true);
+    }
+}
+
+TEST_CASE("Test to_parentheses with Node", "[Node]") {
+
+    SECTION("Testing newick string") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> root_child1 = std::make_shared<Node>("root child 1", 0.8);
+        std::shared_ptr<Node> a = std::make_shared<Node>("A");
+        std::shared_ptr<Node> b = std::make_shared<Node>("B");
+        std::shared_ptr<Node> c = std::make_shared<Node>("C");
+
+        root->add_child(root_child1);
+        root->add_child(c);
+
+        a->add_parent(root_child1);
+        b->add_parent(root_child1);
+        std::string p = root->to_parentheses();
+        REQUIRE(p == "((A:0.8,B:0.8):0.2,C:1):0");
+
+        std::shared_ptr<Node> d = std::make_shared<Node>("D");
+        d->add_parent(root_child1);
+
+        p = root->to_parentheses();
+        REQUIRE(p == "((A:0.8,B:0.8,D:0.8):0.2,C:1):0");
+
+        std::shared_ptr<Node> e = std::make_shared<Node>("E");
+        std::shared_ptr<Node> f = std::make_shared<Node>("F");
+        std::shared_ptr<Node> root_child2 = std::make_shared<Node>("root child 1", 0.3);
+        root_child2->add_child(e);
+        root_child2->add_child(f);
+        root->add_child(root_child2);
+
+        p = root->to_parentheses();
+        REQUIRE(p == "((A:0.8,B:0.8,D:0.8):0.2,C:1,(E:0.3,F:0.3):0.7):0");
+    }
+
+    SECTION("Testing singleton") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+
+        std::string p = root->to_parentheses();
+        REQUIRE(p == "root:0");
+
+        std::shared_ptr<Node> a = std::make_shared<Node>("A");
+
+        root->add_child(a);
+
+        p = root->to_parentheses();
+        REQUIRE(p == "(A:1):0");
     }
 }

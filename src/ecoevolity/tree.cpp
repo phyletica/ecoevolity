@@ -28,7 +28,8 @@ PopulationTree::PopulationTree(
         bool constant_sites_removed,
         bool validate,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        double ploidy) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -37,7 +38,8 @@ PopulationTree::PopulationTree(
                constant_sites_removed,
                validate,
                strict_on_constant_sites,
-               strict_on_missing_sites);
+               strict_on_missing_sites,
+               ploidy);
 }
 
 void PopulationTree::init(
@@ -49,7 +51,14 @@ void PopulationTree::init(
         bool constant_sites_removed,
         bool validate,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        double ploidy) {
+    if (genotypes_are_diploid && (ploidy != 2.0)) {
+        throw EcoevolityBiallelicDataError(
+                "Genotypes cannot be diploid if ploidy is not 2",
+                path);
+    }
+    this->set_ploidy(ploidy);
     this->data_.init(
             path,
             population_name_delimiter,
@@ -228,8 +237,8 @@ void PopulationTree::compute_top_of_branch_partials(
             node.get_allele_count(),
             this->u_->get_value(),
             this->get_v(),
-            node.get_coalescence_rate(),
-            node.get_length() * this->node_height_multiplier_->get_value(),
+            this->get_node_theta(node),
+            this->get_node_length_in_subs_per_site(node),
             node.get_bottom_pattern_probs());
     node.copy_top_pattern_probs(m);
 }
@@ -336,7 +345,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
             N,
             this->u_->get_value(),
             this->get_v(),
-            this->root_->get_coalescence_rate());
+            this->get_node_theta(*this->root_));
     std::vector<double> xcol = q.find_orthogonal_vector();
 
     // ECOEVOLITY_DEBUG(
@@ -408,7 +417,7 @@ void PopulationTree::compute_pattern_likelihoods() {
     }
     double all_green_pattern_likelihood = this->compute_pattern_likelihood(-1);
     double all_red_pattern_likelihood = all_green_pattern_likelihood;
-    if (! this->mutation_rates_are_constrained()) {
+    if (! this->u_v_rates_are_constrained()) {
         all_red_pattern_likelihood = this->compute_pattern_likelihood(-2);
     }
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_likelihood);
@@ -534,10 +543,8 @@ double PopulationTree::get_stored_log_likelihood_value() const {
 }
 
 void PopulationTree::fold_patterns() {
-    if (! this->mutation_rates_are_constrained()) {
-        std::cerr << 
-            "WARNING: Site patterns are being folded when foward/backward\n" <<
-            "         mutation rates are not constrained." << std::endl;
+    if (! this->u_v_rates_are_constrained()) {
+        std::cerr << "WARNING: Site patterns are being folded when u/v rates are not constrained." << std::endl;
     }
     this->data_.fold_patterns();
     this->make_dirty();
@@ -567,7 +574,7 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter
 }
 
 void PopulationTree::set_u(double u) {
-    if (this->mutation_rates_are_fixed()) {
+    if (this->u_v_rates_are_fixed()) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
@@ -579,7 +586,7 @@ void PopulationTree::set_u(double u) {
     this->make_dirty();
 }
 void PopulationTree::update_u(double u) {
-    if (this->mutation_rates_are_fixed()) {
+    if (this->u_v_rates_are_fixed()) {
         return;
     }
     ECOEVOLITY_ASSERT(u >= 0.5);
@@ -605,28 +612,28 @@ void PopulationTree::restore_u() {
     this->make_dirty();
 }
 
-void PopulationTree::set_node_height_multiplier(double m) {
-    if (this->node_height_multiplier_is_fixed()) {
+void PopulationTree::set_mutation_rate(double m) {
+    if (this->mutation_rate_is_fixed()) {
         return;
     }
-    this->node_height_multiplier_->set_value(m);
+    this->mutation_rate_->set_value(m);
     this->make_dirty();
 }
-void PopulationTree::update_node_height_multiplier(double m) {
-    if (this->node_height_multiplier_is_fixed()) {
+void PopulationTree::update_mutation_rate(double m) {
+    if (this->mutation_rate_is_fixed()) {
         return;
     }
-    this->node_height_multiplier_->update_value(m);
+    this->mutation_rate_->update_value(m);
     this->make_dirty();
 }
-double PopulationTree::get_node_height_multiplier() const {
-    return this->node_height_multiplier_->get_value();
+double PopulationTree::get_mutation_rate() const {
+    return this->mutation_rate_->get_value();
 }
-void PopulationTree::store_node_height_multiplier() {
-    this->node_height_multiplier_->store();
+void PopulationTree::store_mutation_rate() {
+    this->mutation_rate_->store();
 }
-void PopulationTree::restore_node_height_multiplier() {
-    this->node_height_multiplier_->restore();
+void PopulationTree::restore_mutation_rate() {
+    this->mutation_rate_->restore();
     this->make_dirty();
 }
 
@@ -634,47 +641,32 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
     return this->u_;
 }
 
-void PopulationTree::set_node_height_multiplier_parameter(std::shared_ptr<PositiveRealParameter> h) {
-    this->node_height_multiplier_ = h;
+void PopulationTree::set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h) {
+    this->mutation_rate_ = h;
     this->make_dirty();
 }
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_node_height_multiplier_parameter() const {
-    return this->node_height_multiplier_;
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_mutation_rate_parameter() const {
+    return this->mutation_rate_;
 }
 
-void PopulationTree::set_root_coalescence_rate(double rate) {
-    if (this->coalescence_rates_are_fixed()) {
-        return;
-    }
-    this->root_->set_coalescence_rate(rate);
-}
-void PopulationTree::set_coalescence_rate(double rate) {
-    if (this->coalescence_rates_are_fixed()) {
-        return;
-    }
-    this->root_->set_all_coalescence_rates(rate);
-}
 void PopulationTree::set_root_population_size(double size) {
-    if (this->coalescence_rates_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->set_population_size(size);
 }
 void PopulationTree::set_population_size(double size) {
-    if (this->coalescence_rates_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->set_all_population_sizes(size);
 }
 
-double PopulationTree::get_root_coalescence_rate() const {
-    return this->root_->get_coalescence_rate();
-}
 double PopulationTree::get_root_population_size() const {
     return this->root_->get_population_size();
 }
-std::shared_ptr<CoalescenceRateParameter> PopulationTree::get_root_coalescence_rate_parameter() const {
-    return this->root_->get_coalescence_rate_parameter();
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_population_size_parameter() const {
+    return this->root_->get_population_size_parameter();
 }
 
 void PopulationTree::store_state() {
@@ -692,12 +684,12 @@ void PopulationTree::store_prior_density() {
 }
 void PopulationTree::store_parameters() {
     this->store_u();
-    this->store_node_height_multiplier();
-    this->store_all_coalescence_rates();
+    this->store_mutation_rate();
+    this->store_all_population_sizes();
     this->store_all_heights();
 }
-void PopulationTree::store_all_coalescence_rates() {
-    this->root_->store_all_coalescence_rates();
+void PopulationTree::store_all_population_sizes() {
+    this->root_->store_all_population_sizes();
 }
 void PopulationTree::store_all_heights() {
     this->root_->store_all_heights();
@@ -718,12 +710,12 @@ void PopulationTree::restore_prior_density() {
 }
 void PopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_node_height_multiplier();
-    this->restore_all_coalescence_rates();
+    this->restore_mutation_rate();
+    this->restore_all_population_sizes();
     this->restore_all_heights();
 }
-void PopulationTree::restore_all_coalescence_rates() {
-    this->root_->restore_all_coalescence_rates();
+void PopulationTree::restore_all_population_sizes() {
+    this->root_->restore_all_population_sizes();
 }
 void PopulationTree::restore_all_heights() {
     this->root_->restore_all_heights();
@@ -743,31 +735,31 @@ void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistributi
     this->u_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_node_height_multiplier_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->node_height_multiplier_->set_prior(prior);
+void PopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+    this->mutation_rate_->set_prior(prior);
     this->make_dirty();
 }
 
 double PopulationTree::compute_log_prior_density() {
     double d = 0.0;
-    d += this->compute_log_prior_density_of_mutation_rates();
-    d += this->compute_log_prior_density_of_node_height_multiplier();
+    d += this->compute_log_prior_density_of_u_v_rates();
+    d += this->compute_log_prior_density_of_mutation_rate();
     d += this->compute_log_prior_density_of_node_heights();
-    d += this->compute_log_prior_density_of_coalescence_rates();
+    d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
     return d;
 }
-double PopulationTree::compute_log_prior_density_of_mutation_rates() const {
+double PopulationTree::compute_log_prior_density_of_u_v_rates() const {
     return this->u_->relative_prior_ln_pdf();
 }
-double PopulationTree::compute_log_prior_density_of_node_height_multiplier() const {
-    return this->node_height_multiplier_->relative_prior_ln_pdf();
+double PopulationTree::compute_log_prior_density_of_mutation_rate() const {
+    return this->mutation_rate_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_node_heights() const {
     return this->root_->calculate_ln_relative_node_height_prior_density();
 }
-double PopulationTree::compute_log_prior_density_of_coalescence_rates() const {
-    return this->root_->calculate_ln_relative_coalescence_rate_prior_density();
+double PopulationTree::compute_log_prior_density_of_population_sizes() const {
+    return this->root_->calculate_ln_relative_population_size_prior_density();
 }
 
 double PopulationTree::get_log_prior_density_value() const {
@@ -813,7 +805,30 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool constant_sites_removed,
         bool validate,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        double ploidy) {
+    this->comparison_init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+}
+void ComparisonPopulationTree::comparison_init(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -822,9 +837,12 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                constant_sites_removed,
                validate,
                strict_on_constant_sites,
-               strict_on_missing_sites);
+               strict_on_missing_sites,
+               ploidy);
     if (this->data_.get_number_of_populations() > 2) {
-        throw EcoevolityError("ComparisonPopulationTree(); does not support more than 2 populations");
+        throw EcoevolityComparisonSettingError(
+                "ComparisonPopulationTree() does not support more than 2 populations",
+                path);
     }
     this->root_->set_label("root-" + this->root_->get_child(0)->get_label());
 }
@@ -833,7 +851,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites) {
-    this->init(settings.get_path(),
+    this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
                settings.genotypes_are_diploid(),
@@ -841,29 +859,28 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                settings.constant_sites_removed(),
                true, // validate
                strict_on_constant_sites,
-               strict_on_missing_sites);
-    if (settings.constrain_mutation_rates()) {
-        this->constrain_mutation_rates();
+               strict_on_missing_sites,
+               settings.get_ploidy());
+    if (settings.constrain_u_v_rates()) {
+        this->constrain_u_v_rates();
         this->fold_patterns();
     }
     this->set_population_size_prior(
             settings.get_population_size_settings().get_prior_settings().get_instance());
     if (settings.constrain_population_sizes()) {
-        this->constrain_coalescence_rates();
+        this->constrain_population_sizes();
     }
     PositiveRealParameter p = PositiveRealParameter(
             settings.get_population_size_settings(),
             rng);
-    this->set_coalescence_rate(
-            CoalescenceRateParameter::get_rate_from_population_size(
-                    p.get_value()));
+    this->set_population_size(p.get_value());
     if (settings.get_population_size_settings().is_fixed()) {
-        this->fix_coalescence_rates();
+        this->fix_population_sizes();
     }
     
     this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
-    if (settings.constrain_mutation_rates()) {
-        this->constrain_mutation_rates();
+    if (settings.constrain_u_v_rates()) {
+        this->constrain_u_v_rates();
     }
     else {
         PositiveRealParameter u = PositiveRealParameter(
@@ -871,18 +888,18 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                 rng);
         this->set_u(u.get_value());
         if (u.is_fixed()) {
-            this->fix_mutation_rates();
+            this->fix_u_v_rates();
         }
     }
-    this->set_node_height_multiplier_parameter(
+    this->set_mutation_rate_parameter(
             std::make_shared<PositiveRealParameter>(
-                    settings.get_time_multiplier_settings(),
+                    settings.get_mutation_rate_settings(),
                     rng));
     if (
         (this->data_.get_number_of_populations() == 1) &&
         (
-            (this->coalescence_rates_are_fixed()) ||
-            (this->coalescence_rates_are_constrained())
+            (this->population_sizes_are_fixed()) ||
+            (this->population_sizes_are_constrained())
         )
     ) {
         std::ostringstream message;
@@ -902,60 +919,47 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     }
 }
 
-void ComparisonPopulationTree::set_child_coalescence_rate(
-        unsigned int child_index,
-        double rate) {
-    if (this->coalescence_rates_are_fixed()) {
-        return;
-    }
-    this->root_->get_child(child_index)->set_coalescence_rate(rate);
-}
 void ComparisonPopulationTree::set_child_population_size(
         unsigned int child_index,
         double size) {
-    if (this->coalescence_rates_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->get_child(child_index)->set_population_size(size);
 }
-void ComparisonPopulationTree::update_child_coalescence_rate(
+void ComparisonPopulationTree::update_child_population_size(
         unsigned int child_index,
-        double rate) {
-    if (this->coalescence_rates_are_fixed()) {
+        double size) {
+    if (this->population_sizes_are_fixed()) {
         return;
     }
-    this->root_->get_child(child_index)->update_coalescence_rate(rate);
+    this->root_->get_child(child_index)->update_population_size(size);
 }
-double ComparisonPopulationTree::get_child_coalescence_rate(
-        unsigned int child_index) const {
-    return this->root_->get_child(child_index)->get_coalescence_rate();
-}
-void ComparisonPopulationTree::store_child_coalescence_rate(
-        unsigned int child_index) {
-    this->root_->get_child(child_index)->store_coalescence_rate();
-}
-void ComparisonPopulationTree::restore_child_coalescence_rate(
-        unsigned int child_index) {
-    this->root_->get_child(child_index)->restore_coalescence_rate();
-}
-std::shared_ptr<CoalescenceRateParameter> ComparisonPopulationTree::get_child_coalescence_rate_parameter(
-        unsigned int child_index) const {
-    return this->root_->get_child(child_index)->get_coalescence_rate_parameter();
-}
-
 double ComparisonPopulationTree::get_child_population_size(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_population_size();
+}
+void ComparisonPopulationTree::store_child_population_size(
+        unsigned int child_index) {
+    this->root_->get_child(child_index)->store_population_size();
+}
+void ComparisonPopulationTree::restore_child_population_size(
+        unsigned int child_index) {
+    this->root_->get_child(child_index)->restore_population_size();
+}
+std::shared_ptr<PositiveRealParameter> ComparisonPopulationTree::get_child_population_size_parameter(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size_parameter();
 }
 
 // Node height sharing needs to be dealt with in next level up in
 // class hierarchy (ComparisonPopulationTreeCollection)
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
-    d += this->compute_log_prior_density_of_mutation_rates();
-    d += this->compute_log_prior_density_of_node_height_multiplier();
+    d += this->compute_log_prior_density_of_u_v_rates();
+    d += this->compute_log_prior_density_of_mutation_rate();
     // d += this->compute_log_prior_density_of_node_heights();
-    d += this->compute_log_prior_density_of_coalescence_rates();
+    d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
     return d;
 }
@@ -963,14 +967,14 @@ double ComparisonPopulationTree::compute_log_prior_density() {
 // Node height (re)storing is managed by ComparisonPopulationTree.
 void ComparisonPopulationTree::store_parameters() {
     this->store_u();
-    this->store_node_height_multiplier();
-    this->store_all_coalescence_rates();
+    this->store_mutation_rate();
+    this->store_all_population_sizes();
     // this->store_all_heights();
 }
 void ComparisonPopulationTree::restore_parameters() {
     this->restore_u();
-    this->restore_node_height_multiplier();
-    this->restore_all_coalescence_rates();
+    this->restore_mutation_rate();
+    this->restore_all_population_sizes();
     // this->restore_all_heights();
 }
 
@@ -985,7 +989,7 @@ void ComparisonPopulationTree::write_state_log_header(
     out << "ln_likelihood" << suffix << delimiter
         << "ln_prior" << suffix << delimiter
         << "root_height" << suffix << delimiter
-        << "time_multiplier" << suffix << delimiter
+        << "mutation_rate" << suffix << delimiter
         << "u" << suffix << delimiter
         << "v" << suffix << delimiter
         << "pop_size" << suffix << delimiter;
@@ -1001,7 +1005,7 @@ void ComparisonPopulationTree::log_state(
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_height() << delimiter
-        << this->get_node_height_multiplier() << delimiter
+        << this->get_mutation_rate() << delimiter
         << this->get_u() << delimiter
         << this->get_v() << delimiter
         << this->get_child_population_size(0) << delimiter;
@@ -1032,4 +1036,198 @@ std::string ComparisonPopulationTree::get_state_string(
     ss.precision(precision);
     this->log_state(ss, delimiter);
     return ss.str();
+}
+
+// TODO: This is a hack. The more general solution would be a recursive method
+// of PopulationTree
+std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
+        const unsigned int pattern_index,
+        RandomNumberGenerator& rng) const {
+
+    std::vector< std::shared_ptr<GeneTreeSimNode> > left_lineages;
+    std::vector< std::shared_ptr<GeneTreeSimNode> > right_lineages;
+    std::vector< std::shared_ptr<GeneTreeSimNode> > root_lineages;
+    unsigned int allele_count;
+    allele_count = this->data_.get_allele_count(
+            pattern_index,
+            this->data_.get_population_index(
+                    this->root_->get_child(0)->get_label()));
+    if (this->data_.markers_are_dominant()) {
+        allele_count *= 2;
+    }
+    left_lineages.reserve(allele_count);
+    for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
+        std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
+                    0,
+                    0.0);
+            tip->fix_node_height();
+            left_lineages.push_back(tip);
+    }
+
+    double top_of_branch_height = this->get_node_length_in_subs_per_site(
+            *this->root_->get_child(0));
+    double current_height = 0.0;
+    double last_left_coal_height = this->coalesce_in_branch(
+            left_lineages,
+            this->get_node_theta(*this->root_->get_child(0)),
+            rng,
+            current_height,
+            top_of_branch_height
+            );
+
+    if (this->root_->get_number_of_children() > 1) {
+        allele_count = this->data_.get_allele_count(
+                pattern_index,
+                this->data_.get_population_index(
+                        this->root_->get_child(1)->get_label()));
+        if (this->data_.markers_are_dominant()) {
+            allele_count *= 2;
+        }
+        right_lineages.reserve(allele_count);
+        for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
+            std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
+                        1,
+                        0.0);
+                tip->fix_node_height();
+                right_lineages.push_back(tip);
+        }
+
+        double last_right_coal_height = this->coalesce_in_branch(
+                right_lineages,
+                this->get_node_theta(*this->root_->get_child(1)),
+                rng,
+                current_height,
+                top_of_branch_height
+                );
+    }
+
+    for (unsigned int i = 0; i < left_lineages.size(); ++i) {
+        root_lineages.push_back(left_lineages.at(i));
+    }
+    left_lineages.clear();
+    for (unsigned int i = 0; i < right_lineages.size(); ++i) {
+        root_lineages.push_back(right_lineages.at(i));
+    }
+    right_lineages.clear();
+    ECOEVOLITY_ASSERT(root_lineages.size() > 0);
+    if (root_lineages.size() == 1) {
+        return root_lineages.at(0);
+    }
+    double last_root_coal_height = this->coalesce_in_branch(
+            root_lineages,
+            this->get_node_theta(*this->root_),
+            rng,
+            top_of_branch_height,
+            std::numeric_limits<double>::infinity()
+            );
+    ECOEVOLITY_ASSERT(root_lineages.size() == 1);
+    return root_lineages.at(0);
+}
+
+double ComparisonPopulationTree::coalesce_in_branch(
+        std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
+        double population_size,
+        RandomNumberGenerator& rng,
+        double bottom_of_branch_height,
+        double top_of_branch_height
+        ) {
+    ECOEVOLITY_ASSERT(lineages.size() > 0);
+    ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
+    double current_height = bottom_of_branch_height;
+    unsigned int k = lineages.size();
+    while (true) {
+        if (k == 1) {
+            ECOEVOLITY_ASSERT(lineages.size() == k);
+            break;
+        }
+        double scale = population_size / (((double)k) * (k - 1.0));
+        double wait = rng.gamma(1.0, scale);
+        
+        if ((current_height + wait) >= top_of_branch_height) {
+            break;
+        }
+        current_height += wait;
+        std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
+                current_height);
+        for (int i = 0; i < 2; ++i) {
+            int idx = rng.uniform_int(0, lineages.size() - 1);
+            mrca->add_child(lineages.at(idx));
+            lineages.erase(lineages.begin() + idx);
+        }
+        lineages.push_back(mrca);
+        --k;
+        ECOEVOLITY_ASSERT(lineages.size() == k);
+    }
+    return current_height;
+}
+
+BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
+        RandomNumberGenerator& rng,
+        bool validate) const {
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    const bool filtering_constant_sites = this->constant_sites_removed_;
+    // Looping over patterns to make sure simulated dataset has exact same
+    // sample configuration (i.e., the same pattern of missing data) as the
+    // member dataset.
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->data_.get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int i = 0;
+                i < this->data_.get_pattern_weight(pattern_idx);
+                ++i) {
+            bool site_added = false;
+            while (! site_added) {
+                auto pattern_tree = this->simulate_biallelic_site(
+                        pattern_idx,
+                        rng);
+                auto pattern = pattern_tree.first;
+                std::vector<unsigned int> red_allele_counts = pattern.first;
+                std::vector<unsigned int> allele_counts = pattern.second;
+                std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
+                site_added = sim_data.add_site(red_allele_counts,
+                        allele_counts,
+                        filtering_constant_sites);
+            }
+        }
+    }
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
+    // What about gene trees? Write to stream/path (don't want to store/return
+    // giant vector)
+    return sim_data;
+}
+
+std::pair<
+        std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
+        std::shared_ptr<GeneTreeSimNode> >
+ComparisonPopulationTree::simulate_biallelic_site(
+        const unsigned int pattern_idx,
+        RandomNumberGenerator& rng) const {
+    double freq_0 = this->get_u() / (this->get_u() + this->get_v());
+
+    std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(pattern_idx, rng);
+    gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
+    gene_tree->simulate_binary_character(freq_0, rng);
+
+    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
+    std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
+    std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
+    if (this->data_.markers_are_dominant()) {
+        std::vector<int> last_allele(expected_allele_counts.size(), -1);
+        gene_tree->get_allele_counts(
+                allele_counts,
+                red_allele_counts,
+                last_allele);
+    }
+    else {
+        gene_tree->get_allele_counts(
+                allele_counts,
+                red_allele_counts);
+    }
+    ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
+    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
+            std::make_pair(red_allele_counts, allele_counts);
+    return std::make_pair(pattern, gene_tree);
 }

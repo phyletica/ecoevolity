@@ -42,9 +42,9 @@ void BiallelicData::init(
         bool markers_are_dominant,
         bool validate) {
     char pop_name_delimiter = population_name_delimiter;
-    if (population_name_delimiter == '_') {
-        pop_name_delimiter = ' ';
-    }
+    // if (population_name_delimiter == '_') {
+    //     pop_name_delimiter = ' ';
+    // }
     this->genotypes_are_diploid_ = genotypes_are_diploid;
     this->markers_are_dominant_ = markers_are_dominant;
     this->path_ = path;
@@ -279,7 +279,7 @@ void BiallelicData::init(
                     red_allele_cts,
                     allele_cts);
             if (pattern_was_found) {
-                this->pattern_weights_[found_pattern_idx] += 1;
+                ++this->pattern_weights_[found_pattern_idx];
             }
             else {
                 this->red_allele_counts_.push_back(red_allele_cts);
@@ -297,6 +297,64 @@ void BiallelicData::init(
     if (validate) {
         this->validate();
     }
+}
+
+BiallelicData BiallelicData::get_empty_copy() const {
+    BiallelicData copy;
+    copy.markers_are_dominant_ = this->markers_are_dominant_;
+    copy.genotypes_are_diploid_ = this->genotypes_are_diploid_;
+    copy.patterns_are_folded_ = this->patterns_are_folded_;
+    copy.population_labels_ = this->population_labels_;
+    for (auto const & seq_labels: this->sequence_labels_) {
+        std::vector<std::string> copied_labels = seq_labels;
+        copy.sequence_labels_.push_back(copied_labels);
+    }
+    copy.seq_label_to_pop_label_map_ = this->seq_label_to_pop_label_map_;
+    copy.pop_label_to_index_map_ = this->pop_label_to_index_map_;
+    copy.appendable_ = true;
+    return copy;
+}
+
+bool BiallelicData::add_site(
+        const std::vector<unsigned int>& red_allele_counts,
+        const std::vector<unsigned int>& allele_counts,
+        bool filtering_constant_patterns) {
+    if (! this->appendable_) {
+        throw EcoevolityBiallelicDataError(
+                "Patterns cannot be added to a parsed dataset",
+                this->path_);
+    }
+    for (auto cnt: allele_counts) {
+        if (cnt == 0) {
+            throw EcoevolityBiallelicDataError(
+                    "Cannot add missing data patterns",
+                    this->path_);
+        }
+    }
+    if (filtering_constant_patterns && this->pattern_is_constant(red_allele_counts, allele_counts)) {
+        if (red_allele_counts == allele_counts) {
+            ++this->number_of_constant_red_sites_removed_;
+        }
+        else {
+            ++this->number_of_constant_green_sites_removed_;
+        }
+        return false;
+    }
+    bool pattern_exists = false;
+    unsigned int pattern_index = 0;
+    this->get_pattern_index(
+            pattern_exists,
+            pattern_index,
+            red_allele_counts,
+            allele_counts);
+    if (pattern_exists) {
+        ++this->pattern_weights_.at(pattern_index);
+        return true;
+    }
+    this->red_allele_counts_.push_back(red_allele_counts);
+    this->allele_counts_.push_back(allele_counts);
+    this->pattern_weights_.push_back(1);
+    return true;
 }
 
 void BiallelicData::update_max_allele_counts() {
@@ -415,6 +473,26 @@ void BiallelicData::update_has_constant_patterns() {
     return;
 }
 
+bool BiallelicData::pattern_is_constant(
+        const std::vector<unsigned int>& red_allele_counts,
+        const std::vector<unsigned int>& allele_counts) {
+    ECOEVOLITY_ASSERT(allele_counts.size() == red_allele_counts.size());
+    bool all_green = true;
+    bool all_red = true;
+    for (unsigned int i = 0; i < allele_counts.size(); ++i) {
+        if (red_allele_counts.at(i) > 0) {
+            all_green = false;
+        }
+        if (red_allele_counts.at(i) < allele_counts.at(i)) {
+            all_red = false;
+        }
+        if ((! all_green) && (! all_red)) {
+            break;
+        }
+    }
+    return (all_red || all_green);
+}
+
 void BiallelicData::update_has_missing_population_patterns() {
     this->has_missing_population_patterns_ = false;
     for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
@@ -482,8 +560,8 @@ void BiallelicData::update_pattern_booleans() {
 void BiallelicData::get_pattern_index(
         bool& was_found,
         unsigned int& pattern_index,
-        std::vector<unsigned int> red_allele_counts,
-        std::vector<unsigned int> allele_counts) const {
+        const std::vector<unsigned int>& red_allele_counts,
+        const std::vector<unsigned int>& allele_counts) const {
     ECOEVOLITY_ASSERT(this->allele_counts_.size() == this->red_allele_counts_.size());
     was_found = false;
     pattern_index = 0;
@@ -705,7 +783,7 @@ double BiallelicData::get_proportion_of_red_alleles() const {
     return (double) red_count / (double) total_count;
 }
 
-void BiallelicData::get_empirical_mutation_rates(double& u, double& v) const {
+void BiallelicData::get_empirical_u_v_rates(double& u, double& v) const {
     double p_red = this->get_proportion_of_red_alleles();
     u = 1.0 / (2.0 * p_red);
     v = 1.0 / (2.0 * (1.0 - p_red));
