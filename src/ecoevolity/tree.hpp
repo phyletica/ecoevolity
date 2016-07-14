@@ -138,6 +138,10 @@ class PopulationTree {
             return this->data_.get_population_labels();
         }
 
+        const BiallelicData& get_data() const {
+            return this->data_;
+        }
+
         void set_ploidy(double ploidy) {
             this->ploidy_ = ploidy;
         }
