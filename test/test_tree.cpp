@@ -2104,6 +2104,55 @@ TEST_CASE("Testing scaling of simulate_gene_tree for pair",
     }
 }
 
+TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
+    SECTION("Testing simulate_biallelic_data_set for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ', true, false, false, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<OffsetExponentialDistribution> u_prior = std::make_shared<OffsetExponentialDistribution>(2.0, 0.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_u_prior(u_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_population_size(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_u_v_rates();
+        tree.set_u(0.8);
+        tree.fix_u_v_rates();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        BiallelicData data = tree.simulate_biallelic_data_set(rng);
+
+        REQUIRE(data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data.markers_are_dominant() == false);
+        REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+        data.get_empirical_u_v_rates(u, v);
+        REQUIRE(u == Approx(0.8).epsilon(0.01));
+    }
+}
+
 TEST_CASE("Testing draw_from_prior for fully fixed", "[ComparisonPopulationTree]") {
 
     SECTION("Testing draw_from_prior for fully fixed pair") {
