@@ -1231,3 +1231,21 @@ ComparisonPopulationTree::simulate_biallelic_site(
             std::make_pair(red_allele_counts, allele_counts);
     return std::make_pair(pattern, gene_tree);
 }
+
+void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
+    if ((! this->u_v_rates_are_fixed()) && (! this->u_v_rates_are_constrained())) {
+        this->u_->set_value_from_prior(rng);
+    }
+    if (! this->mutation_rate_is_fixed()) {
+        this->mutation_rate_->set_value_from_prior(rng);
+    }
+    if (! this->population_sizes_are_fixed()) {
+        this->set_root_population_size(this->population_size_prior_->draw(rng));
+        if (! this->population_sizes_are_constrained()) {
+            this->set_child_population_size(0, this->population_size_prior_->draw(rng));
+            if (this->root_->get_number_of_children() > 1) {
+                this->set_child_population_size(1, this->population_size_prior_->draw(rng));
+            }
+        }
+    }
+}

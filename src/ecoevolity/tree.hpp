@@ -421,6 +421,9 @@ class ComparisonPopulationTree: public PopulationTree {
                 unsigned int indent_level = 0) const {
             this->data_.write_summary(out, indent_level);
         }
+
+        void draw_from_prior(RandomNumberGenerator& rng);
+
 };
 
 #endif

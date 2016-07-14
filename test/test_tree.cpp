@@ -1999,7 +1999,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
 }
 
 TEST_CASE("Testing scaling of simulate_gene_tree for pair",
-        "[ComparisonPopulationTreeX]") {
+        "[ComparisonPopulationTree]") {
 
     SECTION("Testing pair") {
         unsigned int Ne_root = 100000;
@@ -2101,5 +2101,201 @@ TEST_CASE("Testing scaling of simulate_gene_tree for pair",
 
         REQUIRE(scale_tree_length.mean() == Approx(tree_length.mean()).epsilon(0.0001));
         REQUIRE(scale_tree_length.variance() == Approx(tree_length.variance()).epsilon(0.0001));
+    }
+}
+
+TEST_CASE("Testing draw_from_prior for fully fixed", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fully fixed pair") {
+        std::string nex_path = "data/hemi129-5-5.nex";
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<OffsetExponentialDistribution> u_prior = std::make_shared<OffsetExponentialDistribution>(2.0, 0.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_u_prior(u_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_population_size(0.001);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(0.8);
+        tree.fix_mutation_rate();
+        tree.constrain_u_v_rates();
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        for (unsigned int i = 0; i < 10; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_population_size() == 0.001);
+            REQUIRE(tree.get_child_population_size(0) == 0.001);
+            REQUIRE(tree.get_child_population_size(1) == 0.001);
+            REQUIRE(tree.get_u() == 1.0);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+        }
+    }
+}
+
+TEST_CASE("Testing draw_from_prior for constrained sizes", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for constrained sizes") {
+        std::string nex_path = "data/hemi129-5-5.nex";
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<OffsetExponentialDistribution> u_prior = std::make_shared<OffsetExponentialDistribution>(2.0, 0.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_u_prior(u_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_population_size(0.001);
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(0.8);
+        tree.fix_mutation_rate();
+        tree.constrain_u_v_rates();
+
+        SampleSummarizer<double> pop_size;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_u() == 1.0);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+
+            REQUIRE(tree.get_root_population_size() == tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() == tree.get_child_population_size(1));
+
+            pop_size.add_sample(tree.get_root_population_size());
+        }
+
+        REQUIRE(pop_size.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+    }
+}
+
+TEST_CASE("Testing draw_from_prior for unconstrained sizes", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for unconstrained sizes") {
+        std::string nex_path = "data/hemi129-5-5.nex";
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<OffsetExponentialDistribution> u_prior = std::make_shared<OffsetExponentialDistribution>(2.0, 0.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_u_prior(u_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_height(0.1);
+        tree.set_population_size(0.001);
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(0.8);
+        tree.fix_mutation_rate();
+        tree.constrain_u_v_rates();
+
+        SampleSummarizer<double> pop_size_root;
+        SampleSummarizer<double> pop_size_0;
+        SampleSummarizer<double> pop_size_1;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_u() == 1.0);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
+            REQUIRE(tree.get_child_population_size(0) != tree.get_child_population_size(1));
+
+            pop_size_root.add_sample(tree.get_root_population_size());
+            pop_size_0.add_sample(tree.get_child_population_size(0));
+            pop_size_1.add_sample(tree.get_child_population_size(1));
+        }
+
+        REQUIRE(pop_size_root.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size_root.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+        REQUIRE(pop_size_0.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size_0.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+        REQUIRE(pop_size_1.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size_1.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+    }
+}
+
+TEST_CASE("Testing draw_from_prior for fully parameterized", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fully parameterized") {
+        std::string nex_path = "data/hemi129-5-5.nex";
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<OffsetExponentialDistribution> u_prior = std::make_shared<OffsetExponentialDistribution>(2.0, 0.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_u_prior(u_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_height(0.1);
+        tree.set_population_size(0.001);
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(0.8);
+        tree.estimate_u_v_rates();
+        tree.set_u(1.0);
+
+        SampleSummarizer<double> pop_size_root;
+        SampleSummarizer<double> pop_size_0;
+        SampleSummarizer<double> pop_size_1;
+        SampleSummarizer<double> rate;
+        SampleSummarizer<double> u;
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_height() == 0.1);
+
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
+            REQUIRE(tree.get_child_population_size(0) != tree.get_child_population_size(1));
+
+            pop_size_root.add_sample(tree.get_root_population_size());
+            pop_size_0.add_sample(tree.get_child_population_size(0));
+            pop_size_1.add_sample(tree.get_child_population_size(1));
+            rate.add_sample(tree.get_mutation_rate());
+            u.add_sample(tree.get_u());
+        }
+
+        REQUIRE(pop_size_root.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size_root.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+        REQUIRE(pop_size_0.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size_0.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+        REQUIRE(pop_size_1.mean() == Approx(size_prior->get_mean()).epsilon(0.1));
+        REQUIRE(pop_size_1.variance() == Approx(size_prior->get_variance()).epsilon(0.1));
+        REQUIRE(u.mean() == Approx(u_prior->get_mean()).epsilon(0.1));
+        REQUIRE(u.variance() == Approx(u_prior->get_variance()).epsilon(0.1));
+        REQUIRE(rate.mean() == Approx(rate_prior->get_mean()).epsilon(0.1));
+        REQUIRE(rate.variance() == Approx(rate_prior->get_variance()).epsilon(0.1));
     }
 }
