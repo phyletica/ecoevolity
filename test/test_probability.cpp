@@ -133,6 +133,225 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
     }
 }
 
+TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
+
+    SECTION("Testing constructor errors") {
+        REQUIRE_THROWS_AS(BetaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(BetaDistribution(1.0, 0.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(BetaDistribution(-1.0, 1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(BetaDistribution(1.0, -1.0), EcoevolityProbabilityDistributionError);
+    }
+
+    SECTION("Testing bare constructor") {
+        double a = 1.0;
+        double b = 1.0;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        BetaDistribution f = BetaDistribution();
+        REQUIRE(f.to_string() == "beta(1, 1)");
+        REQUIRE(f.get_min() == 0.0);
+        REQUIRE(f.get_max() == 1.0);
+        REQUIRE(f.get_alpha() == a);
+        REQUIRE(f.get_beta() == b);
+        REQUIRE(f.get_mean() == Approx(expected_mean));
+        REQUIRE(f.get_variance() == Approx(expected_variance));
+
+        REQUIRE(f.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        REQUIRE(f.ln_pdf(0.1) == Approx(0.0));
+        REQUIRE(f.ln_pdf(0.5) == Approx(0.0));
+        REQUIRE(f.ln_pdf(0.9) == Approx(0.0));
+
+        RandomNumberGenerator rng(321);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = f.draw(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+        REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+
+    SECTION("Testing BetaDistribution(0.5, 0.5)") {
+        double a = 0.5;
+        double b = 0.5;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        BetaDistribution f = BetaDistribution(a, b);
+        REQUIRE(f.to_string() == "beta(0.5, 0.5)");
+        REQUIRE(f.get_min() == 0.0);
+        REQUIRE(f.get_max() == 1.0);
+        REQUIRE(f.get_alpha() == a);
+        REQUIRE(f.get_beta() == b);
+        REQUIRE(f.get_mean() == Approx(expected_mean));
+        REQUIRE(f.get_variance() == Approx(expected_variance));
+
+        REQUIRE(f.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.beta.logpdf
+        REQUIRE(f.ln_pdf(0.1) == Approx(0.059242918476535955));
+        REQUIRE(f.ln_pdf(0.5) == Approx(-0.45158270528945466));
+        REQUIRE(f.ln_pdf(0.9) == Approx(0.059242918476536177));
+
+        RandomNumberGenerator rng(321);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = f.draw(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+        REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+
+    SECTION("Testing BetaDistribution(5, 1)") {
+        double a = 5.0;
+        double b = 1.0;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        BetaDistribution f = BetaDistribution(a, b);
+        REQUIRE(f.to_string() == "beta(5, 1)");
+        REQUIRE(f.get_min() == 0.0);
+        REQUIRE(f.get_max() == 1.0);
+        REQUIRE(f.get_alpha() == a);
+        REQUIRE(f.get_beta() == b);
+        REQUIRE(f.get_mean() == Approx(expected_mean));
+        REQUIRE(f.get_variance() == Approx(expected_variance));
+
+        REQUIRE(f.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.beta.logpdf
+        REQUIRE(f.ln_pdf(0.1) == Approx(-7.6009024595420813));
+        REQUIRE(f.ln_pdf(0.5) == Approx(-1.1631508098056809));
+        REQUIRE(f.ln_pdf(0.9) == Approx(1.1879958498027952));
+
+        RandomNumberGenerator rng(321);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = f.draw(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+
+    SECTION("Testing BetaDistribution(1, 5)") {
+        double a = 1.0;
+        double b = 5.0;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        BetaDistribution f = BetaDistribution(a, b);
+        REQUIRE(f.to_string() == "beta(1, 5)");
+        REQUIRE(f.get_min() == 0.0);
+        REQUIRE(f.get_max() == 1.0);
+        REQUIRE(f.get_alpha() == a);
+        REQUIRE(f.get_beta() == b);
+        REQUIRE(f.get_mean() == Approx(expected_mean));
+        REQUIRE(f.get_variance() == Approx(expected_variance));
+
+        REQUIRE(f.ln_pdf(-0.01) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.0) == -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(1.1) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.beta.logpdf
+        REQUIRE(f.ln_pdf(0.9) == Approx(-7.6009024595420813));
+        REQUIRE(f.ln_pdf(0.5) == Approx(-1.1631508098056809));
+        REQUIRE(f.ln_pdf(0.1) == Approx(1.1879958498027952));
+
+        RandomNumberGenerator rng(321);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = f.draw(rng);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+    }
+}
+
 TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
     SECTION("Testing bare constructor") {
         OffsetGammaDistribution f = OffsetGammaDistribution();

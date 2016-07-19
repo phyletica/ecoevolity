@@ -196,6 +196,86 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
         }
 };
 
+class BetaDistribution: public ContinuousProbabilityDistribution {
+    protected:
+        double min_ = 0.0;
+        double max_ = 1.0;
+        double alpha_ = 1.0;
+        double beta_ = 1.0;
+
+    public:
+        BetaDistribution() { }
+        ~BetaDistribution() { }
+        BetaDistribution(double alpha, double beta) {
+            if ((alpha <= 0.0) || (beta <= 0.0)) {
+                throw EcoevolityProbabilityDistributionError(
+                        "alpha and beta must be greater than zero for beta distribution");
+            }
+            this->alpha_ = alpha;
+            this->beta_ = beta;
+        }
+        BetaDistribution& operator=(const BetaDistribution& other) {
+            this->min_ = other.min_;
+            this->max_ = other.max_;
+            this->alpha_ = other.alpha_;
+            this->beta_ = other.beta_;
+            return * this;
+        }
+
+        double ln_pdf(double x) const {
+            if ((x <= this->min_) || (x >= this->max_)) {
+                return -std::numeric_limits<double>::infinity();
+            }
+		    double lnp = ((this->alpha_ - 1.0) * std::log(x)) + ((this->beta_ - 1.0) * std::log(1.0 - x));
+
+		    lnp += this->ln_gamma_function(this->alpha_ + this->beta_);
+		    lnp -= this->ln_gamma_function(this->alpha_);
+		    lnp -= this->ln_gamma_function(this->beta_);
+
+		    return lnp;
+        }
+
+        double relative_ln_pdf(double x) const {
+            return this->ln_pdf(x);
+        }
+
+        double get_mean() const {
+            return (this->alpha_ / (this->alpha_ + this->beta_));
+        }
+        double get_variance() const {
+            const double ab = this->alpha_ + this->beta_;
+            return (this->alpha_ * this->beta_) / (ab * ab * (ab + 1.0));
+        }
+
+        double get_min() const {
+            return this->min_;
+        }
+
+        double get_max() const {
+            return this->max_;
+        }
+
+        double get_alpha() const {
+            return this->alpha_;
+        }
+        double get_beta() const {
+            return this->beta_;
+        }
+
+        std::string get_name() const {
+            return "beta";
+        }
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(" << this->alpha_ << ", " << this->beta_ << ")";
+            return ss.str();
+        }
+
+        double draw(RandomNumberGenerator & rng) const {
+            return rng.beta(this->alpha_, this->beta_);
+        }
+};
+
 class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
     protected:
         double min_ = 0.0;
