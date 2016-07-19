@@ -235,7 +235,7 @@ void PopulationTree::compute_top_of_branch_partials(
 
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node.get_allele_count(),
-            this->u_->get_value(),
+            this->get_u(),
             this->get_v(),
             this->get_node_theta(node),
             this->get_node_length_in_subs_per_site(node),
@@ -343,7 +343,7 @@ std::vector< std::vector<double> > PopulationTree::compute_root_probabilities() 
     std::vector< std::vector<double> > x (N + 1); 
     QMatrix q = QMatrix(
             N,
-            this->u_->get_value(),
+            this->get_u(),
             this->get_v(),
             this->get_node_theta(*this->root_));
     std::vector<double> xcol = q.find_orthogonal_vector();
@@ -417,7 +417,7 @@ void PopulationTree::compute_pattern_likelihoods() {
     }
     double all_green_pattern_likelihood = this->compute_pattern_likelihood(-1);
     double all_red_pattern_likelihood = all_green_pattern_likelihood;
-    if (! this->u_v_rates_are_constrained()) {
+    if (! this->state_frequencies_are_constrained()) {
         all_red_pattern_likelihood = this->compute_pattern_likelihood(-2);
     }
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_likelihood);
@@ -543,7 +543,7 @@ double PopulationTree::get_stored_log_likelihood_value() const {
 }
 
 void PopulationTree::fold_patterns() {
-    if (! this->u_v_rates_are_constrained()) {
+    if (! this->state_frequencies_are_constrained()) {
         std::cerr << "WARNING: Site patterns are being folded when u/v rates are not constrained." << std::endl;
     }
     this->data_.fold_patterns();
@@ -573,42 +573,41 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter
     return this->root_->get_height_parameter();
 }
 
-void PopulationTree::set_u(double u) {
-    if (this->u_v_rates_are_fixed()) {
+void PopulationTree::set_freq_1(double p) {
+    if (this->state_frequencies_are_fixed()) {
         return;
     }
-    ECOEVOLITY_ASSERT(u >= 0.5);
-    this->u_->set_value(u);
-    ECOEVOLITY_DEBUG(
-        double v = this->get_v();
-        ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
-    )
+    this->freq_1_->set_value(p);
     this->make_dirty();
 }
-void PopulationTree::update_u(double u) {
-    if (this->u_v_rates_are_fixed()) {
+void PopulationTree::update_freq_1(double p) {
+    if (this->state_frequencies_are_fixed()) {
         return;
     }
-    ECOEVOLITY_ASSERT(u >= 0.5);
-    this->u_->update_value(u);
-    ECOEVOLITY_DEBUG(
-        double v = this->get_v();
-        ECOEVOLITY_ASSERT_APPROX_EQUAL(2*u*v/(u+v), 1.0);
-    )
+    this->freq_1_->update_value(p);
     this->make_dirty();
+}
+double PopulationTree::get_freq_1() const {
+    return this->freq_1_->get_value();
+}
+double PopulationTree::get_freq_0() const {
+    return 1.0 - this->get_freq_1();
 }
 double PopulationTree::get_u() const {
-    return this->u_->get_value();
+    ECOEVOLITY_ASSERT(this->get_freq_1() > 0.0);
+    return 1.0 / (2.0 * this->get_freq_1());
 }
 double PopulationTree::get_v() const {
-    double u = this->get_u();
-    return u / ((2.0 * u) - 1.0);
+    // double u = this->get_u();
+    // return u / ((2.0 * u) - 1.0);
+    ECOEVOLITY_ASSERT(this->get_freq_0() > 0.0);
+    return 1.0 / (2.0 * this->get_freq_0());
 }
-void PopulationTree::store_u() {
-    this->u_->store();
+void PopulationTree::store_freq_1() {
+    this->freq_1_->store();
 }
-void PopulationTree::restore_u() {
-    this->u_->restore();
+void PopulationTree::restore_freq_1() {
+    this->freq_1_->restore();
     this->make_dirty();
 }
 
@@ -637,8 +636,8 @@ void PopulationTree::restore_mutation_rate() {
     this->make_dirty();
 }
 
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_u_parameter() const {
-    return this->u_;
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_freq_1_parameter() const {
+    return this->freq_1_;
 }
 
 void PopulationTree::set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h) {
@@ -683,7 +682,7 @@ void PopulationTree::store_prior_density() {
     this->log_prior_density_.store();
 }
 void PopulationTree::store_parameters() {
-    this->store_u();
+    this->store_freq_1();
     this->store_mutation_rate();
     this->store_all_population_sizes();
     this->store_all_heights();
@@ -709,7 +708,7 @@ void PopulationTree::restore_prior_density() {
     this->log_prior_density_.restore();
 }
 void PopulationTree::restore_parameters() {
-    this->restore_u();
+    this->restore_freq_1();
     this->restore_mutation_rate();
     this->restore_all_population_sizes();
     this->restore_all_heights();
@@ -731,8 +730,8 @@ void PopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabi
     this->root_->set_all_population_size_priors(prior);
 }
 
-void PopulationTree::set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->u_->set_prior(prior);
+void PopulationTree::set_freq_1_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+    this->freq_1_->set_prior(prior);
     this->make_dirty();
 }
 void PopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
@@ -742,15 +741,15 @@ void PopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProbabili
 
 double PopulationTree::compute_log_prior_density() {
     double d = 0.0;
-    d += this->compute_log_prior_density_of_u_v_rates();
+    d += this->compute_log_prior_density_of_state_frequencies();
     d += this->compute_log_prior_density_of_mutation_rate();
     d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_population_sizes();
     this->log_prior_density_.set_value(d);
     return d;
 }
-double PopulationTree::compute_log_prior_density_of_u_v_rates() const {
-    return this->u_->relative_prior_ln_pdf();
+double PopulationTree::compute_log_prior_density_of_state_frequencies() const {
+    return this->freq_1_->relative_prior_ln_pdf();
 }
 double PopulationTree::compute_log_prior_density_of_mutation_rate() const {
     return this->mutation_rate_->relative_prior_ln_pdf();
@@ -861,8 +860,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                settings.get_ploidy());
-    if (settings.constrain_u_v_rates()) {
-        this->constrain_u_v_rates();
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
         this->fold_patterns();
     }
     this->set_population_size_prior(
@@ -878,17 +877,17 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         this->fix_population_sizes();
     }
     
-    this->set_u_prior(settings.get_u_settings().get_prior_settings().get_instance());
-    if (settings.constrain_u_v_rates()) {
-        this->constrain_u_v_rates();
+    this->set_freq_1_prior(settings.get_freq_1_settings().get_prior_settings().get_instance());
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
     }
     else {
-        PositiveRealParameter u = PositiveRealParameter(
-                settings.get_u_settings(),
+        PositiveRealParameter freq_1 = PositiveRealParameter(
+                settings.get_freq_1_settings(),
                 rng);
-        this->set_u(u.get_value());
-        if (u.is_fixed()) {
-            this->fix_u_v_rates();
+        this->set_freq_1(freq_1.get_value());
+        if (freq_1.is_fixed()) {
+            this->fix_state_frequencies();
         }
     }
     this->set_mutation_rate_parameter(
@@ -956,7 +955,7 @@ std::shared_ptr<PositiveRealParameter> ComparisonPopulationTree::get_child_popul
 // class hierarchy (ComparisonPopulationTreeCollection)
 double ComparisonPopulationTree::compute_log_prior_density() {
     double d = 0.0;
-    d += this->compute_log_prior_density_of_u_v_rates();
+    d += this->compute_log_prior_density_of_state_frequencies();
     d += this->compute_log_prior_density_of_mutation_rate();
     // d += this->compute_log_prior_density_of_node_heights();
     d += this->compute_log_prior_density_of_population_sizes();
@@ -966,13 +965,13 @@ double ComparisonPopulationTree::compute_log_prior_density() {
 
 // Node height (re)storing is managed by ComparisonPopulationTree.
 void ComparisonPopulationTree::store_parameters() {
-    this->store_u();
+    this->store_freq_1();
     this->store_mutation_rate();
     this->store_all_population_sizes();
     // this->store_all_heights();
 }
 void ComparisonPopulationTree::restore_parameters() {
-    this->restore_u();
+    this->restore_freq_1();
     this->restore_mutation_rate();
     this->restore_all_population_sizes();
     // this->restore_all_heights();
@@ -990,8 +989,7 @@ void ComparisonPopulationTree::write_state_log_header(
         << "ln_prior" << suffix << delimiter
         << "root_height" << suffix << delimiter
         << "mutation_rate" << suffix << delimiter
-        << "u" << suffix << delimiter
-        << "v" << suffix << delimiter
+        << "freq_1" << suffix << delimiter
         << "pop_size" << suffix << delimiter;
     if (this->root_->get_number_of_children() > 1) {
         out << "pop_size" << "_" << this->root_->get_child(1)->get_label() << delimiter;
@@ -1006,8 +1004,7 @@ void ComparisonPopulationTree::log_state(
         << this->log_prior_density_.get_value() << delimiter
         << this->get_height() << delimiter
         << this->get_mutation_rate() << delimiter
-        << this->get_u() << delimiter
-        << this->get_v() << delimiter
+        << this->get_freq_1() << delimiter
         << this->get_child_population_size(0) << delimiter;
     if (this->root_->get_number_of_children() > 1) {
         out << this->get_child_population_size(1) << delimiter;
@@ -1205,11 +1202,10 @@ std::pair<
 ComparisonPopulationTree::simulate_biallelic_site(
         const unsigned int pattern_idx,
         RandomNumberGenerator& rng) const {
-    double freq_0 = this->get_u() / (this->get_u() + this->get_v());
 
     std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(pattern_idx, rng);
     gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
-    gene_tree->simulate_binary_character(freq_0, rng);
+    gene_tree->simulate_binary_character(this->get_freq_0(), rng);
 
     const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
     std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
@@ -1233,8 +1229,8 @@ ComparisonPopulationTree::simulate_biallelic_site(
 }
 
 void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
-    if ((! this->u_v_rates_are_fixed()) && (! this->u_v_rates_are_constrained())) {
-        this->u_->set_value_from_prior(rng);
+    if ((! this->state_frequencies_are_fixed()) && (! this->state_frequencies_are_constrained())) {
+        this->freq_1_->set_value_from_prior(rng);
     }
     if (! this->mutation_rate_is_fixed()) {
         this->mutation_rate_->set_value_from_prior(rng);

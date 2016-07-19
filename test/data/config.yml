@@ -43,8 +43,8 @@ operator_settings:
         ChildPopulationSizeScaler:
             scale: 0.2
             weight: 2.0
-        UScaler:
-            scale: 0.2
+        FreqMover:
+            window: 0.2
             weight: 0.5
 
 global_comparison_settings:
@@ -54,9 +54,9 @@ global_comparison_settings:
     population_name_delimiter: " "
     population_name_is_prefix: true
     constant_sites_removed: true
-    use_empirical_u_rate_starting_value: false
+    use_empirical_starting_value_for_freq_1: false
     constrain_population_sizes: false
-    constrain_u_v_rates: false
+    constrain_state_frequencies: false
     parameters:
         population_size:
             value: 0.005
@@ -66,13 +66,13 @@ global_comparison_settings:
                     shape: 10.0
                     scale: 0.0001
                     offset: 0.0
-        u_rate:
-            value: 1.0
+        freq_1:
+            value: 0.5
             estimate: true
             prior:
-                gamma_distribution:
-                    shape: 10.0
-                    scale: 0.1
+                beta_distribution:
+                    alpha: 2.5 
+                    beta: 5.3
 
         mutation_rate:
             value: 1.0
@@ -93,7 +93,7 @@ comparisons:
         
 - comparison:
     path: "data2.nex"
-    constrain_u_v_rates: true
+    constrain_state_frequencies: true
     constant_sites_removed: false
     population_name_delimiter: "-"
     population_name_is_prefix: false

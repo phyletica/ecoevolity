@@ -583,33 +583,33 @@ TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
 
         tree.set_root_height(0.1);
         tree.set_population_size(2.0/100.0);
-        tree.set_u(10.0/19.0);
+        tree.set_freq_1(0.95);
 
         tree.set_node_height_prior(std::make_shared<ExponentialDistribution>(100.0));
         tree.set_population_size_prior(std::make_shared<GammaDistribution>(10.0, 0.0001));
-        tree.set_u_prior(std::make_shared<ExponentialDistribution>(10.0));
+        tree.set_freq_1_prior(std::make_shared<BetaDistribution>(2.0, 1.0));
 
         // height   -5.3948298140119091
         // sizes     3 * -155.90663080917298
-        // u        -2.9605728017427961
-        // total    -476.0752950432737
+        // f1       0.64185388617239469 
+        // total    -472.47286835535851
         
         REQUIRE(tree.compute_log_prior_density_of_node_heights() == Approx(-5.3948298140119091));
         REQUIRE(tree.compute_log_prior_density_of_population_sizes() == Approx(-467.71989242751897));
-        REQUIRE(tree.compute_log_prior_density_of_u_v_rates() == Approx(-2.9605728017427961));
+        REQUIRE(tree.compute_log_prior_density_of_state_frequencies() == Approx(0.64185388617239469));
 
         double d = tree.compute_log_prior_density();
 
-        REQUIRE(d == Approx(-476.0752950432737));
-        REQUIRE(tree.get_log_prior_density_value() == Approx(-476.0752950432737));
+        REQUIRE(d == Approx(-472.47286835535851));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-472.47286835535851));
 
 
         tree.store_prior_density();
-        tree.constrain_u_v_rates();
+        tree.constrain_state_frequencies();
 
         REQUIRE(tree.compute_log_prior_density_of_node_heights() == Approx(-5.3948298140119091));
         REQUIRE(tree.compute_log_prior_density_of_population_sizes() == Approx(-467.71989242751897));
-        REQUIRE(tree.compute_log_prior_density_of_u_v_rates() == 0.0);
+        REQUIRE(tree.compute_log_prior_density_of_state_frequencies() == 0.0);
 
         d = tree.compute_log_prior_density();
 
@@ -623,7 +623,7 @@ TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
 
         REQUIRE(tree.compute_log_prior_density_of_node_heights() == Approx(-5.3948298140119091));
         REQUIRE(tree.compute_log_prior_density_of_population_sizes() == Approx(-155.90663080917298));
-        REQUIRE(tree.compute_log_prior_density_of_u_v_rates() == 0.0);
+        REQUIRE(tree.compute_log_prior_density_of_state_frequencies() == 0.0);
 
         d = tree.compute_log_prior_density();
 
@@ -637,8 +637,6 @@ TEST_CASE("Testing simple prior of PopulationTree", "[PopulationTree]") {
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
-
-
 
 
 TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]") {

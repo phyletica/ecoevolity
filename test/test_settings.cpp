@@ -474,9 +474,9 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "population_name_delimiter: ' '\n";
         e += "population_name_is_prefix: true\n";
         e += "constant_sites_removed: true\n";
-        e += "use_empirical_u_rate_starting_value: true\n";
+        e += "use_empirical_starting_value_for_freq_1: true\n";
         e += "constrain_population_sizes: false\n";
-        e += "constrain_u_v_rates: false\n";
+        e += "constrain_state_frequencies: false\n";
         e += "parameters:\n";
         e += "    population_size:\n";
         e += "        estimate: true\n";
@@ -484,11 +484,11 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "            gamma_distribution:\n";
         e += "                shape: 10\n";
         e += "                scale: 0.0001\n";
-        e += "    u_rate:\n";
-        e += "        value: 1.2\n";
-        e += "        estimate: false\n";
         e += "    mutation_rate:\n";
         e += "        value: 1\n";
+        e += "        estimate: false\n";
+        e += "    freq_1:\n";
+        e += "        value: 0.5\n";
         e += "        estimate: false\n";
         REQUIRE(s == e);
 
@@ -502,7 +502,9 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(! std::isnan(t.get_child_population_size(1)));
         REQUIRE(t.get_u() == Approx(1.2));
         REQUIRE(t.get_v() == Approx(0.8571429));
-        REQUIRE(t.get_u_parameter()->is_fixed() == true);
+        REQUIRE(t.get_freq_1() == Approx(0.2380952));
+        REQUIRE(t.get_freq_0() == Approx(1.0 - 0.2380952));
+        REQUIRE(t.get_freq_1_parameter()->is_fixed() == true);
         REQUIRE(t.get_root_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == false);
         REQUIRE(t.get_child_population_size_parameter(1)->is_fixed() == false);
@@ -510,11 +512,11 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_child_population_size_parameter(0) != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
-        REQUIRE(t.u_v_rates_are_fixed() == true);
+        REQUIRE(t.state_frequencies_are_fixed() == true);
         REQUIRE(t.population_sizes_are_fixed() == false);
         REQUIRE(t.mutation_rate_is_fixed() == true);
 
-        REQUIRE(! t.get_u_prior());
+        REQUIRE(! t.get_freq_1_prior());
         REQUIRE(t.get_population_size_prior()->to_string() == "gamma(shape = 10, scale = 0.0001)");
         REQUIRE(! t.get_mutation_rate_prior());
     }
@@ -524,19 +526,22 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
 
         std::unordered_map<std::string, double> no_prior_parameters;
-        std::unordered_map<std::string, double> u_prior_parameters;
-        u_prior_parameters["shape"] = 10.0;
-        u_prior_parameters["scale"] = 0.1;
+        std::unordered_map<std::string, double> freq_1_prior_parameters;
+        std::unordered_map<std::string, double> size_prior_parameters;
+        freq_1_prior_parameters["alpha"] = 2.0;
+        freq_1_prior_parameters["beta"] = 2.0;
+        size_prior_parameters["shape"] = 10.0;
+        size_prior_parameters["scale"] = 0.1;
         PositiveRealParameterSettings pop_size = PositiveRealParameterSettings(
                 2.0 / 10.0,
                 true,
                 "gamma_distribution",
-                u_prior_parameters);
-        PositiveRealParameterSettings u = PositiveRealParameterSettings(
-                1.0,
+                size_prior_parameters);
+        PositiveRealParameterSettings freq_1 = PositiveRealParameterSettings(
+                0.5,
                 false,
-                "gamma_distribution",
-                u_prior_parameters);
+                "beta_distribution",
+                freq_1_prior_parameters);
         PositiveRealParameterSettings mutation_rate = PositiveRealParameterSettings(
                 1.0,
                 true,
@@ -566,18 +571,18 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "population_name_delimiter: ' '\n";
         e += "population_name_is_prefix: true\n";
         e += "constant_sites_removed: true\n";
-        e += "use_empirical_u_rate_starting_value: false\n";
+        e += "use_empirical_starting_value_for_freq_1: false\n";
         e += "constrain_population_sizes: false\n";
-        e += "constrain_u_v_rates: true\n";
+        e += "constrain_state_frequencies: true\n";
         e += "parameters:\n";
         e += "    population_size:\n";
         e += "        value: 0.2\n";
         e += "        estimate: false\n";
-        e += "    u_rate:\n";
-        e += "        value: 1\n";
-        e += "        estimate: false\n";
         e += "    mutation_rate:\n";
         e += "        value: 1\n";
+        e += "        estimate: false\n";
+        e += "    freq_1:\n";
+        e += "        value: 0.5\n";
         e += "        estimate: false\n";
         REQUIRE(s == e);
 
@@ -591,7 +596,9 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_child_population_size(1) == Approx(2.0/10.0));
         REQUIRE(t.get_u() == 1.0);
         REQUIRE(t.get_v() == 1.0);
-        REQUIRE(t.get_u_parameter()->is_fixed() == true);
+        REQUIRE(t.get_freq_1() == 0.5);
+        REQUIRE(t.get_freq_0() == 0.5);
+        REQUIRE(t.get_freq_1_parameter()->is_fixed() == true);
         REQUIRE(t.get_root_population_size_parameter()->is_fixed() == true);
         REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == true);
         REQUIRE(t.get_child_population_size_parameter(1)->is_fixed() == true);
@@ -599,11 +606,11 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size_parameter() != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_child_population_size_parameter(0) != t.get_child_population_size_parameter(1));
         REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
-        REQUIRE(t.u_v_rates_are_fixed() == true);
+        REQUIRE(t.state_frequencies_are_fixed() == true);
         REQUIRE(t.population_sizes_are_fixed() == true);
         REQUIRE(t.mutation_rate_is_fixed() == true);
 
-        REQUIRE(! t.get_u_prior());
+        REQUIRE(! t.get_freq_1_prior());
         REQUIRE(! t.get_population_size_prior());
         REQUIRE(! t.get_mutation_rate_prior());
 
@@ -622,9 +629,9 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         std::unordered_map<std::string, double> no_prior_parameters;
         std::unordered_map<std::string, double> pop_prior_parameters;
         pop_prior_parameters["rate"] = 1.0;
-        std::unordered_map<std::string, double> u_prior_parameters;
-        u_prior_parameters["shape"] = 10.0;
-        u_prior_parameters["scale"] = 0.1;
+        std::unordered_map<std::string, double> freq_1_prior_parameters;
+        freq_1_prior_parameters["alpha"] = 2.0;
+        freq_1_prior_parameters["beta"] = 4.0;
         std::unordered_map<std::string, double> m_prior_parameters;
         m_prior_parameters["min"] = 0.9;
         m_prior_parameters["max"] = 1.1;
@@ -633,11 +640,11 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
                 false,
                 "exponential_distribution",
                 pop_prior_parameters);
-        PositiveRealParameterSettings u = PositiveRealParameterSettings(
-                1.0,
+        PositiveRealParameterSettings freq_1 = PositiveRealParameterSettings(
+                0.5,
                 false,
-                "gamma_distribution",
-                u_prior_parameters);
+                "beta_distribution",
+                freq_1_prior_parameters);
         PositiveRealParameterSettings mutation_rate = PositiveRealParameterSettings(
                 1.0,
                 false,
@@ -667,9 +674,9 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "population_name_delimiter: ' '\n";
         e += "population_name_is_prefix: true\n";
         e += "constant_sites_removed: true\n";
-        e += "use_empirical_u_rate_starting_value: false\n";
+        e += "use_empirical_starting_value_for_freq_1: false\n";
         e += "constrain_population_sizes: true\n";
-        e += "constrain_u_v_rates: false\n";
+        e += "constrain_state_frequencies: false\n";
         e += "parameters:\n";
         e += "    population_size:\n";
         e += "        value: 0.2\n";
@@ -677,13 +684,6 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "        prior:\n";
         e += "            exponential_distribution:\n";
         e += "                rate: 1\n";
-        e += "    u_rate:\n";
-        e += "        value: 1\n";
-        e += "        estimate: true\n";
-        e += "        prior:\n";
-        e += "            gamma_distribution:\n";
-        e += "                shape: 10\n";
-        e += "                scale: 0.1\n";
         e += "    mutation_rate:\n";
         e += "        value: 1\n";
         e += "        estimate: true\n";
@@ -691,6 +691,13 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "            uniform_distribution:\n";
         e += "                min: 0.9\n";
         e += "                max: 1.1\n";
+        e += "    freq_1:\n";
+        e += "        value: 0.5\n";
+        e += "        estimate: true\n";
+        e += "        prior:\n";
+        e += "            beta_distribution:\n";
+        e += "                alpha: 2\n";
+        e += "                beta: 4\n";
         REQUIRE(s == e);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
@@ -703,7 +710,9 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_child_population_size(1) == Approx(2.0/10.0));
         REQUIRE(t.get_u() == 1.0);
         REQUIRE(t.get_v() == 1.0);
-        REQUIRE(t.get_u_parameter()->is_fixed() == false);
+        REQUIRE(t.get_freq_1() == 0.5);
+        REQUIRE(t.get_freq_0() == 0.5);
+        REQUIRE(t.get_freq_1_parameter()->is_fixed() == false);
         REQUIRE(t.get_root_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == false);
         REQUIRE(t.get_child_population_size_parameter(1)->is_fixed() == false);
@@ -711,11 +720,11 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size_parameter() == t.get_child_population_size_parameter(1));
         REQUIRE(t.get_child_population_size_parameter(0) == t.get_child_population_size_parameter(1));
         REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == false);
-        REQUIRE(t.u_v_rates_are_fixed() == false);
+        REQUIRE(t.state_frequencies_are_fixed() == false);
         REQUIRE(t.population_sizes_are_fixed() == false);
         REQUIRE(t.mutation_rate_is_fixed() == false);
 
-        REQUIRE(t.get_u_prior()->to_string() == "gamma(shape = 10, scale = 0.1)");
+        REQUIRE(t.get_freq_1_prior()->to_string() == "beta(2, 4)");
         REQUIRE(t.get_population_size_prior()->to_string() == "exp(lambda = 1)");
         REQUIRE(t.get_mutation_rate_prior()->to_string() == "uniform(0.9, 1.1)");
 
@@ -750,20 +759,20 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -787,9 +796,9 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 0\n";
-        e += "            scale: 0.5\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
@@ -798,7 +807,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 1);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 1);
     }
 }
@@ -842,20 +851,20 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -865,20 +874,20 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -902,9 +911,9 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 0\n";
-        e += "            scale: 0.5\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -913,7 +922,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }
@@ -952,20 +961,20 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -975,20 +984,20 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -1012,9 +1021,9 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 0\n";
-        e += "            scale: 0.5\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1023,7 +1032,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }
@@ -1078,20 +1087,20 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -1101,20 +1110,20 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
         e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -1138,9 +1147,9 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 0\n";
-        e += "            scale: 0.5\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1149,7 +1158,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 0);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }
@@ -1250,9 +1259,9 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         cfg_stream << "    population_name_delimiter: '-'\n";
         cfg_stream << "    population_name_is_prefix: false\n";
         cfg_stream << "    constant_sites_removed: false\n";
-        cfg_stream << "    use_empirical_u_rate_starting_value: true\n";
+        cfg_stream << "    use_empirical_starting_value_for_freq_1: true\n";
         cfg_stream << "    constrain_population_sizes: true\n";
-        cfg_stream << "    constrain_u_v_rates: false\n";
+        cfg_stream << "    constrain_state_frequencies: false\n";
         cfg_stream << "comparisons:\n";
         cfg_stream << "- comparison:\n";
         cfg_stream << "    path: haploid-standard.nex\n";
@@ -1287,25 +1296,25 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "    population_name_delimiter: '-'\n";
         e += "    population_name_is_prefix: false\n";
         e += "    constant_sites_removed: false\n";
-        e += "    use_empirical_u_rate_starting_value: true\n";
+        e += "    use_empirical_starting_value_for_freq_1: true\n";
         e += "    constrain_population_sizes: true\n";
-        e += "    constrain_u_v_rates: false\n";
+        e += "    constrain_state_frequencies: false\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 0.958333\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                exponential_distribution:\n";
-        e += "                    rate: 2\n";
-        e += "                    offset: 0.5\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.521739\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 1\n";
+        e += "                    beta: 1\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
         e += "    ploidy: 2\n";
@@ -1314,25 +1323,25 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "    population_name_delimiter: '-'\n";
         e += "    population_name_is_prefix: false\n";
         e += "    constant_sites_removed: false\n";
-        e += "    use_empirical_u_rate_starting_value: true\n";
+        e += "    use_empirical_starting_value_for_freq_1: true\n";
         e += "    constrain_population_sizes: true\n";
-        e += "    constrain_u_v_rates: false\n";
+        e += "    constrain_state_frequencies: false\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 1000\n";
-        e += "        u_rate:\n";
-        e += "            value: 0.818182\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.611111\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                exponential_distribution:\n";
         e += "                    rate: 2\n";
         e += "                    offset: 0.5\n";
-        e += "        mutation_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
         e += "    auto_optimize_delay: 10000\n";
@@ -1355,9 +1364,9 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 1\n";
-        e += "            scale: 0.5\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1366,7 +1375,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }
@@ -1382,19 +1391,19 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         cfg_stream << "    population_name_delimiter: '-'\n";
         cfg_stream << "    population_name_is_prefix: false\n";
         cfg_stream << "    constant_sites_removed: false\n";
-        cfg_stream << "    use_empirical_u_rate_starting_value: true\n";
+        cfg_stream << "    use_empirical_starting_value_for_freq_1: true\n";
         cfg_stream << "    constrain_population_sizes: true\n";
-        cfg_stream << "    constrain_u_v_rates: false\n";
+        cfg_stream << "    constrain_state_frequencies: false\n";
         cfg_stream << "    parameters:\n";
         cfg_stream << "        mutation_rate:\n";
         cfg_stream << "            estimate: true\n";
-        cfg_stream << "        u_rate:\n";
-        cfg_stream << "            value: 0.9\n";
+        cfg_stream << "        freq_1:\n";
+        cfg_stream << "            value: 0.56\n";
         cfg_stream << "            estimate: true\n";
         cfg_stream << "            prior:\n";
-        cfg_stream << "                gamma_distribution:\n";
-        cfg_stream << "                    shape: 100.0\n";
-        cfg_stream << "                    scale: 0.01\n";
+        cfg_stream << "                beta_distribution:\n";
+        cfg_stream << "                    alpha: 3\n";
+        cfg_stream << "                    beta: 2\n";
         cfg_stream << "        population_size:\n";
         cfg_stream << "            value: 0.01\n";
         cfg_stream << "            estimate: false\n";
@@ -1436,26 +1445,26 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "    population_name_delimiter: '-'\n";
         e += "    population_name_is_prefix: false\n";
         e += "    constant_sites_removed: false\n";
-        e += "    use_empirical_u_rate_starting_value: true\n";
+        e += "    use_empirical_starting_value_for_freq_1: true\n";
         e += "    constrain_population_sizes: true\n";
-        e += "    constrain_u_v_rates: false\n";
+        e += "    constrain_state_frequencies: false\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            value: 0.01\n";
         e += "            estimate: false\n";
-        e += "        u_rate:\n";
-        e += "            value: 0.958333\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 100\n";
-        e += "                    scale: 0.01\n";
         e += "        mutation_rate:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                gamma_distribution:\n";
         e += "                    shape: 1000\n";
         e += "                    scale: 0.001\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.521739\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 3\n";
+        e += "                    beta: 2\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
         e += "    ploidy: 2\n";
@@ -1464,26 +1473,26 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "    population_name_delimiter: '-'\n";
         e += "    population_name_is_prefix: false\n";
         e += "    constant_sites_removed: false\n";
-        e += "    use_empirical_u_rate_starting_value: true\n";
+        e += "    use_empirical_starting_value_for_freq_1: true\n";
         e += "    constrain_population_sizes: true\n";
-        e += "    constrain_u_v_rates: false\n";
+        e += "    constrain_state_frequencies: false\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            value: 0.01\n";
         e += "            estimate: false\n";
-        e += "        u_rate:\n";
-        e += "            value: 0.818182\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 100\n";
-        e += "                    scale: 0.01\n";
         e += "        mutation_rate:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                gamma_distribution:\n";
         e += "                    shape: 1000\n";
         e += "                    scale: 0.001\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.611111\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 3\n";
+        e += "                    beta: 2\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
         e += "    auto_optimize_delay: 10000\n";
@@ -1506,9 +1515,9 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.5\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 1\n";
-        e += "            scale: 0.5\n";
+        e += "            window: 0.1\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -1517,7 +1526,7 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 2);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 0);
     }
 }
@@ -1555,9 +1564,9 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: false\n";
+        e += "    constrain_state_frequencies: false\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            value: 0.005\n";
@@ -1567,16 +1576,16 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "                    shape: 10\n";
         e += "                    scale: 0.0001\n";
         e += "                    offset: 0\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 10\n";
-        e += "                    scale: 0.1\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 2.5\n";
+        e += "                    beta: 5.3\n";
         e += "- comparison:\n";
         e += "    path: data/data1.nex\n";
         e += "    ploidy: 2\n";
@@ -1585,23 +1594,23 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "    population_name_delimiter: ' '\n";
         e += "    population_name_is_prefix: true\n";
         e += "    constant_sites_removed: true\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: true\n";
-        e += "    constrain_u_v_rates: false\n";
+        e += "    constrain_state_frequencies: false\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            value: 0.01\n";
         e += "            estimate: false\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: true\n";
-        e += "            prior:\n";
-        e += "                gamma_distribution:\n";
-        e += "                    shape: 10\n";
-        e += "                    scale: 0.1\n";
         e += "        mutation_rate:\n";
         e += "            value: 1\n";
         e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 2.5\n";
+        e += "                    beta: 5.3\n";
         e += "- comparison:\n";
         e += "    path: data/data2.nex\n";
         e += "    ploidy: 2\n";
@@ -1610,9 +1619,9 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "    population_name_delimiter: '-'\n";
         e += "    population_name_is_prefix: false\n";
         e += "    constant_sites_removed: false\n";
-        e += "    use_empirical_u_rate_starting_value: false\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
         e += "    constrain_population_sizes: false\n";
-        e += "    constrain_u_v_rates: true\n";
+        e += "    constrain_state_frequencies: true\n";
         e += "    parameters:\n";
         e += "        population_size:\n";
         e += "            value: 0.005\n";
@@ -1622,15 +1631,15 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "                    shape: 10\n";
         e += "                    scale: 0.0001\n";
         e += "                    offset: 0\n";
-        e += "        u_rate:\n";
-        e += "            value: 1\n";
-        e += "            estimate: false\n";
         e += "        mutation_rate:\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
         e += "                gamma_distribution:\n";
         e += "                    shape: 100\n";
         e += "                    scale: 0.01\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
+        e += "            estimate: false\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
         e += "    auto_optimize_delay: 20000\n";
@@ -1653,9 +1662,9 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        ChildPopulationSizeScaler:\n";
         e += "            weight: 2\n";
         e += "            scale: 0.2\n";
-        e += "        UScaler:\n";
+        e += "        FreqMover:\n";
         e += "            weight: 0.5\n";
-        e += "            scale: 0.2\n";
+        e += "            window: 0.2\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config.yml");
@@ -1664,7 +1673,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         REQUIRE(settings.get_sample_frequency() == 2000);
         REQUIRE(settings.get_number_of_comparisons() == 3);
         REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 1);
-        REQUIRE(settings.get_number_of_comparisons_with_free_u_rate() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 2);
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }

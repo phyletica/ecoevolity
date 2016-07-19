@@ -113,6 +113,9 @@ class BiallelicData {
         unsigned int get_number_of_missing_sites_removed() const;
 
         double get_proportion_of_red_alleles() const;
+        double get_proportion_1() const {
+            return this->get_proportion_of_red_alleles();
+        }
         void get_empirical_u_v_rates(double& u, double& v) const;
 
         void validate() const;

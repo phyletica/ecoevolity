@@ -39,9 +39,9 @@ class PopulationTree {
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
         double ploidy_ = 2.0;
-        std::shared_ptr<PositiveRealParameter> u_ = std::make_shared<PositiveRealParameter>(
-                std::make_shared<ExponentialDistribution>(1.0),
-                1.0);
+        std::shared_ptr<PositiveRealParameter> freq_1_ = std::make_shared<PositiveRealParameter>(
+                std::make_shared<BetaDistribution>(1.0, 1.0),
+                0.5);
         std::shared_ptr<PositiveRealParameter> mutation_rate_ = std::make_shared<PositiveRealParameter>(
                 1.0,
                 true);
@@ -58,7 +58,7 @@ class PopulationTree {
         int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool population_sizes_are_constrained_ = false;
-        bool u_v_rates_are_constrained_ = false;
+        bool state_frequencies_rates_are_constrained_ = false;
         bool is_dirty_ = true;
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
@@ -158,12 +158,14 @@ class PopulationTree {
             return (node.get_length() * this->get_mutation_rate());
         }
 
-        void set_u(double u);
-        void update_u(double u);
+        void set_freq_1(double p);
+        void update_freq_1(double p);
+        double get_freq_1() const;
+        double get_freq_0() const;
+        void store_freq_1();
+        void restore_freq_1();
         double get_u() const;
         double get_v() const;
-        void store_u();
-        void restore_u();
 
         void set_mutation_rate(double m);
         void update_mutation_rate(double m);
@@ -189,7 +191,7 @@ class PopulationTree {
                 unsigned int number_all_red,
                 unsigned int number_all_green);
 
-        std::shared_ptr<PositiveRealParameter> get_u_parameter() const;
+        std::shared_ptr<PositiveRealParameter> get_freq_1_parameter() const;
 
         void set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h);
         std::shared_ptr<PositiveRealParameter> get_mutation_rate_parameter() const;
@@ -216,7 +218,7 @@ class PopulationTree {
         double get_stored_log_likelihood_value() const;
 
         virtual double compute_log_prior_density();
-        double compute_log_prior_density_of_u_v_rates() const;
+        double compute_log_prior_density_of_state_frequencies() const;
         double compute_log_prior_density_of_mutation_rate() const;
         double compute_log_prior_density_of_node_heights() const;
         double compute_log_prior_density_of_population_sizes() const;
@@ -246,9 +248,9 @@ class PopulationTree {
             return this->population_size_prior_;
         }
 
-        void set_u_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
-        std::shared_ptr<ContinuousProbabilityDistribution> get_u_prior() const {
-            return this->u_->prior;
+        void set_freq_1_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
+        std::shared_ptr<ContinuousProbabilityDistribution> get_freq_1_prior() const {
+            return this->freq_1_->prior;
         }
 
         void set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
@@ -266,17 +268,17 @@ class PopulationTree {
             return this->root_->all_population_sizes_are_fixed();
         }
 
-        void fix_u_v_rates() {
-            this->u_->fix();
+        void fix_state_frequencies() {
+            this->freq_1_->fix();
         }
-        void estimate_u_v_rates() {
-            if (this->u_v_rates_are_constrained_) {
-                throw EcoevolityError("Cannot estimate constrained u/v rates");
+        void estimate_state_frequencies() {
+            if (this->state_frequencies_are_constrained_) {
+                throw EcoevolityError("Cannot estimate constrained state frequencies");
             }
-            this->u_->estimate();
+            this->freq_1_->estimate();
         }
-        bool u_v_rates_are_fixed() const {
-            return this->u_->is_fixed();
+        bool state_frequencies_are_fixed() const {
+            return this->freq_1_->is_fixed();
         }
 
         void fix_mutation_rate() {
@@ -296,14 +298,14 @@ class PopulationTree {
         bool population_sizes_are_constrained() const {
             return this->population_sizes_are_constrained_;
         }
-        void constrain_u_v_rates() {
-            this->u_v_rates_are_constrained_ = true;
-            this->u_->set_value(1.0);
-            this->u_->fix();
+        void constrain_state_frequencies() {
+            this->state_frequencies_are_constrained_ = true;
+            this->freq_1_->set_value(0.5);
+            this->freq_1_->fix();
             this->make_dirty();
         }
-        bool u_v_rates_are_constrained() const {
-            return this->u_v_rates_are_constrained_;
+        bool state_frequencies_are_constrained() const {
+            return this->state_frequencies_are_constrained_;
         }
 
         unsigned int get_number_of_likelihood_calculations() {

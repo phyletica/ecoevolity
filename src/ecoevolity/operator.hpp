@@ -359,18 +359,15 @@ class ConcentrationScaler : public ScaleOperator {
 };
 
 
-// TODO:
-// NOTE: Failing to sample from the prior with no data; use at your own peril
-// (or just use UScaler).
-class UMover : public ComparisonTreeWindowOperator {
+class FreqMover : public ComparisonTreeWindowOperator {
 
     using ComparisonTreeWindowOperator::propose;
 
     public:
-        UMover() : ComparisonTreeWindowOperator() { }
-        UMover(double weight) : ComparisonTreeWindowOperator(weight) { }
-        UMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
-        virtual ~UMover() { }
+        FreqMover() : ComparisonTreeWindowOperator() { }
+        FreqMover(double weight) : ComparisonTreeWindowOperator(weight) { }
+        FreqMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
+        virtual ~FreqMover() { }
 
         double propose(
                 RandomNumberGenerator& rng,
@@ -381,24 +378,25 @@ class UMover : public ComparisonTreeWindowOperator {
         std::string get_name() const;
 };
 
-class UScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        UScaler() : ComparisonTreeScaleOperator() { }
-        UScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        UScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~UScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
+// u/v rates no longer being proposed
+// class UScaler : public ComparisonTreeScaleOperator {
+// 
+//     using ComparisonTreeScaleOperator::propose;
+// 
+//     public:
+//         UScaler() : ComparisonTreeScaleOperator() { }
+//         UScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
+//         UScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
+//         virtual ~UScaler() { }
+// 
+//         double propose(
+//                 RandomNumberGenerator& rng,
+//                 ComparisonPopulationTree& tree) const;
+// 
+//         std::string target_parameter() const;
+// 
+//         std::string get_name() const;
+// };
 
 class ComparisonMutationRateScaler : public ComparisonTreeScaleOperator {
 

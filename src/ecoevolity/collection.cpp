@@ -668,8 +668,8 @@ void ComparisonPopulationTreeCollection::mcmc(
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }
-                if ((op.target_parameter() == "u rate") &&
-                        (this->trees_.at(tree_idx).u_v_rates_are_fixed())) {
+                if ((op.target_parameter() == "freq 1") &&
+                        (this->trees_.at(tree_idx).state_frequencies_are_fixed())) {
                     ECOEVOLITY_ASSERT(! this->trees_.at(tree_idx).is_dirty());
                     continue;
                 }

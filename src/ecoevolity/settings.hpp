@@ -163,6 +163,34 @@ class ContinuousDistributionSettings {
                 this->parameters_["min"] = parameters.at("min");
                 this->parameters_["max"] = parameters.at("max");
             }
+            // Beta 
+            else if (name == "beta_distribution") {
+                if (parameters.count("alpha") < 1) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "alpha parameter missing for beta_distribution"
+                            );
+                }
+                if (parameters.count("beta") < 1) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "beta parameter missing for beta_distribution"
+                            );
+                }
+                if (parameters.size() > 2) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "unrecognized parameters for beta_distribution (recognized parameters: alpha, beta)"
+                            );
+                }
+                if (parameters.at("alpha") <= 0.0) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "alpha must be greater than 0 for Distribution");
+                }
+                if (parameters.at("beta") <= 0.0) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "beta must be greater than 0 for BetaDistribution");
+                }
+                this->parameters_["alpha"] = parameters.at("alpha");
+                this->parameters_["beta"] = parameters.at("beta");
+            }
             else if (name == "none") {
                 this->parameters_.clear();
             }
@@ -277,6 +305,36 @@ class ContinuousDistributionSettings {
                             "The upper limit must be greater than lower limit for UniformDistribution");
                 }
             }
+            // Beta 
+            else if (node["beta_distribution"]) {
+                this->name_ = "beta_distribution";
+                YAML::Node parameters = node["beta_distribution"];
+                if (! parameters["alpha"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "alpha parameter missing for beta_distribution"
+                            );
+                }
+                if (! parameters["beta"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "beta parameter missing for beta_distribution"
+                            );
+                }
+                if (parameters.size() > 2) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "unrecognized parameters for beta_distribution (recognized parameters: alpha, beta)"
+                            );
+                }
+                this->parameters_["alpha"] = parameters["alpha"].as<double>();
+                this->parameters_["beta"] = parameters["beta"].as<double>();
+                if (this->parameters_.at("alpha") <= 0.0) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "alpha must be greater than 0 for BetaDistribution");
+                }
+                if (this->parameters_.at("beta") <= 0.0) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "beta must be greater than 0 for BetaDistribution");
+                }
+            }
             else {
                 std::string message = "unrecognized distribution: " + node.begin()->first.as<std::string>();
                 throw EcoevolityContinuousDistributionSettingError(message);
@@ -329,6 +387,11 @@ class ContinuousDistributionSettings {
                         this->parameters_.at("min"),
                         this->parameters_.at("max"));
             }
+            else if (this->name_ == "beta_distribution") {
+                p = std::make_shared<BetaDistribution>(
+                        this->parameters_.at("alpha"),
+                        this->parameters_.at("beta"));
+            }
             else if (this->name_ == "none") {
                 return p;
             }
@@ -362,6 +425,10 @@ class ContinuousDistributionSettings {
             else if (this->name_ == "uniform_distribution") {
                 ss << margin << indent << "min: " << this->parameters_.at("min") << "\n";
                 ss << margin << indent << "max: " << this->parameters_.at("max") << "\n";
+            }
+            else if (this->name_ == "beta_distribution") {
+                ss << margin << indent << "alpha: " << this->parameters_.at("alpha") << "\n";
+                ss << margin << indent << "beta: " << this->parameters_.at("beta") << "\n";
             }
             else {
                 ECOEVOLITY_ASSERT(0 == 1);
@@ -498,7 +565,7 @@ class ComparisonSettings {
     private:
         std::string path_;
         PositiveRealParameterSettings population_size_settings_;
-        PositiveRealParameterSettings u_settings_;
+        PositiveRealParameterSettings freq_1_settings_;
         PositiveRealParameterSettings mutation_rate_settings_;
 
         char population_name_delimiter_ = ' ';
@@ -507,9 +574,9 @@ class ComparisonSettings {
         bool markers_are_dominant_ = false;
         bool constant_sites_removed_ = true;
 
-        bool use_empirical_u_rate_starting_value_ = false;
+        bool use_empirical_starting_value_for_freq_1_ = false;
         bool constrain_population_sizes_ = false;
-        bool constrain_u_v_rates_ = true;
+        bool constrain_state_frequencies_ = true;
         double ploidy_ = 2.0;
 
         void make_consistent() {
@@ -518,16 +585,16 @@ class ComparisonSettings {
                         "Genotypes cannot be diploid when ploidy is not 2",
                         this->path_);
             }
-            if (this->constrain_u_v_rates_) {
-                this->use_empirical_u_rate_starting_value_ = false;
-                this->u_settings_.prior_settings_.nullify();
-                this->u_settings_.value_ = 1.0;
-                this->u_settings_.is_fixed_ = true;
+            if (this->constrain_state_frequencies_) {
+                this->use_empirical_starting_value_for_freq_1_ = false;
+                this->freq_1_settings_.prior_settings_.nullify();
+                this->freq_1_settings_.value_ = 0.5;
+                this->freq_1_settings_.is_fixed_ = true;
             }
         }
 
-        void init_empirical_u_rate_starting_value() {
-            if (this->use_empirical_u_rate_starting_value_) {
+        void init_empirical_freq_1_starting_value() {
+            if (this->use_empirical_starting_value_for_freq_1_) {
                 BiallelicData d = BiallelicData(
                         this->path_,
                         this->population_name_delimiter_,
@@ -535,10 +602,7 @@ class ComparisonSettings {
                         this->genotypes_are_diploid_,
                         this->markers_are_dominant_,
                         true);
-                double u;
-                double v;
-                d.get_empirical_u_v_rates(u, v);
-                this->u_settings_.value_ = u;
+                this->freq_1_settings_.value_ = d.get_proportion_1();
             }
         }
 
@@ -558,8 +622,8 @@ class ComparisonSettings {
                 if (parameter->first.as<std::string>() == "population_size") {
                     this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
-                else if (parameter->first.as<std::string>() == "u_rate") {
-                    this->u_settings_ = PositiveRealParameterSettings(parameter->second);
+                else if (parameter->first.as<std::string>() == "freq_1") {
+                    this->freq_1_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
                 else if (parameter->first.as<std::string>() == "mutation_rate") {
                     this->mutation_rate_settings_ = PositiveRealParameterSettings(parameter->second);
@@ -611,14 +675,14 @@ class ComparisonSettings {
                 else if (arg->first.as<std::string>() == "constant_sites_removed") {
                     this->constant_sites_removed_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "use_empirical_u_rate_starting_value") {
-                    this->use_empirical_u_rate_starting_value_ = arg->second.as<bool>();
+                else if (arg->first.as<std::string>() == "use_empirical_starting_value_for_freq_1") {
+                    this->use_empirical_starting_value_for_freq_1_ = arg->second.as<bool>();
                 }
                 else if (arg->first.as<std::string>() == "constrain_population_sizes") {
                     this->constrain_population_sizes_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "constrain_u_v_rates") {
-                    this->constrain_u_v_rates_ = arg->second.as<bool>();
+                else if (arg->first.as<std::string>() == "constrain_state_frequencies") {
+                    this->constrain_state_frequencies_ = arg->second.as<bool>();
                 }
                 else if (arg->first.as<std::string>() == "parameters") {
                     this->parse_parameter_settings(arg->second);
@@ -634,7 +698,7 @@ class ComparisonSettings {
             }
             this->make_consistent();
             if (! global_defaults) {
-                this->init_empirical_u_rate_starting_value();
+                this->init_empirical_freq_1_starting_value();
             }
         }
 
@@ -643,30 +707,30 @@ class ComparisonSettings {
         ComparisonSettings(
                 const std::string& path,
                 const PositiveRealParameterSettings& population_size_settings,
-                const PositiveRealParameterSettings& u_settings,
+                const PositiveRealParameterSettings& freq_1_settings,
                 const PositiveRealParameterSettings& mutation_rate_settings,
                 char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool use_empirical_u_rate_starting_value = false,
+                bool use_empirical_starting_value_for_freq_1 = false,
                 bool constrain_population_sizes = false,
-                bool constrain_u_v_rates = true,
+                bool constrain_state_frequencies = true,
                 double ploidy = 2.0) {
 
             this->path_ = path;
             this->population_size_settings_ = population_size_settings;
-            this->u_settings_ = u_settings;
+            this->freq_1_settings_ = freq_1_settings;
             this->mutation_rate_settings_ = mutation_rate_settings;
             this->population_name_delimiter_ = population_name_delimiter;
             this->population_name_is_prefix_ = population_name_is_prefix;
             this->genotypes_are_diploid_ = genotypes_are_diploid;
             this->markers_are_dominant_ = markers_are_dominant;
             this->constant_sites_removed_ = constant_sites_removed;
-            this->use_empirical_u_rate_starting_value_ = use_empirical_u_rate_starting_value;
+            this->use_empirical_starting_value_for_freq_1_ = use_empirical_starting_value_for_freq_1;
             this->constrain_population_sizes_ = constrain_population_sizes;
-            this->constrain_u_v_rates_ = constrain_u_v_rates;
+            this->constrain_state_frequencies_ = constrain_state_frequencies;
             this->ploidy_ = ploidy;
             this->make_consistent();
 
@@ -675,7 +739,7 @@ class ComparisonSettings {
             // more awkward than it's worth to defer it.
             // Make a copy operator for BiallelicData and parse and store here, then
             // can copy it in get_instance method
-            this->init_empirical_u_rate_starting_value();
+            this->init_empirical_freq_1_starting_value();
         }
         ComparisonSettings(
                 const YAML::Node& comparison_node,
@@ -688,16 +752,16 @@ class ComparisonSettings {
         ComparisonSettings& operator=(const ComparisonSettings& other) {
             this->path_                                = other.path_;
             this->population_size_settings_            = other.population_size_settings_;
-            this->u_settings_                          = other.u_settings_;
+            this->freq_1_settings_                     = other.freq_1_settings_;
             this->mutation_rate_settings_              = other.mutation_rate_settings_;
             this->population_name_delimiter_           = other.population_name_delimiter_;
             this->population_name_is_prefix_           = other.population_name_is_prefix_;
             this->genotypes_are_diploid_               = other.genotypes_are_diploid_;
             this->markers_are_dominant_                = other.markers_are_dominant_;
             this->constant_sites_removed_              = other.constant_sites_removed_;
-            this->use_empirical_u_rate_starting_value_ = other.use_empirical_u_rate_starting_value_;
+            this->use_empirical_starting_value_for_freq_1_ = other.use_empirical_starting_value_for_freq_1_;
             this->constrain_population_sizes_          = other.constrain_population_sizes_;
-            this->constrain_u_v_rates_                 = other.constrain_u_v_rates_;
+            this->constrain_state_frequencies_         = other.constrain_state_frequencies_;
             this->ploidy_                              = other.ploidy_;
             return * this;
         }
@@ -723,20 +787,20 @@ class ComparisonSettings {
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;
         }
-        bool constrain_u_v_rates() const {
-            return this->constrain_u_v_rates_;
+        bool constrain_state_frequencies() const {
+            return this->constrain_state_frequencies_;
         }
         bool constrain_population_sizes() const {
             return this->constrain_population_sizes_;
         }
-        bool use_empirical_u_rate_starting_value() const {
-            return this->use_empirical_u_rate_starting_value_;
+        bool use_empirical_starting_value_for_freq_1() const {
+            return this->use_empirical_starting_value_for_freq_1_;
         }
         const PositiveRealParameterSettings& get_population_size_settings() const {
             return this->population_size_settings_;
         }
-        const PositiveRealParameterSettings& get_u_settings() const {
-            return this->u_settings_;
+        const PositiveRealParameterSettings& get_freq_1_settings() const {
+            return this->freq_1_settings_;
         }
         const PositiveRealParameterSettings& get_mutation_rate_settings() const {
             return this->mutation_rate_settings_;
@@ -754,19 +818,19 @@ class ComparisonSettings {
             ss << margin << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
             ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
             ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
-            ss << margin << "use_empirical_u_rate_starting_value: " << this->use_empirical_u_rate_starting_value_ << "\n";
+            ss << margin << "use_empirical_starting_value_for_freq_1: " << this->use_empirical_starting_value_for_freq_1_ << "\n";
             ss << margin << "constrain_population_sizes: " << this->constrain_population_sizes_ << "\n";
-            ss << margin << "constrain_u_v_rates: " << this->constrain_u_v_rates_ << "\n";
+            ss << margin << "constrain_state_frequencies: " << this->constrain_state_frequencies_ << "\n";
             ss << margin << "parameters:\n";
 
             ss << margin << indent << "population_size:\n";
             ss << this->population_size_settings_.to_string(indent_level + 2);
 
-            ss << margin << indent << "u_rate:\n";
-            ss << this->u_settings_.to_string(indent_level + 2);
-
             ss << margin << indent << "mutation_rate:\n";
             ss << this->mutation_rate_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "freq_1:\n";
+            ss << this->freq_1_settings_.to_string(indent_level + 2);
 
             return ss.str();
         }
@@ -1014,8 +1078,8 @@ class OperatorScheduleSettings {
                 1.0, 0.5);
         ScaleOperatorSettings child_population_size_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings u_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+        WindowOperatorSettings freq_mover_settings_ = WindowOperatorSettings(
+                1.0, 0.1);
 
     public:
         OperatorScheduleSettings() { }
@@ -1029,7 +1093,7 @@ class OperatorScheduleSettings {
             this->comparison_mutation_rate_scaler_settings_ = other.comparison_mutation_rate_scaler_settings_;
             this->root_population_size_scaler_settings_ = other.root_population_size_scaler_settings_;
             this->child_population_size_scaler_settings_ = other.child_population_size_scaler_settings_;
-            this->u_scaler_settings_ = other.u_scaler_settings_;
+            this->freq_mover_settings_ = other.freq_mover_settings_;
             return * this;
         }
 
@@ -1057,8 +1121,8 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_child_population_size_scaler_settings() const {
             return this->child_population_size_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_u_scaler_settings() const {
-            return this->u_scaler_settings_;
+        const ScaleOperatorSettings& get_freq_mover_settings() const {
+            return this->freq_mover_settings_;
         }
 
         void update_from_config(const YAML::Node& operator_node) {
@@ -1159,13 +1223,13 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "UScaler") {
+                else if (op->first.as<std::string>() == "FreqMover") {
                     try {
-                        this->u_scaler_settings_.update_from_config(op->second);
+                        this->freq_mover_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing UScaler settings\n";
+                                  << "Problem parsing FreqMover settings\n";
                         throw;
                     }
                 }
@@ -1199,8 +1263,8 @@ class OperatorScheduleSettings {
             ss << this->root_population_size_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ChildPopulationSizeScaler:\n";
             ss << this->child_population_size_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "UScaler:\n";
-            ss << this->u_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "FreqMover:\n";
+            ss << this->freq_mover_settings_.to_string(indent_level + 3);
             return ss.str();
         }
 };
@@ -1250,7 +1314,7 @@ class CollectionSettings {
             this->comparisons_ = other.comparisons_;
             this->default_time_prior_ = other.default_time_prior_;
             this->default_population_size_prior_ = other.default_population_size_prior_;
-            this->default_u_prior_ = other.default_u_prior_;
+            this->default_freq_1_prior_ = other.default_freq_1_prior_;
             this->default_mutation_rate_prior_ = other.default_mutation_rate_prior_;
             this->state_log_path_ = other.state_log_path_;
             this->operator_log_path_ = other.operator_log_path_;
@@ -1306,10 +1370,10 @@ class CollectionSettings {
             return nfree;
         }
 
-        unsigned int get_number_of_comparisons_with_free_u_rate() const {
+        unsigned int get_number_of_comparisons_with_free_state_frequencies() const {
             unsigned int nfree = 0;
             for (const ComparisonSettings& comparison : this->comparisons_) {
-                if (! comparison.u_settings_.is_fixed()) {
+                if (! comparison.freq_1_settings_.is_fixed()) {
                     ++nfree;
                 }
             }
@@ -1396,7 +1460,7 @@ class CollectionSettings {
 
         ContinuousDistributionSettings default_time_prior_;
         ContinuousDistributionSettings default_population_size_prior_;
-        ContinuousDistributionSettings default_u_prior_;
+        ContinuousDistributionSettings default_freq_1_prior_;
         ContinuousDistributionSettings default_mutation_rate_prior_;
 
         void init_default_priors() {
@@ -1411,10 +1475,10 @@ class CollectionSettings {
                     "exponential_distribution",
                     default_parameters);
             default_parameters.clear();
-            default_parameters["rate"] = 2.0;
-            default_parameters["offset"] = 0.5;
-            this->default_u_prior_ = ContinuousDistributionSettings(
-                    "exponential_distribution",
+            default_parameters["alpha"] = 1.0;
+            default_parameters["beta"] = 1.0;
+            this->default_freq_1_prior_ = ContinuousDistributionSettings(
+                    "beta_distribution",
                     default_parameters);
             default_parameters.clear();
             default_parameters["shape"] = 1000.0;
@@ -1572,8 +1636,8 @@ class CollectionSettings {
             if (this->get_number_of_comparisons_with_free_mutation_rate() < 1) {
                 this->operator_schedule_settings_.comparison_mutation_rate_scaler_settings_.set_weight(0.0);
             }
-            if (this->get_number_of_comparisons_with_free_u_rate() < 1) {
-                this->operator_schedule_settings_.u_scaler_settings_.set_weight(0.0);
+            if (this->get_number_of_comparisons_with_free_state_frequencies() < 1) {
+                this->operator_schedule_settings_.freq_mover_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
                 this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
@@ -1587,9 +1651,9 @@ class CollectionSettings {
                         (comp.mutation_rate_settings_.prior_settings_.get_name() == "none")) {
                     comp.mutation_rate_settings_.prior_settings_ = this->default_mutation_rate_prior_;
                 }
-                if ((! comp.u_settings_.is_fixed()) &&
-                        (comp.u_settings_.prior_settings_.get_name() == "none")) {
-                    comp.u_settings_.prior_settings_ = this->default_u_prior_;
+                if ((! comp.freq_1_settings_.is_fixed()) &&
+                        (comp.freq_1_settings_.prior_settings_.get_name() == "none")) {
+                    comp.freq_1_settings_.prior_settings_ = this->default_freq_1_prior_;
                 }
                 if ((! comp.population_size_settings_.is_fixed()) &&
                         (comp.population_size_settings_.prior_settings_.get_name() == "none")) {

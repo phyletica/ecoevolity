@@ -280,57 +280,58 @@ std::string ConcentrationScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UMover methods
+// FreqMover methods
 //////////////////////////////////////////////////////////////////////////////
 
-double UMover::propose(
+double FreqMover::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
-    double red_freq = tree.get_v() / (tree.get_u() + tree.get_v());
+    double freq_1 = tree.get_freq_1();
     double hastings;
-    this->update(rng, red_freq, hastings);
-    if ((red_freq <= 0.0) || (red_freq > 1.0)) {
+    this->update(rng, freq_1, hastings);
+    if ((freq_1 <= 0.0) || (freq_1 > 1.0)) {
         return -std::numeric_limits<double>::infinity();
     }
-    // v is also set here
-    tree.set_u(1.0 / (2.0 * red_freq));
+    tree.set_freq_1(freq_1);
     return hastings; 
 }
 
-std::string UMover::target_parameter() const {
-    return "u rate";
+std::string FreqMover::target_parameter() const {
+    return "freq 1";
 }
 
-std::string UMover::get_name() const {
-    return "UMover";
+std::string FreqMover::get_name() const {
+    return "FreqMover";
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////
 // UScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-double UScaler::propose(
-        RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    double val = tree.get_u();
-    double hastings;
-    this->update(rng, val, hastings);
-    if (val < 0.5) {
-        return -std::numeric_limits<double>::infinity();
-    }
-    // v is also set here
-    tree.set_u(val);
-    return hastings;
-}
-
-std::string UScaler::target_parameter() const {
-    return "u rate";
-}
-
-std::string UScaler::get_name() const {
-    return "UScaler";
-}
+// u/v rates no longer being proposed
+// double UScaler::propose(
+//         RandomNumberGenerator& rng,
+//         ComparisonPopulationTree& tree) const {
+//     double val = tree.get_u();
+//     double hastings;
+//     this->update(rng, val, hastings);
+//     if (val < 0.5) {
+//         return -std::numeric_limits<double>::infinity();
+//     }
+//     // v is also set here
+//     tree.set_u(val);
+//     return hastings;
+// }
+// 
+// std::string UScaler::target_parameter() const {
+//     return "u rate";
+// }
+// 
+// std::string UScaler::get_name() const {
+//     return "UScaler";
+// }
 
 
 //////////////////////////////////////////////////////////////////////////////
