@@ -441,3 +441,153 @@ TEST_CASE("Testing random_subset_indices 9 from 10", "[RandomNumberGenerator]") 
         }
     }
 }
+
+TEST_CASE("Testing beta(1,1)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing beta(1,1)") {
+        double a = 1.0;
+        double b = 1.0;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        RandomNumberGenerator rng(123);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = rng.beta(a, b);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+        REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing beta(0.5,0.5)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing beta(1,1)") {
+        double a = 0.5;
+        double b = 0.5;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        RandomNumberGenerator rng(123);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = rng.beta(a, b);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+        REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing beta(5,1)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing beta(5,1)") {
+        double a = 5.0;
+        double b = 1.0;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        RandomNumberGenerator rng(123);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = rng.beta(a, b);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        // Unlikely to sample near zero
+        // REQUIRE(mn == Approx(0.0).epsilon(0.001));
+        REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing beta(1,5)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing beta(1,5)") {
+        double a = 1.0;
+        double b = 5.0;
+        double expected_mean = a / (a + b);
+        double expected_variance = (a * b) / ((a + b) * (a + b) * (a + b + 1.0));
+
+        RandomNumberGenerator rng(123);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            double x = rng.beta(a, b);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        
+        REQUIRE(mean == Approx(expected_mean).epsilon(0.001));
+        REQUIRE(variance == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(mn > 0.0);
+        REQUIRE(mx < 1.0);
+        REQUIRE(mn == Approx(0.0).epsilon(0.001));
+        // Unlikely to sample near one
+        // REQUIRE(mx == Approx(1.0).epsilon(0.001));
+    }
+}

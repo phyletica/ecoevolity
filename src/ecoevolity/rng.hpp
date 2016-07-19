@@ -107,6 +107,12 @@ class RandomNumberGenerator {
                             shape, scale));
         }
 
+        inline double beta(double alpha, double beta) {
+            double x = this->gamma(alpha, 1.0);
+            double y = this->gamma(beta, 1.0);
+            return (x / (x + y));
+        }
+
         inline unsigned int weighted_index(
                 const std::vector<double>& probabilities) {
             double u = this->uniform_real();
