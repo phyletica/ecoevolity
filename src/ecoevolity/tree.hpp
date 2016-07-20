@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <future>
 
 #include "data.hpp"
 #include "node.hpp"
@@ -45,7 +46,6 @@ class PopulationTree {
         std::shared_ptr<PositiveRealParameter> mutation_rate_ = std::make_shared<PositiveRealParameter>(
                 1.0,
                 true);
-        std::vector<double> pattern_likelihoods_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
@@ -73,7 +73,12 @@ class PopulationTree {
                 unsigned int allele_count) const;
 
         double compute_pattern_likelihood(int pattern_index);
-        void compute_pattern_likelihoods();
+        void compute_constant_pattern_likelihoods();
+        double compute_pattern_log_likelihoods_by_index_range(
+                unsigned int start_index,
+                unsigned int stop_index);
+        double compute_pattern_log_likelihoods();
+        double compute_pattern_log_likelihoods(unsigned int nthreads);
 
         std::vector< std::vector<double> > compute_root_probabilities();
         double compute_root_likelihood();
@@ -203,16 +208,16 @@ class PopulationTree {
 
         double get_likelihood_correction(bool force = false);
 
-        virtual void compute_log_likelihood_and_prior() {
+        virtual void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
             if (this->is_dirty()) {
-                this->compute_log_likelihood();
+                this->compute_log_likelihood(nthreads);
                 this->compute_log_prior_density();
                 this->make_clean();
             }
             return;
         }
 
-        double compute_log_likelihood();
+        double compute_log_likelihood(unsigned int nthreads = 1);
 
         double get_log_likelihood_value() const;
         double get_stored_log_likelihood_value() const;

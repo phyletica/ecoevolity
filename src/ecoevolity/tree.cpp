@@ -138,8 +138,6 @@ void PopulationTree::init(
     this->init_tree();
 
     this->root_->resize_all();
-
-    this->pattern_likelihoods_.assign(this->data_.get_number_of_patterns(), 0.0);
 }
 
 void PopulationTree::init_tree() {
@@ -409,12 +407,7 @@ double PopulationTree::compute_pattern_likelihood(int pattern_index) {
     return this->compute_root_likelihood();
 }
 
-void PopulationTree::compute_pattern_likelihoods() {
-    for (unsigned int pattern_idx = 0;
-            pattern_idx < this->data_.get_number_of_patterns();
-            ++pattern_idx) {
-        this->pattern_likelihoods_.at(pattern_idx) = this->compute_pattern_likelihood(pattern_idx);
-    }
+void PopulationTree::compute_constant_pattern_likelihoods() {
     double all_green_pattern_likelihood = this->compute_pattern_likelihood(-1);
     double all_red_pattern_likelihood = all_green_pattern_likelihood;
     if (! this->state_frequencies_are_constrained()) {
@@ -422,6 +415,69 @@ void PopulationTree::compute_pattern_likelihoods() {
     }
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_likelihood);
     this->all_red_pattern_likelihood_.set_value(all_red_pattern_likelihood);
+}
+
+
+double PopulationTree::compute_pattern_log_likelihoods_by_index_range(
+        unsigned int start_pattern_index,
+        unsigned int stop_pattern_index) {
+    double log_likelihood = 0.0;
+    for (unsigned int pattern_idx = start_pattern_index;
+            pattern_idx < stop_pattern_index;
+            ++pattern_idx) {
+        double pattern_likelihood = this->compute_pattern_likelihood(pattern_idx);
+        if (pattern_likelihood ==  0.0) {
+            return -std::numeric_limits<double>::infinity();
+        }
+        double weight = (double) this->data_.get_pattern_weight(pattern_idx);
+        log_likelihood += weight * std::log(pattern_likelihood);
+    }
+    return log_likelihood;
+}
+
+double PopulationTree::compute_pattern_log_likelihoods() {
+    if (this->constant_sites_removed_) {
+        this->compute_constant_pattern_likelihoods();
+    }
+    return this->compute_pattern_log_likelihoods_by_index_range(0, this->data_.get_number_of_patterns());
+}
+
+double PopulationTree::compute_pattern_log_likelihoods(unsigned int nthreads) {
+    if (nthreads < 2) {
+        return this->compute_pattern_log_likelihoods();
+    }
+    double log_likelihood = 0.0;
+    const unsigned int npatterns = this->data_.get_number_of_patterns();
+    if (npatterns < nthreads) {
+        nthreads = npatterns;
+    }
+    const unsigned int batch_size = npatterns / nthreads;
+    unsigned int start_idx = 0;
+    std::vector< std::future<double> > threads;
+    threads.reserve(nthreads - 1);
+
+    // Launch nthreads - 1 threads
+    for (unsigned int i = 0; i < (nthreads - 1); ++i) {
+        threads.push_back(std::async(
+                &PopulationTree::compute_pattern_log_likelihoods_by_index_range,
+                this,
+                start_idx,
+                start_idx + batch_size
+                ));
+        start_idx += batch_size;
+    }
+
+    // Use the main thread as the last thread
+    if (this->constant_sites_removed_) {
+        this->compute_constant_pattern_likelihoods();
+    }
+    log_likelihood += this->compute_pattern_log_likelihoods_by_index_range(start_idx, npatterns);
+
+    // Join the launched threads
+    for (auto &t : threads) {
+        log_likelihood += t.get();
+    }
+    return log_likelihood;
 }
 
 void PopulationTree::calculate_likelihood_correction() {
@@ -474,24 +530,12 @@ bool PopulationTree::constant_site_counts_were_provided() {
     return false;
 }
 
-double PopulationTree::compute_log_likelihood() {
+double PopulationTree::compute_log_likelihood(unsigned int nthreads) {
     if (this->ignore_data_) {
         this->log_likelihood_.set_value(0.0);
         return 0.0;
     }
-    double log_likelihood = 0.0;
-    this->compute_pattern_likelihoods();
-    for (unsigned int pattern_idx = 0;
-            pattern_idx < this->data_.get_number_of_patterns();
-            ++pattern_idx) {
-        double pattern_likelihood = this->pattern_likelihoods_.at(pattern_idx);
-        double weight = (double) this->data_.get_pattern_weight(pattern_idx);
-        if (pattern_likelihood ==  0.0) {
-            log_likelihood = -10e100;
-            break;
-        }
-        log_likelihood += weight * std::log(pattern_likelihood);
-    }
+    double log_likelihood = this->compute_pattern_log_likelihoods(nthreads);
 
     if (this->constant_sites_removed_) {
         if (this->constant_site_counts_were_provided()) {

@@ -27,6 +27,40 @@ TEST_CASE("Testing simple likelihood of PopulationTree", "[PopulationTree]") {
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing threaded likelihood of PopulationTree", "[PopulationTree]") {
+
+    SECTION("Testing constructor and threaded likelihood calc") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        PopulationTree tree(nex_path, ' ', true, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.01);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(2);
+        REQUIRE(l == Approx(-31.77866581319647));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(2);
+        REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
+TEST_CASE("Testing over-threaded likelihood of PopulationTree", "[PopulationTree]") {
+
+    SECTION("Testing constructor and over-threaded likelihood calc") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        PopulationTree tree(nex_path, ' ', true, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.01);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(10);
+        REQUIRE(l == Approx(-31.77866581319647));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(10);
+        REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -56,6 +90,25 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing hemi129.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.01);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-248.93254688526213));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-248.93254688526213));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -80,6 +133,25 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-7099.716015109998));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.01);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-7099.716015109998));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(4);
         REQUIRE(l == Approx(-7099.716015109998));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);

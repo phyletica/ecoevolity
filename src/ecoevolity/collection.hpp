@@ -20,7 +20,6 @@
 #ifndef ECOEVOLITY_COLLECTION_HPP
 #define ECOEVOLITY_COLLECTION_HPP
 
-#include <thread>
 #include <unordered_set>
 
 #include "data.hpp"
@@ -62,7 +61,6 @@ class ComparisonPopulationTreeCollection {
                 );
 
         void compute_tree_partials();
-        void compute_tree_partials_threaded();
         void make_trees_clean();
         void make_trees_dirty();
 
