@@ -55,8 +55,8 @@ global_comparison_settings:
     population_name_is_prefix: true
     constant_sites_removed: true
     use_empirical_starting_value_for_freq_1: false
-    constrain_population_sizes: false
-    constrain_state_frequencies: false
+    equal_population_sizes: false
+    equal_state_frequencies: false
     parameters:
         population_size:
             value: 0.005
@@ -85,7 +85,7 @@ comparisons:
 
 - comparison:
     path: "data1.nex"
-    constrain_population_sizes: true
+    equal_population_sizes: true
     parameters:
         population_size:
             value: 0.01
@@ -93,7 +93,7 @@ comparisons:
         
 - comparison:
     path: "data2.nex"
-    constrain_state_frequencies: true
+    equal_state_frequencies: true
     constant_sites_removed: false
     population_name_delimiter: "-"
     population_name_is_prefix: false

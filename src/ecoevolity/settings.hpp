@@ -678,10 +678,10 @@ class ComparisonSettings {
                 else if (arg->first.as<std::string>() == "use_empirical_starting_value_for_freq_1") {
                     this->use_empirical_starting_value_for_freq_1_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "constrain_population_sizes") {
+                else if (arg->first.as<std::string>() == "equal_population_sizes") {
                     this->constrain_population_sizes_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "constrain_state_frequencies") {
+                else if (arg->first.as<std::string>() == "equal_state_frequencies") {
                     this->constrain_state_frequencies_ = arg->second.as<bool>();
                 }
                 else if (arg->first.as<std::string>() == "parameters") {
@@ -819,8 +819,8 @@ class ComparisonSettings {
             ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
             ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
             ss << margin << "use_empirical_starting_value_for_freq_1: " << this->use_empirical_starting_value_for_freq_1_ << "\n";
-            ss << margin << "constrain_population_sizes: " << this->constrain_population_sizes_ << "\n";
-            ss << margin << "constrain_state_frequencies: " << this->constrain_state_frequencies_ << "\n";
+            ss << margin << "equal_population_sizes: " << this->constrain_population_sizes_ << "\n";
+            ss << margin << "equal_state_frequencies: " << this->constrain_state_frequencies_ << "\n";
             ss << margin << "parameters:\n";
 
             ss << margin << indent << "population_size:\n";
