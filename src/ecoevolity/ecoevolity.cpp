@@ -94,6 +94,10 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "With this option, Ecoevolity will automatically ignore such "
                   "sites and only issue a warning."
                 );
+    parser.add_option("--dry-run")
+            .action("store_true")
+            .dest("dry_run")
+            .help("Do not run analysis; only process and report settings.");
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();
@@ -109,6 +113,8 @@ int ecoevolity_main(int argc, char * argv[]) {
     const long seed = seed_opt;
     rng.set_seed(seed);
     std::cout << "Seed: " << seed << std::endl;
+
+    const bool dry_run = options.get("dry_run");
 
     const bool ignore_data = options.get("ignore_data");
     if (ignore_data) {
@@ -168,6 +174,10 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     comparisons.set_number_of_threads(nthreads);
     std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
+
+    if (dry_run) {
+        return 0;
+    }
 
     time_t start;
     time_t finish;
