@@ -74,8 +74,8 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -241,8 +241,8 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -411,8 +411,8 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -578,8 +578,8 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -749,8 +749,8 @@ TEST_CASE("Testing constrained singleton error",
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -917,8 +917,8 @@ TEST_CASE("Testing fixed singleton error",
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -1084,8 +1084,8 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "        ChildPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        UScaler:\n";
-        os << "            scale: 0.5\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";

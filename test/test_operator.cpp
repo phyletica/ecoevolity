@@ -702,10 +702,10 @@ TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler
 
 TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
-    section("testing beta(1.0, 1.0) prior and no optimizing") {
-        randomnumbergenerator rng = randomnumbergenerator(9284);
-        std::shared_ptr<operator> op = std::make_shared<freqmover>(1.0, 0.1);
-        operatorschedule os = operatorschedule();
+    SECTION("testing beta(1.0, 1.0) prior and no optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(3648);
+        std::shared_ptr<Operator> op = std::make_shared<FreqMover>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
         // os.set_auto_optimize_delay(10000);
@@ -713,11 +713,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         double a = 1.0;
         double b = 1.0;
-        std::shared_ptr<continuousprobabilitydistribution> prior = std::make_shared<betadistribution>(a, b);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(a, b);
 
         std::string nex_path = "data/hemi129.nex";
-        comparisonpopulationtree tree(nex_path, ' ', true, true, false);
-        require(tree.get_degree_of_root() == 2);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
         tree.estimate_state_frequencies();
@@ -727,10 +727,10 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         tree.make_dirty();
         tree.compute_log_likelihood_and_prior();
-        require(! tree.is_dirty());
+        REQUIRE(! tree.is_dirty());
 
-        require(! tree.state_frequencies_are_constrained());
-        require(! tree.state_frequencies_are_fixed());
+        REQUIRE(! tree.state_frequencies_are_constrained());
+        REQUIRE(! tree.state_frequencies_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -740,7 +740,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            operator& o = os.draw_operator(rng);
+            Operator& o = os.draw_operator(rng);
             tree.store_state();
             double hastings = o.propose(rng, tree);
             tree.compute_log_likelihood_and_prior();
@@ -756,7 +756,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_u();
+            double x = tree.get_freq_1();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -773,18 +773,18 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         std::cout << "expected prior mean: " << prior->get_mean() << "\n";
         std::cout << "expected prior variance: " << prior->get_variance() << "\n";
         
-        require(mean == approx(prior->get_mean()).epsilon(0.001));
-        require(variance == approx(prior->get_variance()).epsilon(0.001));
-        require(mn >= prior->get_min());
-        require(mx < prior->get_max());
-        require(mn == approx(prior->get_min()).epsilon(0.001));
-        require(mx == approx(prior->get_max()).epsilon(0.001));
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
     }
 
-    section("testing beta(1.0, 1.0) prior with optimizing") {
-        randomnumbergenerator rng = randomnumbergenerator(9284);
-        std::shared_ptr<operator> op = std::make_shared<freqmover>(1.0, 0.1);
-        operatorschedule os = operatorschedule();
+    SECTION("testing beta(1.0, 1.0) prior with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(2945720);
+        std::shared_ptr<Operator> op = std::make_shared<FreqMover>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -792,11 +792,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         double a = 1.0;
         double b = 1.0;
-        std::shared_ptr<continuousprobabilitydistribution> prior = std::make_shared<betadistribution>(a, b);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(a, b);
 
         std::string nex_path = "data/hemi129.nex";
-        comparisonpopulationtree tree(nex_path, ' ', true, true, false);
-        require(tree.get_degree_of_root() == 2);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
         tree.estimate_state_frequencies();
@@ -806,10 +806,10 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         tree.make_dirty();
         tree.compute_log_likelihood_and_prior();
-        require(! tree.is_dirty());
+        REQUIRE(! tree.is_dirty());
 
-        require(! tree.state_frequencies_are_constrained());
-        require(! tree.state_frequencies_are_fixed());
+        REQUIRE(! tree.state_frequencies_are_constrained());
+        REQUIRE(! tree.state_frequencies_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -819,7 +819,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            operator& o = os.draw_operator(rng);
+            Operator& o = os.draw_operator(rng);
             tree.store_state();
             double hastings = o.propose(rng, tree);
             tree.compute_log_likelihood_and_prior();
@@ -835,7 +835,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_u();
+            double x = tree.get_freq_1();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -852,18 +852,18 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         std::cout << "expected prior mean: " << prior->get_mean() << "\n";
         std::cout << "expected prior variance: " << prior->get_variance() << "\n";
         
-        require(mean == approx(prior->get_mean()).epsilon(0.001));
-        require(variance == approx(prior->get_variance()).epsilon(0.001));
-        require(mn >= prior->get_min());
-        require(mx < prior->get_max());
-        require(mn == approx(prior->get_min()).epsilon(0.001));
-        require(mx == approx(prior->get_max()).epsilon(0.001));
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
     }
 
-    section("testing beta(5.0, 1.0) prior and no optimizing") {
-        randomnumbergenerator rng = randomnumbergenerator(9284);
-        std::shared_ptr<operator> op = std::make_shared<freqmover>(1.0, 0.1);
-        operatorschedule os = operatorschedule();
+    SECTION("testing beta(5.0, 1.0) prior and no optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(841984264);
+        std::shared_ptr<Operator> op = std::make_shared<FreqMover>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
         // os.set_auto_optimize_delay(10000);
@@ -871,11 +871,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         double a = 5.0;
         double b = 1.0;
-        std::shared_ptr<continuousprobabilitydistribution> prior = std::make_shared<betadistribution>(a, b);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(a, b);
 
         std::string nex_path = "data/hemi129.nex";
-        comparisonpopulationtree tree(nex_path, ' ', true, true, false);
-        require(tree.get_degree_of_root() == 2);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
         tree.estimate_state_frequencies();
@@ -885,10 +885,10 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         tree.make_dirty();
         tree.compute_log_likelihood_and_prior();
-        require(! tree.is_dirty());
+        REQUIRE(! tree.is_dirty());
 
-        require(! tree.state_frequencies_are_constrained());
-        require(! tree.state_frequencies_are_fixed());
+        REQUIRE(! tree.state_frequencies_are_constrained());
+        REQUIRE(! tree.state_frequencies_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -898,7 +898,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            operator& o = os.draw_operator(rng);
+            Operator& o = os.draw_operator(rng);
             tree.store_state();
             double hastings = o.propose(rng, tree);
             tree.compute_log_likelihood_and_prior();
@@ -914,7 +914,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_u();
+            double x = tree.get_freq_1();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -931,18 +931,17 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         std::cout << "expected prior mean: " << prior->get_mean() << "\n";
         std::cout << "expected prior variance: " << prior->get_variance() << "\n";
         
-        require(mean == approx(prior->get_mean()).epsilon(0.001));
-        require(variance == approx(prior->get_variance()).epsilon(0.001));
-        require(mn >= prior->get_min());
-        require(mx < prior->get_max());
-        require(mn == approx(prior->get_min()).epsilon(0.001));
-        require(mx == approx(prior->get_max()).epsilon(0.001));
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
     }
 
-    section("testing beta(5.0, 1.0) prior with optimizing") {
-        randomnumbergenerator rng = randomnumbergenerator(9284);
-        std::shared_ptr<operator> op = std::make_shared<freqmover>(1.0, 0.1);
-        operatorschedule os = operatorschedule();
+    SECTION("testing beta(5.0, 1.0) prior with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(25456657);
+        std::shared_ptr<Operator> op = std::make_shared<FreqMover>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -950,11 +949,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         double a = 5.0;
         double b = 1.0;
-        std::shared_ptr<continuousprobabilitydistribution> prior = std::make_shared<betadistribution>(a, b);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(a, b);
 
         std::string nex_path = "data/hemi129.nex";
-        comparisonpopulationtree tree(nex_path, ' ', true, true, false);
-        require(tree.get_degree_of_root() == 2);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
         tree.estimate_state_frequencies();
@@ -964,10 +963,10 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         tree.make_dirty();
         tree.compute_log_likelihood_and_prior();
-        require(! tree.is_dirty());
+        REQUIRE(! tree.is_dirty());
 
-        require(! tree.state_frequencies_are_constrained());
-        require(! tree.state_frequencies_are_fixed());
+        REQUIRE(! tree.state_frequencies_are_constrained());
+        REQUIRE(! tree.state_frequencies_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -977,7 +976,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            operator& o = os.draw_operator(rng);
+            Operator& o = os.draw_operator(rng);
             tree.store_state();
             double hastings = o.propose(rng, tree);
             tree.compute_log_likelihood_and_prior();
@@ -993,7 +992,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_u();
+            double x = tree.get_freq_1();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -1010,18 +1009,17 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         std::cout << "expected prior mean: " << prior->get_mean() << "\n";
         std::cout << "expected prior variance: " << prior->get_variance() << "\n";
         
-        require(mean == approx(prior->get_mean()).epsilon(0.001));
-        require(variance == approx(prior->get_variance()).epsilon(0.001));
-        require(mn >= prior->get_min());
-        require(mx < prior->get_max());
-        require(mn == approx(prior->get_min()).epsilon(0.001));
-        require(mx == approx(prior->get_max()).epsilon(0.001));
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
     }
 
-    section("testing beta(1.0, 5.0) prior with optimizing") {
-        randomnumbergenerator rng = randomnumbergenerator(9284);
-        std::shared_ptr<operator> op = std::make_shared<freqmover>(1.0, 0.1);
-        operatorschedule os = operatorschedule();
+    SECTION("testing beta(1.0, 5.0) prior with optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(14458);
+        std::shared_ptr<Operator> op = std::make_shared<FreqMover>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -1029,11 +1027,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         double a = 1.0;
         double b = 5.0;
-        std::shared_ptr<continuousprobabilitydistribution> prior = std::make_shared<betadistribution>(a, b);
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(a, b);
 
         std::string nex_path = "data/hemi129.nex";
-        comparisonpopulationtree tree(nex_path, ' ', true, true, false);
-        require(tree.get_degree_of_root() == 2);
+        ComparisonPopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
         tree.fix_population_sizes();
         tree.fix_mutation_rate();
         tree.estimate_state_frequencies();
@@ -1043,10 +1041,10 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         tree.make_dirty();
         tree.compute_log_likelihood_and_prior();
-        require(! tree.is_dirty());
+        REQUIRE(! tree.is_dirty());
 
-        require(! tree.state_frequencies_are_constrained());
-        require(! tree.state_frequencies_are_fixed());
+        REQUIRE(! tree.state_frequencies_are_constrained());
+        REQUIRE(! tree.state_frequencies_are_fixed());
     
         unsigned int n = 0;
         double mean = 0.0;
@@ -1056,7 +1054,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double mn = std::numeric_limits<double>::max();
         double mx = -std::numeric_limits<double>::max();
         for (unsigned int i = 0; i < 100000; ++i) {
-            operator& o = os.draw_operator(rng);
+            Operator& o = os.draw_operator(rng);
             tree.store_state();
             double hastings = o.propose(rng, tree);
             tree.compute_log_likelihood_and_prior();
@@ -1072,7 +1070,7 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
                 tree.restore_state();
             }
             o.optimize(os, acceptance_prob);
-            double x = tree.get_u();
+            double x = tree.get_freq_1();
             mn = std::min(mn, x);
             mx = std::max(mx, x);
             ++n;
@@ -1089,12 +1087,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         std::cout << "expected prior mean: " << prior->get_mean() << "\n";
         std::cout << "expected prior variance: " << prior->get_variance() << "\n";
         
-        require(mean == approx(prior->get_mean()).epsilon(0.001));
-        require(variance == approx(prior->get_variance()).epsilon(0.001));
-        require(mn >= prior->get_min());
-        require(mx < prior->get_max());
-        require(mn == approx(prior->get_min()).epsilon(0.001));
-        require(mx == approx(prior->get_max()).epsilon(0.001));
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
     }
 }
 

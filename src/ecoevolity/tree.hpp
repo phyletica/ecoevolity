@@ -58,7 +58,7 @@ class PopulationTree {
         int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool population_sizes_are_constrained_ = false;
-        bool state_frequencies_rates_are_constrained_ = false;
+        bool state_frequencies_are_constrained_ = false;
         bool is_dirty_ = true;
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;

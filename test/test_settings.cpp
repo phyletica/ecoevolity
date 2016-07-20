@@ -488,7 +488,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         e += "        value: 1\n";
         e += "        estimate: false\n";
         e += "    freq_1:\n";
-        e += "        value: 0.5\n";
+        e += "        value: 0.416667\n";
         e += "        estimate: false\n";
         REQUIRE(s == e);
 
@@ -502,8 +502,8 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(! std::isnan(t.get_child_population_size(1)));
         REQUIRE(t.get_u() == Approx(1.2));
         REQUIRE(t.get_v() == Approx(0.8571429));
-        REQUIRE(t.get_freq_1() == Approx(0.2380952));
-        REQUIRE(t.get_freq_0() == Approx(1.0 - 0.2380952));
+        REQUIRE(t.get_freq_1() == Approx(0.4166666666666667));
+        REQUIRE(t.get_freq_0() == Approx(1.0 - 0.4166666666666667));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == true);
         REQUIRE(t.get_root_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == false);
@@ -551,7 +551,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         ComparisonSettings settings = ComparisonSettings(
                 nex_path,
                 pop_size,
-                u,
+                freq_1,
                 mutation_rate,
                 ' ',
                 true,
@@ -594,10 +594,10 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size() == Approx(2.0/10.0));
         REQUIRE(t.get_child_population_size(0) == Approx(2.0/10.0));
         REQUIRE(t.get_child_population_size(1) == Approx(2.0/10.0));
-        REQUIRE(t.get_u() == 1.0);
-        REQUIRE(t.get_v() == 1.0);
-        REQUIRE(t.get_freq_1() == 0.5);
-        REQUIRE(t.get_freq_0() == 0.5);
+        REQUIRE(t.get_u() == Approx(1.0));
+        REQUIRE(t.get_v() == Approx(1.0));
+        REQUIRE(t.get_freq_1() == Approx(0.5));
+        REQUIRE(t.get_freq_0() == Approx(0.5));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == true);
         REQUIRE(t.get_root_population_size_parameter()->is_fixed() == true);
         REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == true);
@@ -654,7 +654,7 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         ComparisonSettings settings = ComparisonSettings(
                 nex_path,
                 pop_size,
-                u,
+                freq_1,
                 mutation_rate,
                 ' ',
                 true,
@@ -708,10 +708,10 @@ TEST_CASE("Testing comparison setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_root_population_size() == Approx(2.0/10.0));
         REQUIRE(t.get_child_population_size(0) == Approx(2.0/10.0));
         REQUIRE(t.get_child_population_size(1) == Approx(2.0/10.0));
-        REQUIRE(t.get_u() == 1.0);
-        REQUIRE(t.get_v() == 1.0);
-        REQUIRE(t.get_freq_1() == 0.5);
-        REQUIRE(t.get_freq_0() == 0.5);
+        REQUIRE(t.get_u() == Approx(1.0));
+        REQUIRE(t.get_v() == Approx(1.0));
+        REQUIRE(t.get_freq_1() == Approx(0.5));
+        REQUIRE(t.get_freq_0() == Approx(0.5));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == false);
         REQUIRE(t.get_root_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_child_population_size_parameter(0)->is_fixed() == false);
@@ -1339,9 +1339,9 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "            value: 0.611111\n";
         e += "            estimate: true\n";
         e += "            prior:\n";
-        e += "                exponential_distribution:\n";
-        e += "                    rate: 2\n";
-        e += "                    offset: 0.5\n";
+        e += "                beta_distribution:\n";
+        e += "                    alpha: 1\n";
+        e += "                    beta: 1\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
         e += "    auto_optimize_delay: 10000\n";

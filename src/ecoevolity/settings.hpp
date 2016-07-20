@@ -1121,7 +1121,7 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_child_population_size_scaler_settings() const {
             return this->child_population_size_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_freq_mover_settings() const {
+        const WindowOperatorSettings& get_freq_mover_settings() const {
             return this->freq_mover_settings_;
         }
 

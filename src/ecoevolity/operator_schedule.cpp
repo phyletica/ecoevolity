@@ -79,7 +79,7 @@ OperatorSchedule::OperatorSchedule(
     if (settings.get_freq_mover_settings().get_weight() > 0.0) {
         this->add_operator(std::make_shared<FreqMover>(
                 settings.get_freq_mover_settings().get_weight(),
-                settings.get_freq_mover_settings().get_scale()
+                settings.get_freq_mover_settings().get_window()
                 ));
     }
 }

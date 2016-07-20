@@ -1189,8 +1189,8 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         REQUIRE(samples.size() == 10001);
 
         SampleSummarizer<double> summary = prior_sample.summarize<double>("freq_1_kya");
-        REQUIRE(summary.mean() == Approx(expected_mean).epsilon(0.001));
-        REQUIRE(summary.variance() == Approx(expected_variance).epsilon(0.001));
+        REQUIRE(summary.mean() == Approx(expected_mean).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(expected_variance).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         summary = prior_sample.summarize<double>("ln_likelihood");
@@ -1876,8 +1876,8 @@ TEST_CASE("Testing fully parameterized model for one pair",
         REQUIRE(size_summary2.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
         REQUIRE(size_summary3.mean() == Approx(size_shape * size_scale).epsilon(0.01));
         REQUIRE(size_summary3.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
-        REQUIRE(f_summary.mean() == Approx(expected_f_mean).epsilon(0.001));
-        REQUIRE(f_summary.variance() == Approx(expected_f_variance).epsilon(0.001));
+        REQUIRE(f_summary.mean() == Approx(expected_f_mean).epsilon(0.005));
+        REQUIRE(f_summary.variance() == Approx(expected_f_variance).epsilon(0.005));
         REQUIRE(mult_summary.mean() == Approx(mult_shape * mult_scale).epsilon(0.01));
         REQUIRE(mult_summary.variance() == Approx(mult_shape * mult_scale * mult_scale).epsilon(0.01));
 
@@ -2033,8 +2033,8 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         REQUIRE(size_summary2.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
         REQUIRE(size_summary3.mean() == Approx(size_shape * size_scale).epsilon(0.01));
         REQUIRE(size_summary3.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
-        REQUIRE(f_summary.mean() == Approx(expected_f_mean).epsilon(0.001));
-        REQUIRE(f_summary.variance() == Approx(expected_f_variance).epsilon(0.001));
+        REQUIRE(f_summary.mean() == Approx(expected_f_mean).epsilon(0.005));
+        REQUIRE(f_summary.variance() == Approx(expected_f_variance).epsilon(0.005));
         REQUIRE(mult_summary.mean() == Approx(mult_shape * mult_scale).epsilon(0.01));
         REQUIRE(mult_summary.variance() == Approx(mult_shape * mult_scale * mult_scale).epsilon(0.01));
 
@@ -3345,7 +3345,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "            prior:\n";
         os << "                beta_distribution:\n";
         os << "                    alpha: " << f1_a << "\n";
-        os << "                    beta: " << f1_a << "\n";
+        os << "                    beta: " << f1_b << "\n";
         os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
@@ -3363,7 +3363,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "            prior:\n";
         os << "                beta_distribution:\n";
         os << "                    alpha: " << f2_a << "\n";
-        os << "                    beta: " << f2_a << "\n";
+        os << "                    beta: " << f2_b << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -3384,7 +3384,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "            prior:\n";
         os << "                beta_distribution:\n";
         os << "                    alpha: " << f3_a << "\n";
-        os << "                    beta: " << f3_a << "\n";
+        os << "                    beta: " << f3_b << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
