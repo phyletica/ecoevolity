@@ -459,6 +459,7 @@ double PopulationTree::compute_pattern_log_likelihoods(unsigned int nthreads) {
     // Launch nthreads - 1 threads
     for (unsigned int i = 0; i < (nthreads - 1); ++i) {
         threads.push_back(std::async(
+                std::launch::async,
                 &PopulationTree::compute_pattern_log_likelihoods_by_index_range,
                 this,
                 start_idx,
