@@ -246,6 +246,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->bottom_pattern_probs_.resize(allele_count);
             this->top_pattern_probs_.resize(allele_count);
         }
+        PopulationNode(const PopulationNode& node) :
+            BaseClass(node.label_, node.height_)
+        {
+            PositiveRealParameter s = *node.population_size_;
+            this->population_size_ = s;
+            this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
+            this->top_pattern_probs_ = node.top_pattern_probs_;
+        }
 
         // overload copy operator
         // PopulationNode& operator=(const PopulationNode& node) {

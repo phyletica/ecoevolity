@@ -84,6 +84,11 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->label_ = label;
             this->height_->set_value(height);
         }
+        BaseNode(std::string label, std::shared_ptr<PositiveRealParameter> height) {
+            this->label_ = label;
+            PositiveRealParameter h = *height;
+            this->height_ = h;
+        }
 
         // Destructor
         // virtual ~BaseNode() { }
@@ -216,13 +221,6 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         void set_height_parameter(std::shared_ptr<PositiveRealParameter> height_parameter) {
             this->height_ = height_parameter;
             this->make_all_dirty();
-        }
-
-        void scale(double multiplier) {
-            this->set_height(this->get_height() * multiplier);
-            for (auto child_iter: this->children_) {
-                child_iter->scale(multiplier);
-            }
         }
 
         std::shared_ptr<PositiveRealParameter> get_height_parameter() const {

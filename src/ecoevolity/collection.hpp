@@ -49,7 +49,7 @@ class ComparisonPopulationTreeCollection {
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
         std::string operator_log_path_ = "ecoevolity-operator-run-1.log";
-        unsigned int number_of_threads_ = 0;
+        unsigned int number_of_threads_ = 1;
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
 
