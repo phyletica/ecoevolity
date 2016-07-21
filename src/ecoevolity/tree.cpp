@@ -487,7 +487,7 @@ double PopulationTree::compute_log_likelihood() {
         double pattern_likelihood = this->pattern_likelihoods_.at(pattern_idx);
         double weight = (double) this->data_.get_pattern_weight(pattern_idx);
         if (pattern_likelihood ==  0.0) {
-            log_likelihood = -10e100;
+            log_likelihood = -std::numeric_limits<double>::infinity();
             break;
         }
         log_likelihood += weight * std::log(pattern_likelihood);
