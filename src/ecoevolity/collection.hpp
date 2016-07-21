@@ -119,9 +119,6 @@ class ComparisonPopulationTreeCollection {
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void set_number_of_threads(unsigned int n) {
-            if (n > this->trees_.size()) {
-                n = this->trees_.size();
-            }
             this->number_of_threads_ = n;
         }
         unsigned int get_number_of_threads() const {
