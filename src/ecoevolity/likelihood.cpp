@@ -198,10 +198,10 @@ void compute_pattern_partials(
 
 std::vector< std::vector<double> > compute_root_probabilities(
         const PopulationNode& root,
-        u,
-        v,
-        mutation_rate,
-        ploidy
+        double u,
+        double v,
+        double mutation_rate,
+        double ploidy
         ) {
     unsigned int N = root.get_allele_count();
     std::vector< std::vector<double> > x (N + 1); 
@@ -239,10 +239,10 @@ std::vector< std::vector<double> > compute_root_probabilities(
 
 double compute_root_likelihood(
         const PopulationNode& root,
-        u,
-        v,
-        mutation_rate,
-        ploidy
+        double u,
+        double v,
+        double mutation_rate,
+        double ploidy
         ) {
     unsigned int N = root.get_allele_count();
     std::vector< std::vector<double> > conditionals = compute_root_probabilities(root, u, v, mutation_rate, ploidy);
@@ -375,13 +375,17 @@ double get_log_likelihood(
     unsigned int start_idx = 0;
     std::vector< std::future<double> > threads;
     threads.reserve(nthreads - 1);
+    std::vector< std::shared_ptr<PopulationNode> > root_clones;
+    root_clones.reserve(nthreads - 1);
 
     // Launch nthreads - 1 threads
     for (unsigned int i = 0; i < (nthreads - 1); ++i) {
+        std::shared_ptr<PopulationNode> root_clone = root.get_clade_clone();
+        root_clones.push_back(root_clone);
         threads.push_back(std::async(
                 std::launch::async,
                 get_log_likelihood_for_pattern_range,
-                copy_of_root_node,
+                root_clone,
                 data,
                 start_idx,
                 start_idx + batch_size,

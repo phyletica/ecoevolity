@@ -86,8 +86,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         BaseNode(std::string label, std::shared_ptr<PositiveRealParameter> height) {
             this->label_ = label;
-            PositiveRealParameter h = *height;
-            this->height_ = h;
+            this->height_ = height;
         }
 
         // Destructor

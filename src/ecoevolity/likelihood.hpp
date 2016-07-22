@@ -58,18 +58,18 @@ void compute_pattern_partials(
 
 std::vector< std::vector<double> > compute_root_probabilities(
         const PopulationNode& root,
-        u,
-        v,
-        mutation_rate,
-        ploidy
+        double u,
+        double v,
+        double mutation_rate,
+        double ploidy
         );
 
 double compute_root_likelihood(
         const PopulationNode& root,
-        u,
-        v,
-        mutation_rate,
-        ploidy
+        double u,
+        double v,
+        double mutation_rate,
+        double ploidy
         );
 
 double compute_pattern_likelihood(

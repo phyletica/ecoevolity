@@ -249,8 +249,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         PopulationNode(const PopulationNode& node) :
             BaseClass(node.label_, node.height_)
         {
-            PositiveRealParameter s = *node.population_size_;
-            this->population_size_ = s;
+            this->population_size_ = node.population_size_;
             this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
             this->top_pattern_probs_ = node.top_pattern_probs_;
         }
@@ -296,6 +295,21 @@ class PopulationNode: public BaseNode<PopulationNode>{
             for (auto child_iter: this->children_) {
                 child_iter->resize_all();
             }
+        }
+
+        std::shared_ptr<PopulationNode> get_clone() {
+            return std::make_shared<PopulationNode>(*this);
+        }
+
+        std::shared_ptr<PopulationNode> get_clade_clone() {
+            if (this->is_leaf()) {
+                return this->get_clone();
+            }
+            std::shared_ptr<PopulationNode> n = this->get_clone();
+            for (auto child_iter: this->children_) {
+                n->add_child(child_iter->get_clade_clone());
+            }
+            return n;
         }
 
         const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs() const{

@@ -1727,3 +1727,232 @@ TEST_CASE("Test to_parentheses with Node", "[Node]") {
         REQUIRE(p == "(A:1):0");
     }
 }
+
+TEST_CASE("Test clade cloning with PopulationNode", "[PopulationNode]") {
+
+    SECTION("Testing clade cloning") {
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 1.0);
+        std::shared_ptr<PopulationNode> root_child1 = std::make_shared<PopulationNode>("root child 1", 0.8);
+        std::shared_ptr<PopulationNode> root_child2 = std::make_shared<PopulationNode>("root child 2", 0.3);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>("leaf 1", (unsigned int)3);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>("leaf 2", (unsigned int)3);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>("leaf 3", (unsigned int)3);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>("leaf 4", (unsigned int)3);
+        std::shared_ptr<PopulationNode> leaf5 = std::make_shared<PopulationNode>("leaf 5", (unsigned int)3);
+
+        root->add_child(root_child1);
+        root->add_child(root_child2);
+
+        leaf1->add_parent(root_child1);
+        leaf2->add_parent(root_child1);
+        leaf3->add_parent(root_child1);
+
+        leaf4->add_parent(root_child2);
+        leaf5->add_parent(root_child2);
+
+        std::shared_ptr<PopulationNode> clone = root->get_clade_clone();
+
+        REQUIRE(root->degree() == 2);
+        REQUIRE(root->is_root());
+        REQUIRE(! root->is_leaf());
+        REQUIRE(root->has_children());
+        REQUIRE(! root->has_parent());
+        REQUIRE(root->get_number_of_children() == 2);
+
+        REQUIRE(clone->degree() == 2);
+        REQUIRE(clone->is_root());
+        REQUIRE(! clone->is_leaf());
+        REQUIRE(clone->has_children());
+        REQUIRE(! clone->has_parent());
+        REQUIRE(clone->get_number_of_children() == 2);
+
+        REQUIRE(root != clone);
+        REQUIRE(root->get_height_parameter() == clone->get_height_parameter());
+        REQUIRE(root->get_population_size_parameter() == clone->get_population_size_parameter());
+
+        std::shared_ptr<PopulationNode> clone_child1 = clone.get_child(0);
+        std::shared_ptr<PopulationNode> clone_child2 = clone.get_child(1);
+
+        REQUIRE(root_child1->degree() == 4);
+        REQUIRE(root_child1->get_number_of_children() == 3);
+        REQUIRE(! root_child1->is_root());
+        REQUIRE(! root_child1->is_leaf());
+        REQUIRE(root_child1->has_children());
+        REQUIRE(root_child1->has_parent());
+
+        REQUIRE(clone_child1->degree() == 4);
+        REQUIRE(clone_child1->get_number_of_children() == 3);
+        REQUIRE(! clone_child1->is_root());
+        REQUIRE(! clone_child1->is_leaf());
+        REQUIRE(clone_child1->has_children());
+        REQUIRE(clone_child1->has_parent());
+
+        REQUIRE(root_child1 != clone_child1);
+        REQUIRE(root_child1->get_height_parameter() == clone_child1->get_height_parameter());
+        REQUIRE(root_child1->get_population_size_parameter() == clone_child1->get_population_size_parameter());
+
+        REQUIRE(root_child2->degree() == 3);
+        REQUIRE(root_child2->get_number_of_children() == 2);
+        REQUIRE(! root_child2->is_root());
+        REQUIRE(! root_child2->is_leaf());
+        REQUIRE(root_child2->has_children());
+        REQUIRE(root_child2->has_parent());
+
+        REQUIRE(clone_child2->degree() == 3);
+        REQUIRE(clone_child2->get_number_of_children() == 2);
+        REQUIRE(! clone_child2->is_root());
+        REQUIRE(! clone_child2->is_leaf());
+        REQUIRE(clone_child2->has_children());
+        REQUIRE(clone_child2->has_parent());
+
+        REQUIRE(root_child2 != clone_child2);
+        REQUIRE(root_child2->get_height_parameter() == clone_child2->get_height_parameter());
+        REQUIRE(root_child2->get_population_size_parameter() == clone_child2->get_population_size_parameter());
+
+        std::shared_ptr<PopulationNode> leaf1_clone = clone_child1.get_child(0);
+        std::shared_ptr<PopulationNode> leaf2_clone = clone_child1.get_child(1);
+        std::shared_ptr<PopulationNode> leaf3_clone = clone_child1.get_child(2);
+        std::shared_ptr<PopulationNode> leaf4_clone = clone_child2.get_child(0);
+        std::shared_ptr<PopulationNode> leaf5_clone = clone_child2.get_child(1);
+
+        REQUIRE(leaf1->degree() == 1);
+        REQUIRE(leaf1->get_number_of_children() == 0);
+        REQUIRE(! leaf1->is_root());
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(! leaf1->has_children());
+        REQUIRE(leaf1->has_parent());
+
+        REQUIRE(leaf1_clone->degree() == 1);
+        REQUIRE(leaf1_clone->get_number_of_children() == 0);
+        REQUIRE(! leaf1_clone->is_root());
+        REQUIRE(leaf1_clone->is_leaf());
+        REQUIRE(! leaf1_clone->has_children());
+        REQUIRE(leaf1_clone->has_parent());
+
+        REQUIRE(leaf1 != leaf1_clone);
+        REQUIRE(leaf1->get_height_parameter() == leaf1_clone->get_height_parameter());
+        REQUIRE(leaf1->get_population_size_parameter() == leaf1_clone->get_population_size_parameter());
+
+        REQUIRE(leaf2->degree() == 1);
+        REQUIRE(leaf2->get_number_of_children() == 0);
+        REQUIRE(! leaf2->is_root());
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(! leaf2->has_children());
+        REQUIRE(leaf2->has_parent());
+
+        REQUIRE(leaf2_clone->degree() == 1);
+        REQUIRE(leaf2_clone->get_number_of_children() == 0);
+        REQUIRE(! leaf2_clone->is_root());
+        REQUIRE(leaf2_clone->is_leaf());
+        REQUIRE(! leaf2_clone->has_children());
+        REQUIRE(leaf2_clone->has_parent());
+
+        REQUIRE(leaf2 != leaf2_clone);
+        REQUIRE(leaf2->get_height_parameter() == leaf2_clone->get_height_parameter());
+        REQUIRE(leaf2->get_population_size_parameter() == leaf2_clone->get_population_size_parameter());
+
+        REQUIRE(leaf3->degree() == 1);
+        REQUIRE(leaf3->get_number_of_children() == 0);
+        REQUIRE(! leaf3->is_root());
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(! leaf3->has_children());
+        REQUIRE(leaf3->has_parent());
+
+        REQUIRE(leaf3_clone->degree() == 1);
+        REQUIRE(leaf3_clone->get_number_of_children() == 0);
+        REQUIRE(! leaf3_clone->is_root());
+        REQUIRE(leaf3_clone->is_leaf());
+        REQUIRE(! leaf3_clone->has_children());
+        REQUIRE(leaf3_clone->has_parent());
+
+        REQUIRE(leaf3 != leaf3_clone);
+        REQUIRE(leaf3->get_height_parameter() == leaf3_clone->get_height_parameter());
+        REQUIRE(leaf3->get_population_size_parameter() == leaf3_clone->get_population_size_parameter());
+
+        REQUIRE(leaf4->degree() == 1);
+        REQUIRE(leaf4->get_number_of_children() == 0);
+        REQUIRE(! leaf4->is_root());
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(! leaf4->has_children());
+        REQUIRE(leaf4->has_parent());
+
+        REQUIRE(leaf4_clone->degree() == 1);
+        REQUIRE(leaf4_clone->get_number_of_children() == 0);
+        REQUIRE(! leaf4_clone->is_root());
+        REQUIRE(leaf4_clone->is_leaf());
+        REQUIRE(! leaf4_clone->has_children());
+        REQUIRE(leaf4_clone->has_parent());
+
+        REQUIRE(leaf4 != leaf4_clone);
+        REQUIRE(leaf4->get_height_parameter() == leaf4_clone->get_height_parameter());
+        REQUIRE(leaf4->get_population_size_parameter() == leaf4_clone->get_population_size_parameter());
+
+        REQUIRE(leaf5->degree() == 1);
+        REQUIRE(leaf5->get_number_of_children() == 0);
+        REQUIRE(! leaf5->is_root());
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(! leaf5->has_children());
+        REQUIRE(leaf5->has_parent());
+
+        REQUIRE(leaf5_clone->degree() == 1);
+        REQUIRE(leaf5_clone->get_number_of_children() == 0);
+        REQUIRE(! leaf5_clone->is_root());
+        REQUIRE(leaf5_clone->is_leaf());
+        REQUIRE(! leaf5_clone->has_children());
+        REQUIRE(leaf5_clone->has_parent());
+
+        REQUIRE(leaf5 != leaf5_clone);
+        REQUIRE(leaf5->get_height_parameter() == leaf5_clone->get_height_parameter());
+        REQUIRE(leaf5->get_population_size_parameter() == leaf5_clone->get_population_size_parameter());
+
+
+        REQUIRE(leaf1->get_allele_count() == 3);
+        REQUIRE(leaf2->get_allele_count() == 3);
+        REQUIRE(leaf3->get_allele_count() == 3);
+        REQUIRE(leaf4->get_allele_count() == 3);
+        REQUIRE(leaf5->get_allele_count() == 3);
+        REQUIRE(root_child1->get_allele_count() == 0);
+        REQUIRE(root_child2->get_allele_count() == 0);
+        REQUIRE(root->get_allele_count() == 0);
+
+        REQUIRE(leaf1_clone->get_allele_count() == 3);
+        REQUIRE(leaf2_clone->get_allele_count() == 3);
+        REQUIRE(leaf3_clone->get_allele_count() == 3);
+        REQUIRE(leaf4_clone->get_allele_count() == 3);
+        REQUIRE(leaf5_clone->get_allele_count() == 3);
+        REQUIRE(clone_child1->get_allele_count() == 0);
+        REQUIRE(clone_child2->get_allele_count() == 0);
+        REQUIRE(clone->get_allele_count() == 0);
+        
+        root->resize_all();
+
+        REQUIRE(leaf1->get_allele_count() == 3);
+        REQUIRE(leaf2->get_allele_count() == 3);
+        REQUIRE(leaf3->get_allele_count() == 3);
+        REQUIRE(leaf4->get_allele_count() == 3);
+        REQUIRE(leaf5->get_allele_count() == 3);
+        REQUIRE(root_child1->get_allele_count() == 9);
+        REQUIRE(root_child2->get_allele_count() == 6);
+        REQUIRE(root->get_allele_count() == 15);
+
+        REQUIRE(leaf1_clone->get_allele_count() == 3);
+        REQUIRE(leaf2_clone->get_allele_count() == 3);
+        REQUIRE(leaf3_clone->get_allele_count() == 3);
+        REQUIRE(leaf4_clone->get_allele_count() == 3);
+        REQUIRE(leaf5_clone->get_allele_count() == 3);
+        REQUIRE(clone_child1->get_allele_count() == 0);
+        REQUIRE(clone_child2->get_allele_count() == 0);
+        REQUIRE(clone->get_allele_count() == 0);
+
+        clone->resize_all();
+
+        REQUIRE(leaf1_clone->get_allele_count() == 3);
+        REQUIRE(leaf2_clone->get_allele_count() == 3);
+        REQUIRE(leaf3_clone->get_allele_count() == 3);
+        REQUIRE(leaf4_clone->get_allele_count() == 3);
+        REQUIRE(leaf5_clone->get_allele_count() == 3);
+        REQUIRE(clone_child1->get_allele_count() == 9);
+        REQUIRE(clone_child2->get_allele_count() == 6);
+        REQUIRE(clone->get_allele_count() == 15);
+    }
+}

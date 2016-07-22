@@ -935,33 +935,35 @@ void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
     }
 }
 
-double calculate_log_likelihood(
-        PopulationTree tree&
+double PopulationTree::compute_log_likelihood(
         unsigned int nthreads) {
-    if (tree.ignore_data()) {
-        tree.set_log_likelihood(0.0);
+    if (this->ignoring_data()) {
+        this->log_likelihood_.set_value(0.0);
         return 0.0;
     }
-    double all_red_pattern_likelihood = 0.0;
-    double all_green_pattern_likelihood = 0.0;
+    double all_red_pattern_prob = 0.0;
+    double all_green_pattern_prob = 0.0;
     double log_likelihood = get_log_likelihood(
-            tree.get_root(),
-            tree.get_data(),
-            tree.get_u(),
-            tree.get_v(),
-            tree.get_mutation_rate(),
-            tree.get_ploidy(),
-            tree.state_frequencies_are_constrained(),
-            tree.constant_sites_removed(),
-            all_red_pattern_likelihood,
-            all_green_pattern_likelihood,
+            this->get_mutable_root(),
+            this->get_data(),
+            this->get_u(),
+            this->get_v(),
+            this->get_mutation_rate(),
+            this->get_ploidy(),
+            this->state_frequencies_are_constrained(),
+            this->constant_sites_removed(),
+            all_red_pattern_prob,
+            all_green_pattern_prob,
             nthreads);
 
-    if (tree.constant_sites_removed()) {
-        if (tree.constant_site_counts_were_provided()) {
+    this->all_red_pattern_likelihood_.set_value(all_red_pattern_prob);
+    this->all_green_pattern_likelihood_.set_value(all_green_pattern_prob);
+
+    if (this->constant_sites_removed()) {
+        if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
-                    ((double)tree.get_provided_number_of_constant_green_sites() * all_green_pattern_likelihood) +
-                    ((double)tree.get_provided_number_of_constant_red_sites() * all_red_pattern_likelihood);
+                    ((double)this->get_provided_number_of_constant_green_sites() * all_green_pattern_prob) +
+                    ((double)this->get_provided_number_of_constant_red_sites() * all_red_pattern_prob);
             log_likelihood += constant_log_likelihood;
         }
         //////////////////////////////////////////////////////////////////////
@@ -979,19 +981,19 @@ double calculate_log_likelihood(
         // }
         //////////////////////////////////////////////////////////////////////
         else {
-            log_likelihood -= ((double)tree.get_data().get_number_of_sites() * 
-                    std::log(1.0 - all_green_pattern_likelihood -
-                            all_red_pattern_likelihood));
+            log_likelihood -= ((double)this->data_.get_number_of_sites() * 
+                    std::log(1.0 - all_green_pattern_prob -
+                            all_red_pattern_prob));
         }
     }
 
 
-    log_likelihood += tree.get_likelihood_correction();
+    log_likelihood += this->get_likelihood_correction();
 
     // ECOEVOLITY_DEBUG(
     //     std::cerr << "compute_log_likelihood(): " << log_likelihood << std::endl;
     // )
 
-    tree.set_log_likelihood_value(log_likelihood);
+    this->log_likelihood_.set_value(log_likelihood);
     return log_likelihood;
 }

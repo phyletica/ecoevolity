@@ -28,9 +28,6 @@
 #include "error.hpp"
 #include "assert.hpp"
 
-double calculate_log_likelihood(
-        PopulationTree tree&
-        unsigned int nthreads = 1);
 
 class PopulationTree {
     protected:
@@ -116,6 +113,7 @@ class PopulationTree {
 
         bool initialized() const {return (bool)this->root_;}
         const PopulationNode& get_root() const {return *this->root_;}
+        PopulationNode& get_mutable_root() const {return *this->root_;}
         void set_root_height(double height);
         void update_root_height(double height);
         double get_root_height() const;
@@ -208,9 +206,7 @@ class PopulationTree {
             return;
         }
 
-        double compute_log_likelihood(unsigned int nthreads = 1) {
-            return calculate_log_likelihood(*this, nthreads);
-        }
+        double compute_log_likelihood(unsigned int nthreads = 1);
 
         void set_log_likelihood_value(double value) {
             this->log_likelihood_.set_value(value);
