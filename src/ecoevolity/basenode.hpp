@@ -105,6 +105,25 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
+        void disconnect() {
+            if (this->parent_) {
+                this->parent_->remove_child(this->shared_from_this());
+            }
+            for (unsigned int i = 0; i < this->children_.size(); ++i) {
+                this->children_.at(i)->remove_parent();
+            }
+            this->children_.clear();
+            this->parent_ = nullptr;
+        }
+        void destroy() {
+            if (this->parent_) {
+                this->parent_->remove_child(this->shared_from_this());
+            }
+            while (this->has_children()) {
+                this->get_child(0)->destroy();
+            }
+        }
+
         bool has_parent() const { return parent_ ? true : false; }
         bool is_root() const { return parent_ ? false : true; }
 
@@ -140,6 +159,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::shared_ptr<DerivedNodeT> remove_parent() {
             if (this->has_parent()) {
                 std::shared_ptr<DerivedNodeT> p = this->parent_;
+                this->parent_.reset();
                 this->parent_ = nullptr;
                 p->remove_child(this->shared_from_this());
                 return p;
@@ -192,6 +212,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
             for (unsigned int i = 0; i < this->children_.size(); ++i) {
                 if (this->children_.at(i) == node) {
+                    this->children_.at(i).reset();
                     this->children_.erase(this->children_.begin() + i);
                     node->remove_parent();
                 }
@@ -203,6 +224,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 throw std::out_of_range("BaseNode::remove_child() index out of range");
             }
             std::shared_ptr<DerivedNodeT> c = this->children_.at(index);
+            this->children_.at(index).reset();
             this->children_.erase(this->children_.begin() + index);
             c->remove_parent();
             return c;
