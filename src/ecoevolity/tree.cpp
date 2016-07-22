@@ -962,8 +962,8 @@ double PopulationTree::compute_log_likelihood(
     if (this->constant_sites_removed()) {
         if (this->constant_site_counts_were_provided()) {
             double constant_log_likelihood =
-                    ((double)this->get_provided_number_of_constant_green_sites() * all_green_pattern_prob) +
-                    ((double)this->get_provided_number_of_constant_red_sites() * all_red_pattern_prob);
+                    ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
+                    ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
             log_likelihood += constant_log_likelihood;
         }
         //////////////////////////////////////////////////////////////////////
