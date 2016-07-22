@@ -118,7 +118,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 RandomNumberGenerator& rng) {
             double u = rng.uniform_real();
             if (this->has_parent()) {
-                int i = this->parent_->get_character_state();
+                int i = this->get_parent()->get_character_state();
                 ECOEVOLITY_ASSERT((i == 0) || (i == 1));
                 if (u < this->p[i][0]) {
                     this->set_character_state(0);

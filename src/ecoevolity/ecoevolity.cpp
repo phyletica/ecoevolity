@@ -176,7 +176,6 @@ int ecoevolity_main(int argc, char * argv[]) {
     std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
 
     if (dry_run) {
-        comparisons.destroy();
         return 0;
     }
 
@@ -194,6 +193,5 @@ int ecoevolity_main(int argc, char * argv[]) {
     double duration = difftime(finish, start);
     std::cout << "Runtime: " << duration << " seconds." << std::endl;
 
-    comparisons.destroy();
     return 0;
 }

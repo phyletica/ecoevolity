@@ -99,10 +99,6 @@ class PopulationTree {
 
         void fold_patterns();
 
-        void destroy() {
-            this->root_->destroy();
-        }
-
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;
         }

@@ -47,7 +47,7 @@ template<class DerivedNodeT>
 class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
     protected:
         std::vector< std::shared_ptr<DerivedNodeT> > children_;
-        std::shared_ptr<DerivedNodeT> parent_ = nullptr;
+        std::weak_ptr<DerivedNodeT> parent_ = nullptr;
         std::string label_ = "";
         std::shared_ptr<PositiveRealParameter> height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
@@ -105,35 +105,16 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
-        void disconnect() {
-            if (this->parent_) {
-                this->parent_->remove_child(this->shared_from_this());
-            }
-            for (unsigned int i = 0; i < this->children_.size(); ++i) {
-                this->children_.at(i)->remove_parent();
-            }
-            this->children_.clear();
-            this->parent_ = nullptr;
-        }
-        void destroy() {
-            if (this->parent_) {
-                this->parent_->remove_child(this->shared_from_this());
-            }
-            while (this->has_children()) {
-                this->get_child(0)->destroy();
-            }
-        }
-
         bool has_parent() const { return parent_ ? true : false; }
         bool is_root() const { return parent_ ? false : true; }
 
         unsigned int get_number_of_parents() const { return parent_ ? 1 : 0; }
 
-        const std::shared_ptr<DerivedNodeT>& get_parent() const {
-            return this->parent_;
-        }
+        /* const std::shared_ptr<DerivedNodeT>& get_parent() const { */
+        /*     return this->parent_.lock(); */
+        /* } */
         std::shared_ptr<DerivedNodeT> get_parent() {
-            return this->parent_;
+            return this->parent_.lock();
         }
 
         bool is_parent(const std::shared_ptr<DerivedNodeT>& node) const {
@@ -158,7 +139,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         std::shared_ptr<DerivedNodeT> remove_parent() {
             if (this->has_parent()) {
-                std::shared_ptr<DerivedNodeT> p = this->parent_;
+                std::shared_ptr<DerivedNodeT> p = this->parent_.lock();
                 this->parent_.reset();
                 this->parent_ = nullptr;
                 p->remove_child(this->shared_from_this());

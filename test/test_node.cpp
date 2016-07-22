@@ -483,41 +483,6 @@ TEST_CASE("Test simple tree building with Node", "[Node]") {
         REQUIRE(leaf5->get_height() == Approx(0.0));
         REQUIRE(leaf5->get_length() == Approx(0.3));
         REQUIRE(leaf5->is_parent(root_child2));
-
-
-        root->destroy();
-
-        REQUIRE(root->degree() == 0);
-        REQUIRE(root->has_children() == false);
-        REQUIRE(root->has_parent() == false);
-
-        REQUIRE(root_child1->degree() == 0);
-        REQUIRE(root_child1->has_children() == false);
-        REQUIRE(root_child1->has_parent() == false);
-
-        REQUIRE(root_child2->degree() == 0);
-        REQUIRE(root_child2->has_children() == false);
-        REQUIRE(root_child2->has_parent() == false);
-
-        REQUIRE(leaf1->degree() == 0);
-        REQUIRE(leaf1->has_children() == false);
-        REQUIRE(leaf1->has_parent() == false);
-
-        REQUIRE(leaf2->degree() == 0);
-        REQUIRE(leaf2->has_children() == false);
-        REQUIRE(leaf2->has_parent() == false);
-
-        REQUIRE(leaf3->degree() == 0);
-        REQUIRE(leaf3->has_children() == false);
-        REQUIRE(leaf3->has_parent() == false);
-
-        REQUIRE(leaf4->degree() == 0);
-        REQUIRE(leaf4->has_children() == false);
-        REQUIRE(leaf4->has_parent() == false);
-
-        REQUIRE(leaf5->degree() == 0);
-        REQUIRE(leaf5->has_children() == false);
-        REQUIRE(leaf5->has_parent() == false);
     }
 }
 
@@ -1467,41 +1432,6 @@ TEST_CASE("Test simple tree building with PopulationNode", "[PopulationNode]") {
         REQUIRE(root_child1->get_allele_count() == 9);
         REQUIRE(root_child2->get_allele_count() == 6);
         REQUIRE(root->get_allele_count() == 15);
-
-
-        root->destroy();
-
-        REQUIRE(root->degree() == 0);
-        REQUIRE(root->has_children() == false);
-        REQUIRE(root->has_parent() == false);
-
-        REQUIRE(root_child1->degree() == 0);
-        REQUIRE(root_child1->has_children() == false);
-        REQUIRE(root_child1->has_parent() == false);
-
-        REQUIRE(root_child2->degree() == 0);
-        REQUIRE(root_child2->has_children() == false);
-        REQUIRE(root_child2->has_parent() == false);
-
-        REQUIRE(leaf1->degree() == 0);
-        REQUIRE(leaf1->has_children() == false);
-        REQUIRE(leaf1->has_parent() == false);
-
-        REQUIRE(leaf2->degree() == 0);
-        REQUIRE(leaf2->has_children() == false);
-        REQUIRE(leaf2->has_parent() == false);
-
-        REQUIRE(leaf3->degree() == 0);
-        REQUIRE(leaf3->has_children() == false);
-        REQUIRE(leaf3->has_parent() == false);
-
-        REQUIRE(leaf4->degree() == 0);
-        REQUIRE(leaf4->has_children() == false);
-        REQUIRE(leaf4->has_parent() == false);
-
-        REQUIRE(leaf5->degree() == 0);
-        REQUIRE(leaf5->has_children() == false);
-        REQUIRE(leaf5->has_parent() == false);
     }
 }
 

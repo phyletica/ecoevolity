@@ -426,8 +426,5 @@ double get_log_likelihood(
     for (auto &t : threads) {
         log_likelihood += t.get();
     }
-    for (auto r : root_clones) {
-        r->destroy();
-    }
     return log_likelihood;
 }
