@@ -377,18 +377,18 @@ double get_log_likelihood(
     unsigned int start_idx = 0;
     std::vector< std::future<double> > threads;
     threads.reserve(nthreads - 1);
-    std::vector< std::shared_ptr<PopulationNode> > root_clones;
-    root_clones.reserve(nthreads - 1);
+    // std::vector< std::shared_ptr<PopulationNode> > root_clones;
+    // root_clones.reserve(nthreads - 1);
 
     // Launch nthreads - 1 threads
     for (unsigned int i = 0; i < (nthreads - 1); ++i) {
         std::shared_ptr<PopulationNode> root_clone = root.get_clade_clone();
-        root_clones.push_back(root_clone);
+        // root_clones.push_back(root_clone);
         threads.push_back(std::async(
                 std::launch::async,
                 get_log_likelihood_for_pattern_range,
                 std::ref(*root_clone),
-                data,
+                std::cref(data),
                 start_idx,
                 start_idx + batch_size,
                 u,
