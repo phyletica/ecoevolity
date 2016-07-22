@@ -82,7 +82,7 @@ class PopulationTree {
                 bool strict_on_missing_sites = false,
                 double ploidy = 2.0
                 );
-        //~PopulationTree () { delete this->root_; }
+        // virtual ~PopulationTree () { this->root_->destroy(); }
 
         void init(
                 std::string path, 
@@ -98,6 +98,10 @@ class PopulationTree {
                 );
 
         void fold_patterns();
+
+        void destroy() {
+            this->root_->destroy();
+        }
 
         bool constant_sites_removed() const {
             return this->constant_sites_removed_;

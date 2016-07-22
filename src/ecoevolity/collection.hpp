@@ -111,7 +111,13 @@ class ComparisonPopulationTreeCollection {
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true
                 );
-        virtual ~ComparisonPopulationTreeCollection() { }
+        // virtual ~ComparisonPopulationTreeCollection() { }
+        void destroy() {
+            for (auto &t: this->trees_) {
+                t.destroy();
+            }
+        }
+
         void store_state();
         void restore_state();
         void store_model_state();

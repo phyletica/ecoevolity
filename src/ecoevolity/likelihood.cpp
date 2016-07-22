@@ -377,13 +377,13 @@ double get_log_likelihood(
     unsigned int start_idx = 0;
     std::vector< std::future<double> > threads;
     threads.reserve(nthreads - 1);
-    // std::vector< std::shared_ptr<PopulationNode> > root_clones;
-    // root_clones.reserve(nthreads - 1);
+    std::vector< std::shared_ptr<PopulationNode> > root_clones;
+    root_clones.reserve(nthreads - 1);
 
     // Launch nthreads - 1 threads
     for (unsigned int i = 0; i < (nthreads - 1); ++i) {
         std::shared_ptr<PopulationNode> root_clone = root.get_clade_clone();
-        // root_clones.push_back(root_clone);
+        root_clones.push_back(root_clone);
         threads.push_back(std::async(
                 std::launch::async,
                 get_log_likelihood_for_pattern_range,
@@ -425,6 +425,9 @@ double get_log_likelihood(
     // Join the launched threads
     for (auto &t : threads) {
         log_likelihood += t.get();
+    }
+    for (auto r : root_clones) {
+        r->destroy();
     }
     return log_likelihood;
 }
