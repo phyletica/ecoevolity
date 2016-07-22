@@ -19,6 +19,8 @@
 
 #include "likelihood.hpp"
 
+const static MatrixExponentiator matrix_exponentiator;
+
 void compute_leaf_partials(
         PopulationNode& node,
         const BiallelicData& data,
@@ -85,7 +87,6 @@ void compute_top_of_branch_partials(
 
     double theta = 2 * ploidy * node.get_population_size() * mutation_rate;
     double length = node.get_length() * mutation_rate;;
-    MatrixExponentiator matrix_exponentiator;
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node.get_allele_count(),
             u,
