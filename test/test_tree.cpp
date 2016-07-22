@@ -184,6 +184,22 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[P
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
     }
 }
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.01);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(5);
+        REQUIRE(l == Approx(-6986.120524781545));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+    }
+}
 
 
 
@@ -210,6 +226,25 @@ TEST_CASE("Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-328.39238828878365));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
+TEST_CASE("Testing hemi129.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(7);
+        REQUIRE(l == Approx(-328.39238828878365));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(7);
         REQUIRE(l == Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -244,6 +279,25 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(3);
+        REQUIRE(l == Approx(-7256.501742344454));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(3);
+        REQUIRE(l == Approx(-7256.501742344454));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -264,6 +318,22 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[Po
         tree.set_root_height(0.0);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-7223.362711937651));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+    }
+}
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.0);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(4);
         REQUIRE(l == Approx(-7223.362711937651));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -300,6 +370,25 @@ TEST_CASE("Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing hemi129.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.2);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(2);
+        REQUIRE(l == Approx(-227.41048391087554));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(2);
+        REQUIRE(l == Approx(-227.41048391087554));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -329,6 +418,25 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.2);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-7304.180743441677));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-7304.180743441677));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -349,6 +457,22 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[Po
         tree.set_root_height(0.2);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-7405.145951634711));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+    }
+}
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.2);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(6);
         REQUIRE(l == Approx(-7405.145951634711));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -390,6 +514,27 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        tree.set_freq_1(0.05); // tree.set_u(10.0);
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-327.7437811413033));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(2);
+        REQUIRE(! std::isnan(l));
+        REQUIRE(l != Approx(-327.7437811413033));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -421,6 +566,27 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        tree.set_freq_1(0.05); // tree.set_u(10.0);
+        double l = tree.compute_log_likelihood(5);
+        REQUIRE(l == Approx(-6472.856486972301));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(3);
+        REQUIRE(! std::isnan(l));
+        REQUIRE(l != Approx(-6472.856486972301));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -442,6 +608,23 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-6494.774924871097));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+    }
+}
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        tree.set_freq_1(0.05); // tree.set_u(10.0);
+        double l = tree.compute_log_likelihood(4);
         REQUIRE(l == Approx(-6494.774924871097));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -481,6 +664,27 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-265.0023534261969));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(1);
+        REQUIRE(! std::isnan(l));
+        REQUIRE(l != Approx(-265.0023534261969));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -506,6 +710,27 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
+        REQUIRE(! std::isnan(l));
+        REQUIRE(l != Approx(-10163.468886613919));
+        REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
+        double l = tree.compute_log_likelihood(3);
+        REQUIRE(l == Approx(-10163.468886613919));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(5);
         REQUIRE(! std::isnan(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
@@ -540,6 +765,23 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant
         REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
     }
 }
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-10999.288193543642));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+    }
+}
 
 
 
@@ -567,6 +809,21 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/hemi129.nex";
+        PopulationTree tree(nex_path, ' ', true, true, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(100000);
+        REQUIRE(l == Approx(-224.40177558289847));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -587,6 +844,21 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-8158.88094671241));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, false);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(1000000);
         REQUIRE(l == Approx(-8158.88094671241));
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -618,6 +890,21 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominan
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
+TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0, dominant)", "[PopulationTree]") {
+
+    SECTION("Testing threaded likelihood calc") {
+        std::string nex_path = "data/aflp_25.nex";
+        PopulationTree tree(nex_path, ' ', true, false, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        tree.set_root_height(0.03);
+        tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
+        tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-8034.250341980543));
+        REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
 
 // BEAST v2.4.0 (master 3731dff6884f7dd27b288099027dc1d500a3a9d8)
 // SNAPP v1.3.0 (master 24d18026c774b10f2e79de16100d96e1a5df1b96)
@@ -641,6 +928,24 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
+        REQUIRE(l == Approx(-31.77866581319647));
+        REQUIRE(tree.get_degree_of_root() == 2);
+    }
+}
+TEST_CASE("Testing simple threaded likelihood of ComparisonPopulationTree", "[ComparisonPopulationTree]") {
+
+    SECTION("Testing constructor and threaded likelihood calc") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        ComparisonPopulationTree tree(nex_path, ' ', true, true);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        REQUIRE(tree.get_root().get_label() == "root-pop1");
+        tree.set_height(0.01);
+        tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
+        double l = tree.compute_log_likelihood(2);
+        REQUIRE(l == Approx(-31.77866581319647));
+
+        tree.fold_patterns();
+        l = tree.compute_log_likelihood(2);
         REQUIRE(l == Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -1343,6 +1648,84 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
         // Oops, mixing up red/green here to make sure it counts!
         t_mistake.provide_number_of_constant_sites(6, 3);
         double l_mistake = t_mistake.compute_log_likelihood();
+
+        REQUIRE(l_removed != Approx(l_mistake));
+        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
+    }
+}
+TEST_CASE("Testing affect of constant sites on threaded likelihood of PopulationTree", "[PopulationTreeX]") {
+
+    SECTION("Testing haploid-standard-full-constant.nex") {
+        std::string nex_path = "data/haploid-standard-full-constant.nex";
+        PopulationTree t_included(
+                nex_path, // path
+                ' ',      // pop name delimiter
+                true,     // pop name is prefix
+                false,    // genotypes are diploid
+                false,    // markers are dominant
+                false,    // constant sites removed
+                true);    // validate
+        std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
+        PopulationTree t_removed(
+                nex_path2, // path
+                ' ',       // pop name delimiter
+                true,      // pop name is prefix
+                false,     // genotypes are diploid
+                false,     // markers are dominant
+                true,      // constant sites removed
+                true);     // validate
+        PopulationTree t(
+                nex_path2, // path
+                ' ',       // pop name delimiter
+                true,      // pop name is prefix
+                false,     // genotypes are diploid
+                false,     // markers are dominant
+                true,      // constant sites removed
+                true);     // validate
+
+        t.set_root_height(0.03);
+        t.set_freq_1(0.05);
+        t.set_population_size(2.0/(10.0 * 2 * t.get_ploidy()));
+
+        t_included.set_root_height(0.03);
+        t_included.set_freq_1(0.05);
+        t_included.set_population_size(2.0/(10.0 * 2 * t_included.get_ploidy()));
+
+        t_removed.set_root_height(0.03);
+        t_removed.set_freq_1(0.05);
+        t_removed.set_population_size(2.0/(10.0 * 2 * t_removed.get_ploidy()));
+
+        t_removed.provide_number_of_constant_sites(3, 6);
+
+        double l = t.compute_log_likelihood(4);
+        REQUIRE(l == Approx(-23.81984255023975));
+        REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
+
+        double l_included = t_included.compute_log_likelihood(2);
+        double l_removed = t_removed.compute_log_likelihood(3);
+
+        REQUIRE(l_included == Approx(-55.01646493341547));
+        REQUIRE(l_included == Approx(l_removed));
+
+        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
+        REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
+
+        PopulationTree t_mistake(
+                nex_path2, // path
+                ' ',       // pop name delimiter
+                true,      // pop name is prefix
+                false,     // genotypes are diploid
+                false,     // markers are dominant
+                true,      // constant sites removed
+                true);     // validate
+
+        t_mistake.set_root_height(0.03);
+        t_mistake.set_freq_1(0.05);
+        t_mistake.set_population_size(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
+
+        // Oops, mixing up red/green here to make sure it counts!
+        t_mistake.provide_number_of_constant_sites(6, 3);
+        double l_mistake = t_mistake.compute_log_likelihood(4);
 
         REQUIRE(l_removed != Approx(l_mistake));
         REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
