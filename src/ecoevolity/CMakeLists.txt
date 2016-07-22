@@ -6,6 +6,7 @@ set(ECOEVOLITY_MAIN_SOURCES
 set(ECOEVOLITY_SOURCES
     error.cpp
     matrix.cpp
+    likelihood.cpp
     tree.cpp
     operator_schedule.cpp
     operator.cpp

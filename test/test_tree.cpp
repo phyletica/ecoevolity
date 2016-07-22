@@ -1270,7 +1270,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 // With constant sites inclucded and m_bUseNonPolymorphic = true
 // Log likelihood            = -55.01646493341547
 // Log likelihood correction = -6.87935580446044
-TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[PopulationTree]") {
+TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[PopulationTreeX]") {
 
     SECTION("Testing haploid-standard-full-constant.nex") {
         std::string nex_path = "data/haploid-standard-full-constant.nex";

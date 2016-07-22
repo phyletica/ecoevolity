@@ -33,7 +33,6 @@ class PopulationTree {
     protected:
         BiallelicData data_;
         std::shared_ptr<PopulationNode> root_;
-        MatrixExponentiator matrix_exponentiator;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
         double ploidy_ = 2.0;

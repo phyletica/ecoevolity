@@ -1770,8 +1770,8 @@ TEST_CASE("Test clade cloning with PopulationNode", "[PopulationNode]") {
         REQUIRE(root->get_height_parameter() == clone->get_height_parameter());
         REQUIRE(root->get_population_size_parameter() == clone->get_population_size_parameter());
 
-        std::shared_ptr<PopulationNode> clone_child1 = clone.get_child(0);
-        std::shared_ptr<PopulationNode> clone_child2 = clone.get_child(1);
+        std::shared_ptr<PopulationNode> clone_child1 = clone->get_child(0);
+        std::shared_ptr<PopulationNode> clone_child2 = clone->get_child(1);
 
         REQUIRE(root_child1->degree() == 4);
         REQUIRE(root_child1->get_number_of_children() == 3);
@@ -1809,11 +1809,11 @@ TEST_CASE("Test clade cloning with PopulationNode", "[PopulationNode]") {
         REQUIRE(root_child2->get_height_parameter() == clone_child2->get_height_parameter());
         REQUIRE(root_child2->get_population_size_parameter() == clone_child2->get_population_size_parameter());
 
-        std::shared_ptr<PopulationNode> leaf1_clone = clone_child1.get_child(0);
-        std::shared_ptr<PopulationNode> leaf2_clone = clone_child1.get_child(1);
-        std::shared_ptr<PopulationNode> leaf3_clone = clone_child1.get_child(2);
-        std::shared_ptr<PopulationNode> leaf4_clone = clone_child2.get_child(0);
-        std::shared_ptr<PopulationNode> leaf5_clone = clone_child2.get_child(1);
+        std::shared_ptr<PopulationNode> leaf1_clone = clone_child1->get_child(0);
+        std::shared_ptr<PopulationNode> leaf2_clone = clone_child1->get_child(1);
+        std::shared_ptr<PopulationNode> leaf3_clone = clone_child1->get_child(2);
+        std::shared_ptr<PopulationNode> leaf4_clone = clone_child2->get_child(0);
+        std::shared_ptr<PopulationNode> leaf5_clone = clone_child2->get_child(1);
 
         REQUIRE(leaf1->degree() == 1);
         REQUIRE(leaf1->get_number_of_children() == 0);
