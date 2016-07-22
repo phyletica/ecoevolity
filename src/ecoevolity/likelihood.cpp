@@ -344,7 +344,7 @@ double get_log_likelihood(
         double& all_green_pattern_likelihood,
         unsigned int nthreads
         ) {
-    /* if (nthreads < 2) { */
+    if (nthreads < 2) {
         if (constant_sites_removed) {
             compute_constant_pattern_likelihoods(
                     root,
@@ -366,64 +366,64 @@ double get_log_likelihood(
                 v,
                 mutation_rate,
                 ploidy);
-    /* } */
-    /* double log_likelihood = 0.0; */
-    /* const unsigned int npatterns = data.get_number_of_patterns(); */
-    /* if (npatterns < nthreads) { */
-    /*     nthreads = npatterns; */
-    /* } */
-    /* const unsigned int batch_size = npatterns / nthreads; */
-    /* unsigned int start_idx = 0; */
-    /* std::vector< std::future<double> > threads; */
-    /* threads.reserve(nthreads - 1); */
-    /* std::vector< std::shared_ptr<PopulationNode> > root_clones; */
-    /* root_clones.reserve(nthreads - 1); */
+    }
+    double log_likelihood = 0.0;
+    const unsigned int npatterns = data.get_number_of_patterns();
+    if (npatterns < nthreads) {
+        nthreads = npatterns;
+    }
+    const unsigned int batch_size = npatterns / nthreads;
+    unsigned int start_idx = 0;
+    std::vector< std::future<double> > threads;
+    threads.reserve(nthreads - 1);
+    std::vector< std::shared_ptr<PopulationNode> > root_clones;
+    root_clones.reserve(nthreads - 1);
 
-    /* // Launch nthreads - 1 threads */
-    /* for (unsigned int i = 0; i < (nthreads - 1); ++i) { */
-    /*     std::shared_ptr<PopulationNode> root_clone = root.get_clade_clone(); */
-    /*     root_clones.push_back(root_clone); */
-    /*     threads.push_back(std::async( */
-    /*             std::launch::async, */
-    /*             get_log_likelihood_for_pattern_range, */
-    /*             *root_clone, */
-    /*             data, */
-    /*             start_idx, */
-    /*             start_idx + batch_size, */
-    /*             u, */
-    /*             v, */
-    /*             mutation_rate, */
-    /*             ploidy */
-    /*             )); */
-    /*     start_idx += batch_size; */
-    /* } */
+    // Launch nthreads - 1 threads
+    for (unsigned int i = 0; i < (nthreads - 1); ++i) {
+        std::shared_ptr<PopulationNode> root_clone = root.get_clade_clone();
+        root_clones.push_back(root_clone);
+        threads.push_back(std::async(
+                std::launch::async,
+                get_log_likelihood_for_pattern_range,
+                std::ref(*root_clone),
+                data,
+                start_idx,
+                start_idx + batch_size,
+                u,
+                v,
+                mutation_rate,
+                ploidy
+                ));
+        start_idx += batch_size;
+    }
 
-    /* // Use the main thread as the last thread */
-    /* if (constant_sites_removed) { */
-    /*     compute_constant_pattern_likelihoods( */
-    /*             root, */
-    /*             data, */
-    /*             u, */
-    /*             v, */
-    /*             mutation_rate, */
-    /*             ploidy, */
-    /*             state_frequencies_are_constrained, */
-    /*             all_red_pattern_likelihood, */
-    /*             all_green_pattern_likelihood); */
-    /* } */
-    /* log_likelihood += get_log_likelihood_for_pattern_range( */
-    /*         root, */
-    /*         data, */
-    /*         start_idx, */
-    /*         npatterns, */
-    /*         u, */
-    /*         v, */
-    /*         mutation_rate, */
-    /*         ploidy); */
+    // Use the main thread as the last thread
+    if (constant_sites_removed) {
+        compute_constant_pattern_likelihoods(
+                root,
+                data,
+                u,
+                v,
+                mutation_rate,
+                ploidy,
+                state_frequencies_are_constrained,
+                all_red_pattern_likelihood,
+                all_green_pattern_likelihood);
+    }
+    log_likelihood += get_log_likelihood_for_pattern_range(
+            root,
+            data,
+            start_idx,
+            npatterns,
+            u,
+            v,
+            mutation_rate,
+            ploidy);
 
-    /* // Join the launched threads */
-    /* for (auto &t : threads) { */
-    /*     log_likelihood += t.get(); */
-    /* } */
-    /* return log_likelihood; */
+    // Join the launched threads
+    for (auto &t : threads) {
+        log_likelihood += t.get();
+    }
+    return log_likelihood;
 }
