@@ -47,7 +47,7 @@ template<class DerivedNodeT>
 class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
     protected:
         std::vector< std::shared_ptr<DerivedNodeT> > children_;
-        std::weak_ptr<DerivedNodeT> parent_ = nullptr;
+        std::weak_ptr<DerivedNodeT> parent_;
         std::string label_ = "";
         std::shared_ptr<PositiveRealParameter> height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
@@ -105,20 +105,20 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
-        bool has_parent() const { return parent_ ? true : false; }
-        bool is_root() const { return parent_ ? false : true; }
+        bool has_parent() const { return this->parent_.expired() ? false : true; }
+        bool is_root() const { return this->parent_.expired() ? true : false; }
 
-        unsigned int get_number_of_parents() const { return parent_ ? 1 : 0; }
+        unsigned int get_number_of_parents() const { return this->parent_.expired() ? 0 : 1; }
 
-        /* const std::shared_ptr<DerivedNodeT>& get_parent() const { */
-        /*     return this->parent_.lock(); */
-        /* } */
+        const std::shared_ptr<DerivedNodeT>& get_parent() const {
+            return this->parent_.lock();
+        }
         std::shared_ptr<DerivedNodeT> get_parent() {
             return this->parent_.lock();
         }
 
         bool is_parent(const std::shared_ptr<DerivedNodeT>& node) const {
-            if (this->parent_ == node) {
+            if (this->parent_.lock() == node) {
                 return true;
             }
             return false;
@@ -128,7 +128,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNode::add_parent(), empty node given");
             }
-            if (this->parent_) {
+            if (! this->parent_.expired()) {
                 throw EcoevolityError("BaseNode::add_parent(), this node already has a parent");
             }
             this->parent_ = node;
@@ -141,7 +141,6 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (this->has_parent()) {
                 std::shared_ptr<DerivedNodeT> p = this->parent_.lock();
                 this->parent_.reset();
-                this->parent_ = nullptr;
                 p->remove_child(this->shared_from_this());
                 return p;
             }
@@ -265,7 +264,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         double get_length() const {
             if (this->has_parent()) {
-                return this->get_parent()->get_height() - this->get_height();
+                return this->parent_.lock()->get_height() - this->get_height();
             }
             return 0.0;
         }
