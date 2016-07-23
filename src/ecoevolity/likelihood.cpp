@@ -388,7 +388,7 @@ double get_log_likelihood(
                 std::launch::async,
                 get_log_likelihood_for_pattern_range,
                 std::ref(*root_clone),
-                std::cref(data),
+                data,
                 start_idx,
                 start_idx + batch_size,
                 u,
