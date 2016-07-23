@@ -20,22 +20,19 @@
 #ifndef ECOEVOLITY_TREE_HPP
 #define ECOEVOLITY_TREE_HPP
 
-#include <algorithm>
-#include <memory>
-
 #include "data.hpp"
 #include "node.hpp"
-#include "matrix.hpp"
+#include "likelihood.hpp"
 #include "parameter.hpp"
 #include "probability.hpp"
 #include "error.hpp"
 #include "assert.hpp"
 
+
 class PopulationTree {
     protected:
         BiallelicData data_;
         std::shared_ptr<PopulationNode> root_;
-        MatrixExponentiator matrix_exponentiator;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
         double ploidy_ = 2.0;
@@ -51,7 +48,6 @@ class PopulationTree {
         bool likelihood_correction_was_calculated_ = false;
         ProbabilityDensity all_green_pattern_likelihood_ = ProbabilityDensity(0.0);
         ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
-        bool correct_for_full_likelihood_ = true;
         bool constant_sites_removed_ = true;
         int provided_number_of_constant_red_sites_ = -1;
         int provided_number_of_constant_green_sites_ = -1;
@@ -71,26 +67,6 @@ class PopulationTree {
                 unsigned int red_allele_count,
                 unsigned int allele_count) const;
 
-        double compute_pattern_likelihood(int pattern_index);
-        void compute_constant_pattern_likelihoods();
-        double compute_pattern_log_likelihoods_by_index_range(
-                unsigned int start_index,
-                unsigned int stop_index);
-        double compute_pattern_log_likelihoods();
-
-        std::vector< std::vector<double> > compute_root_probabilities();
-        double compute_root_likelihood();
-
-        void compute_pattern_partials(
-                int pattern_index,
-                PopulationNode& node);
-        void compute_internal_partials(PopulationNode& node);
-        void compute_top_of_branch_partials(PopulationNode& node);
-        void compute_leaf_partials(
-                int pattern_index,
-                PopulationNode& node);
-        
-
     public:
         PopulationTree() { }
         PopulationTree(
@@ -105,7 +81,7 @@ class PopulationTree {
                 bool strict_on_missing_sites = false,
                 double ploidy = 2.0
                 );
-        //~PopulationTree () { delete this->root_; }
+        // virtual ~PopulationTree () { this->root_->destroy(); }
 
         void init(
                 std::string path, 
@@ -122,8 +98,20 @@ class PopulationTree {
 
         void fold_patterns();
 
+        bool constant_sites_removed() const {
+            return this->constant_sites_removed_;
+        }
+
+        int get_provided_number_of_constant_red_sites() const {
+            return this->provided_number_of_constant_red_sites_;
+        }
+        int get_provided_number_of_constant_green_sites() const {
+            return this->provided_number_of_constant_green_sites_;
+        }
+
         bool initialized() const {return (bool)this->root_;}
         const PopulationNode& get_root() const {return *this->root_;}
+        PopulationNode& get_mutable_root() const {return *this->root_;}
         void set_root_height(double height);
         void update_root_height(double height);
         double get_root_height() const;
@@ -206,17 +194,21 @@ class PopulationTree {
 
         double get_likelihood_correction(bool force = false);
 
-        virtual void compute_log_likelihood_and_prior() {
+        virtual void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
             if (this->is_dirty()) {
-                this->compute_log_likelihood();
+                this->compute_log_likelihood(nthreads);
+                ++this->number_of_likelihood_calculations_;
                 this->compute_log_prior_density();
                 this->make_clean();
             }
             return;
         }
 
-        double compute_log_likelihood();
+        double compute_log_likelihood(unsigned int nthreads = 1);
 
+        void set_log_likelihood_value(double value) {
+            this->log_likelihood_.set_value(value);
+        }
         double get_log_likelihood_value() const;
         double get_stored_log_likelihood_value() const;
 

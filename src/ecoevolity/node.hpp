@@ -118,7 +118,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 RandomNumberGenerator& rng) {
             double u = rng.uniform_real();
             if (this->has_parent()) {
-                int i = this->parent_->get_character_state();
+                int i = this->get_parent()->get_character_state();
                 ECOEVOLITY_ASSERT((i == 0) || (i == 1));
                 if (u < this->p[i][0]) {
                     this->set_character_state(0);
@@ -246,6 +246,13 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->bottom_pattern_probs_.resize(allele_count);
             this->top_pattern_probs_.resize(allele_count);
         }
+        PopulationNode(const PopulationNode& node) :
+            BaseClass(node.label_, node.height_)
+        {
+            this->population_size_ = node.population_size_;
+            this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
+            this->top_pattern_probs_ = node.top_pattern_probs_;
+        }
 
         // overload copy operator
         // PopulationNode& operator=(const PopulationNode& node) {
@@ -288,6 +295,21 @@ class PopulationNode: public BaseNode<PopulationNode>{
             for (auto child_iter: this->children_) {
                 child_iter->resize_all();
             }
+        }
+
+        std::shared_ptr<PopulationNode> get_clone() {
+            return std::make_shared<PopulationNode>(*this);
+        }
+
+        std::shared_ptr<PopulationNode> get_clade_clone() {
+            if (this->is_leaf()) {
+                return this->get_clone();
+            }
+            std::shared_ptr<PopulationNode> n = this->get_clone();
+            for (auto child_iter: this->children_) {
+                n->add_child(child_iter->get_clade_clone());
+            }
+            return n;
         }
 
         const BiallelicPatternProbabilityMatrix& get_bottom_pattern_probs() const{

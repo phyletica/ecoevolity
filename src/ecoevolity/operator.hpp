@@ -74,7 +74,8 @@ class Operator {
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) = 0;
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) const = 0;
         virtual double propose(RandomNumberGenerator& rng,
@@ -190,8 +191,9 @@ class ModelOperator : public Operator {
          *
          * @return  Log of Hastings Ratio.
          */
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) = 0;
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) const {
             throw EcoevolityError("calling wrong propose signature");
@@ -227,7 +229,8 @@ class ComparisonTreeScaleOperator : public ScaleOperator {
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) {
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
             throw EcoevolityError("calling wrong propose signature");
         }
         virtual double propose(RandomNumberGenerator& rng,
@@ -255,7 +258,8 @@ class ComparisonTreeWindowOperator : public WindowOperator {
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) {
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
             throw EcoevolityError("calling wrong propose signature");
         }
         virtual double propose(RandomNumberGenerator& rng,
@@ -283,7 +287,8 @@ class NodeHeightScaleOperator : public ScaleOperator {
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) {
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
             throw EcoevolityError("calling wrong propose signature");
         }
         double propose(RandomNumberGenerator& rng,
@@ -313,7 +318,8 @@ class NodeHeightWindowOperator : public WindowOperator {
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons) {
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
             throw EcoevolityError("calling wrong propose signature");
         }
         double propose(RandomNumberGenerator& rng,
@@ -343,7 +349,8 @@ class ConcentrationScaler : public ScaleOperator {
         Operator::OperatorTypeEnum get_type() const;
 
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) const {
             throw EcoevolityError("calling wrong propose signature");
@@ -516,7 +523,8 @@ class DirichletProcessGibbsSampler : public ModelOperator {
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
 };
 
 class ReversibleJumpSampler : public ModelOperator {
@@ -544,7 +552,8 @@ class ReversibleJumpSampler : public ModelOperator {
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
         virtual double propose_jump_to_prior(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons);
         virtual double propose_jump_to_gap(RandomNumberGenerator& rng,

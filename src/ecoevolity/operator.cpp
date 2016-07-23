@@ -262,7 +262,8 @@ Operator::OperatorTypeEnum ConcentrationScaler::get_type() const {
 }
 
 double ConcentrationScaler::propose(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) {
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
     double v = comparisons.get_concentration();
     double hastings;
     this->update(rng, v, hastings);
@@ -483,7 +484,8 @@ std::string DirichletProcessGibbsSampler::get_name() const {
 }
 
 double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) {
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
 
     const double ln_concentration_over_num_aux = std::log(
             comparisons.get_concentration() /
@@ -516,7 +518,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             else {
                 comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx)->get_value());
             }
-            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
+            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
             ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
             ln_tree_likelihoods.push_back(lnl);
         }
@@ -527,7 +529,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             double fresh_height = comparisons.node_height_prior_->draw(rng);
             auxiliary_heights.push_back(fresh_height);
             comparisons.trees_.at(tree_idx).set_height(fresh_height);
-            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood();
+            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
             ln_category_likelihoods.push_back(lnl + ln_concentration_over_num_aux);
             ln_tree_likelihoods.push_back(lnl);
         }
@@ -570,7 +572,8 @@ Operator::OperatorTypeEnum ReversibleJumpSampler::get_type() const {
 }
 
 double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) {
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
     return this->propose_jump_to_gap(rng, comparisons);
 }
 

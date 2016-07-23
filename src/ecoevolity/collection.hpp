@@ -20,7 +20,6 @@
 #ifndef ECOEVOLITY_COLLECTION_HPP
 #define ECOEVOLITY_COLLECTION_HPP
 
-#include <thread>
 #include <unordered_set>
 
 #include "data.hpp"
@@ -50,7 +49,7 @@ class ComparisonPopulationTreeCollection {
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
         std::string operator_log_path_ = "ecoevolity-operator-run-1.log";
-        unsigned int number_of_threads_ = 0;
+        unsigned int number_of_threads_ = 1;
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
 
@@ -62,7 +61,6 @@ class ComparisonPopulationTreeCollection {
                 );
 
         void compute_tree_partials();
-        void compute_tree_partials_threaded();
         void make_trees_clean();
         void make_trees_dirty();
 
@@ -113,7 +111,8 @@ class ComparisonPopulationTreeCollection {
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true
                 );
-        virtual ~ComparisonPopulationTreeCollection() { }
+        // virtual ~ComparisonPopulationTreeCollection() { }
+
         void store_state();
         void restore_state();
         void store_model_state();
@@ -121,9 +120,6 @@ class ComparisonPopulationTreeCollection {
         void compute_log_likelihood_and_prior(bool compute_partials = true);
 
         void set_number_of_threads(unsigned int n) {
-            if (n > this->trees_.size()) {
-                n = this->trees_.size();
-            }
             this->number_of_threads_ = n;
         }
         unsigned int get_number_of_threads() const {
