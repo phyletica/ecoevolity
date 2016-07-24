@@ -147,6 +147,7 @@ void PopulationTree::init_tree() {
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
             std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
+                    pop_idx,
                     this->data_.get_population_label(pop_idx),
                     0.0,
                     this->data_.get_max_allele_count(pop_idx));
@@ -164,6 +165,7 @@ void PopulationTree::init_tree() {
         std::shared_ptr<PopulationNode> next_ancestor = std::make_shared<PopulationNode>(0.0);
         next_ancestor->add_child(ancestor);
         std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
+                pop_idx,
                 this->data_.get_population_label(pop_idx),
                 0.0,
                 this->data_.get_max_allele_count(pop_idx));
@@ -945,11 +947,15 @@ double PopulationTree::compute_log_likelihood(
     double all_green_pattern_prob = 0.0;
     double log_likelihood = get_log_likelihood(
             this->get_mutable_root(),
-            this->get_data(),
+            this->data_.get_red_allele_count_matrix(),
+            this->data_.get_allele_count_matrix(),
+            this->data_.get_pattern_weights(),
+            this->data_.get_max_allele_counts(),
             this->get_u(),
             this->get_v(),
             this->get_mutation_rate(),
             this->get_ploidy(),
+            this->data_.markers_are_dominant(),
             this->state_frequencies_are_constrained(),
             this->constant_sites_removed(),
             all_red_pattern_prob,
