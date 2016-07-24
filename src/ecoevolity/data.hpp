@@ -131,6 +131,15 @@ class BiallelicData {
                 std::ostream& out,
                 unsigned int indent_level = 0) const;
 
+        const std::vector< std::vector<unsigned int> >& get_red_allele_count_matrix() const {
+            return this->red_allele_counts_;
+        }
+        const std::vector< std::vector<unsigned int> >& get_allele_count_matrix() const {
+            return this->allele_counts_;
+        }
+        const std::vector<unsigned int>& get_pattern_weights() const {
+            return this->pattern_weights_;
+        }
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;
         unsigned int number_of_constant_green_sites_removed_ = 0;
