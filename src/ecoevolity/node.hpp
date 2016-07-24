@@ -192,6 +192,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
 class PopulationNode: public BaseNode<PopulationNode>{
     private:
         typedef BaseNode<PopulationNode> BaseClass;
+        int population_index_ = -1;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(0.001);
@@ -246,12 +247,24 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->bottom_pattern_probs_.resize(allele_count);
             this->top_pattern_probs_.resize(allele_count);
         }
+        PopulationNode(
+                unsigned int population_index,
+                std::string label,
+                double height,
+                unsigned int allele_count) :
+            BaseClass(label, height)
+        {
+            this->bottom_pattern_probs_.resize(allele_count);
+            this->top_pattern_probs_.resize(allele_count);
+            this->population_index_ = population_index;
+        }
         PopulationNode(const PopulationNode& node) :
             BaseClass(node.label_, node.height_)
         {
             this->population_size_ = node.population_size_;
             this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
             this->top_pattern_probs_ = node.top_pattern_probs_;
+            this->population_index_ = node.population_index_;
         }
 
         // overload copy operator
@@ -265,6 +278,10 @@ class PopulationNode: public BaseNode<PopulationNode>{
         //     this->top_pattern_probs_ = node.top_pattern_probs_;
         //     return * this;
         // }
+
+        int get_population_index() const {
+            return this->population_index_;
+        }
 
         // methods for accessing/changing pattern probabilities
         unsigned int get_allele_count() const {
@@ -297,11 +314,11 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
-        std::shared_ptr<PopulationNode> get_clone() {
+        std::shared_ptr<PopulationNode> get_clone() const {
             return std::make_shared<PopulationNode>(*this);
         }
 
-        std::shared_ptr<PopulationNode> get_clade_clone() {
+        std::shared_ptr<PopulationNode> get_clade_clone() const {
             if (this->is_leaf()) {
                 return this->get_clone();
             }
