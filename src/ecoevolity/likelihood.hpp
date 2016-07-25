@@ -22,7 +22,7 @@
 
 #include <algorithm>
 #include <memory>
-#include <thread>
+#include <future>
 
 #include "node.hpp"
 #include "matrix.hpp"
@@ -99,20 +99,6 @@ void compute_constant_pattern_likelihoods(
         );
 
 double get_log_likelihood_for_pattern_range(
-        PopulationNode& root,
-        const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
-        const std::vector< std::vector<unsigned int> >& allele_count_matrix,
-        const std::vector<unsigned int>& pattern_weights,
-        const unsigned int start_index,
-        const unsigned int stop_index,
-        const double u,
-        const double v,
-        const double mutation_rate,
-        const double ploidy,
-        const bool markers_are_dominant
-        );
-void thread_log_likelihood_for_pattern_range(
-        double& log_likelihood,
         PopulationNode& root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,

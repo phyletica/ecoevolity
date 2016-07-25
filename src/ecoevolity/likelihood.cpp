@@ -377,35 +377,6 @@ double get_log_likelihood_for_pattern_range(
     return log_likelihood;
 }
 
-void thread_log_likelihood_for_pattern_range(
-        double& log_likelihood,
-        PopulationNode& root,
-        const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
-        const std::vector< std::vector<unsigned int> >& allele_count_matrix,
-        const std::vector<unsigned int>& pattern_weights,
-        const unsigned int start_index,
-        const unsigned int stop_index,
-        const double u,
-        const double v,
-        const double mutation_rate,
-        const double ploidy,
-        const bool markers_are_dominant
-        ) {
-    log_likelihood = get_log_likelihood_for_pattern_range(
-            root,
-            red_allele_count_matrix,
-            allele_count_matrix,
-            pattern_weights,
-            start_index,
-            stop_index,
-            u,
-            v,
-            mutation_rate,
-            ploidy,
-            markers_are_dominant
-            );
-}
-
 double get_log_likelihood(
         PopulationNode& root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
@@ -457,20 +428,16 @@ double get_log_likelihood(
     }
     const unsigned int batch_size = npatterns / nthreads;
     unsigned int start_idx = 0;
-    std::vector<std::thread> threads;
-    threads.reserve(nthreads - 1);
-    std::vector< std::shared_ptr<PopulationNode> > root_clones;
-    root_clones.reserve(nthreads - 1);
-    std::vector<double> partial_log_likelihoods(nthreads - 1, 0.0);
+    std::vector< std::future<double> > threads(nthreads - 1);
+    std::vector< std::shared_ptr<PopulationNode> > root_clones(nthreads - 1);
 
     // Launch nthreads - 1 threads
     for (unsigned int i = 0; i < (nthreads - 1); ++i) {
-        std::shared_ptr<PopulationNode> root_clone = root.get_clade_clone();
-        root_clones.push_back(root_clone);
-        threads.push_back(std::thread(
-                thread_log_likelihood_for_pattern_range,
-                std::ref(partial_log_likelihoods.at(i)),
-                std::ref(*root_clone),
+        root_clones.at(i) = root.get_clade_clone();
+        threads.at(i) = std::async(
+                std::launch::async,
+                get_log_likelihood_for_pattern_range,
+                std::ref(*root_clones.at(i)),
                 std::cref(red_allele_count_matrix),
                 std::cref(allele_count_matrix),
                 std::cref(pattern_weights),
@@ -481,7 +448,7 @@ double get_log_likelihood(
                 mutation_rate,
                 ploidy,
                 markers_are_dominant
-                ));
+                );
         start_idx += batch_size;
     }
 
@@ -514,10 +481,7 @@ double get_log_likelihood(
 
     // Join the launched threads
     for (auto &t : threads) {
-        t.join();
-    }
-    for (auto l : partial_log_likelihoods) {
-        log_likelihood += l;
+        log_likelihood += t.get();
     }
     return log_likelihood;
 }
