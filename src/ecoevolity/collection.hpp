@@ -30,6 +30,7 @@
 #include "operator_schedule.hpp"
 #include "error.hpp"
 #include "assert.hpp"
+#include "rng.hpp"
 
 class ComparisonPopulationTreeCollection {
 
@@ -232,6 +233,9 @@ class ComparisonPopulationTreeCollection {
         void write_summary(
                 std::ostream& out,
                 unsigned int indent_level = 0) const;
+
+        void draw_heights_from_prior(RandomNumberGenerator& rng);
+        void draw_from_prior(RandomNumberGenerator& rng);
 };
 
 #endif

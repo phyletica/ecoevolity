@@ -877,3 +877,21 @@ void ComparisonPopulationTreeCollection::write_summary(
         tree.write_data_summary(out, indent_level + 1);
     }
 }
+
+void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
+    if (this->using_dpp()) {
+        unsigned int num_heights = rng.dirichlet_process(this->node_height_indices_, this->get_concentration());
+        this->node_heights_.resize(num_heights);
+        for (unsigned int i = 0; i < num_heights; ++i) {
+            this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
+        }
+    }
+}
+
+void ComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
+    this->draw_heights_from_prior(rng);
+    for (unsigned int i = 0; i < this->trees_.size(); ++i) {
+        this->trees_.at(i).draw_from_prior(rng);
+    }
+}
+
