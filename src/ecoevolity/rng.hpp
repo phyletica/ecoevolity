@@ -182,6 +182,58 @@ class RandomNumberGenerator {
             }
             return s;
         }
+
+        /** 
+         * A function for generating a random draw from a Dirichlet process.
+         */
+        inline void dirichlet_process(
+                std::vector<unsigned int>& elements,
+                double alpha) {
+            ECOEVOLITY_ASSERT (alpha > 0.0);
+            unsigned int n = elements.size();
+            ECOEVOLITY_ASSERT(n > 0);
+            double subset_prob;
+            double new_subset_prob;
+            double u;
+            std::vector<unsigned int> subset_counts;
+            subset_counts.reserve(n);
+            subset_counts.push_back(1);
+            elements.at(0) = 0;
+            unsigned int num_subsets = 1;
+            for (unsigned int i = 1; i < n; ++i) {
+                new_subset_prob = (alpha / (alpha + (double)i));
+                u = this->uniform_real();
+                u -= new_subset_prob;
+                if (u < 0.0) {
+                    elements.at(i) = num_subsets;
+                    subset_counts.push_back(1);
+                    ++num_subsets;
+                    continue;
+                }
+                for (unsigned int j = 0; j < num_subsets; ++j) {
+                    subset_prob = ((double)subset_counts.at(j) / (alpha + (double)i));
+                    u -= subset_prob;
+                    if (u < 0.0) {
+                        elements.at(i) = j;
+                        ++subset_counts.at(j);
+                        break;
+                    }
+                }
+                if (u > 0.0) {
+                    elements.at(i) = num_subsets - 1;
+                    ++subset_counts.at(num_subsets - 1);
+                }
+            }
+        }
+
+        inline std::vector<unsigned int> dirichlet_process(
+                unsigned int number_of_elements,
+                double alpha) {
+            std::vector<unsigned int> elements (number_of_elements, 0);
+            this->dirichlet_process(elements, alpha);
+            return elements;
+        }
+
 };
 
 #endif
