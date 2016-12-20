@@ -186,7 +186,7 @@ class RandomNumberGenerator {
         /** 
          * A function for generating a random draw from a Dirichlet process.
          */
-        inline void dirichlet_process(
+        inline unsigned int dirichlet_process(
                 std::vector<unsigned int>& elements,
                 double alpha) {
             ECOEVOLITY_ASSERT (alpha > 0.0);
@@ -224,14 +224,15 @@ class RandomNumberGenerator {
                     ++subset_counts.at(num_subsets - 1);
                 }
             }
+            return num_subsets;
         }
 
-        inline std::vector<unsigned int> dirichlet_process(
+        inline std::pair< unsigned int, std::vector<unsigned int> > dirichlet_process(
                 unsigned int number_of_elements,
                 double alpha) {
             std::vector<unsigned int> elements (number_of_elements, 0);
-            this->dirichlet_process(elements, alpha);
-            return elements;
+            unsigned int num_subsets = this->dirichlet_process(elements, alpha);
+            return std::make_pair(num_subsets, elements);
         }
 
 };

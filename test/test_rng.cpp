@@ -615,18 +615,15 @@ TEST_CASE("Testing dirichet_process(6, 1.7)", "[RandomNumberGenerator]") {
 
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
-            rng.dirichlet_process(elements, a);
+            unsigned int ncats = rng.dirichlet_process(elements, a);
             std::ostringstream stream;
-            std::set<unsigned int> unique_elements;
             unsigned int max_index = 0;
             for (auto e: elements) {
                 stream << e;
-                unique_elements.insert(e);
                 if (e > max_index) {
                     max_index = e;
                 }
             }
-            unsigned int ncats = unique_elements.size();
             REQUIRE(max_index + 1 == ncats);
             ++nevent_counts.at(ncats);
             std::string model_str = stream.str();
@@ -676,18 +673,15 @@ TEST_CASE("Testing dirichet_process(3, 0.6)", "[RandomNumberGenerator]") {
 
         RandomNumberGenerator rng(342254);
         for (unsigned int i = 0; i < nsamples; ++i) {
-            rng.dirichlet_process(elements, a);
+            unsigned int ncats = rng.dirichlet_process(elements, a);
             std::ostringstream stream;
-            std::set<unsigned int> unique_elements;
             unsigned int max_index = 0;
             for (auto e: elements) {
                 stream << e;
-                unique_elements.insert(e);
                 if (e > max_index) {
                     max_index = e;
                 }
             }
-            unsigned int ncats = unique_elements.size();
             REQUIRE(max_index + 1 == ncats);
             ++nevent_counts.at(ncats);
             std::string model_str = stream.str();
@@ -738,18 +732,15 @@ TEST_CASE("Testing dirichet_process(3, 4.2)", "[RandomNumberGenerator]") {
 
         RandomNumberGenerator rng(42342);
         for (unsigned int i = 0; i < nsamples; ++i) {
-            rng.dirichlet_process(elements, a);
+            unsigned int ncats = rng.dirichlet_process(elements, a);
             std::ostringstream stream;
-            std::set<unsigned int> unique_elements;
             unsigned int max_index = 0;
             for (auto e: elements) {
                 stream << e;
-                unique_elements.insert(e);
                 if (e > max_index) {
                     max_index = e;
                 }
             }
-            unsigned int ncats = unique_elements.size();
             REQUIRE(max_index + 1 == ncats);
             ++nevent_counts.at(ncats);
             std::string model_str = stream.str();
@@ -800,18 +791,16 @@ TEST_CASE("Testing vector return version of dirichet_process(3, 0.6)",
 
         RandomNumberGenerator rng(342254);
         for (unsigned int i = 0; i < nsamples; ++i) {
-            std::vector<unsigned int> elements = rng.dirichlet_process(n, a);
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.dirichlet_process(n, a);
             std::ostringstream stream;
-            std::set<unsigned int> unique_elements;
             unsigned int max_index = 0;
-            for (auto e: elements) {
+            for (auto e: ret.second) {
                 stream << e;
-                unique_elements.insert(e);
                 if (e > max_index) {
                     max_index = e;
                 }
             }
-            unsigned int ncats = unique_elements.size();
+            unsigned int ncats = ret.first;
             REQUIRE(max_index + 1 == ncats);
             ++nevent_counts.at(ncats);
             std::string model_str = stream.str();
