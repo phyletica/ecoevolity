@@ -901,6 +901,7 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
 }
 
 void ComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
+    this->concentration_->set_value_from_prior(rng);
     this->draw_heights_from_prior(rng);
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i).draw_from_prior(rng);
