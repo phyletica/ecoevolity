@@ -880,9 +880,21 @@ void ComparisonPopulationTreeCollection::write_summary(
 
 void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
     if (this->using_dpp()) {
-        unsigned int num_heights = rng.dirichlet_process(this->node_height_indices_, this->get_concentration());
-        this->node_heights_.resize(num_heights);
-        for (unsigned int i = 0; i < num_heights; ++i) {
+        unsigned int num_heights = this->node_heights_.size();
+        unsigned int new_num_heights = rng.dirichlet_process(this->node_height_indices_, this->get_concentration());
+        if (new_num_heights > num_heights) {
+            for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
+                this->node_heights_.push_back(
+                        std::make_shared<PositiveRealParameter>(
+                            this->node_height_prior_));
+            }
+        }
+        else if (new_num_heights < num_heights) {
+            for (unsigned int i = 0; i < (num_heights - new_num_heights); ++i) {
+                this->node_heights_.pop_back();
+            }
+        }
+        for (unsigned int i = 0; i < new_num_heights; ++i) {
             this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
         }
     }
