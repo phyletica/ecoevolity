@@ -898,6 +898,11 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
             this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
         }
     }
+    else {
+        throw EcoevolityNotImplementedError(
+                "Simulating uniform prior over divergence models is not yet"
+                "implemented");
+    }
 }
 
 void ComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
