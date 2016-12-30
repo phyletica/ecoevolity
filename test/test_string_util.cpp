@@ -37,6 +37,20 @@ SCENARIO("split provides Python-like splitting of strings", "[string_util]") {
     }
 }
 
+TEST_CASE("Testing pad_int", "[string_util]") {
+    SECTION("Testing pad_int") {
+        REQUIRE(string_util::pad_int(0, 1) == "0");
+        REQUIRE(string_util::pad_int(0, 2) == "00");
+        REQUIRE(string_util::pad_int(0, 3) == "000");
+        REQUIRE(string_util::pad_int(1, 3) == "001");
+        REQUIRE(string_util::pad_int(11, 3) == "011");
+        REQUIRE(string_util::pad_int(111, 3) == "111");
+        REQUIRE(string_util::pad_int(1111, 3) == "1111");
+        REQUIRE(string_util::pad_int(1111, 4) == "1111");
+        REQUIRE(string_util::pad_int(1111, 5) == "01111");
+    }
+}
+
 TEST_CASE("Testing get_indent", "[string_util]") {
     SECTION("Testing get_indent") {
         REQUIRE(string_util::get_indent() == "    ");

@@ -62,6 +62,15 @@ inline std::string join(const std::vector<std::string>& components,
     return ss.str();
 }
 
+inline std::string pad_int(unsigned int n, unsigned int len) {
+    ECOEVOLITY_ASSERT(len > 0);
+    std::string r = std::to_string(n);
+    if (r.size() >= len) {
+        return r;
+    }
+    return std::string(len - r.size(), '0') + r;
+}
+
 inline std::string get_indent(unsigned int level = 1) {
     return std::string(4 * level, ' ');
 }
