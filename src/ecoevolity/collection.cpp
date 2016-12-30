@@ -913,3 +913,13 @@ void ComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& 
     }
 }
 
+std::map<std::string, BiallelicData> ComparisonPopulationTreeCollection::simulate_biallelic_data_sets(
+        RandomNumberGenerator& rng,
+        bool validate) const {
+    std::map<std::string, BiallelicData> alignments;
+    for (auto const & tree: this->trees_) {
+        alignments[tree.data_.get_path()] = tree.simulate_biallelic_data_set(rng, validate);
+    }
+    return alignments;
+}
+

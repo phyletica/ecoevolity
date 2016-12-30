@@ -236,6 +236,10 @@ class ComparisonPopulationTreeCollection {
 
         void draw_heights_from_prior(RandomNumberGenerator& rng);
         void draw_from_prior(RandomNumberGenerator& rng);
+
+        std::map<std::string, BiallelicData> simulate_biallelic_data_sets(
+                RandomNumberGenerator& rng,
+                bool validate = true) const;
 };
 
 #endif
