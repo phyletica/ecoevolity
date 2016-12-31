@@ -636,6 +636,10 @@ class ComparisonSettings {
             }
         }
 
+        void set_path(const std::string& path) {
+            this->path_ = path;
+        }
+
         void update_from_config(
                 const YAML::Node& comparison_node,
                 const std::string& config_path,
@@ -1392,6 +1396,31 @@ class CollectionSettings {
             return this->comparisons_;
         }
 
+        void replace_comparison_path(
+                const std::string & original_path,
+                const std::string & new_path) {
+            for (auto comp : this->comparisons_) {
+                if (comp.get_path() == original_path) {
+                    comp.set_path(new_path);
+                    return;
+                }
+            }
+            throw EcoevolityComparisonSettingError(
+                    "Comparison path \'" + original_path +
+                    "\' was not found in collection settings");
+        }
+
+        char get_population_name_delimiter(const std::string& comparison_path) {
+            for (auto comp : this->comparisons_) {
+                if (comp.get_path() == comparison_path) {
+                    return comp.get_population_name_delimiter();
+                }
+            }
+            throw EcoevolityComparisonSettingError(
+                    "Comparison path \'" + comparison_path +
+                    "\' was not found in collection settings");
+        }
+
         const OperatorScheduleSettings& get_operator_schedule_settings() const {
             return this->operator_schedule_settings_;
         }
@@ -1436,6 +1465,12 @@ class CollectionSettings {
             std::ostringstream ss;
             this->write_settings(ss);
             return ss.str();
+        }
+
+        void blanket_set_population_name_is_prefix(bool b) {
+            for (auto comp : this->comparisons_) {
+                comp.population_name_is_prefix_ = b;
+            }
         }
 
 
