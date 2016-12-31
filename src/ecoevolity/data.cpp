@@ -847,6 +847,87 @@ void BiallelicData::validate() const {
     return;
 }
 
+std::vector< std::vector<std::string> > BiallelicData::get_alignment() const {
+    unsigned int npops = this->get_number_of_populations();
+    std::vector< std::vector<std::string> > alignment;
+    alignment.reserve(npops);
+    for (unsigned int pop_idx = 0; pop_idx < npops; ++pop_idx) {
+        unsigned int max_allele_count = this->get_max_allele_count(pop_idx);
+        std::vector<std::string> row;
+        row.reserve(max_allele_count);
+        for (unsigned int allele_idx = 0;
+                allele_idx < max_allele_count;
+                ++allele_idx) {
+            row.push_back("");
+        }
+        alignment.push_back(row);
+    }
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int pop_idx = 0; pop_idx < npops; ++pop_idx) {
+            int n_red_alleles = this->get_red_allele_count(pattern_idx, pop_idx);
+            int n_alleles = this->get_allele_count(pattern_idx, pop_idx);
+            int n_zero_alleles = n_alleles - n_red_alleles;
+            for (auto & row: alignment.at(pop_idx)) {
+                if (n_zero_alleles > 0) {
+                    row += std::string(this->get_pattern_weight(pattern_idx), '0');
+                    --n_zero_alleles;
+                    --n_alleles;
+                }
+                else if (n_red_alleles > 0) {
+                    row += std::string(this->get_pattern_weight(pattern_idx), '1');
+                    --n_red_alleles;
+                    --n_alleles;
+                }
+                else {
+                    ECOEVOLITY_ASSERT(n_alleles == 0);
+                    row += std::string(this->get_pattern_weight(pattern_idx), '?');
+                }
+            }
+        }
+    }
+    return alignment;
+}
+
+void BiallelicData::write_alignment(
+        std::ostream& out,
+        char population_name_delimiter) const {
+    unsigned int count = 0;
+    std::vector < std::vector<std::string> > alignment = this->get_alignment();
+    unsigned int pop_idx = 0;
+    for (auto rows: alignment) {
+        unsigned int row_idx = 0;
+        std::string pop_label = this->get_population_label(pop_idx);
+        for (auto row: rows) {
+            out << "\'" << pop_label << population_name_delimiter
+                << string_util::pad_int(row_idx, 4) << "\'  "
+                << row << std::endl;
+            ++row_idx;
+            ++count;
+        }
+        ++pop_idx;
+    }
+}
+
+void BiallelicData::write_nexus(
+        std::ostream& out,
+        char population_name_delimiter) const {
+    unsigned int ntax = 0;
+    for (auto num_alleles: this->get_max_allele_counts()) {
+        ntax += num_alleles;
+    }
+    unsigned int nchar = this->get_number_of_sites();
+    out << "#NEXUS\n" 
+        << "Begin data;\n"
+        << "    Dimensions ntax=" << ntax << " nchar=" << nchar << ";\n"
+        << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+        << "    Matrix\n";
+    this->write_alignment(out, population_name_delimiter);
+    out << "    ;\n"
+        << "End;\n";
+}
+
 void BiallelicData::write_summary(
         std::ostream& out,
         unsigned int indent_level) const {

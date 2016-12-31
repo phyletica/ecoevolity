@@ -1,6 +1,13 @@
 #include "catch.hpp"
 #include "ecoevolity/data.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include "ecoevolity/rng.hpp"
+
+RandomNumberGenerator _ECOEVOLITY_DATA_RNG = RandomNumberGenerator();
+
 /**
  *
  * #NEXUS
@@ -3295,6 +3302,1138 @@ TEST_CASE("Testing quoted spaces", "[BiallelicData]") {
             REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
             REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+    }
+}
+
+/**
+ *
+ * #NEXUS
+ * Begin data;
+ *     Dimensions ntax=5 nchar=5;
+ *     Format datatype=standard symbols="012" gap=-;
+ *     Matrix
+ * pop1_a  00000
+ * pop1_b  00202
+ * pop1_c  01101
+ * pop2_c  2-122
+ * pop2_d  02202
+ *     ;
+ * End;
+ */
+TEST_CASE("Testing writing methods for diploid standard data set",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.get_path() == nex_path);
+
+        char delim = ' ';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  00000\n"
+                           << "\'pop1" << delim << "0001\'  00000\n"
+                           << "\'pop1" << delim << "0002\'  00000\n"
+                           << "\'pop1" << delim << "0003\'  00011\n"
+                           << "\'pop1" << delim << "0004\'  00011\n"
+                           << "\'pop1" << delim << "0005\'  00111\n"
+                           << "\'pop2" << delim << "0000\'  00101\n"
+                           << "\'pop2" << delim << "0001\'  00111\n"
+                           << "\'pop2" << delim << "0002\'  11?11\n"
+                           << "\'pop2" << delim << "0003\'  11?11\n";
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=10 nchar=5;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+/**
+ * #NEXUS
+ * Begin data;
+ *     Dimensions ntax=5 nchar=5;
+ *     Format datatype=standard symbols="012" gap=-;
+ *     Matrix
+ * pop1_a  11100
+ * pop1_b  00001
+ * pop2_c  11101
+ * pop2_d  10011
+ * pop2_e  1-?01
+
+ *     ;
+ * End;
+ */
+TEST_CASE("Testing writing methods for standard diploid with only 0/1 genotypes",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-only-01.nex") {
+        std::string nex_path = "data/diploid-standard-only-01.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 3);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+
+        char delim = ' ';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  00000\n"
+                           << "\'pop1" << delim << "0001\'  00000\n"
+                           << "\'pop1" << delim << "0002\'  00000\n"
+                           << "\'pop1" << delim << "0003\'  11110\n"
+                           << "\'pop2" << delim << "0000\'  00000\n"
+                           << "\'pop2" << delim << "0001\'  00000\n"
+                           << "\'pop2" << delim << "0002\'  00000\n"
+                           << "\'pop2" << delim << "0003\'  11110\n"
+                           << "\'pop2" << delim << "0004\'  11??0\n"
+                           << "\'pop2" << delim << "0005\'  11??1\n";
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=10 nchar=5;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+/**
+ * #NEXUS
+ * Begin data;
+ *     Dimensions ntax=5 nchar=5;
+ *     Format datatype=standard symbols="01" gap=-;
+ *     Matrix
+ * pop1_a  11100
+ * pop1_b  00001
+ * pop2_c  11101
+ * pop2_d  10011
+ * pop2_e  1-?00
+ *     ;
+ * End;
+ */
+TEST_CASE("Testing writing methods for standard haploid", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard.nex") {
+        std::string nex_path = "data/haploid-standard.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        char delim = ' ';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  00000\n"
+                           << "\'pop1" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0000\'  10000\n"
+                           << "\'pop2" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0002\'  1??11\n";
+
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=5 nchar=5;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+/**
+ * #NEXUS
+ * Begin data;
+ *     Dimensions ntax=5 nchar=5;
+ *     Format datatype=standard symbols="01" gap=-;
+ *     Matrix
+ * pop1_a  11100
+ * pop1_b  00001
+ * pop2_c  11101
+ * pop2_d  10011
+ * pop2_e  1-?00
+ *     ;
+ * End;
+ */
+TEST_CASE("Testing writing methods for standard haploid dominant", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard.nex as dominant") {
+        std::string nex_path = "data/haploid-standard.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        char delim = ' ';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  00000\n"
+                           << "\'pop1" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0000\'  10000\n"
+                           << "\'pop2" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0002\'  1??11\n";
+
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=5 nchar=5;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for constant diploid site patterns",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/diploid-standard-constant0.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        char delim = ' ';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  000000\n"
+                           << "\'pop1" << delim << "0001\'  000000\n"
+                           << "\'pop1" << delim << "0002\'  000000\n"
+                           << "\'pop1" << delim << "0003\'  001010\n"
+                           << "\'pop1" << delim << "0004\'  00101?\n"
+                           << "\'pop1" << delim << "0005\'  01101?\n"
+                           << "\'pop2" << delim << "0000\'  010010\n"
+                           << "\'pop2" << delim << "0001\'  011010\n"
+                           << "\'pop2" << delim << "0002\'  0?111?\n"
+                           << "\'pop2" << delim << "0003\'  0?111?\n";
+
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=10 nchar=6;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+
+        bd.fold_patterns();
+
+        tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        test_path = "data/tmp-data-" + tag + ".cfg";
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d2(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d2.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d2.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d2.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d2.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d2.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d2.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d2.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d2.get_pattern_weight(i));
+        }
+
+        bd.remove_constant_patterns();
+
+        tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        test_path = "data/tmp-data-" + tag + ".cfg";
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d3(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d3.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d3.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d3.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d3.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d3.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d3.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d3.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d3.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for aflp data",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for aflp data with folding",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for aflp data with removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.remove_constant_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for aflp data with folding and removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+        bd.remove_constant_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for dominant aflp data",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false,  // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for dominant aflp data with removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        bd.remove_constant_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for hemi data",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for hemi data with folding",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for hemi data with removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.remove_constant_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for hemi data with folding and removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+        bd.remove_constant_patterns();
+
+        char delim = ' ';
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for quoted underscores",
+        "[BiallelicData]") {
+
+    SECTION("Testing quoted underscores") {
+        std::string nex_path = "data/haploid-standard-quoted-underscores.nex";
+        BiallelicData bd(
+                nex_path,
+                '_',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        std::vector<unsigned int> expected_wts = {1,2,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(4);
+        expected_allele_counts[0] = {2, 3};
+        expected_allele_counts[1] = {2, 2};
+        expected_allele_counts[2] = {2, 3};
+        expected_allele_counts[3] = {2, 3};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(4);
+        expected_red_counts[0] = {1, 3};
+        expected_red_counts[1] = {1, 1};
+        expected_red_counts[2] = {0, 1};
+        expected_red_counts[3] = {1, 2};
+
+        char delim = '_';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  00000\n"
+                           << "\'pop1" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0000\'  10000\n"
+                           << "\'pop2" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0002\'  1??11\n";
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=5 nchar=5;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                '_',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing writing methods for quoted spaces",
+        "[BiallelicData]") {
+
+    SECTION("Testing quoted spaces") {
+        std::string nex_path = "data/haploid-standard-quoted-spaces.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+        REQUIRE(bd.get_number_of_populations() == 2);
+        REQUIRE(bd.get_number_of_patterns() == 4);
+        REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == false);
+
+        std::vector<unsigned int> expected_wts = {1,2,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(4);
+        expected_allele_counts[0] = {2, 3};
+        expected_allele_counts[1] = {2, 2};
+        expected_allele_counts[2] = {2, 3};
+        expected_allele_counts[3] = {2, 3};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(4);
+        expected_red_counts[0] = {1, 3};
+        expected_red_counts[1] = {1, 1};
+        expected_red_counts[2] = {0, 1};
+        expected_red_counts[3] = {1, 2};
+
+        char delim = ' ';
+        std::stringstream expected_alignment;
+        expected_alignment << "\'pop1" << delim << "0000\'  00000\n"
+                           << "\'pop1" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0000\'  10000\n"
+                           << "\'pop2" << delim << "0001\'  11101\n"
+                           << "\'pop2" << delim << "0002\'  1??11\n";
+        std::stringstream alignment;
+        bd.write_alignment(alignment, delim);
+
+        REQUIRE(alignment.str() == expected_alignment.str());
+
+        std::stringstream expected_nexus;
+        expected_nexus << "#NEXUS\n"
+                       << "Begin data;\n"
+                       << "    Dimensions ntax=5 nchar=5;\n"
+                       << "    Format datatype=standard symbols=\"01\" missing=? gap=-;\n"
+                       << "    Matrix\n"
+                       << expected_alignment.str()
+                       << "    ;\n"
+                       << "End;\n";
+
+        std::stringstream nexus;
+        bd.write_nexus(nexus, delim);
+
+        REQUIRE(nexus.str() == expected_nexus.str());
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_nexus(os, delim);
+        os.close();
+
+        BiallelicData d(
+                test_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
         }
     }
 }

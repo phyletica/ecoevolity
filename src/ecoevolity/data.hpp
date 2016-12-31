@@ -127,6 +127,14 @@ class BiallelicData {
 
         void update_pattern_booleans();
 
+        std::vector< std::vector<std::string> > get_alignment() const;
+        void write_nexus(
+                std::ostream& out,
+                char population_name_delimiter) const;
+        void write_alignment(
+                std::ostream& out,
+                char population_name_delimiter) const;
+
         void write_summary(
                 std::ostream& out,
                 unsigned int indent_level = 0) const;
