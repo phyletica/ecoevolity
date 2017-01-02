@@ -95,12 +95,6 @@ class ComparisonPopulationTreeCollection {
 
         void remove_height(unsigned int height_index);
 
-        void write_state_log_header(std::ostream& out,
-                bool short_summary = false) const;
-        void log_state(std::ostream& out,
-                unsigned int generation_index,
-                bool short_summary = false) const;
-
         void update_log_paths(unsigned int max_number_of_attempts = 10000);
         void increment_log_paths();
 
@@ -225,6 +219,12 @@ class ComparisonPopulationTreeCollection {
         void set_operator_log_path(const std::string& path) {
             this->operator_log_path_ = path;
         }
+
+        void write_state_log_header(std::ostream& out,
+                bool short_summary = false) const;
+        void log_state(std::ostream& out,
+                unsigned int generation_index,
+                bool short_summary = false) const;
 
         void mcmc(RandomNumberGenerator& rng,
                 unsigned int chain_length,
