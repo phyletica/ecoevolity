@@ -47,6 +47,7 @@ class Value {
     operator float() { float t; return (valid && (std::istringstream(str) >> t)) ? t : 0; }
     operator double() { double t; return (valid && (std::istringstream(str) >> t)) ? t : 0; }
     operator long double() { long double t; return (valid && (std::istringstream(str) >> t)) ? t : 0; }
+    const std::string& get_str() { return str; }
  private:
     const std::string str;
     bool valid;
