@@ -78,14 +78,16 @@ int simcoevolity_main(int argc, char * argv[]) {
             .set_default("100")
             .help("Number of simulation replicates. Default: 100.");
     parser.add_option("-o", "--output-directory")
-            .set_default("")
+            .action("store")
             .dest("output_directory")
+            .set_default("")
             .help("The directory into which simulated alignments and "
                   "associated config files will be written. Default: "
                   "Use directory of YAML config file.");
     parser.add_option("-p", "--prior")
-            .set_default("")
+            .action("store")
             .dest("prior")
+            .set_default("")
             .help("The path to the configuration file that contains the "
                   "priors you would like to use when you analyse the "
                   "simulated datasets. By default, the same priors will "
@@ -126,6 +128,10 @@ int simcoevolity_main(int argc, char * argv[]) {
     std::cout << "Seed: " << seed << std::endl;
 
     unsigned int nreps = options.get("number_of_replicates");
+    if (nreps < 1) {
+        throw EcoevolityError(
+                "Number of simulation replicates must be 1 or greater");
+    }
     std::cout << "Number of simulation replicates: " << nreps << std::endl;
 
     const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
@@ -152,20 +158,20 @@ int simcoevolity_main(int argc, char * argv[]) {
     bool using_prior_config = false;
     if (options.is_set_by_user("prior")) {
         using_prior_config = true;
-        prior_config_path = options.get("prior");
+        prior_config_path = options.get("prior").get_str();
         if (! path::exists(prior_config_path)) {
-            throw EcoevolityError("Config file \'" + config_path +
+            throw EcoevolityError("Config file \'" + prior_config_path +
                     "\' does not exist");
         }
         if (! path::isfile(prior_config_path)) {
-            throw EcoevolityError("Config path \'" + config_path +
+            throw EcoevolityError("Config path \'" + prior_config_path +
                     "\' is not a regular file");
         }
     }
 
     std::string output_dir = path::dirname(config_path);
     if (options.is_set_by_user("output_directory")) {
-        output_dir = options.get("output_directory");
+        output_dir = options.get("output_directory").get_str();
         if (! path::exists(output_dir)) {
             throw EcoevolityError("Output directory \'" + output_dir +
                     "\' does not exist");
@@ -185,38 +191,14 @@ int simcoevolity_main(int argc, char * argv[]) {
 
     CollectionSettings prior_settings = CollectionSettings(prior_config_path);
 
-    //////////////////////////////////////////////////////////////////////////
-    // Checking that prior settings in the simulation and analysis config
-    // files can be matched by comparison file paths
     if (using_prior_config) {
-        unsigned int ncomps = settings.get_number_of_comparisons();
-        if (ncomps != prior_settings.get_number_of_comparisons()) {
+        if (! settings.same_comparison_paths(prior_settings)) {
             throw EcoevolityError(
-                    "The number of comparisons in \'" + config_path +
+                    "The comparison files specified in \'" + config_path +
                     "\' and \'" + prior_config_path +
-                    "\' does not match");
-        }
-        std::vector<std::string> comparison_file_names;
-        comparison_file_names.reserve(ncomps);
-        for (auto const & comparison: settings.get_comparison_settings()) {
-            comparison_file_names.push_back(comparison.get_path());
-        }
-        std::vector<std::string> prior_comparison_file_names;
-        prior_comparison_file_names.reserve(ncomps);
-        for (auto const & comparison: prior_settings.get_comparison_settings()) {
-            prior_comparison_file_names.push_back(comparison.get_path());
-        }
-        ECOEVOLITY_ASSERT(comparison_file_names.size() == prior_comparison_file_names.size());
-        for (auto fname: comparison_file_names) {
-            if (prior_comparison_file_names.count(fname) != 1) {
-                throw EcoevolityError(
-                        "The comparison files specified in \'" + config_path +
-                        "\' and \'" + prior_config_path +
-                        "\' do not match");
-            }
+                    "\' do not match");
         }
     }
-    //////////////////////////////////////////////////////////////////////////
 
     std::string sim_settings_path = path::join(
             output_dir,
@@ -235,6 +217,13 @@ int simcoevolity_main(int argc, char * argv[]) {
                     strict_on_constant_sites,
                     strict_on_missing_sites);
 
+    // Not used but creating instance to vet settings
+    ComparisonPopulationTreeCollection prior_comparisons =
+            ComparisonPopulationTreeCollection(
+                    prior_settings,
+                    rng,
+                    strict_on_constant_sites,
+                    strict_on_missing_sites);
 
     std::cout << "\n" << string_util::banner('-') << "\n";
     comparisons.write_summary(std::cout);
@@ -251,9 +240,9 @@ int simcoevolity_main(int argc, char * argv[]) {
     for (unsigned int i = 0; i < nreps; ++i) {
         std::string rep_str = string_util::pad_int(i, pad_width);
         std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
-        check_path(analysis_config_path);
+        check_output_path(analysis_config_path);
         std::string true_state_path = sim_prefix + rep_str + "-true-values.txt";
-        check_path(true_state_path);
+        check_output_path(true_state_path);
 
         comparisons.draw_from_prior(rng);
         sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
@@ -268,7 +257,7 @@ int simcoevolity_main(int argc, char * argv[]) {
         std::ofstream sim_alignment_stream;
         for (auto const & k_v: sim_alignments) {
             std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
-            check_path(sim_alignment_path);
+            check_output_path(sim_alignment_path);
 
             char delim = prior_settings.get_population_name_delimiter(k_v.first);
             prior_settings.replace_comparison_path(k_v.first, sim_alignment_path);

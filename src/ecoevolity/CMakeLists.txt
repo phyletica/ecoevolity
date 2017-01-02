@@ -1,7 +1,8 @@
 include_directories("${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
 set(ECOEVOLITY_MAIN_SOURCES
-    ecoevolity_main.cpp)
+    ecoevolity_main.cpp
+    simcoevolity_main.cpp)
 
 set(ECOEVOLITY_SOURCES
     error.cpp
@@ -13,6 +14,7 @@ set(ECOEVOLITY_SOURCES
     collection.cpp
     "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     ecoevolity.cpp
+    simcoevolity.cpp
     data.cpp)
 
 foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})

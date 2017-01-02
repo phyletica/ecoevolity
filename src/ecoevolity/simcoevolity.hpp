@@ -34,6 +34,8 @@
 
 void write_sim_splash(std::ostream& out);
 
+void check_output_path(const std::string& path);
+
 int simcoevolity_main(int argc, char * argv[]);
 
 #endif

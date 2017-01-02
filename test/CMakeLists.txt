@@ -15,6 +15,7 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/collection.cpp"
     "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/ecoevolity.cpp"
+    "${ECOEVOLITY_SOURCE_DIR}/simcoevolity.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/data.cpp")
 
 #set(ECOEVOLITY_TEST_SOURCES "${ECOEVOLITY_TEST_SOURCES} ${TEST_DIR}/ecoevolity_testing.cpp")
