@@ -1677,3 +1677,67 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
     }
 }
+
+TEST_CASE("Testing path comparison between collection settings",
+        "[CollectionSettings]") {
+    SECTION("Testing path comparisons between collection settings") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream1;
+        cfg_stream1 << "comparisons:\n";
+        cfg_stream1 << "- comparison:\n";
+        cfg_stream1 << "    path: \"hemi129.nex\"\n";
+        cfg_stream1 << "- comparison:\n";
+        cfg_stream1 << "    path: \"hemi129-altname1.nex\"\n";
+        cfg_stream1 << "- comparison:\n";
+        cfg_stream1 << "    path: \"hemi129-altname2.nex\"\n";
+
+        CollectionSettings settings1 = CollectionSettings(cfg_stream1, cfg_path);
+
+        std::stringstream cfg_stream2;
+        cfg_stream2 << "comparisons:\n";
+        cfg_stream2 << "- comparison:\n";
+        cfg_stream2 << "    path: \"hemi129-altname2.nex\"\n";
+        cfg_stream2 << "- comparison:\n";
+        cfg_stream2 << "    path: \"hemi129.nex\"\n";
+        cfg_stream2 << "- comparison:\n";
+        cfg_stream2 << "    path: \"hemi129-altname1.nex\"\n";
+
+        CollectionSettings settings2 = CollectionSettings(cfg_stream2, cfg_path);
+
+        std::stringstream cfg_stream3;
+        cfg_stream3 << "comparisons:\n";
+        cfg_stream3 << "- comparison:\n";
+        cfg_stream3 << "    path: \"hemi129.nex\"\n";
+        cfg_stream3 << "- comparison:\n";
+        cfg_stream3 << "    path: \"hemi129-altname1.nex\"\n";
+        cfg_stream3 << "- comparison:\n";
+        cfg_stream3 << "    path: \"hemi129-altname2.nex\"\n";
+        cfg_stream3 << "- comparison:\n";
+        cfg_stream3 << "    path: \"hemi129-altname3.nex\"\n";
+
+        CollectionSettings settings3 = CollectionSettings(cfg_stream3, cfg_path);
+
+        std::stringstream cfg_stream4;
+        cfg_stream4 << "comparisons:\n";
+        cfg_stream4 << "- comparison:\n";
+        cfg_stream4 << "    path: \"hemi129.nex\"\n";
+        cfg_stream4 << "- comparison:\n";
+        cfg_stream4 << "    path: \"hemi129-altname1.nex\"\n";
+
+        CollectionSettings settings4 = CollectionSettings(cfg_stream4, cfg_path);
+
+        REQUIRE(settings1.same_comparison_paths(settings2) == true);
+        REQUIRE(settings2.same_comparison_paths(settings1) == true);
+        REQUIRE(settings1.same_comparison_paths(settings3) == false);
+        REQUIRE(settings1.same_comparison_paths(settings4) == false);
+        REQUIRE(settings2.same_comparison_paths(settings3) == false);
+        REQUIRE(settings2.same_comparison_paths(settings4) == false);
+        REQUIRE(settings3.same_comparison_paths(settings1) == false);
+        REQUIRE(settings3.same_comparison_paths(settings2) == false);
+        REQUIRE(settings3.same_comparison_paths(settings4) == false);
+        REQUIRE(settings4.same_comparison_paths(settings1) == false);
+        REQUIRE(settings4.same_comparison_paths(settings2) == false);
+        REQUIRE(settings4.same_comparison_paths(settings3) == false);
+    }
+}

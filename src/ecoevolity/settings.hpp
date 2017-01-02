@@ -27,6 +27,7 @@
 #include <fstream>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "yaml-cpp/yaml.h"
 
@@ -1394,6 +1395,28 @@ class CollectionSettings {
 
         const std::vector<ComparisonSettings>& get_comparison_settings() const { 
             return this->comparisons_;
+        }
+
+        const ComparisonSettings& get_comparison_setting(
+                unsigned int comparison_index) const { 
+            ECOEVOLITY_ASSERT(comparison_index < this->comparisons_.size());
+            return this->comparisons_.at(comparison_index);
+        }
+
+        bool same_comparison_paths(const CollectionSettings& s) const {
+            if (this->get_number_of_comparisons() != s.get_number_of_comparisons()) {
+                return false;
+            }
+            std::unordered_set<std::string> paths;
+            std::unordered_set<std::string> other_paths;
+            for (unsigned int i = 0; i < this->get_number_of_comparisons(); ++i) {
+                paths.insert(this->get_comparison_setting(i).get_path());
+                other_paths.insert(s.get_comparison_setting(i).get_path());
+            }
+            if (paths == other_paths) {
+                return true;
+            }
+            return false;
         }
 
         void replace_comparison_path(
