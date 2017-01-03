@@ -878,6 +878,7 @@ BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
             }
         }
     }
+    sim_data.update_max_allele_counts();
     sim_data.update_pattern_booleans();
     if (validate) {
         sim_data.validate();
