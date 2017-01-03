@@ -63,6 +63,11 @@ MESSAGE(STATUS "USING_BUNDLED_YAML_CPP: ${USING_BUNDLED_YAML_CPP}")
 #######################################################################
 # Compiler settings 
 option (STATIC_LINKING "Build with static links" OFF)
+if (STATIC_LINKING)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+endif()
+MESSAGE(STATUS "Using static linking: ${STATIC_LINKING}")
+
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE RelWithDebInfo)
