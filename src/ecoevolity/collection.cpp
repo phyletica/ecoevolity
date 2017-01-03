@@ -761,6 +761,7 @@ void ComparisonPopulationTreeCollection::mcmc(
                 op.accept(this->operator_schedule_);
             }
             else {
+                // DPP Gibbs sampler should never reject
                 ECOEVOLITY_ASSERT(op.get_name() != "DirichletProcessGibbsSampler");
                 op.reject(this->operator_schedule_);
                 this->restore_state();
@@ -769,45 +770,39 @@ void ComparisonPopulationTreeCollection::mcmc(
             op.optimize(this->operator_schedule_, acceptance_probability);
         }
         else if (op.get_type() == Operator::OperatorTypeEnum::rj_operator) {
-            for (unsigned int tree_idx = 0;
-                    tree_idx < this->get_number_of_trees();
-                    ++tree_idx) {
+            /* std::cout << "State before RJ:\n"; */
+            /* this->log_state(std::cout, gen + 1); */
 
-                /* std::cout << "State before RJ:\n"; */
-                /* this->log_state(std::cout, gen + 1); */
+            this->store_model_state();
+            double hastings_ratio = op.propose(rng, *this);
+            this->compute_log_likelihood_and_prior(true);
 
-                this->store_model_state();
-                double hastings_ratio = op.propose(rng, *this);
-                this->compute_log_likelihood_and_prior(true);
+            /* std::cout << "State proposed:\n"; */
+            /* this->log_state(std::cout, gen + 1); */
 
-                /* std::cout << "State proposed:\n"; */
-                /* this->log_state(std::cout, gen + 1); */
-
-                double likelihood_ratio = 
-                    this->log_likelihood_.get_value() -
-                    this->log_likelihood_.get_stored_value();
-                double prior_ratio = 
-                    this->log_prior_density_.get_value() -
-                    this->log_prior_density_.get_stored_value();
-                double acceptance_probability =
-                        likelihood_ratio + 
-                        prior_ratio +
-                        hastings_ratio;
-                double u = rng.uniform_real();
-                if (u < std::exp(acceptance_probability)) {
-                    op.accept(this->operator_schedule_);
-                }
-                else {
-                    op.reject(this->operator_schedule_);
-                    this->restore_model_state();
-                }
-                this->make_trees_clean();
-                op.optimize(this->operator_schedule_, acceptance_probability);
-
-                /* std::cout << "State after RJ:\n"; */
-                /* this->log_state(std::cout, gen + 1); */
-
+            double likelihood_ratio = 
+                this->log_likelihood_.get_value() -
+                this->log_likelihood_.get_stored_value();
+            double prior_ratio = 
+                this->log_prior_density_.get_value() -
+                this->log_prior_density_.get_stored_value();
+            double acceptance_probability =
+                    likelihood_ratio + 
+                    prior_ratio +
+                    hastings_ratio;
+            double u = rng.uniform_real();
+            if (u < std::exp(acceptance_probability)) {
+                op.accept(this->operator_schedule_);
             }
+            else {
+                op.reject(this->operator_schedule_);
+                this->restore_model_state();
+            }
+            this->make_trees_clean();
+            op.optimize(this->operator_schedule_, acceptance_probability);
+
+            /* std::cout << "State after RJ:\n"; */
+            /* this->log_state(std::cout, gen + 1); */
         }
         else {
             state_log_stream.close();
