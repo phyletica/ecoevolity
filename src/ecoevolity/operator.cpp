@@ -28,7 +28,11 @@ Operator::Operator(double weight) {
 }
 
 double Operator::get_target_acceptance_probability() const {
-    return 0.234;
+    // Some prelim tests confirm that an acceptance rate of 0.44 leads to
+    // better mixing for the simple, univariate random variables that the
+    // operators are updating.
+    // return 0.234;
+    return 0.44;
 }
 
 double Operator::get_coercable_parameter_value() const {
