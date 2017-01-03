@@ -112,6 +112,26 @@ Operator& OperatorSchedule::get_operator(unsigned int operator_index) const {
     return *this->operators_.at(operator_index);
 }
 
+Operator& OperatorSchedule::get_reversible_jump_operator() const {
+    for (auto & op: this->operators_) {
+        if (op->get_type() == Operator::OperatorTypeEnum::rj_operator) {
+            return *op;
+        }
+    }
+    ECOEVOLITY_ASSERT(true == false);
+    return *this->operators_.at(0);
+}
+
+Operator& OperatorSchedule::get_time_operator() const {
+    for (auto & op: this->operators_) {
+        if (op->get_type() == Operator::OperatorTypeEnum::time_operator) {
+            return *op;
+        }
+    }
+    ECOEVOLITY_ASSERT(true == false);
+    return *this->operators_.at(0);
+}
+
 double OperatorSchedule::calc_delta(const Operator& op, double log_alpha) {
     if ((this->get_auto_optimize_delay_count() < this->get_auto_optimize_delay()) ||
             (! this->auto_optimize_)) {

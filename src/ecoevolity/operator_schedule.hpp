@@ -53,6 +53,9 @@ class OperatorSchedule {
         Operator& draw_operator(RandomNumberGenerator& rng) const;
         Operator& get_operator(unsigned int operator_index) const;
 
+        Operator& get_reversible_jump_operator() const;
+        Operator& get_time_operator() const;
+
         double calc_delta(const Operator& op, double log_alpha);
 
         double get_total_weight() const;
