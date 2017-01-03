@@ -5269,6 +5269,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
         for (std::string m: {"000", "001", "010", "011", "012"}) {
+            std::cout << m << ": " << model_counts.at(m) / (double)expected_sample_size << "\n";
+        }
+        for (std::string m: {"000", "001", "010", "011", "012"}) {
             REQUIRE((model_counts.at(m) / (double)expected_sample_size) == Approx(1.0/model_counts.size()).epsilon(0.01));
         }
 

@@ -894,9 +894,82 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
         }
     }
     else {
-        throw EcoevolityNotImplementedError(
-                "Simulating uniform prior over divergence models is not yet"
-                "implemented");
+        // Not aware of an "easy" way to uniformly sampling set partitions, so
+        // (hackily) using reversible jump MCMC to do so.
+        bool was_ignoring_data = this->ignoring_data();
+        this->ignore_data();
+        Operator& op = this->operator_schedule_.get_reversible_jump_operator();
+        Operator& time_op = this->operator_schedule_.get_time_operator();
+        for (unsigned int i = 0; i < 100; ++i) {
+            std::vector<double> hastings_ratios;
+            hastings_ratios.reserve(this->node_heights_.size());
+            for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
+                hastings_ratios.push_back(time_op.propose(rng, *(this->node_heights_.at(height_idx))));
+            }
+            this->make_trees_dirty();
+            this->compute_tree_partials();
+            for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
+                double prior_ratio =
+                        this->node_heights_.at(height_idx)->relative_prior_ln_pdf() -
+                        this->node_heights_.at(height_idx)->relative_prior_ln_pdf(
+                                this->node_heights_.at(height_idx)->get_stored_value());
+                double hastings_ratio = hastings_ratios.at(height_idx);
+                double acceptance_probability =
+                        prior_ratio +
+                        hastings_ratio;
+                double u = rng.uniform_real();
+                if (u < std::exp(acceptance_probability)) {
+                    time_op.accept(this->operator_schedule_);
+                }
+                else {
+                    time_op.reject(this->operator_schedule_);
+                    this->node_heights_.at(height_idx)->restore();
+                    for (unsigned int tree_idx = 0; tree_idx < this->node_height_indices_.size(); ++tree_idx) {
+                        if (this->node_height_indices_.at(tree_idx) == height_idx) {
+                            this->trees_.at(tree_idx).restore_likelihood();
+                        }
+                    }
+                }
+                time_op.optimize(this->operator_schedule_, acceptance_probability);
+            }
+            this->make_trees_clean();
+            this->compute_log_likelihood_and_prior(false);
+
+
+            this->store_model_state();
+            double hastings_ratio = op.propose(rng, *this);
+            this->compute_log_likelihood_and_prior(true);
+
+            double likelihood_ratio = 
+                this->log_likelihood_.get_value() -
+                this->log_likelihood_.get_stored_value();
+            double prior_ratio = 
+                this->log_prior_density_.get_value() -
+                this->log_prior_density_.get_stored_value();
+            double acceptance_probability =
+                    likelihood_ratio + 
+                    prior_ratio +
+                    hastings_ratio;
+            double u = rng.uniform_real();
+            if (u < std::exp(acceptance_probability)) {
+                op.accept(this->operator_schedule_);
+            }
+            else {
+                op.reject(this->operator_schedule_);
+                this->restore_model_state();
+            }
+            this->make_trees_clean();
+            op.optimize(this->operator_schedule_, acceptance_probability);
+        }
+        if (! was_ignoring_data) {
+            this->use_data();
+        }
+        for (unsigned int height_idx = 0;
+                height_idx < this->node_heights_.size();
+                ++height_idx) {
+            this->node_heights_.at(height_idx)->set_value(
+                    this->node_height_prior_->draw(rng));
+        }
     }
 }
 

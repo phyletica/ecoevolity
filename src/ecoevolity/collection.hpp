@@ -131,6 +131,10 @@ class ComparisonPopulationTreeCollection {
             }
         }
 
+        bool ignoring_data() const {
+            return this->trees_.at(0).ignoring_data();
+        }
+
         bool using_dpp() const {
             return this->operator_schedule_.using_dpp();
         }
