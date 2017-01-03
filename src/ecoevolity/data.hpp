@@ -126,6 +126,7 @@ class BiallelicData {
                 bool filtering_contant_sites = true);
 
         void update_pattern_booleans();
+        void update_max_allele_counts();
 
         std::vector< std::vector<std::string> > get_alignment() const;
         void write_nexus(
@@ -184,7 +185,6 @@ class BiallelicData {
         void fold_first_mirrored_pattern(
                 bool& was_folded,
                 unsigned int& folded_index);
-        void update_max_allele_counts();
 };
 
 #endif
