@@ -154,6 +154,8 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
+        char arg5[] = "--prefix";
+        char arg6[] = "test1";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -163,6 +165,8 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
             &arg2[0],
             &arg3[0],
             &arg4[0],
+            &arg5[0],
+            &arg6[0],
             cfg_path,
             NULL
         };
@@ -323,7 +327,9 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
-        char arg5[] = "--relax-constant-sites";
+        char arg5[] = "--prefix";
+        char arg6[] = "test2";
+        char arg7[] = "--relax-constant-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -334,6 +340,8 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
             &arg3[0],
             &arg4[0],
             &arg5[0],
+            &arg6[0],
+            &arg7[0],
             cfg_path,
             NULL
         };
@@ -343,11 +351,11 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
         ret = simcoevolity_main(argc, argv);
         REQUIRE(ret == 0);
 
-        REQUIRE(path::exists("simcoevolity-model-used-for-sims.yml"));
+        REQUIRE(path::exists("data/test2-simcoevolity-model-used-for-sims.yml"));
 
         for (unsigned int i = 0; i < 10; ++i) {
             std::string sim_rep = string_util::pad_int(i, 2);
-            std::string sim_prefix = "simcoevolity-" + sim_rep + "-";
+            std::string sim_prefix = "data/test2-simcoevolity-sim-" + sim_rep + "-";
             std::string expected_true_path = sim_prefix + "true-values.txt";
             std::string expected_config_path = sim_prefix + "config.yml";
             std::string expected_align_path1 = sim_prefix + "hemi129-with-constant.nex";
@@ -512,6 +520,8 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
+        char arg5[] = "--prefix";
+        char arg6[] = "test3";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -521,6 +531,8 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
             &arg2[0],
             &arg3[0],
             &arg4[0],
+            &arg5[0],
+            &arg6[0],
             cfg_path,
             NULL
         };
@@ -681,7 +693,9 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
-        char arg5[] = "--relax-missing-sites";
+        char arg5[] = "--prefix";
+        char arg6[] = "test4";
+        char arg7[] = "--relax-missing-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -692,6 +706,8 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
             &arg3[0],
             &arg4[0],
             &arg5[0],
+            &arg6[0],
+            &arg7[0],
             cfg_path,
             NULL
         };
@@ -701,11 +717,11 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
         ret = simcoevolity_main(argc, argv);
         REQUIRE(ret == 0);
 
-        REQUIRE(path::exists("simcoevolity-model-used-for-sims.yml"));
+        REQUIRE(path::exists("data/test4-simcoevolity-model-used-for-sims.yml"));
 
         for (unsigned int i = 0; i < 10; ++i) {
             std::string sim_rep = string_util::pad_int(i, 2);
-            std::string sim_prefix = "simcoevolity-" + sim_rep + "-";
+            std::string sim_prefix = "data/test4-simcoevolity-sim-" + sim_rep + "-";
             std::string expected_true_path = sim_prefix + "true-values.txt";
             std::string expected_config_path = sim_prefix + "config.yml";
             std::string expected_align_path1 = sim_prefix + "hemi129-with-missing.nex";
@@ -872,6 +888,8 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
+        char arg5[] = "--prefix";
+        char arg6[] = "test5";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -881,6 +899,8 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
             &arg2[0],
             &arg3[0],
             &arg4[0],
+            &arg5[0],
+            &arg6[0],
             cfg_path,
             NULL
         };
@@ -1042,6 +1062,8 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
+        char arg5[] = "--prefix";
+        char arg6[] = "test6";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -1051,6 +1073,8 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
             &arg2[0],
             &arg3[0],
             &arg4[0],
+            &arg5[0],
+            &arg6[0],
             cfg_path,
             NULL
         };
@@ -1210,6 +1234,8 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
         char arg2[] = "283402";
         char arg3[] = "-n";
         char arg4[] = "10";
+        char arg5[] = "--prefix";
+        char arg6[] = "test7";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -1219,6 +1245,8 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
             &arg2[0],
             &arg3[0],
             &arg4[0],
+            &arg5[0],
+            &arg6[0],
             cfg_path,
             NULL
         };

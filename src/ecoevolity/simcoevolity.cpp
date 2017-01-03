@@ -93,6 +93,11 @@ int simcoevolity_main(int argc, char * argv[]) {
                   "simulated datasets. By default, the same priors will "
                   "specified in your subsequent analyses as were used to "
                   "simulate the datasets.");
+    parser.add_option("--prefix")
+            .action("store")
+            .dest("prefix")
+            .set_default("")
+            .help("Optional string to prefix all output files.");
     parser.add_option("--relax-constant-sites")
             .action("store_true")
             .dest("relax_constant_sites")
@@ -182,7 +187,11 @@ int simcoevolity_main(int argc, char * argv[]) {
         }
     }
 
-    std::string output_prefix = "simcoevolity-";
+    std::string output_prefix = "";
+    if (options.is_set_by_user("prefix")) {
+        output_prefix = options.get("prefix").get_str() + "-";
+    }
+    output_prefix += "simcoevolity-";
 
     std::cout << "Prior config path: " << prior_config_path << std::endl;
 
@@ -217,13 +226,16 @@ int simcoevolity_main(int argc, char * argv[]) {
                     strict_on_constant_sites,
                     strict_on_missing_sites);
 
-    // Not used but creating instance to vet settings
-    ComparisonPopulationTreeCollection prior_comparisons =
-            ComparisonPopulationTreeCollection(
-                    prior_settings,
-                    rng,
-                    strict_on_constant_sites,
-                    strict_on_missing_sites);
+    if (using_prior_config) {
+        // Not used but creating instance to vet settings
+        std::cout << "Vetting model for analyses of simulated data sets..." << std::endl;
+        ComparisonPopulationTreeCollection prior_comparisons =
+                ComparisonPopulationTreeCollection(
+                        prior_settings,
+                        rng,
+                        strict_on_constant_sites,
+                        strict_on_missing_sites);
+    }
 
     std::cout << "\n" << string_util::banner('-') << "\n";
     comparisons.write_summary(std::cout);
