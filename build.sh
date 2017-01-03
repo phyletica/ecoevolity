@@ -2,12 +2,13 @@
 
 usage () {
     echo ""
-    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-s|--static] [-i|--install] [-t|--test]"
-    echo "  -h|--help       show help message and exit."
-    echo "  -s|--static     build statically linked binaries."
-    echo "  -t|--test       run the test suite after building."
-    echo "  -i|--install    install the executables."
-    echo "  -p|--prefix     install path. Default: '/usr/local'."
+    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-d|--dynamic] [-i|--install]"
+    echo "  -h|--help        Show help message and exit."
+    echo "  -d|--dynamic     Build dynamically linked binaries. Default: static."
+    echo "  -i|--install     Install the executables."
+    echo "  -p|--prefix      Install path. Default: '/usr/local'."
+    echo "  -b|--build-type  Build type. Options: debug, release, relwithdebinfo."
+    echo "                   Default: relwithdebinfo."
     echo ""
 }
 
@@ -41,12 +42,8 @@ build_ecoevolity () {
     echo "Configuring make files..."
     echo "${base_dir}/ $cmake_args" | xargs cmake || exit 1
     echo "Building..."
-    make || exit 1
-    if [ -n "$ECOEVOLITY_RUN_TESTS" ]
-    then
-        echo "Building and running test suite..."
-        make check || exit 1
-    fi
+    make clean || exit 1
+    make -j $COMPILETHREADS || exit 1
     if [ -n "$ECOEVOLITY_RUN_INSTALL" ]
     then
         echo "Installing..."
@@ -75,13 +72,22 @@ export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
 
 # process args
 extra_args=""
-static=""
+static=1
 install_prefix=""
-ECOEVOLITY_RUN_TESTS=""
 ECOEVOLITY_RUN_INSTALL=""
 universal_mac_build=""
 linux_dist_build=""
-mbit=""
+mbit=64
+build_type="RELWITHDEBINFO"
+COMPILETHREADS="4"
+
+if [ "$(echo "$@" | grep -c "=")" -gt 0 ]
+then
+    echo "ERROR: Do not use '=' for arugments. For example, use"
+    echo "'--nthreads 2' instead of '--nthreads=2'."
+    exit 1
+fi
+
 while [ "$1" != "" ]
 do
     case $1 in
@@ -91,14 +97,18 @@ do
             ;;
         -p| --prefix)
             shift
-            install_prefix=$1
+            install_prefix="$1"
             ;;
-        -s| --static)
-            static=1
+        -b| --build-type)
+            shift
+            build_type="$1"
             ;;
-        -t| --test)
-            ECOEVOLITY_RUN_TESTS=1
-            export ECOEVOLITY_RUN_TESTS
+        -d| --dynamic)
+            static=""
+            ;;
+        -n| --nthreads)
+            shift
+            COMPILETHREADS="$1"
             ;;
         -i| --install)
             ECOEVOLITY_RUN_INSTALL=1
@@ -106,7 +116,7 @@ do
             ;;
         -m)
             shift
-            mbit=$1
+            mbit="$1"
             ;;
         --universal-mac-build)
             universal_mac_build=1
@@ -121,20 +131,21 @@ do
     esac
     shift
 done
-args=""
+export COMPILETHREADS
+args="-DCMAKE_BUILD_TYPE=${build_type} -DFORCE_BUNDLED_NCL=yes -DFORCE_BUNDLED_YAML_CPP=yes"
 if [ -n "$install_prefix" ]
 then
     args="${args} -DCMAKE_INSTALL_PREFIX=${install_prefix}"
 fi
 if [ -n "$static" ]
 then
-    args="${args} -DSTATIC_LINKING=YES"
+    args="${args} -DSTATIC_LINKING=yes"
 fi
 if [ -n "$extra_args" ]
 then
     args="${args} ${extra_args}"
 fi
-if [ -n "$linux_dist_build" ] && [ -n "$mbit" ]
+if [ -n "$linux_dist_build" ]
 then
     args="${args} -DCMAKE_CXX_FLAGS=-m${mbit} -DCMAKE_LD_FLAGS=-m${mbit}"
 fi
@@ -144,4 +155,5 @@ then
 fi
 
 # check for build directory
+echo $args
 build_ecoevolity $args
