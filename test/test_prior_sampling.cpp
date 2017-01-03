@@ -148,8 +148,8 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comp-height-scaler-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comp-height-scaler-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -414,8 +414,8 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         double scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-root-pop-size-scaler-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-root-pop-size-scaler-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
