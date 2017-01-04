@@ -1422,7 +1422,7 @@ class CollectionSettings {
         void replace_comparison_path(
                 const std::string & original_path,
                 const std::string & new_path) {
-            for (auto comp : this->comparisons_) {
+            for (auto & comp : this->comparisons_) {
                 if (comp.get_path() == original_path) {
                     comp.set_path(new_path);
                     return;
