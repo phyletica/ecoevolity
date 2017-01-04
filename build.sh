@@ -155,5 +155,4 @@ then
 fi
 
 # check for build directory
-echo $args
 build_ecoevolity $args
