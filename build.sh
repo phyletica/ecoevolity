@@ -2,9 +2,9 @@
 
 usage () {
     echo ""
-    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-d|--dynamic] [-i|--install]"
+    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-s|--static] [-i|--install]"
     echo "  -h|--help        Show help message and exit."
-    echo "  -d|--dynamic     Build dynamically linked binaries. Default: static."
+    echo "  -s|--static      Build statically linked binaries. Default: dynamic."
     echo "  -i|--install     Install the executables."
     echo "  -p|--prefix      Install path. Default: '/usr/local'."
     echo "  -b|--build-type  Build type. Options: debug, release, relwithdebinfo."
@@ -72,7 +72,7 @@ export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
 
 # process args
 extra_args=""
-static=1
+static=""
 install_prefix=""
 ECOEVOLITY_RUN_INSTALL=""
 universal_mac_build=""
@@ -103,8 +103,8 @@ do
             shift
             build_type="$1"
             ;;
-        -d| --dynamic)
-            static=""
+        -s| --static)
+            static=1
             ;;
         -n| --nthreads)
             shift
