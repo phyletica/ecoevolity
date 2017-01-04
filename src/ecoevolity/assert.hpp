@@ -32,6 +32,7 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <stdexcept>
 
 inline void ecoevolity_assertion_failed(char const * expr, char const * function, char const * file, long line) {
     std::cerr << std::endl <<

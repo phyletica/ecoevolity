@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <stdexcept>
 
 #include "matrix.hpp"
 #include "parameter.hpp"

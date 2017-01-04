@@ -26,6 +26,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <stdexcept>
 
 #include "debug.hpp"
 #include "assert.hpp"
