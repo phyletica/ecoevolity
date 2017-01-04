@@ -272,7 +272,7 @@ int simcoevolity_main(int argc, char * argv[]) {
             check_output_path(sim_alignment_path);
 
             char delim = prior_settings.get_population_name_delimiter(k_v.first);
-            prior_settings.replace_comparison_path(k_v.first, sim_alignment_path);
+            prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
 
             sim_alignment_stream.open(sim_alignment_path);
             k_v.second.write_nexus(sim_alignment_stream, delim);
