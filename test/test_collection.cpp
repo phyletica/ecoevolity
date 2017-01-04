@@ -762,7 +762,7 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
 TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
         "[ComparisonPopulationTreeCollection]") {
 
-    SECTION("Testing draw_from_prior for DPP with 3 pairs and alpha 1.0") {
+    SECTION("Testing draw_from_prior for reversible jump with 3 pairs") {
         std::string cfg_path = "data/dummy.yml";
 
         double height_shape = 10.0;
