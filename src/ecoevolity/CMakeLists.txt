@@ -17,16 +17,20 @@ set(ECOEVOLITY_SOURCES
     simcoevolity.cpp
     data.cpp)
 
-foreach(main_source ${ECOEVOLITY_MAIN_SOURCES})
-    get_filename_component(main_file_name ${main_source} NAME_WE)
-    string(REGEX REPLACE "_main" "" stripped_name ${main_file_name})
-    string(REGEX REPLACE "_" "-" exe_name ${stripped_name})
-    add_executable(${exe_name}
-            ${main_source}
-            ${ECOEVOLITY_SOURCES}
-            )
-    TARGET_LINK_LIBRARIES(${exe_name} ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY})
-    INSTALL(TARGETS ${exe_name}
-            DESTINATION bin
-            )
-endforeach()
+add_executable(ecoevolity
+        ecoevolity_main.cpp
+        ${ECOEVOLITY_SOURCES}
+        )
+target_link_libraries(ecoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} Threads::Threads)
+install(TARGETS ecoevolity
+        DESTINATION bin
+        )
+
+add_executable(simcoevolity
+        simcoevolity_main.cpp
+        ${ECOEVOLITY_SOURCES}
+        )
+target_link_libraries(simcoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} Threads::Threads)
+install(TARGETS simcoevolity
+        DESTINATION bin
+        )
