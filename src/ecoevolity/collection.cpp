@@ -892,6 +892,13 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
         for (unsigned int i = 0; i < new_num_heights; ++i) {
             this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
         }
+        for (unsigned int tree_idx = 0;
+                tree_idx < this->trees_.size();
+                ++tree_idx) {
+            unsigned int height_index = this->node_height_indices_.at(tree_idx);
+            this->trees_.at(tree_idx).set_height_parameter(
+                    this->get_height_parameter(height_index));
+        }
     }
     else {
         // Not aware of an "easy" way to uniformly sampling set partitions, so
@@ -901,6 +908,7 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
         Operator& op = this->operator_schedule_.get_reversible_jump_operator();
         Operator& time_op = this->operator_schedule_.get_time_operator();
         for (unsigned int i = 0; i < 100; ++i) {
+            this->store_state();
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->node_heights_.size());
             for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
@@ -936,6 +944,7 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
             this->compute_log_likelihood_and_prior(false);
 
 
+            this->store_state();
             this->store_model_state();
             double hastings_ratio = op.propose(rng, *this);
             this->compute_log_likelihood_and_prior(true);
