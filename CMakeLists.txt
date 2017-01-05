@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.1)
 
-project("ecoevolity" CXX)
+project("ecoevolity" C CXX)
 
 #######################################################################
 # Get local cmake modules
