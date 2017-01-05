@@ -170,6 +170,7 @@ void OperatorSchedule::write_operator_rates(std::ostream& out) const {
     for (unsigned int i = 1; i < this->operators_.size(); ++i) {
         out << this->get_operator(i).to_string(*this);
     }
+    out << std::flush;
 }
 
 bool OperatorSchedule::auto_optimizing() const {
