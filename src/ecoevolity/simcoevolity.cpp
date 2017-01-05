@@ -283,6 +283,10 @@ int simcoevolity_main(int argc, char * argv[]) {
         analysis_settings_stream.open(analysis_config_path);
         prior_settings.write_settings(analysis_settings_stream);
         analysis_settings_stream.close();
+        for (auto const & k_v: sim_alignments) {
+            std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+            prior_settings.replace_comparison_path(path::basename(sim_alignment_path), k_v.first);
+        }
     }
 
     time(&finish);
