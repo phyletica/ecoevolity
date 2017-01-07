@@ -1741,3 +1741,115 @@ TEST_CASE("Testing path comparison between collection settings",
         REQUIRE(settings4.same_comparison_paths(settings3) == false);
     }
 }
+
+TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
+    SECTION("Testing fixed model") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg_stream;
+        cfg_stream << "event_model_prior:\n";
+        cfg_stream << "    fixed: [0, 1]\n";
+        cfg_stream << "comparisons:\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"hemi129.nex\"\n";
+        cfg_stream << "- comparison:\n";
+        cfg_stream << "    path: \"diploid-dna.nex\"\n";
+
+        CollectionSettings settings = CollectionSettings(cfg_stream, cfg_path);
+
+        std::string e =  "";
+        e += "---\n";
+        e += "event_model_prior:\n";
+        e += "    fixed: [0, 1]\n";
+        e += "event_time_prior:\n";
+        e += "    exponential_distribution:\n";
+        e += "        rate: 100\n";
+        e += "mcmc_settings:\n";
+        e += "    chain_length: 100000\n";
+        e += "    sample_frequency: 100\n";
+        e += "comparisons:\n";
+        e += "- comparison:\n";
+        e += "    path: data/hemi129.nex\n";
+        e += "    ploidy: 2\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: ' '\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
+        e += "    equal_population_sizes: false\n";
+        e += "    equal_state_frequencies: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
+        e += "            estimate: false\n";
+        e += "- comparison:\n";
+        e += "    path: data/diploid-dna.nex\n";
+        e += "    ploidy: 2\n";
+        e += "    genotypes_are_diploid: true\n";
+        e += "    markers_are_dominant: false\n";
+        e += "    population_name_delimiter: ' '\n";
+        e += "    population_name_is_prefix: true\n";
+        e += "    constant_sites_removed: true\n";
+        e += "    use_empirical_starting_value_for_freq_1: false\n";
+        e += "    equal_population_sizes: false\n";
+        e += "    equal_state_frequencies: true\n";
+        e += "    parameters:\n";
+        e += "        population_size:\n";
+        e += "            estimate: true\n";
+        e += "            prior:\n";
+        e += "                exponential_distribution:\n";
+        e += "                    rate: 1000\n";
+        e += "        mutation_rate:\n";
+        e += "            value: 1\n";
+        e += "            estimate: false\n";
+        e += "        freq_1:\n";
+        e += "            value: 0.5\n";
+        e += "            estimate: false\n";
+        e += "operator_settings:\n";
+        e += "    auto_optimize: true\n";
+        e += "    auto_optimize_delay: 10000\n";
+        e += "    operators:\n";
+        e += "        ModelOperator:\n";
+        e += "            weight: 0\n";
+        e += "            number_of_auxiliary_categories: 4\n";
+        e += "        ConcentrationScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonHeightScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ComparisonMutationRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.3\n";
+        e += "        RootPopulationSizeScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        ChildPopulationSizeScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        FreqMover:\n";
+        e += "            weight: 0\n";
+        e += "            window: 0.1\n";
+
+        REQUIRE(settings.to_string() == e);
+        REQUIRE(settings.get_path() == "data/dummy.yml");
+        REQUIRE(settings.using_dpp() == false);
+        REQUIRE(settings.get_chain_length() == 100000);
+        REQUIRE(settings.get_sample_frequency() == 100);
+        REQUIRE(settings.get_number_of_comparisons() == 2);
+        REQUIRE(settings.get_number_of_comparisons_with_free_mutation_rate() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_state_frequencies() == 0);
+        REQUIRE(settings.get_number_of_comparisons_with_free_population_size() == 2);
+        REQUIRE(settings.event_model_is_fixed() == true);
+    }
+}
+

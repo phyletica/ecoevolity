@@ -70,6 +70,8 @@ class OperatorSchedule {
         void turn_off_auto_optimize();
 
         bool using_dpp() const;
+        bool using_reversible_jump() const;
+        bool sampling_models() const;
 };
 
 #endif

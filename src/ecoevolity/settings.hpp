@@ -1316,6 +1316,7 @@ class CollectionSettings {
             this->sample_frequency_ = other.sample_frequency_;
             this->concentration_settings_ = other.concentration_settings_;
             this->use_dpp_ = other.use_dpp_;
+            this->fixed_event_model_indices_ = other.fixed_event_model_indices_;
             this->comparisons_ = other.comparisons_;
             this->default_time_prior_ = other.default_time_prior_;
             this->default_population_size_prior_ = other.default_population_size_prior_;
@@ -1454,7 +1455,14 @@ class CollectionSettings {
 
             out << "---\n"
                 << "event_model_prior:\n";
-            if (this->use_dpp_) {
+            if (this->event_model_is_fixed()) {
+                out << indent << "fixed: [" << this->fixed_event_model_indices_.at(0);
+                for (unsigned int i = 1; i < this->fixed_event_model_indices_.size(); ++i) {
+                    out << ", " << this->fixed_event_model_indices_.at(i);
+                }
+                out << "]\n";
+            }
+            else if (this->use_dpp_) {
                 out << indent << "dirichlet_process:\n"
                     << indent << indent << "parameters:\n"
                     << indent << indent <<  indent <<"concentration:\n";
@@ -1496,11 +1504,23 @@ class CollectionSettings {
             }
         }
 
+        bool event_model_is_fixed() const {
+            if (this->fixed_event_model_indices_.size() > 0) {
+                return true;
+            }
+            return false;
+        }
+
+        const std::vector<unsigned int>& get_fixed_event_model_indices() const {
+            return this->fixed_event_model_indices_;
+        }
+
 
     private:
 
         std::string path_ = "";
         bool use_dpp_ = true;
+        std::vector<unsigned int> fixed_event_model_indices_;
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
@@ -1579,6 +1599,11 @@ class CollectionSettings {
                 throw;
             }
             this->parse_top_level(config);
+            if (this->event_model_is_fixed() &&
+                    (this->fixed_event_model_indices_.size() != this->comparisons_.size())) {
+                throw EcoevolityYamlConfigError(
+                        "The number of indices in the fixed event model is incorrect");
+            }
         }
 
         void parse_top_level(const YAML::Node& top_level_node) {
@@ -1688,7 +1713,7 @@ class CollectionSettings {
             if ((! this->use_dpp_) || (this->concentration_settings_.is_fixed())) {
                 this->operator_schedule_settings_.concentration_scaler_settings_.set_weight(0.0);
             }
-            if (this->comparisons_.size() < 2) {
+            if ((this->comparisons_.size() < 2) || (this->event_model_is_fixed())) {
                 this->operator_schedule_settings_.model_operator_settings_.set_weight(0.0);
             }
             if (this->get_number_of_comparisons_with_free_mutation_rate() < 1) {
@@ -1786,6 +1811,10 @@ class CollectionSettings {
             else if (model_prior_node["uniform"]) {
                 this->use_dpp_ = false;
             }
+            else if(model_prior_node["fixed"]) {
+                this->use_dpp_ = false;
+                this->parse_fixed_event_model(model_prior_node["fixed"]);
+            }
             else {
                 throw EcoevolityYamlConfigError(
                         "Unrecognized event_model_prior key: " +
@@ -1835,10 +1864,20 @@ class CollectionSettings {
             ECOEVOLITY_ASSERT(comparisons_node.size() == this->comparisons_.size());
         }
 
+        void parse_fixed_event_model(const YAML::Node& model_node) {
+            if (! model_node.IsSequence()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting fixed event model node to be a sequence, but found: " +
+                        YamlCppUtils::get_node_type(model_node));
+            }
+            for (std::size_t i = 0; i < model_node.size(); ++i) {
+                this->fixed_event_model_indices_.push_back(model_node[i].as<unsigned int>());
+            }
+        }
         void parse_dirichlet_process_prior(const YAML::Node& dpp_node) {
             if (! dpp_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
-                        "Expecting event_model_prior to be a map, but found: " +
+                        "Expecting dirichlet_process to be a map, but found: " +
                         YamlCppUtils::get_node_type(dpp_node));
             }
 

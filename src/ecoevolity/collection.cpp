@@ -41,6 +41,9 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
             strict_on_missing_sites);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
+    if (settings.event_model_is_fixed()) {
+        this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
+    }
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -873,6 +876,50 @@ void ComparisonPopulationTreeCollection::write_summary(
     }
 }
 
+void ComparisonPopulationTreeCollection::set_node_height_indices(
+        const std::vector<unsigned int>& indices,
+        RandomNumberGenerator & rng) {
+    std::unordered_set<unsigned int> index_set;
+    for (auto i: indices) {
+        index_set.insert(i);
+    }
+    if (index_set.size() > this->get_number_of_trees()) {
+        throw EcoevolityError("event/node height indices are not valid.");
+    }
+    for (unsigned int i = 0; i < index_set.size(); ++i) {
+        if (index_set.count(i) < 1) {
+            throw EcoevolityError("event/node height indices are not valid.");
+        }
+    }
+
+    this->node_height_indices_ = indices;
+
+    unsigned int num_heights = this->node_heights_.size();
+    unsigned int new_num_heights = index_set.size();
+    if (new_num_heights > num_heights) {
+        for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
+            this->node_heights_.push_back(
+                    std::make_shared<PositiveRealParameter>(
+                        this->node_height_prior_));
+        }
+    }
+    else if (new_num_heights < num_heights) {
+        for (unsigned int i = 0; i < (num_heights - new_num_heights); ++i) {
+            this->node_heights_.pop_back();
+        }
+    }
+    for (unsigned int i = 0; i < new_num_heights; ++i) {
+        this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
+    }
+    for (unsigned int tree_idx = 0;
+            tree_idx < this->trees_.size();
+            ++tree_idx) {
+        unsigned int height_index = this->node_height_indices_.at(tree_idx);
+        this->trees_.at(tree_idx).set_height_parameter(
+                this->get_height_parameter(height_index));
+    }
+}
+
 void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
     if (this->using_dpp()) {
         unsigned int num_heights = this->node_heights_.size();
@@ -900,7 +947,7 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
                     this->get_height_parameter(height_index));
         }
     }
-    else {
+    else if (this->using_reversible_jump()) {
         // Not aware of an "easy" way to uniformly sampling set partitions, so
         // (hackily) using reversible jump MCMC to do so.
         bool was_ignoring_data = this->ignoring_data();
@@ -980,6 +1027,14 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
                     this->node_height_prior_->draw(rng));
         }
     }
+    else {
+        for (unsigned int height_idx = 0;
+                height_idx < this->node_heights_.size();
+                ++height_idx) {
+            this->node_heights_.at(height_idx)->set_value(
+                    this->node_height_prior_->draw(rng));
+        }
+    }
 }
 
 void ComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
@@ -999,4 +1054,3 @@ std::map<std::string, BiallelicData> ComparisonPopulationTreeCollection::simulat
     }
     return alignments;
 }
-

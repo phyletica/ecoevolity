@@ -191,3 +191,19 @@ bool OperatorSchedule::using_dpp() const {
     }
     return false;
 }
+
+bool OperatorSchedule::using_reversible_jump() const {
+    for (auto op : this->operators_) {
+        if (op->get_name() == "ReversibleJumpSampler") {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool OperatorSchedule::sampling_models() const {
+    if (this->using_dpp() || this->using_reversible_jump()) {
+        return true;
+    }
+    return false;
+}

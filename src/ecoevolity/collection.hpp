@@ -89,6 +89,10 @@ class ComparisonPopulationTreeCollection {
                 const std::vector<unsigned int>& tree_indices,
                 double height);
 
+        void set_node_height_indices(
+                const std::vector<unsigned int>& indices,
+                RandomNumberGenerator & rng);
+
         void add_height(
                 double height,
                 const std::vector<unsigned int>& mapped_tree_indices);
@@ -137,6 +141,14 @@ class ComparisonPopulationTreeCollection {
 
         bool using_dpp() const {
             return this->operator_schedule_.using_dpp();
+        }
+
+        bool using_reversible_jump() const {
+            return this->operator_schedule_.using_reversible_jump();
+        }
+
+        bool sampling_models() const {
+            return this->operator_schedule_.sampling_models();
         }
 
         unsigned int get_logging_precision() const {
