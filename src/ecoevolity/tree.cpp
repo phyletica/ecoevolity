@@ -353,7 +353,7 @@ void PopulationTree::set_population_size(double size) {
 }
 unsigned int PopulationTree::scale_population_sizes(double scale) {
     if (this->population_sizes_are_fixed()) {
-        return;
+        return 0;
     }
     unsigned int number_of_free_parameters_scaled = this->root_->scale_all_population_sizes(scale);
     return number_of_free_parameters_scaled;
