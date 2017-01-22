@@ -784,6 +784,9 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        ConcentrationScaler:\n";
         e += "            weight: 0\n";
         e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -899,6 +902,9 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1008,6 +1014,9 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 1\n";
         e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
@@ -1133,6 +1142,9 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "            weight: 3\n";
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
@@ -1352,6 +1364,9 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1503,6 +1518,9 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "        ConcentrationScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -1650,6 +1668,9 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        ConcentrationScaler:\n";
         e += "            weight: 3\n";
         e += "            scale: 0.2\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 2\n";
+        e += "            scale: 0.4\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 3\n";
         e += "            scale: 0.3\n";
@@ -1823,6 +1844,9 @@ TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
         e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
+        e += "        CollectionScaler:\n";
+        e += "            weight: 1\n";
         e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";

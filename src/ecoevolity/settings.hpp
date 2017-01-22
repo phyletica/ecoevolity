@@ -1075,6 +1075,8 @@ class OperatorScheduleSettings {
                 3.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
+        ScaleOperatorSettings collection_scaler_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
         ScaleOperatorSettings comparison_height_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
         ScaleOperatorSettings comparison_mutation_rate_scaler_settings_ = ScaleOperatorSettings(
@@ -1094,6 +1096,7 @@ class OperatorScheduleSettings {
             this->auto_optimize_delay_ = other.auto_optimize_delay_;
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
+            this->collection_scaler_settings_ = other.collection_scaler_settings_;
             this->comparison_height_scaler_settings_ = other.comparison_height_scaler_settings_;
             this->comparison_mutation_rate_scaler_settings_ = other.comparison_mutation_rate_scaler_settings_;
             this->root_population_size_scaler_settings_ = other.root_population_size_scaler_settings_;
@@ -1113,6 +1116,9 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_concentration_scaler_settings() const {
             return this->concentration_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_collection_scaler_settings() const {
+            return this->collection_scaler_settings_;
         }
         const ScaleOperatorSettings& get_comparison_height_scaler_settings() const {
             return this->comparison_height_scaler_settings_;
@@ -1188,6 +1194,16 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
+                else if (op->first.as<std::string>() == "CollectionScaler") {
+                    try {
+                        this->collection_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing CollectionScaler settings\n";
+                        throw;
+                    }
+                }
                 else if (op->first.as<std::string>() == "ComparisonHeightScaler") {
                     try {
                         this->comparison_height_scaler_settings_.update_from_config(op->second);
@@ -1260,6 +1276,8 @@ class OperatorScheduleSettings {
             ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "CollectionScaler:\n";
+            ss << this->collection_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonHeightScaler:\n";
             ss << this->comparison_height_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonMutationRateScaler:\n";
@@ -1725,6 +1743,7 @@ class CollectionSettings {
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
                 this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
                 this->operator_schedule_settings_.child_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.collection_scaler_settings_.set_weight(0.0);
             }
         }
 

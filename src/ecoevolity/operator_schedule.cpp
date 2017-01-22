@@ -48,6 +48,13 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
+    if (settings.get_collection_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<CollectionScaler>(
+                settings.get_collection_scaler_settings().get_weight(),
+                settings.get_collection_scaler_settings().get_scale()
+                ));
+    }
+
     if (settings.get_comparison_height_scaler_settings().get_weight() > 0.0) {
         this->add_operator(std::make_shared<ComparisonHeightScaler>(
                 settings.get_comparison_height_scaler_settings().get_weight(),
