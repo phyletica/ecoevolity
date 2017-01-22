@@ -278,8 +278,8 @@ double CollectionScaler::propose(RandomNumberGenerator& rng,
     for (unsigned int height_idx = 0;
             height_idx < comparisons.node_heights_.size();
             ++height_idx) {
-        comparisons.node_heights_.at(height_idx).set_value(
-                comparisons.node_heights_.at(height_idx).get_value() * multiplier);
+        comparisons.node_heights_.at(height_idx)->set_value(
+                comparisons.node_heights_.at(height_idx)->get_value() * multiplier);
         ++number_of_free_parameters_scaled;
     }
     comparisons.make_trees_dirty();
