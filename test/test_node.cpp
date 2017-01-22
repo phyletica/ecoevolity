@@ -1956,3 +1956,96 @@ TEST_CASE("Test clade cloning with PopulationNode", "[PopulationNode]") {
         REQUIRE(clone->get_allele_count() == 15);
     }
 }
+
+TEST_CASE("Test population size setting and scaling", "[PopulationNode]") {
+
+    SECTION("Testing setting and scaling population size") {
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>("root", 1.0);
+        std::shared_ptr<PopulationNode> root_child1 = std::make_shared<PopulationNode>("root child 1", 0.8);
+        std::shared_ptr<PopulationNode> root_child2 = std::make_shared<PopulationNode>("root child 2", 0.3);
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>("leaf 1", 0.0);
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>("leaf 2", 0.0);
+        std::shared_ptr<PopulationNode> leaf3 = std::make_shared<PopulationNode>("leaf 3", 0.0);
+        std::shared_ptr<PopulationNode> leaf4 = std::make_shared<PopulationNode>("leaf 4", 0.0);
+        std::shared_ptr<PopulationNode> leaf5 = std::make_shared<PopulationNode>("leaf 5", 0.0);
+
+        root->add_child(root_child1);
+        root->add_child(root_child2);
+
+        leaf1->add_parent(root_child1);
+        leaf2->add_parent(root_child1);
+        leaf3->add_parent(root_child1);
+
+        leaf4->add_parent(root_child2);
+        leaf5->add_parent(root_child2);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(1.0, 1.0);
+        root->set_all_node_height_priors(prior);
+        root->set_all_population_size_priors(prior);
+
+        root->set_all_population_sizes(2.0);
+
+        REQUIRE(root->get_population_size() == 2.0);
+        REQUIRE(root_child1->get_population_size() == 2.0);
+        REQUIRE(root_child2->get_population_size() == 2.0);
+        REQUIRE(leaf1->get_population_size() == 2.0);
+        REQUIRE(leaf2->get_population_size() == 2.0);
+        REQUIRE(leaf3->get_population_size() == 2.0);
+        REQUIRE(leaf4->get_population_size() == 2.0);
+        REQUIRE(leaf5->get_population_size() == 2.0);
+
+        unsigned int num_pop_sizes_scaled = root->scale_all_population_sizes(0.5);
+
+        REQUIRE(num_pop_sizes_scaled == 8);
+
+        REQUIRE(root->get_population_size() == 1.0);
+        REQUIRE(root_child1->get_population_size() == 1.0);
+        REQUIRE(root_child2->get_population_size() == 1.0);
+        REQUIRE(leaf1->get_population_size() == 1.0);
+        REQUIRE(leaf2->get_population_size() == 1.0);
+        REQUIRE(leaf3->get_population_size() == 1.0);
+        REQUIRE(leaf4->get_population_size() == 1.0);
+        REQUIRE(leaf5->get_population_size() == 1.0);
+
+        std::shared_ptr<PositiveRealParameter> size = std::make_shared<PositiveRealParameter>(prior, 4.0, false);
+
+        root->set_all_population_size_parameters(size);
+
+        REQUIRE(root->get_population_size() == 4.0);
+        REQUIRE(root_child1->get_population_size() == 4.0);
+        REQUIRE(root_child2->get_population_size() == 4.0);
+        REQUIRE(leaf1->get_population_size() == 4.0);
+        REQUIRE(leaf2->get_population_size() == 4.0);
+        REQUIRE(leaf3->get_population_size() == 4.0);
+        REQUIRE(leaf4->get_population_size() == 4.0);
+        REQUIRE(leaf5->get_population_size() == 4.0);
+
+        num_pop_sizes_scaled = root->scale_all_population_sizes(2.0);
+
+        REQUIRE(num_pop_sizes_scaled == 1);
+
+        REQUIRE(root->get_population_size() == 8.0);
+        REQUIRE(root_child1->get_population_size() == 8.0);
+        REQUIRE(root_child2->get_population_size() == 8.0);
+        REQUIRE(leaf1->get_population_size() == 8.0);
+        REQUIRE(leaf2->get_population_size() == 8.0);
+        REQUIRE(leaf3->get_population_size() == 8.0);
+        REQUIRE(leaf4->get_population_size() == 8.0);
+        REQUIRE(leaf5->get_population_size() == 8.0);
+
+        root->fix_all_population_sizes();
+
+        num_pop_sizes_scaled = root->scale_all_population_sizes(0.5);
+
+        REQUIRE(num_pop_sizes_scaled == 0);
+
+        REQUIRE(root->get_population_size() == 8.0);
+        REQUIRE(root_child1->get_population_size() == 8.0);
+        REQUIRE(root_child2->get_population_size() == 8.0);
+        REQUIRE(leaf1->get_population_size() == 8.0);
+        REQUIRE(leaf2->get_population_size() == 8.0);
+        REQUIRE(leaf3->get_population_size() == 8.0);
+        REQUIRE(leaf4->get_population_size() == 8.0);
+        REQUIRE(leaf5->get_population_size() == 8.0);
+    }
+}

@@ -216,7 +216,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
-        void scale_all_population_size_parameters(
+        void scale_all_population_sizes(
                 double scale,
                 std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
                 unsigned int & number_of_free_parameters_scaled) {
@@ -228,12 +228,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
                 }
             }
             if (! parameter_found) {
-                this->set_population_size(this->get_population_size() * scale);
                 parameters.push_back(this->population_size_);
-                ++number_of_free_parameters_scaled;
+                if (! this->population_size_is_fixed()) {
+                    this->set_population_size(this->get_population_size() * scale);
+                    ++number_of_free_parameters_scaled;
+                }
             }
             for (unsigned int i = 0; i < this->children_.size(); ++i) {
-                this->children_.at(i)->scale_all_population_size_parameters(
+                this->children_.at(i)->scale_all_population_sizes(
                         scale,
                         parameters,
                         number_of_free_parameters_scaled);
@@ -534,11 +536,11 @@ class PopulationNode: public BaseNode<PopulationNode>{
             return d;
         }
 
-        unsigned int scale_all_population_size_parameters(double scale) {
+        unsigned int scale_all_population_sizes(double scale) {
             std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
             parameters.reserve(this->get_node_count());
             unsigned int number_of_free_parameters_scaled = 0;
-            this->scale_all_population_size_parameters(
+            this->scale_all_population_sizes(
                     scale,
                     parameters,
                     number_of_free_parameters_scaled);
