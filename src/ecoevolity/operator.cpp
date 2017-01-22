@@ -258,6 +258,45 @@ std::string NodeHeightWindowOperator::target_parameter() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// CollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+Operator::OperatorTypeEnum CollectionScaler::get_type() const {
+    return Operator::OperatorTypeEnum::model_operator;
+}
+
+double CollectionScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+    unsigned int number_of_free_parameters_scaled = 0;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparisons.trees_.size();
+            ++tree_idx) {
+        number_of_free_parameters_scaled += comparisons.trees_.at(tree_idx).scale_population_sizes(multiplier);
+    }
+    for (unsigned int height_idx = 0;
+            height_idx < comparisons.node_heights_.size();
+            ++height_idx) {
+        comparisons.node_heights_.at(height_idx).set_value(
+                comparisons.node_heights_.at(height_idx).get_value() * multiplier);
+        ++number_of_free_parameters_scaled;
+    }
+    comparisons.make_trees_dirty();
+
+    return std::log(multiplier) * number_of_free_parameters_scaled;
+}
+
+std::string CollectionScaler::target_parameter() const {
+    return "node heights and population sizes";
+}
+
+std::string CollectionScaler::get_name() const {
+    return "CollectionScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // ConcentrationScaler methods
 //////////////////////////////////////////////////////////////////////////////
 

@@ -216,6 +216,30 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
+        void scale_all_population_size_parameters(
+                double scale,
+                std::vector< std::shared_ptr<PositiveRealParameter> >& parameters,
+                unsigned int & number_of_free_parameters_scaled) {
+            bool parameter_found = false;
+            for (auto parameter_iter : parameters) {
+                if (parameter_iter == this->population_size_) {
+                    parameter_found = true;
+                    break;
+                }
+            }
+            if (! parameter_found) {
+                this->set_population_size(this->get_population_size() * scale);
+                parameters.push_back(this->population_size_);
+                ++number_of_free_parameters_scaled;
+            }
+            for (unsigned int i = 0; i < this->children_.size(); ++i) {
+                this->children_.at(i)->scale_all_population_size_parameters(
+                        scale,
+                        parameters,
+                        number_of_free_parameters_scaled);
+            }
+        }
+
     public:
         PopulationNode() { }
         PopulationNode(std::string label) : BaseClass(label) { }
@@ -508,6 +532,17 @@ class PopulationNode: public BaseNode<PopulationNode>{
             parameters.reserve(this->get_node_count());
             this->add_ln_relative_population_size_prior_density(d, parameters);
             return d;
+        }
+
+        unsigned int scale_all_population_size_parameters(double scale) {
+            std::vector< std::shared_ptr<PositiveRealParameter> > parameters;
+            parameters.reserve(this->get_node_count());
+            unsigned int number_of_free_parameters_scaled = 0;
+            this->scale_all_population_size_parameters(
+                    scale,
+                    parameters,
+                    number_of_free_parameters_scaled);
+            return number_of_free_parameters_scaled;
         }
 
         bool population_size_is_fixed() const {

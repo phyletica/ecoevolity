@@ -339,6 +339,33 @@ class NodeHeightWindowOperator : public WindowOperator {
 // Derived Operator classes
 //////////////////////////////////////////////////////////////////////////////
 
+class CollectionScaler : public ScaleOperator {
+    public:
+        CollectionScaler() : ScaleOperator() { }
+        CollectionScaler(double weight) : ScaleOperator(weight) { }
+        CollectionScaler(double weight, double scale) : ScaleOperator(weight, scale) { }
+        virtual ~CollectionScaler() { }
+
+        Operator::OperatorTypeEnum get_type() const;
+
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
 class ConcentrationScaler : public ScaleOperator {
     public:
         ConcentrationScaler() : ScaleOperator() { }

@@ -189,6 +189,7 @@ class PopulationTree {
 
         void set_root_population_size(double size);
         void set_population_size(double size);
+        unsigned int scale_population_sizes(double scale);
         double get_root_population_size() const;
         std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const;
 

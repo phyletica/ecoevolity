@@ -36,6 +36,7 @@ class ComparisonPopulationTreeCollection {
 
     friend class DirichletProcessGibbsSampler;
     friend class ReversibleJumpSampler;
+    friend class CollectionScaler;
 
     protected:
         std::vector<ComparisonPopulationTree> trees_;
