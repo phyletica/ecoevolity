@@ -287,6 +287,46 @@ double CollectionScaler::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * number_of_free_parameters_scaled;
 }
 
+// The following element-wise proposal worked in the sense that it sampled from
+// the expected prior when there were no data. However, it did not improve the
+// mixing of node heights and pop sizes when there are no constant sits
+//
+// double CollectionScaler::propose(RandomNumberGenerator& rng,
+//         ComparisonPopulationTreeCollection& comparisons,
+//         unsigned int nthreads) {
+//     double ln_hastings = 0.0;
+//     double size;
+//     double height;
+//     double hastings;
+//     for (unsigned int tree_idx = 0;
+//             tree_idx < comparisons.trees_.size();
+//             ++tree_idx) {
+//         size = comparisons.trees_.at(tree_idx).get_root_population_size();
+//         this->update(rng, size, hastings);
+//         ln_hastings += hastings;
+//         comparisons.trees_.at(tree_idx).set_root_population_size(size);
+//         if (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained()) {
+//             for (unsigned int i = 0; i < comparisons.trees_.at(tree_idx).get_leaf_node_count(); ++i) {
+//                 size = comparisons.trees_.at(tree_idx).get_child_population_size(i);
+//                 this->update(rng, size, hastings);
+//                 ln_hastings += hastings;
+//                 comparisons.trees_.at(tree_idx).set_child_population_size(i, size);
+//             }
+//         }
+//     }
+//     for (unsigned int height_idx = 0;
+//             height_idx < comparisons.node_heights_.size();
+//             ++height_idx) {
+//         height = comparisons.node_heights_.at(height_idx)->get_value();
+//         this->update(rng, height, hastings);
+//         ln_hastings += hastings;
+//         comparisons.node_heights_.at(height_idx)->set_value(height);
+//     }
+//     comparisons.make_trees_dirty();
+//
+//     return ln_hastings;
+// }
+
 std::string CollectionScaler::target_parameter() const {
     return "node heights and population sizes";
 }
