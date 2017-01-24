@@ -488,6 +488,163 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
 
         delete[] cfg_path;
     }
+
+    SECTION("Testing gamma(10.0, 10.0) and gamma(2.0, 0.5) prior with optimizing") {
+        double time_shape = 10.0;
+        double time_scale = 10.0;
+        double size_shape = 2.0;
+        double size_scale = 0.5;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << time_shape << "\n";
+        os << "        scale: " << time_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            weight: 0.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        CollectionScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonMutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shape << "\n";
+        os << "                    scale: " << size_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "123456";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+        std::vector<double> samples = prior_sample.get<double>("root_height_kya");
+        REQUIRE(samples.size() == 50001);
+
+        SampleSummarizer<double> summary = prior_sample.summarize<double>("root_height_kya");
+        REQUIRE(summary.mean() == Approx(time_shape * time_scale).epsilon(0.01));
+        REQUIRE(summary.variance() == Approx(time_shape * time_scale * time_scale).epsilon(0.01));
+
+        SampleSummarizer<double> size_summary1 = prior_sample.summarize<double>("pop_size_kya");
+        SampleSummarizer<double> size_summary2 = prior_sample.summarize<double>("pop_size_fas");
+        SampleSummarizer<double> size_summary3 = prior_sample.summarize<double>("pop_size_root_kya");
+
+        REQUIRE(size_summary1.sample_size() == 50001);
+        REQUIRE(size_summary2.sample_size() == 50001);
+        REQUIRE(size_summary3.sample_size() == 50001);
+
+        REQUIRE(size_summary1.mean() == Approx(size_shape * size_scale).epsilon(0.01));
+        REQUIRE(size_summary1.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
+        REQUIRE(size_summary2.mean() == Approx(size_shape * size_scale).epsilon(0.01));
+        REQUIRE(size_summary2.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
+        REQUIRE(size_summary3.mean() == Approx(size_shape * size_scale).epsilon(0.01));
+        REQUIRE(size_summary3.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
+
+        SampleSummarizer<double> f_summary = prior_sample.summarize<double>("freq_1_kya");
+        REQUIRE(f_summary.mean() == Approx(0.5));
+        REQUIRE(f_summary.variance() == Approx(0.0));
+
+
+        // Make sure the rest of the prior sample is as expected
+        summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
+        summary = prior_sample.summarize<double>("ln_likelihood_kya");
+        REQUIRE(summary.mean() == 0.0);
+        REQUIRE(summary.variance() == 0.0);
+
+        std::vector<std::string> columns_to_ignore = {
+                "generation",
+                "root_height_kya",
+                "pop_size_kya",
+                "pop_size_fas",
+                "pop_size_root_kya",
+                "ln_prior",
+                "ln_prior_kya"};
+        for (auto const &kv: prior_sample.data) {
+            bool test = true;
+            for (auto const &p: columns_to_ignore) {
+                if (kv.first == p) {
+                    test = false;
+                }
+            }
+            if (test) {
+                summary = prior_sample.summarize<double>(kv.first);
+                REQUIRE(summary.variance() == 0.0);
+            }
+        }
+
+        delete[] cfg_path;
+    }
 }
 
 TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingPrior]") {
