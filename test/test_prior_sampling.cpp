@@ -16,8 +16,8 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         double size_scale = 0.5;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -173,8 +173,8 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         double size_scale = 0.5;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -330,8 +330,8 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         double size_scale = 0.5;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -496,8 +496,8 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         double size_scale = 0.5;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
