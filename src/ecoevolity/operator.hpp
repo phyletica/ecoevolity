@@ -46,7 +46,8 @@ class Operator {
             tree_operator = 1,
             time_operator = 2,
             model_operator = 3,
-            rj_operator = 4
+            rj_operator = 4,
+            collection_operator = 5
         };
 
         virtual Operator::OperatorTypeEnum get_type() const = 0;
@@ -104,7 +105,7 @@ class Operator {
 
         std::string header_string() const;
 
-        std::string to_string(const OperatorSchedule& os) const;
+        virtual std::string to_string(const OperatorSchedule& os) const;
 
     protected:
         double weight_ = 1.0;
@@ -339,7 +340,37 @@ class NodeHeightWindowOperator : public WindowOperator {
 // Derived Operator classes
 //////////////////////////////////////////////////////////////////////////////
 
+class UnivariateCollectionScaler : public ScaleOperator {
+    public:
+        UnivariateCollectionScaler() : ScaleOperator() { }
+        UnivariateCollectionScaler(double weight) : ScaleOperator(weight) { }
+        UnivariateCollectionScaler(double weight, double scale) : ScaleOperator(weight, scale) { }
+        virtual ~UnivariateCollectionScaler() { }
+
+        Operator::OperatorTypeEnum get_type() const;
+
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
 class CollectionScaler : public ScaleOperator {
+    protected:
+        UnivariateCollectionScaler uni_collection_scaler = UnivariateCollectionScaler(0.0, 0.5);
+
     public:
         CollectionScaler() : ScaleOperator() { }
         CollectionScaler(double weight) : ScaleOperator(weight) { }
@@ -363,6 +394,8 @@ class CollectionScaler : public ScaleOperator {
         std::string target_parameter() const;
 
         std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
 };
 
 

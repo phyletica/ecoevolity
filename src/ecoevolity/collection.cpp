@@ -648,9 +648,9 @@ void ComparisonPopulationTreeCollection::mcmc(
     unsigned int gen_of_last_state_log = 0;
     unsigned int gen_of_last_operator_log = 0;
     for (gen = 0; gen < chain_length; ++gen) {
-        this->store_state();
         Operator& op = this->operator_schedule_.draw_operator(rng);
         if (op.get_type() == Operator::OperatorTypeEnum::tree_operator) {
+            this->store_state();
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->trees_.size());
             for (unsigned int tree_idx = 0; tree_idx < this->trees_.size(); ++tree_idx) {
@@ -701,6 +701,7 @@ void ComparisonPopulationTreeCollection::mcmc(
             this->compute_log_likelihood_and_prior(false);
         }
         else if (op.get_type() == Operator::OperatorTypeEnum::time_operator) {
+            this->store_state();
             std::vector<double> hastings_ratios;
             hastings_ratios.reserve(this->node_heights_.size());
             for (unsigned int height_idx = 0; height_idx < this->node_heights_.size(); ++height_idx) {
@@ -747,6 +748,7 @@ void ComparisonPopulationTreeCollection::mcmc(
             this->compute_log_likelihood_and_prior(false);
         }
         else if (op.get_type() == Operator::OperatorTypeEnum::model_operator) {
+            this->store_state();
             double hastings_ratio = op.propose(rng, *this);
             this->compute_log_likelihood_and_prior(true);
             double likelihood_ratio = 
@@ -773,6 +775,7 @@ void ComparisonPopulationTreeCollection::mcmc(
             op.optimize(this->operator_schedule_, acceptance_probability);
         }
         else if (op.get_type() == Operator::OperatorTypeEnum::rj_operator) {
+            this->store_state();
             /* std::cout << "State before RJ:\n"; */
             /* this->log_state(std::cout, gen + 1); */
 
@@ -806,6 +809,9 @@ void ComparisonPopulationTreeCollection::mcmc(
 
             /* std::cout << "State after RJ:\n"; */
             /* this->log_state(std::cout, gen + 1); */
+        }
+        else if (op.get_type() == Operator::OperatorTypeEnum::collection_operator) {
+            op.propose(rng, *this);
         }
         else {
             state_log_stream.close();
