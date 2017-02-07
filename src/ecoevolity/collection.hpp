@@ -212,8 +212,12 @@ class ComparisonPopulationTreeCollection {
 
         double get_nearest_smaller_height(
                 unsigned int height_index) const;
+        unsigned int get_nearest_smaller_height_index(
+                unsigned int height_index,
+                bool allow_smallest_index = false) const;
         unsigned int get_nearest_larger_height_index(
-                unsigned int height_index) const;
+                unsigned int height_index,
+                bool allow_largest_index = false) const;
 
         double get_concentration() const {
             return this->concentration_->get_value();

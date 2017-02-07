@@ -640,4 +640,40 @@ class ReversibleJumpSampler : public ModelOperator {
 
 };
 
+class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
+
+    protected:
+        double window_size_ = 0.1;
+
+    public:
+        ReversibleJumpWindowOperator() : ReversibleJumpSampler() { }
+        ReversibleJumpWindowOperator(double weight) : ReversibleJumpSampler(weight) { }
+        ReversibleJumpWindowOperator(double weight, double window_size);
+        virtual ~ReversibleJumpWindowOperator() { }
+
+        Operator::OperatorTypeEnum get_type() const;
+
+        void set_window_size(double window_size);
+        double get_window_size() const;
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        void optimize(OperatorSchedule& os, double log_alpha);
+
+        double get_coercable_parameter_value() const;
+
+        void set_coercable_parameter_value(double value);
+
+        std::string get_name() const;
+
+        std::string target_parameter() const;
+};
+
 #endif

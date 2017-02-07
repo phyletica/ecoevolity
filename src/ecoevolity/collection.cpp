@@ -302,8 +302,43 @@ double ComparisonPopulationTreeCollection::get_nearest_smaller_height(
     return nearest_smaller_height;
 }
 
+unsigned int ComparisonPopulationTreeCollection::get_nearest_smaller_height_index(
+        unsigned int height_index,
+        bool allow_smallest_index) const {
+    double ref_height = this->get_height(height_index);
+    double nearest_smaller_height = 0.0;
+    int current_nearest_idx = -1;
+    for (unsigned int h_idx = 0;
+            h_idx < this->get_number_of_events();
+            ++h_idx) {
+        if (h_idx == height_index) {
+            continue;
+        }
+        double candidate_height = this->get_height(h_idx);
+        if (candidate_height > ref_height) {
+            continue;
+        }
+        if ((ref_height - candidate_height) < (ref_height - nearest_smaller_height)) {
+            nearest_smaller_height = candidate_height;
+            current_nearest_idx = h_idx;
+        }
+    }
+    if (current_nearest_idx < 0) {
+        if (allow_smallest_index) {
+            return height_index;
+        }
+        else {
+            throw EcoevolityError(
+                    "ComparisonPopulationTreeCollection::get_nearest_smaller_height_index "
+                    "was called with smallest height index");
+        }
+    }
+    return current_nearest_idx;
+}
+
 unsigned int ComparisonPopulationTreeCollection::get_nearest_larger_height_index(
-        unsigned int height_index) const {
+        unsigned int height_index,
+        bool allow_largest_index) const {
     double ref_height = this->get_height(height_index);
     double nearest_larger_height = std::numeric_limits<double>::max();
     int current_nearest_idx = -1;
@@ -323,9 +358,14 @@ unsigned int ComparisonPopulationTreeCollection::get_nearest_larger_height_index
         }
     }
     if (current_nearest_idx < 0) {
-        throw EcoevolityError(
-                "ComparisonPopulationTreeCollection::get_nearest_larger_height_index "
-                "was called with largest height index");
+        if (allow_largest_index) {
+            return height_index;
+        }
+        else {
+            throw EcoevolityError(
+                    "ComparisonPopulationTreeCollection::get_nearest_larger_height_index "
+                    "was called with largest height index");
+        }
     }
     return current_nearest_idx;
 }
