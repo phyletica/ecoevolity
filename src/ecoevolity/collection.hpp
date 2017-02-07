@@ -36,6 +36,7 @@ class ComparisonPopulationTreeCollection {
 
     friend class DirichletProcessGibbsSampler;
     friend class ReversibleJumpSampler;
+    friend class ReversibleJumpWindowOperator;
     friend class UnivariateCollectionScaler;
     friend class CollectionScaler;
 

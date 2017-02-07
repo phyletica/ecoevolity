@@ -651,19 +651,29 @@ class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
         ReversibleJumpWindowOperator(double weight, double window_size);
         virtual ~ReversibleJumpWindowOperator() { }
 
-        Operator::OperatorTypeEnum get_type() const;
-
         void set_window_size(double window_size);
         double get_window_size() const;
+        void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const;
 
         /**
          * @brief   Propose a new state.
          *
          * @return  Log of Hastings Ratio.
          */
-        virtual double propose(RandomNumberGenerator& rng,
+        double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
 
         void optimize(OperatorSchedule& os, double log_alpha);
 
@@ -672,8 +682,6 @@ class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
         void set_coercable_parameter_value(double value);
 
         std::string get_name() const;
-
-        std::string target_parameter() const;
 };
 
 #endif

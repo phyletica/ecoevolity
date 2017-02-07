@@ -36,7 +36,8 @@ OperatorSchedule::OperatorSchedule(
                     settings.get_model_operator_settings().get_weight()));
         }
         else {
-            this->add_operator(std::make_shared<ReversibleJumpSampler>(
+            /* this->add_operator(std::make_shared<ReversibleJumpSampler>( */
+            this->add_operator(std::make_shared<ReversibleJumpWindowOperator>(
                     settings.get_model_operator_settings().get_weight()));
         }
     }
@@ -201,7 +202,7 @@ bool OperatorSchedule::using_dpp() const {
 
 bool OperatorSchedule::using_reversible_jump() const {
     for (auto op : this->operators_) {
-        if (op->get_name() == "ReversibleJumpSampler") {
+        if ((op->get_name() == "ReversibleJumpSampler") || (op->get_name() == "ReversibleJumpWindowOperator")) {
             return true;
         }
     }

@@ -1182,7 +1182,7 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         double ln_hastings =
                 this->ln_number_of_possible_splits_.at(num_mapped_nodes) +
                 std::log(shared_indices.size()) -
-                std::log(nevents + 1);
+                (std::log((nevents + 1) * 2));
 
         // Account for hastings of proposed height
         ln_hastings += new_height_ln_hastings;
@@ -1225,7 +1225,7 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         }
     }
     if (! merging) {
-        comparisons.get_height_parameter(height_index).set_value(new_height);
+        comparisons.get_height_parameter(height_index)->set_value(new_height);
         return new_height_ln_hastings;
     }
 
@@ -1263,10 +1263,10 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     //     (number of shared events after the proposal * 2 * stirling2(n, 2))
     ECOEVOLITY_ASSERT(comparisons.get_number_of_events() + 1 == nevents);
     unsigned int nshared_after = comparisons.get_shared_event_indices().size();
-    double ln_hastings = std::log(nevents);
+    double ln_hastings = std::log(nevents * 2);
     ln_hastings -= (
             std::log(nshared_after) +
-            this->ln_number_of_possible_splits_.at(nnodes_in_merged_event);
+            this->ln_number_of_possible_splits_.at(nnodes_in_merged_event));
 
     // Account for hastings of proposed height
     ln_hastings += new_height_ln_hastings;

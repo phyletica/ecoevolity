@@ -6146,7 +6146,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 pairs") {
         double height_shape = 10.0;
