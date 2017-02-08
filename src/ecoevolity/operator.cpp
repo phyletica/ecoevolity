@@ -1123,13 +1123,11 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         unsigned int nthreads) {
     const unsigned int nnodes = comparisons.get_number_of_trees();
     const unsigned int nevents = comparisons.get_number_of_events();
-    std::cout << "nevents: " << nevents << "\n";
     const bool in_general_state_before = (nnodes == nevents);
     const bool in_shared_state_before = (nevents == 1);
     const bool split_event = ((! in_general_state_before) &&
             (in_shared_state_before || (rng.uniform_real() < 0.5)));
     if (split_event) {
-        std::cout << "splitting...\n";
         std::vector<unsigned int> shared_indices =
                 comparisons.get_shared_event_indices();
         unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
@@ -1211,7 +1209,6 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         return ln_hastings + ln_jacobian;
     }
     // Merge move
-    std::cout << "merging...\n";
     unsigned int height_index = rng.uniform_int(0, comparisons.get_number_of_events() - 1);
     double old_height = comparisons.get_height(height_index);
     double new_height = old_height;
@@ -1275,7 +1272,7 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     //     ------------------------------------------------------------------------------------
     //     (number of shared events after the proposal * 2 * stirling2(n, 2) * window overhang)
     ECOEVOLITY_ASSERT(comparisons.get_number_of_events() + 1 == nevents);
-    double merge_overhang = this->window_size_ - std::abs(old_height - comparisons.get_height(target_height_index));
+    double merge_overhang = this->window_size_ - std::abs(old_height - comparisons.get_height(new_merged_event_index));
     ECOEVOLITY_ASSERT(merge_overhang > 0.0);
     unsigned int nshared_after = comparisons.get_shared_event_indices().size();
     double ln_hastings = std::log(nevents) + std::log(2.0 * this->window_size_);

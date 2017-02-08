@@ -202,7 +202,7 @@ bool OperatorSchedule::using_dpp() const {
 
 bool OperatorSchedule::using_reversible_jump() const {
     for (auto op : this->operators_) {
-        if ((op->get_name() == "ReversibleJumpSampler") || (op->get_name() == "ReversibleJumpWindowOperator")) {
+        if (op->get_type() == Operator::OperatorTypeEnum::rj_operator) {
             return true;
         }
     }

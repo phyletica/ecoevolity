@@ -6164,7 +6164,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 100000\n";
+        os << "    chain_length: 300000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6180,7 +6180,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -6222,7 +6222,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "29475945";
+        char arg2[] = "54354";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6244,7 +6244,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 10001;
+        unsigned int expected_sample_size = 30001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
