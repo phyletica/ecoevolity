@@ -220,6 +220,10 @@ class ComparisonPopulationTreeCollection {
                 unsigned int height_index,
                 bool allow_largest_index = false) const;
 
+        unsigned int get_distal_height_index_within_move(
+                unsigned int starting_height_index,
+                double delta_height) const;
+
         double get_concentration() const {
             return this->concentration_->get_value();
         }

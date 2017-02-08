@@ -6146,7 +6146,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xxSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 pairs") {
         double height_shape = 10.0;
@@ -6164,7 +6164,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 300000\n";
+        os << "    chain_length: 1000000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6244,16 +6244,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 30001;
+        unsigned int expected_sample_size = 100001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         std::vector<int> nevents = prior_sample.get<int>("number_of_events");
         std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
@@ -6280,6 +6274,13 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
         }
         REQUIRE(total == expected_sample_size);
         REQUIRE((nshared / (double)expected_sample_size) == Approx(0.5).epsilon(0.01));
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -6315,7 +6316,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -6349,7 +6350,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -6420,15 +6421,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
         SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.sample_size() == expected_sample_size);
-        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         std::vector<int> nevents = prior_sample.get<int>("number_of_events");
         std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
@@ -6490,12 +6482,25 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         REQUIRE(model_counts.at("012") == nevent_counts.at(3));
         REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
-        for (std::string m: {"000", "001", "010", "011", "012"}) {
-            std::cout << m << ": " << model_counts.at(m) / (double)expected_sample_size << "\n";
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
         }
         for (std::string m: {"000", "001", "010", "011", "012"}) {
             REQUIRE((model_counts.at(m) / (double)expected_sample_size) == Approx(1.0/model_counts.size()).epsilon(0.01));
         }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -6533,7 +6538,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 6 pairs") {
         double height_shape = 10.0;
@@ -6567,7 +6572,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -6647,24 +6652,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         SampleSummarizer<double> height_summary4 = prior_sample.summarize<double>("root_height_pop1c");
         SampleSummarizer<double> height_summary5 = prior_sample.summarize<double>("root_height_pop1d");
         SampleSummarizer<double> height_summary6 = prior_sample.summarize<double>("root_height_pop1e");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
-        REQUIRE(height_summary3.sample_size() == expected_sample_size);
-        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
-        REQUIRE(height_summary4.sample_size() == expected_sample_size);
-        REQUIRE(height_summary4.mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
-        REQUIRE(height_summary5.sample_size() == expected_sample_size);
-        REQUIRE(height_summary5.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
-        REQUIRE(height_summary6.sample_size() == expected_sample_size);
-        REQUIRE(height_summary6.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
 
         std::vector<int> nevents = prior_sample.get<int>("number_of_events");
         std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
@@ -6765,12 +6752,35 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
 
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+
         for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
             REQUIRE((model_counts.at(m) / (double)expected_sample_size) == Approx(1.0/bell_float(6)).epsilon(0.002));
         }
         for (auto const & kv: nevent_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(6, kv.first)/bell_float(6)).epsilon(0.002));
         }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary4.sample_size() == expected_sample_size);
+        REQUIRE(height_summary4.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.sample_size() == expected_sample_size);
+        REQUIRE(height_summary5.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.sample_size() == expected_sample_size);
+        REQUIRE(height_summary6.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
 
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
         REQUIRE(lnl_summary.mean() == 0.0);
@@ -6780,7 +6790,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -6836,7 +6846,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -6951,15 +6961,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
         SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.sample_size() == expected_sample_size);
-        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         SampleSummarizer<double> size1_summary_a = prior_sample.summarize<double>("pop_size_kya");
         SampleSummarizer<double> size1_summary_b = prior_sample.summarize<double>("pop_size_fas");
@@ -6971,61 +6972,13 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         SampleSummarizer<double> size3_summary_b = prior_sample.summarize<double>("pop_size_pop2b");
         SampleSummarizer<double> size3_summary_c = prior_sample.summarize<double>("pop_size_root_pop1b");
 
-        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-
-        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-
-        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-
         SampleSummarizer<double> f1_summary = prior_sample.summarize<double>("freq_1_kya");
         SampleSummarizer<double> f2_summary = prior_sample.summarize<double>("freq_1_pop1");
         SampleSummarizer<double> f3_summary = prior_sample.summarize<double>("freq_1_pop1b");
-        REQUIRE(f1_summary.sample_size() == expected_sample_size);
-        REQUIRE(f2_summary.sample_size() == expected_sample_size);
-        REQUIRE(f3_summary.sample_size() == expected_sample_size);
-        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
-        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
-        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
-        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
-        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
-        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
 
         SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
         SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
         SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
-        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult1_summary.mean() == 1.0);
-        REQUIRE(mult1_summary.variance() == 0.0);
-        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
-        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         REQUIRE_THROWS(prior_sample.summarize<double>("concentration"));
 
@@ -7085,13 +7038,16 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         }
         REQUIRE(total == expected_sample_size);
 
-        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
-        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
-        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
-
         for (auto const & kv: model_counts) {
             std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
         }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(1.0/bell_float(3)).epsilon(0.01));
@@ -7099,6 +7055,66 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         for (auto const & kv: nevent_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.005));
         }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        REQUIRE(f1_summary.sample_size() == expected_sample_size);
+        REQUIRE(f2_summary.sample_size() == expected_sample_size);
+        REQUIRE(f3_summary.sample_size() == expected_sample_size);
+        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
+        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
+        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
+        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
+        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
+        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
+
+        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult1_summary.mean() == 1.0);
+        REQUIRE(mult1_summary.variance() == 0.0);
+        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
+        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -7110,7 +7126,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CollectionScaler",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -7166,7 +7182,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -7281,15 +7297,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
         SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.sample_size() == expected_sample_size);
-        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         SampleSummarizer<double> size1_summary_a = prior_sample.summarize<double>("pop_size_kya");
         SampleSummarizer<double> size1_summary_b = prior_sample.summarize<double>("pop_size_fas");
@@ -7301,61 +7308,13 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         SampleSummarizer<double> size3_summary_b = prior_sample.summarize<double>("pop_size_pop2b");
         SampleSummarizer<double> size3_summary_c = prior_sample.summarize<double>("pop_size_root_pop1b");
 
-        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-
-        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-
-        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-
         SampleSummarizer<double> f1_summary = prior_sample.summarize<double>("freq_1_kya");
         SampleSummarizer<double> f2_summary = prior_sample.summarize<double>("freq_1_pop1");
         SampleSummarizer<double> f3_summary = prior_sample.summarize<double>("freq_1_pop1b");
-        REQUIRE(f1_summary.sample_size() == expected_sample_size);
-        REQUIRE(f2_summary.sample_size() == expected_sample_size);
-        REQUIRE(f3_summary.sample_size() == expected_sample_size);
-        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
-        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
-        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
-        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
-        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
-        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
 
         SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
         SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
         SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
-        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult1_summary.mean() == 1.0);
-        REQUIRE(mult1_summary.variance() == 0.0);
-        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
-        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         REQUIRE_THROWS(prior_sample.summarize<double>("concentration"));
 
@@ -7415,13 +7374,16 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         }
         REQUIRE(total == expected_sample_size);
 
-        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
-        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
-        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
-
         for (auto const & kv: model_counts) {
             std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
         }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(1.0/bell_float(3)).epsilon(0.01));
@@ -7429,6 +7391,66 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         for (auto const & kv: nevent_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.005));
         }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        REQUIRE(f1_summary.sample_size() == expected_sample_size);
+        REQUIRE(f2_summary.sample_size() == expected_sample_size);
+        REQUIRE(f3_summary.sample_size() == expected_sample_size);
+        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
+        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
+        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
+        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
+        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
+        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
+
+        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult1_summary.mean() == 1.0);
+        REQUIRE(mult1_summary.variance() == 0.0);
+        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
+        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -7496,7 +7518,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8428,7 +8450,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -8484,7 +8506,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8599,15 +8621,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
         SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.sample_size() == expected_sample_size);
-        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         SampleSummarizer<double> size1_summary_a = prior_sample.summarize<double>("pop_size_kya");
         REQUIRE_THROWS(prior_sample.summarize<double>("pop_size_fas"));
@@ -8619,55 +8632,13 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         SampleSummarizer<double> size3_summary_b = prior_sample.summarize<double>("pop_size_pop2b");
         SampleSummarizer<double> size3_summary_c = prior_sample.summarize<double>("pop_size_root_pop1b");
 
-        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-
-        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-
-        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-
         SampleSummarizer<double> f1_summary = prior_sample.summarize<double>("freq_1_kya");
         SampleSummarizer<double> f2_summary = prior_sample.summarize<double>("freq_1_pop1");
         SampleSummarizer<double> f3_summary = prior_sample.summarize<double>("freq_1_pop1b");
-        REQUIRE(f1_summary.sample_size() == expected_sample_size);
-        REQUIRE(f2_summary.sample_size() == expected_sample_size);
-        REQUIRE(f3_summary.sample_size() == expected_sample_size);
-        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
-        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
-        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
-        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
-        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
-        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
 
         SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
         SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
         SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
-        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult1_summary.mean() == 1.0);
-        REQUIRE(mult1_summary.variance() == 0.0);
-        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
-        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         REQUIRE_THROWS(prior_sample.summarize<double>("concentration"));
 
@@ -8727,13 +8698,16 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         }
         REQUIRE(total == expected_sample_size);
 
-        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
-        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
-        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
-
         for (auto const & kv: model_counts) {
             std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
         }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(1.0/bell_float(3)).epsilon(0.01));
@@ -8741,6 +8715,60 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         for (auto const & kv: nevent_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.005));
         }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        REQUIRE(f1_summary.sample_size() == expected_sample_size);
+        REQUIRE(f2_summary.sample_size() == expected_sample_size);
+        REQUIRE(f3_summary.sample_size() == expected_sample_size);
+        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
+        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
+        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
+        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
+        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
+        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
+
+        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult1_summary.mean() == 1.0);
+        REQUIRE(mult1_summary.variance() == 0.0);
+        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
+        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -8752,7 +8780,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionScaler, and fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -8808,7 +8836,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
+        os << "            weight: 0.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8923,15 +8951,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
         SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
-        REQUIRE(height_summary1.sample_size() == expected_sample_size);
-        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.sample_size() == expected_sample_size);
-        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.sample_size() == expected_sample_size);
-        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
         SampleSummarizer<double> size1_summary_a = prior_sample.summarize<double>("pop_size_kya");
         REQUIRE_THROWS(prior_sample.summarize<double>("pop_size_fas"));
@@ -8943,55 +8962,13 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         SampleSummarizer<double> size3_summary_b = prior_sample.summarize<double>("pop_size_pop2b");
         SampleSummarizer<double> size3_summary_c = prior_sample.summarize<double>("pop_size_root_pop1b");
 
-        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
-
-        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
-
-        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
-        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
-
         SampleSummarizer<double> f1_summary = prior_sample.summarize<double>("freq_1_kya");
         SampleSummarizer<double> f2_summary = prior_sample.summarize<double>("freq_1_pop1");
         SampleSummarizer<double> f3_summary = prior_sample.summarize<double>("freq_1_pop1b");
-        REQUIRE(f1_summary.sample_size() == expected_sample_size);
-        REQUIRE(f2_summary.sample_size() == expected_sample_size);
-        REQUIRE(f3_summary.sample_size() == expected_sample_size);
-        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
-        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
-        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
-        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
-        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
-        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
 
         SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
         SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
         SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
-        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
-        REQUIRE(mult1_summary.mean() == 1.0);
-        REQUIRE(mult1_summary.variance() == 0.0);
-        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
-        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
-        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         REQUIRE_THROWS(prior_sample.summarize<double>("concentration"));
 
@@ -9051,13 +9028,16 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         }
         REQUIRE(total == expected_sample_size);
 
-        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
-        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
-        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
-
         for (auto const & kv: model_counts) {
             std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
         }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(1.0/bell_float(3)).epsilon(0.01));
@@ -9065,6 +9045,60 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         for (auto const & kv: nevent_counts) {
             REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(3, kv.first)/bell_float(3)).epsilon(0.005));
         }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        REQUIRE(f1_summary.sample_size() == expected_sample_size);
+        REQUIRE(f2_summary.sample_size() == expected_sample_size);
+        REQUIRE(f3_summary.sample_size() == expected_sample_size);
+        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
+        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
+        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
+        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
+        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
+        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
+
+        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult1_summary.mean() == 1.0);
+        REQUIRE(mult1_summary.variance() == 0.0);
+        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
+        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");

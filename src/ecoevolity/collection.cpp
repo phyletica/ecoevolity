@@ -370,6 +370,43 @@ unsigned int ComparisonPopulationTreeCollection::get_nearest_larger_height_index
     return current_nearest_idx;
 }
 
+unsigned int ComparisonPopulationTreeCollection::get_distal_height_index_within_move(
+                unsigned int starting_height_index,
+                double delta_height) const {
+
+    double starting_height = this->get_height(starting_height_index);
+    double lower_limit = 0.0;
+    double upper_limit = 0.0;
+    if (delta_height > 0.0) {
+        lower_limit = starting_height;
+        upper_limit = starting_height + delta_height;
+    }
+    else {
+        lower_limit = starting_height + delta_height;
+        upper_limit = starting_height;
+    }
+    int current_ht_idx = -1;
+    double current_largest_distance = -1.0;
+    double distance = 0.0;
+    double height = 0.0;
+    for (unsigned int h_idx = 1;
+            h_idx < this->get_number_of_events();
+            ++h_idx) {
+        height = this->get_height(h_idx);
+        if ((height > lower_limit) && (height < upper_limit)) {
+            distance = std::abs(height - starting_height);
+            if (distance > current_largest_distance) {
+                current_ht_idx = h_idx;
+                current_largest_distance = distance; 
+            }
+        }
+    }
+    if (current_ht_idx < 0) {
+        return starting_height_index;
+    }
+    return current_ht_idx;
+}
+
 unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
         unsigned int height_index) const {
     unsigned int count = 0;
