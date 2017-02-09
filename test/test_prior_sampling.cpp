@@ -6150,7 +6150,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xxSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 pairs") {
         double height_shape = 10.0;
-        double height_scale = 0.1;
+        double height_scale = 10.0;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + ".cfg";

@@ -1163,7 +1163,6 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
                 if (lower_bound < 0.0) {
                     // window_width += lower_bound;
                     lower_bound = 0.0;
-                    std::cout << "\n\nHERE1\n\n";
                 }
             }
         }
@@ -1210,29 +1209,36 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         //   2) randomly splitting the subset out of the 'n' nodes sharing the event
         //          = 1 / (2 * stirling2(n, 2))
         //          = 1 / (2^n - 2)
+        //   3) drawing the new height
+        //          = 1 / 2w
+        //      where w = window size
         // So the prob of the forward split move is
-        // p(split move) = 1 / (number of shared events * (2^n - 2))
-        //               = 1 / (number of shared events * 2 * stirling2(n, 2))
+        // p(split move) = 1 / (number of shared events * (2^n - 2) * 2w)
+        //               = 1 / (number of shared events * 2 * stirling2(n, 2) * 2w)
         //
         // The probability of the reverse move is simply the probability of
         // randomly selecting the proposed (split) event from among all events.
         // Times the probability of drawing a height that will lead to a merge
         // p(selecting proposed event) = 1 / (number of events before proposal + 1)
-        // p(drawing a merge height) = width of window beyond old height / width of window
-        //                           = window overhang / window width
-        // p(reverse merge) = window overhang / (window width * (number of events before proposal + 1))
+        // p(drawing merge height) = width of window that leads to merge / 2w
+        //                           = merge gap / 2w 
+        // p(reverse merge) = merge gap / (2w * (number of events before proposal + 1))
         //
         // So, the Hasting ratio for the proposed split move is:
         // p(reverse merge) / p(proposed split) = 
-        //     (number of shared events * 2 * stirling2(n, 2) * window overhang)
+        //     (number of shared events * 2 * stirling2(n, 2) * 2w * merge gap)
         //     -----------------------------------------------------------------
-        //         window width * (number of events before the proposal + 1)
+        //               2w * (number of events before the proposal + 1)
+        //  =
+        //     (number of shared events * 2 * stirling2(n, 2) * merge gap)
+        //     -----------------------------------------------------------------
+        //               (number of events before the proposal + 1)
 
         double ln_hastings =
                 this->ln_number_of_possible_splits_.at(num_mapped_nodes) +
                 std::log(shared_indices.size()) +
                 std::log(merge_gap) -
-                (std::log(nevents + 1) + std::log(window_width));
+                std::log(nevents + 1);
 
         // Account for hastings of proposed height
         ln_hastings += new_height_ln_hastings;
@@ -1262,6 +1268,12 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
 
     unsigned int target_height_index = comparisons.get_distal_height_index_within_move(height_index, (new_height - old_height));
     if (target_height_index == height_index) {
+        // std::cout << "Merging, but no merge\n";
+        // std::cout << "old height: " << old_height << "\n";
+        // std::cout << "new height: " << new_height << "\n";
+        // std::cout << "nearest smaller: " << comparisons.get_height(comparisons.get_nearest_smaller_height_index(height_index, true)) << "\n";
+        // std::cout << "nearest larger: " << comparisons.get_height(comparisons.get_nearest_larger_height_index(height_index, true)) << "\n";
+        // std::cout << "\n";
         comparisons.get_height_parameter(height_index)->set_value(new_height);
         return new_height_ln_hastings;
         // return -std::numeric_limits<double>::infinity();
@@ -1288,7 +1300,6 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
            ((old_height - lower_bound) > this->window_size_)) {
             lower_bound = old_height - this->window_size_;
             if (lower_bound < 0.0) {
-                std::cout << "\n\nHERE2\n\n";
                 // window_width += lower_bound;
                 lower_bound = 0.0;
             }
@@ -1326,29 +1337,36 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     // randomly selecting the height to merge from among all heights times the
     // probability of drawing a height that will lead to the merge
     // p(selecting height) = 1 / (number of events before proposal)
-    // p(drawing a merge height) = width of window beyond target height / width of window
-    //                           = window overhang / window width
-    // p(merge) = window overhang / (window width * number of events before proposal)
+    // p(drawing a merge height) = width of window that leads to merge / 2w
+    //                           = merge gap / 2w 
+    // where w = window size
+    //
+    // p(merge) = merge gap / (2w * number of events before proposal)
     //
     // The probability of reverse split move is the product of the probabilites of
     //   1) choosing the merged shared event to split
     //          = 1 / number of shared events after the proposal
     //   2) randomly splitting the subset out of the 'n' nodes in the merged
-    //   event (the number of nodes in the event after the proposal).
+    //      event (the number of nodes in the event after the proposal).
     //          = 1 / (2 * stirling2(n, 2))
     //          = 1 / (2^n - 2)
+    //   3) randomly drawing the new time = 1 / 2w
     // So the prob of the reverse split move is
-    // p(split move) =  1 / (number of shared events after the proposal * (2^n - 2))
-    //                  1 / (number of shared events after the proposal * 2 * stirling2(n, 2))
+    // p(split move) =  1 / (number of shared events after the proposal * (2^n - 2) * 2w)
+    //                  1 / (number of shared events after the proposal * 2 * stirling2(n, 2) * 2w)
     //
     // So, the Hasting ratio for the proposed split move is:
     // p(reverse split) / p(merge) = 
-    //                  (number of events before the proposal * window width)
+    //                  (number of events before the proposal * 2w)
     //     ------------------------------------------------------------------------------------
-    //     (number of shared events after the proposal * 2 * stirling2(n, 2) * window overhang)
+    //     (number of shared events after the proposal * 2 * stirling2(n, 2) * 2w * merge gap)
+    // =
+    //                  (number of events before the proposal)
+    //     ------------------------------------------------------------------------------------
+    //     (number of shared events after the proposal * 2 * stirling2(n, 2) * merge gap)
     ECOEVOLITY_ASSERT(comparisons.get_number_of_events() + 1 == nevents);
     unsigned int nshared_after = comparisons.get_shared_event_indices().size();
-    double ln_hastings = std::log(nevents) + std::log(window_width);
+    double ln_hastings = std::log(nevents);
     ln_hastings -= (
             std::log(nshared_after) +
             this->ln_number_of_possible_splits_.at(nnodes_in_merged_event) +
