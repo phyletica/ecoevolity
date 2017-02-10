@@ -315,7 +315,7 @@ std::string UnivariateCollectionScaler::get_name() const {
 //////////////////////////////////////////////////////////////////////////////
 
 Operator::OperatorTypeEnum CollectionScaler::get_type() const {
-    return Operator::OperatorTypeEnum::collection_operator;
+    return Operator::OperatorTypeEnum::self_contained_operator;
 }
 
 double CollectionScaler::propose(RandomNumberGenerator& rng,
@@ -422,7 +422,6 @@ std::string CollectionScaler::to_string(const OperatorSchedule& os) const {
     }
     ss << "\n";
     ss << this->uni_collection_scaler.to_string(os);
-    ss << "\n";
     return ss.str();
 }
 
@@ -1081,44 +1080,129 @@ const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabil
 //////////////////////////////////////////////////////////////////////////////
 
 ReversibleJumpWindowOperator::ReversibleJumpWindowOperator(double weight, double window_size) : ReversibleJumpSampler(weight) {
-    this->set_window_size(window_size);
-}
-void ReversibleJumpWindowOperator::set_window_size(double window_size) {
-    ECOEVOLITY_ASSERT(window_size > 0.0);
-    this->window_size_ = window_size;
-}
-double ReversibleJumpWindowOperator::get_window_size() const {
-    return this->window_size_;
-}
-
-void ReversibleJumpWindowOperator::update(
-        RandomNumberGenerator& rng,
-        double& parameter_value,
-        double& hastings_ratio) const {
-    double addend = (rng.uniform_real() * 2 * this->window_size_) - this->window_size_;
-    parameter_value += addend;
-    hastings_ratio = 0.0;
-}
-
-void ReversibleJumpWindowOperator::optimize(OperatorSchedule& os, double log_alpha) {
-    double delta = this->calc_delta(os, log_alpha);
-    delta += std::log(this->window_size_);
-    this->set_window_size(std::exp(delta));
-}
-
-double ReversibleJumpWindowOperator::get_coercable_parameter_value() const {
-    return this->window_size_;
-}
-
-void ReversibleJumpWindowOperator::set_coercable_parameter_value(double value) {
-    this->set_window_size(value);
+    this->height_mover_.set_window_size(window_size);
 }
 
 std::string ReversibleJumpWindowOperator::get_name() const {
     return "ReversibleJumpWindowOperator";
 }
 
+Operator::OperatorTypeEnum ReversibleJumpWindowOperator::get_type() const {
+    return Operator::OperatorTypeEnum::self_contained_operator;
+}
+
+std::string ReversibleJumpWindowOperator::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->height_mover_.get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->height_mover_.to_string(os);
+    return ss.str();
+}
+
 double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+
+    this->propose_height_moves(rng, comparisons);
+
+    comparisons.store_state();
+    comparisons.store_model_state();
+
+    double hastings_ratio = this->propose_jump(rng, comparisons, nthreads);
+    comparisons.compute_log_likelihood_and_prior(true);
+
+    double likelihood_ratio = 
+        comparisons.log_likelihood_.get_value() -
+        comparisons.log_likelihood_.get_stored_value();
+    double prior_ratio = 
+        comparisons.log_prior_density_.get_value() -
+        comparisons.log_prior_density_.get_stored_value();
+    double acceptance_probability =
+            likelihood_ratio + 
+            prior_ratio +
+            hastings_ratio;
+    double u = rng.uniform_real();
+    if (u < std::exp(acceptance_probability)) {
+        this->accept(comparisons.operator_schedule_);
+    }
+    else {
+        this->reject(comparisons.operator_schedule_);
+        comparisons.restore_model_state();
+    }
+    comparisons.make_trees_clean();
+
+    return std::numeric_limits<double>::infinity();
+}
+
+double ReversibleJumpWindowOperator::propose_height_moves(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons) {
+    comparisons.store_state();
+    std::vector<double> hastings_ratios;
+    hastings_ratios.reserve(comparisons.node_heights_.size());
+    for (unsigned int height_idx = 0; height_idx < comparisons.node_heights_.size(); ++height_idx) {
+        hastings_ratios.push_back(this->height_mover_.propose(rng, *(comparisons.node_heights_.at(height_idx))));
+    }
+    comparisons.make_trees_dirty();
+    comparisons.compute_tree_partials();
+    for (unsigned int height_idx = 0; height_idx < comparisons.node_heights_.size(); ++height_idx) {
+        double old_lnl = 0.0;
+        double new_lnl = 0.0;
+        for (unsigned int tree_idx = 0; tree_idx < comparisons.node_height_indices_.size(); ++tree_idx) {
+            if (comparisons.node_height_indices_.at(tree_idx) == height_idx) {
+                old_lnl += comparisons.trees_.at(tree_idx).get_stored_log_likelihood_value();
+                new_lnl += comparisons.trees_.at(tree_idx).get_log_likelihood_value();
+            }
+        }
+        double likelihood_ratio = new_lnl - old_lnl;
+        double prior_ratio =
+                comparisons.node_heights_.at(height_idx)->relative_prior_ln_pdf() -
+                comparisons.node_heights_.at(height_idx)->relative_prior_ln_pdf(
+                        comparisons.node_heights_.at(height_idx)->get_stored_value());
+        double hastings_ratio = hastings_ratios.at(height_idx);
+        double acceptance_probability =
+                likelihood_ratio + 
+                prior_ratio +
+                hastings_ratio;
+        double u = rng.uniform_real();
+        if (u < std::exp(acceptance_probability)) {
+            this->height_mover_.accept(comparisons.operator_schedule_);
+        }
+        else {
+            this->height_mover_.reject(comparisons.operator_schedule_);
+            comparisons.node_heights_.at(height_idx)->restore();
+            for (unsigned int tree_idx = 0; tree_idx < comparisons.node_height_indices_.size(); ++tree_idx) {
+                if (comparisons.node_height_indices_.at(tree_idx) == height_idx) {
+                    comparisons.trees_.at(tree_idx).restore_likelihood();
+                }
+            }
+        }
+        this->height_mover_.optimize(comparisons.operator_schedule_, acceptance_probability);
+    }
+    comparisons.make_trees_clean();
+    comparisons.compute_log_likelihood_and_prior(false);
+
+    return std::numeric_limits<double>::infinity();
+}
+
+double ReversibleJumpWindowOperator::propose_jump(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
     const unsigned int nnodes = comparisons.get_number_of_trees();
@@ -1127,6 +1211,7 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     const bool in_shared_state_before = (nevents == 1);
     const bool split_event = ((! in_general_state_before) &&
             (in_shared_state_before || (rng.uniform_real() < 0.5)));
+    double window_size = this->height_mover_.get_window_size();
     if (split_event) {
         std::vector<unsigned int> shared_indices =
                 comparisons.get_shared_event_indices();
@@ -1135,12 +1220,11 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         double old_height = comparisons.get_height(event_index);
         double new_height = old_height;
         double new_height_ln_hastings = 0.0;
-        this->update(rng, new_height, new_height_ln_hastings);
+        this->height_mover_.update(rng, new_height, new_height_ln_hastings);
         if (new_height <= 0.0) {
             return -std::numeric_limits<double>::infinity();
         }
 
-        double window_width = 2.0 * this->window_size_;
         double lower_bound = 0.0;
         double upper_bound = 0.0;
         unsigned int next_proximal_height_index = event_index;
@@ -1149,8 +1233,8 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
             lower_bound = old_height;
             upper_bound = comparisons.get_height(next_proximal_height_index);
             if ((next_proximal_height_index == event_index) ||
-               ((upper_bound - new_height) > this->window_size_)) {
-                upper_bound = new_height + this->window_size_;
+               ((upper_bound - new_height) > window_size)) {
+                upper_bound = new_height + window_size;
             }
         }
         else {
@@ -1158,12 +1242,11 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
             upper_bound = old_height;
             lower_bound = comparisons.get_height(next_proximal_height_index);
             if ((next_proximal_height_index == event_index) ||
-               ((new_height - lower_bound) > this->window_size_)) {
-                lower_bound = new_height - this->window_size_;
-                if (lower_bound < 0.0) {
-                    // window_width += lower_bound;
-                    lower_bound = 0.0;
-                }
+               ((new_height - lower_bound) > window_size)) {
+                lower_bound = new_height - window_size;
+                // if (lower_bound < 0.0) {
+                //     lower_bound = 0.0;
+                // }
             }
         }
         double merge_gap = upper_bound - lower_bound;
@@ -1173,7 +1256,7 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         // std::cout << "new height: " << new_height << "\n";
         // std::cout << "next proximal height: " << comparisons.get_height(next_proximal_height_index) << "\n";
         // std::cout << "next_proximal_height_index: " << next_proximal_height_index << "\n";
-        // std::cout << "window size: " << this->window_size_ << "\n";
+        // std::cout << "window size: " << window_size << "\n";
         // std::cout << "upper bond: " << upper_bound << "\n";
         // std::cout << "lower bond: " << lower_bound << "\n";
         // std::cout << "merge gap: " << merge_gap << "\n";
@@ -1254,6 +1337,14 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         else if (in_general_state_after && (! in_shared_state_before)) {
             ln_hastings += std::log(2.0);
         }
+
+        // double merge_overhang = window_size - std::abs(new_height - old_height);
+        // std::cout << "splitting:\n";
+        // std::cout << "hastings: " << std::exp(ln_hastings) << "\n";
+        // std::cout << "gap: " << merge_gap << "\n";
+        // std::cout << "overhang: " << merge_overhang << "\n";
+        // std::cout << "\n";
+
         return ln_hastings + ln_jacobian;
     }
     // Merge move
@@ -1261,25 +1352,17 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     double old_height = comparisons.get_height(height_index);
     double new_height = old_height;
     double new_height_ln_hastings = 0.0;
-    this->update(rng, new_height, new_height_ln_hastings);
+    this->height_mover_.update(rng, new_height, new_height_ln_hastings);
     if (new_height <= 0.0) {
         return -std::numeric_limits<double>::infinity();
     }
 
     unsigned int target_height_index = comparisons.get_distal_height_index_within_move(height_index, (new_height - old_height));
     if (target_height_index == height_index) {
-        // std::cout << "Merging, but no merge\n";
-        // std::cout << "old height: " << old_height << "\n";
-        // std::cout << "new height: " << new_height << "\n";
-        // std::cout << "nearest smaller: " << comparisons.get_height(comparisons.get_nearest_smaller_height_index(height_index, true)) << "\n";
-        // std::cout << "nearest larger: " << comparisons.get_height(comparisons.get_nearest_larger_height_index(height_index, true)) << "\n";
-        // std::cout << "\n";
         comparisons.get_height_parameter(height_index)->set_value(new_height);
         return new_height_ln_hastings;
-        // return -std::numeric_limits<double>::infinity();
     }
 
-    double window_width = 2.0 * this->window_size_;
     double lower_bound = 0.0;
     double upper_bound = 0.0;
     unsigned int next_proximal_height_index = target_height_index;
@@ -1288,8 +1371,8 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         lower_bound = comparisons.get_height(target_height_index);
         upper_bound = comparisons.get_height(next_proximal_height_index);
         if ((next_proximal_height_index == target_height_index) ||
-           ((upper_bound - old_height) > this->window_size_)) {
-            upper_bound = old_height + this->window_size_;
+           ((upper_bound - old_height) > window_size)) {
+            upper_bound = old_height + window_size;
         }
     }
     else {
@@ -1297,12 +1380,11 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         upper_bound = comparisons.get_height(target_height_index);
         lower_bound = comparisons.get_height(next_proximal_height_index);
         if ((next_proximal_height_index == target_height_index) ||
-           ((old_height - lower_bound) > this->window_size_)) {
-            lower_bound = old_height - this->window_size_;
-            if (lower_bound < 0.0) {
-                // window_width += lower_bound;
-                lower_bound = 0.0;
-            }
+           ((old_height - lower_bound) > window_size)) {
+            lower_bound = old_height - window_size;
+            // if (lower_bound < 0.0) {
+            //     lower_bound = 0.0;
+            // }
         }
     }
     double merge_gap = upper_bound - lower_bound;
@@ -1315,7 +1397,7 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     // std::cout << "height index: " << height_index << "\n";
     // std::cout << "target_height index: " << target_height_index << "\n";
     // std::cout << "next_proximal_height_index: " << next_proximal_height_index << "\n";
-    // std::cout << "window size: " << this->window_size_ << "\n";
+    // std::cout << "window size: " << window_size << "\n";
     // std::cout << "upper bond: " << upper_bound << "\n";
     // std::cout << "lower bond: " << lower_bound << "\n";
     // std::cout << "merge gap: " << merge_gap << "\n";
@@ -1385,5 +1467,13 @@ double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
     else if (in_shared_state_after && (! in_general_state_before)) {
         ln_hastings += std::log(2.0);
     }
+
+    // double merge_overhang = window_size - std::abs(old_height - comparisons.get_height(new_merged_event_index));
+    // std::cout << "merging:\n";
+    // std::cout << "hastings: " << std::exp(ln_hastings) << "\n";
+    // std::cout << "1/gap: " << 1.0/merge_gap << "\n";
+    // std::cout << "1/overhang: " << 1.0/merge_overhang << "\n";
+    // std::cout << "\n";
+
     return ln_hastings + ln_jacobian;
 }

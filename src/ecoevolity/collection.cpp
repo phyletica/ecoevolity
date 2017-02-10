@@ -387,11 +387,14 @@ unsigned int ComparisonPopulationTreeCollection::get_distal_height_index_within_
     }
     int current_ht_idx = -1;
     double current_largest_distance = -1.0;
-    double distance = 0.0;
-    double height = 0.0;
-    for (unsigned int h_idx = 1;
+    double distance = -1.0;
+    double height = -1.0;
+    for (unsigned int h_idx = 0;
             h_idx < this->get_number_of_events();
             ++h_idx) {
+        if (h_idx == starting_height_index) {
+            continue;
+        }
         height = this->get_height(h_idx);
         if ((height > lower_limit) && (height < upper_limit)) {
             distance = std::abs(height - starting_height);
@@ -887,7 +890,7 @@ void ComparisonPopulationTreeCollection::mcmc(
             /* std::cout << "State after RJ:\n"; */
             /* this->log_state(std::cout, gen + 1); */
         }
-        else if (op.get_type() == Operator::OperatorTypeEnum::collection_operator) {
+        else if (op.get_type() == Operator::OperatorTypeEnum::self_contained_operator) {
             op.propose(rng, *this);
         }
         else {

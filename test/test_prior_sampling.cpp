@@ -6146,11 +6146,11 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xxSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 pairs") {
         double height_shape = 10.0;
-        double height_scale = 10.0;
+        double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + ".cfg";
@@ -6164,7 +6164,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xxSamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 1000000\n";
+        os << "    chain_length: 100000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6222,7 +6222,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xxSamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "54354";
+        char arg2[] = "6623";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6244,7 +6244,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xxSamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 100001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -6538,7 +6538,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[xSamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xxSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 6 pairs") {
         double height_shape = 10.0;
@@ -6556,7 +6556,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xSamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 1000000\n";
+        os << "    chain_length: 5000000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6622,7 +6622,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xSamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "1234";
+        char arg2[] = "209485";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6644,7 +6644,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xSamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 100001;
+        unsigned int expected_sample_size = 500001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -6754,6 +6754,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xSamplingPrior]") {
 
         for (auto const & kv: nevent_counts) {
             std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+        for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
+            std::cout << m << ": " << model_counts.at(m) / (double)expected_sample_size << "\n";
         }
 
         for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {

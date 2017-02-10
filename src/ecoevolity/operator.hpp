@@ -47,7 +47,7 @@ class Operator {
             time_operator = 2,
             model_operator = 3,
             rj_operator = 4,
-            collection_operator = 5
+            self_contained_operator = 5
         };
 
         virtual Operator::OperatorTypeEnum get_type() const = 0;
@@ -637,13 +637,12 @@ class ReversibleJumpSampler : public ModelOperator {
                 }
             }
         }
-
 };
 
 class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
 
     protected:
-        double window_size_ = 0.1;
+        ComparisonHeightMover height_mover_ = ComparisonHeightMover(0.0, 0.5);
 
     public:
         ReversibleJumpWindowOperator() : ReversibleJumpSampler() { }
@@ -651,12 +650,7 @@ class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
         ReversibleJumpWindowOperator(double weight, double window_size);
         virtual ~ReversibleJumpWindowOperator() { }
 
-        void set_window_size(double window_size);
-        double get_window_size() const;
-        void update(
-                RandomNumberGenerator& rng,
-                double& parameter_value,
-                double& hastings_ratio) const;
+        Operator::OperatorTypeEnum get_type() const;
 
         /**
          * @brief   Propose a new state.
@@ -675,13 +669,16 @@ class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
             throw EcoevolityError("calling wrong propose signature");
         }
 
-        void optimize(OperatorSchedule& os, double log_alpha);
+        double propose_height_moves(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons);
 
-        double get_coercable_parameter_value() const;
-
-        void set_coercable_parameter_value(double value);
+        double propose_jump(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads);
 
         std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
 };
 
 #endif
