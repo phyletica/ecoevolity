@@ -33,11 +33,12 @@ OperatorSchedule::OperatorSchedule(
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
         if (use_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
-                    settings.get_model_operator_settings().get_weight()));
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
         else {
-            /* this->add_operator(std::make_shared<ReversibleJumpSampler>( */
-            this->add_operator(std::make_shared<ReversibleJumpWindowOperator>(
+            // this->add_operator(std::make_shared<ReversibleJumpWindowOperator>(
+            this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
         }
     }
@@ -92,7 +93,7 @@ OperatorSchedule::OperatorSchedule(
     }
 }
 
-void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
+void OperatorSchedule::add_operator(std::shared_ptr<OperatorInterface> o) {
     this->operators_.push_back(o);
     this->total_weight_ += o->get_weight();
     this->cumulative_probs_.push_back(0.0);
@@ -106,7 +107,7 @@ void OperatorSchedule::add_operator(std::shared_ptr<Operator> o) {
     }
 }
 
-Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) const {
+OperatorInterface& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) const {
     double u = rng.uniform_real();
     for (unsigned int i = 0; i < this->cumulative_probs_.size(); ++i) {
         if (u <= this->cumulative_probs_.at(i)) {
@@ -116,13 +117,13 @@ Operator& OperatorSchedule::draw_operator(RandomNumberGenerator& rng) const {
     return *this->operators_.back();
 }
 
-Operator& OperatorSchedule::get_operator(unsigned int operator_index) const {
+OperatorInterface& OperatorSchedule::get_operator(unsigned int operator_index) const {
     return *this->operators_.at(operator_index);
 }
 
-Operator& OperatorSchedule::get_reversible_jump_operator() const {
+OperatorInterface& OperatorSchedule::get_reversible_jump_operator() const {
     for (auto & op: this->operators_) {
-        if (op->get_type() == Operator::OperatorTypeEnum::rj_operator) {
+        if (op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator) {
             return *op;
         }
     }
@@ -130,9 +131,9 @@ Operator& OperatorSchedule::get_reversible_jump_operator() const {
     return *this->operators_.at(0);
 }
 
-Operator& OperatorSchedule::get_time_operator() const {
+OperatorInterface& OperatorSchedule::get_time_operator() const {
     for (auto & op: this->operators_) {
-        if (op->get_type() == Operator::OperatorTypeEnum::time_operator) {
+        if (op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator) {
             return *op;
         }
     }
@@ -172,7 +173,7 @@ void OperatorSchedule::set_auto_optimize_delay(unsigned int delay) {
 }
 
 void OperatorSchedule::write_operator_rates(std::ostream& out) const {
-    Operator& op = this->get_operator(0);
+    OperatorInterface& op = this->get_operator(0);
     out << op.header_string();
     out << op.to_string(*this);
     for (unsigned int i = 1; i < this->operators_.size(); ++i) {
@@ -202,7 +203,7 @@ bool OperatorSchedule::using_dpp() const {
 
 bool OperatorSchedule::using_reversible_jump() const {
     for (auto op : this->operators_) {
-        if (op->get_type() == Operator::OperatorTypeEnum::rj_operator) {
+        if (op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator) {
             return true;
         }
     }

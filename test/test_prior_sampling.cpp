@@ -3949,7 +3949,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "1234";
+        char arg2[] = "6455152";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -5242,8 +5242,8 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
     SECTION("Testing concentration sampling") {
         double height_shape = 10.0;
         double height_scale = 0.1;
-        double concentration_shape = 0.1;
-        double concentration_scale = 10.0;
+        double concentration_shape = 0.5;
+        double concentration_scale = 2.0;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + ".cfg";
@@ -5325,7 +5325,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "2934982978";
+        char arg2[] = "5486654";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -5428,8 +5428,10 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         REQUIRE(model_counts.at("012") == nevent_counts.at(3));
         REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
 
-        REQUIRE((model_counts.at("000") / (double)expected_sample_size) == Approx(0.778).epsilon(0.01));
-        REQUIRE((model_counts.at("012") / (double)expected_sample_size) == Approx(0.093).epsilon(0.01));
+        // Expected prior probs estimated by 10 million simulations using the
+        // 'dmc_estimate_prior_probs.py' tool from the PyMsBayes package
+        REQUIRE((model_counts.at("000") / (double)expected_sample_size) == Approx(0.554).epsilon(0.01));
+        REQUIRE((model_counts.at("012") / (double)expected_sample_size) == Approx(0.140).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -6146,7 +6148,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 pairs") {
         double height_shape = 10.0;
@@ -6316,7 +6318,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[xSamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[xSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -6538,7 +6540,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[xSamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xxSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 6 pairs") {
         double height_shape = 10.0;
@@ -6556,7 +6558,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xxSamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 5000000\n";
+        os << "    chain_length: 1000000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6622,7 +6624,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xxSamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "209485";
+        char arg2[] = "681654";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6644,7 +6646,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xxSamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 500001;
+        unsigned int expected_sample_size = 100001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -6793,7 +6795,262 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[xxSamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[xSamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[SamplingPrior]") {
+
+    SECTION("Testing rjMCMC with 6 pairs and diffuse gamma") {
+        double height_shape = 1.0;
+        double height_scale = 0.1;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 1000000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        CollectionScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonMutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname5.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "4826624";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = 100001;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
+        SampleSummarizer<double> height_summary4 = prior_sample.summarize<double>("root_height_pop1c");
+        SampleSummarizer<double> height_summary5 = prior_sample.summarize<double>("root_height_pop1d");
+        SampleSummarizer<double> height_summary6 = prior_sample.summarize<double>("root_height_pop1e");
+
+        std::vector<int> nevents = prior_sample.get<int>("number_of_events");
+        std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
+        std::vector<int> event_indices2 = prior_sample.get<int>("root_height_index_pop1");
+        std::vector<int> event_indices3 = prior_sample.get<int>("root_height_index_pop1b");
+        std::vector<int> event_indices4 = prior_sample.get<int>("root_height_index_pop1c");
+        std::vector<int> event_indices5 = prior_sample.get<int>("root_height_index_pop1d");
+        std::vector<int> event_indices6 = prior_sample.get<int>("root_height_index_pop1e");
+        std::vector<double> heights1 = prior_sample.get<double>("root_height_kya");
+        std::vector<double> heights2 = prior_sample.get<double>("root_height_pop1");
+        std::vector<double> heights3 = prior_sample.get<double>("root_height_pop1b");
+        std::vector<double> heights4 = prior_sample.get<double>("root_height_pop1c");
+        std::vector<double> heights5 = prior_sample.get<double>("root_height_pop1d");
+        std::vector<double> heights6 = prior_sample.get<double>("root_height_pop1e");
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0},
+                {4, 0},
+                {5, 0},
+                {6, 0}
+        };
+        for (size_t i = 0; i < nevents.size(); ++i) {
+            std::ostringstream stream;
+            stream << event_indices1.at(i);
+            stream << event_indices2.at(i);
+            stream << event_indices3.at(i);
+            stream << event_indices4.at(i);
+            stream << event_indices5.at(i);
+            stream << event_indices6.at(i);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            REQUIRE(nevent_counts.count(nevents.at(i)) == 1);
+            ++nevent_counts[nevents.at(i)];
+            if (nevents.at(i) == 1) {
+                REQUIRE(event_indices1.at(i) == event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices3.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices4.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices5.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices6.at(i));
+                REQUIRE(heights1.at(i) == heights2.at(i));
+                REQUIRE(heights1.at(i) == heights3.at(i));
+                REQUIRE(heights1.at(i) == heights4.at(i));
+                REQUIRE(heights1.at(i) == heights5.at(i));
+                REQUIRE(heights1.at(i) == heights6.at(i));
+            }
+            else if (nevents.at(i) == 6) {
+                REQUIRE(event_indices1.at(i) != event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices4.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices4.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices3.at(i) != event_indices4.at(i));
+                REQUIRE(event_indices3.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices3.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices4.at(i) != event_indices5.at(i));
+                REQUIRE(event_indices4.at(i) != event_indices6.at(i));
+                REQUIRE(event_indices5.at(i) != event_indices6.at(i));
+                REQUIRE(heights1.at(i) != heights2.at(i));
+                REQUIRE(heights1.at(i) != heights3.at(i));
+                REQUIRE(heights1.at(i) != heights4.at(i));
+                REQUIRE(heights1.at(i) != heights5.at(i));
+                REQUIRE(heights1.at(i) != heights6.at(i));
+                REQUIRE(heights2.at(i) != heights3.at(i));
+                REQUIRE(heights2.at(i) != heights4.at(i));
+                REQUIRE(heights2.at(i) != heights5.at(i));
+                REQUIRE(heights2.at(i) != heights6.at(i));
+                REQUIRE(heights3.at(i) != heights4.at(i));
+                REQUIRE(heights3.at(i) != heights5.at(i));
+                REQUIRE(heights3.at(i) != heights6.at(i));
+                REQUIRE(heights4.at(i) != heights5.at(i));
+                REQUIRE(heights4.at(i) != heights6.at(i));
+                REQUIRE(heights5.at(i) != heights6.at(i));
+            }
+        }
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+
+        REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
+
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)expected_sample_size << "\n";
+        }
+        for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
+            std::cout << m << ": " << model_counts.at(m) / (double)expected_sample_size << "\n";
+        }
+
+        for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
+            REQUIRE((model_counts.at(m) / (double)expected_sample_size) == Approx(1.0/bell_float(6)).epsilon(0.002));
+        }
+        for (auto const & kv: nevent_counts) {
+            REQUIRE((kv.second / (double)expected_sample_size) == Approx(stirling2_float(6, kv.first)/bell_float(6)).epsilon(0.002));
+        }
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary4.sample_size() == expected_sample_size);
+        REQUIRE(height_summary4.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.sample_size() == expected_sample_size);
+        REQUIRE(height_summary5.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.sample_size() == expected_sample_size);
+        REQUIRE(height_summary6.mean() == Approx(height_shape * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -6849,7 +7106,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -7129,7 +7386,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CollectionScaler",
-        "[xSamplingPrior]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -7185,7 +7442,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -7521,7 +7778,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8453,7 +8710,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully parameterized",
-        "[xSamplingPrior]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -8509,7 +8766,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8783,7 +9040,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionScaler, and fully parameterized",
-        "[xSamplingPrior]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -8839,7 +9096,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        ComparisonMutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";

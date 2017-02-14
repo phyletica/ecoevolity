@@ -19,29 +19,153 @@
 
 #include "operator.hpp"
 
+
 //////////////////////////////////////////////////////////////////////////////
-// Operator methods
+// OperatorInterface methods
 //////////////////////////////////////////////////////////////////////////////
 
-Operator::Operator(double weight) {
+OperatorInterface::OperatorInterface(double weight) {
     this->set_weight(weight);
 }
 
-double Operator::get_target_acceptance_probability() const {
-    // Some prelim tests confirm that an acceptance rate of 0.44 leads to
-    // better mixing for the simple, univariate random variables that the
-    // operators are updating.
-    // return 0.234;
-    return 0.44;
+void OperatorInterface::set_weight(double weight) {
+    ECOEVOLITY_ASSERT(weight >= 0.0);
+    this->weight_ = weight;
 }
+
+double OperatorInterface::get_weight() const {
+    return this->weight_;
+}
+
+void OperatorInterface::call_store_methods(
+        ComparisonPopulationTreeCollection& comparisons) const {
+    comparisons.store_state();
+}
+
+void OperatorInterface::call_restore_methods(
+        ComparisonPopulationTreeCollection& comparisons) const {
+    comparisons.restore_state();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// BaseOperatorInterface methods
+//////////////////////////////////////////////////////////////////////////////
+
+template<class DerivedOperatorType>
+void BaseOperatorInterface<DerivedOperatorType>::optimize(
+        OperatorSchedule& os,
+        double log_alpha) {
+    this->op_.optimize(os, log_alpha);
+}
+
+template<class DerivedOperatorType>
+void BaseOperatorInterface<DerivedOperatorType>::accept(
+        const OperatorSchedule& os) {
+    this->op_.accept(os);
+}
+
+template<class DerivedOperatorType>
+void BaseOperatorInterface<DerivedOperatorType>::reject(
+        const OperatorSchedule& os) {
+    this->op_.reject(os);
+}
+
+template<class DerivedOperatorType>
+std::string BaseOperatorInterface<DerivedOperatorType>::header_string() const {
+    return "name\tnumber_accepted\tnumber_rejected\tweight\tweight_prob\ttuning_parameter\n";
+}
+
+template<class DerivedOperatorType>
+std::string BaseOperatorInterface<DerivedOperatorType>::to_string(
+        const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->op_.get_number_accepted() << "\t"
+       << this->op_.get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->op_.get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    return ss.str();
+}
+
+template<class DerivedOperatorType>
+double BaseOperatorInterface<DerivedOperatorType>::get_coercable_parameter_value() const {
+    return this->op_.get_coercable_parameter_value();
+}
+
+template<class DerivedOperatorType>
+void BaseOperatorInterface<DerivedOperatorType>::set_coercable_parameter_value(
+        double value) {
+    this->op_.set_coercable_parameter_value(value);
+}
+
+template<class DerivedOperatorType>
+void BaseOperatorInterface<DerivedOperatorType>::update(
+        RandomNumberGenerator& rng,
+        double& parameter_value,
+        double& hastings_ratio) const {
+    this->op_.update(rng, parameter_value, hastings_ratio);
+}
+
+template<class DerivedOperatorType>
+double BaseOperatorInterface<DerivedOperatorType>::calc_delta(
+        OperatorSchedule& os,
+        double log_alpha) const {
+    return this->op_.calc_delta(os, log_alpha);
+}
+
+template<class DerivedOperatorType>
+double BaseOperatorInterface<DerivedOperatorType>::get_target_acceptance_probability() const {
+    return this->op_.get_target_acceptance_probability();
+}
+
+template<class DerivedOperatorType>
+unsigned int BaseOperatorInterface<DerivedOperatorType>::get_number_rejected() const {
+    return this->op_.get_number_rejected();
+}
+
+template<class DerivedOperatorType>
+unsigned int BaseOperatorInterface<DerivedOperatorType>::get_number_accepted() const {
+    return this->op_.get_number_accepted();
+}
+
+template<class DerivedOperatorType>
+unsigned int BaseOperatorInterface<DerivedOperatorType>::get_number_rejected_for_correction() const {
+    return this->op_.get_number_rejected_for_correction();
+}
+
+template<class DerivedOperatorType>
+unsigned int BaseOperatorInterface<DerivedOperatorType>::get_number_accepted_for_correction() const {
+    return this->op_.get_number_accepted_for_correction();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Operator methods
+//////////////////////////////////////////////////////////////////////////////
 
 double Operator::get_coercable_parameter_value() const {
     return std::numeric_limits<double>::quiet_NaN();
 }
 
-void Operator::set_weight(double weight) {
-    ECOEVOLITY_ASSERT(weight >= 0.0);
-    this->weight_ = weight;
+double Operator::calc_delta(OperatorSchedule& os,
+        double log_alpha) const {
+    return os.calc_delta(*this, log_alpha);
 }
 
 void Operator::accept(const OperatorSchedule& os) {
@@ -58,42 +182,25 @@ void Operator::reject(const OperatorSchedule& os) {
     }
 }
 
-std::string Operator::get_name() const {
-    return "BaseOperator";
+double Operator::get_target_acceptance_probability() const {
+    // Some prelim tests confirm that an acceptance rate of 0.44 leads to
+    // better mixing for the simple, univariate random variables that the
+    // operators are updating.
+    // return 0.234;
+    return 0.44;
 }
 
-std::string Operator::header_string() const {
-    return "name\tnumber_accepted\tnumber_rejected\tweight\tweight_prob\ttuning_parameter\n";
+unsigned int Operator::get_number_rejected() const {
+    return this->number_rejected_;
 }
-
-std::string Operator::to_string(const OperatorSchedule& os) const {
-    std::ostringstream ss;
-    ss << this->get_name() << "\t" 
-       << this->get_number_accepted() << "\t"
-       << this->get_number_rejected() << "\t"
-       << this->get_weight() << "\t";
-
-    if (os.get_total_weight() > 0.0) {
-        ss << this->get_weight() / os.get_total_weight() << "\t";
-    }
-    else {
-        ss << "nan\t";
-    }
-
-    double tuning = this->get_coercable_parameter_value();
-    if (std::isnan(tuning)) {
-        ss << "none\t";
-    }
-    else {
-        ss << tuning << "\t";
-    }
-    ss << "\n";
-    return ss.str();
+unsigned int Operator::get_number_accepted() const {
+    return this->number_accepted_;
 }
-
-double Operator::calc_delta(OperatorSchedule& os,
-        double log_alpha) const {
-    return os.calc_delta(*this, log_alpha);
+unsigned int Operator::get_number_rejected_for_correction() const {
+    return this->number_rejected_for_correction_;
+}
+unsigned int Operator::get_number_accepted_for_correction() const {
+    return this->number_accepted_for_correction_;
 }
 
 
@@ -101,13 +208,17 @@ double Operator::calc_delta(OperatorSchedule& os,
 // ScaleOperator methods
 //////////////////////////////////////////////////////////////////////////////
 
-ScaleOperator::ScaleOperator(double weight, double scale) : Operator(weight) {
+ScaleOperator::ScaleOperator(double scale) : Operator() {
     this->set_scale(scale);
 }
 
 void ScaleOperator::set_scale(double scale) {
     ECOEVOLITY_ASSERT(scale > 0.0);
     this->scale_ = scale;
+}
+
+double ScaleOperator::get_scale() const {
+    return this->scale_;
 }
 
 void ScaleOperator::update(
@@ -133,16 +244,12 @@ void ScaleOperator::set_coercable_parameter_value(double value) {
     this->set_scale(value);
 }
 
-std::string ScaleOperator::get_name() const {
-    return "BaseScaleOperator";
-}
-
 
 //////////////////////////////////////////////////////////////////////////////
 // WindowOperator methods
 //////////////////////////////////////////////////////////////////////////////
 
-WindowOperator::WindowOperator(double weight, double window_size) : Operator(weight) {
+WindowOperator::WindowOperator(double window_size) : Operator() {
     this->set_window_size(window_size);
 }
 void WindowOperator::set_window_size(double window_size) {
@@ -176,171 +283,155 @@ void WindowOperator::set_coercable_parameter_value(double value) {
     this->set_window_size(value);
 }
 
-std::string WindowOperator::get_name() const {
-    return "BaseWindowOperator";
-}
-
 
 //////////////////////////////////////////////////////////////////////////////
-// ModelOperator methods
+// TimeOperatorInterface methods
 //////////////////////////////////////////////////////////////////////////////
 
-Operator::OperatorTypeEnum ModelOperator::get_type() const {
-    return Operator::OperatorTypeEnum::model_operator;
+template<class DerivedOperatorType>
+OperatorInterface::OperatorTypeEnum TimeOperatorInterface<DerivedOperatorType>::get_type() const {
+    return OperatorInterface::OperatorTypeEnum::time_operator;
 }
 
-std::string ModelOperator::get_name() const {
-    return "ModelOperator";
-}
-
-std::string ModelOperator::target_parameter() const {
-    return "model";
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-// ComparisonTreeScaleOperator methods
-//////////////////////////////////////////////////////////////////////////////
-
-Operator::OperatorTypeEnum ComparisonTreeScaleOperator::get_type() const {
-    return Operator::OperatorTypeEnum::tree_operator;
-}
-
-std::string ComparisonTreeScaleOperator::get_name() const {
-    return "ComparisonTreeScaleOperator";
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// ComparisonTreeWindowOperator methods
-//////////////////////////////////////////////////////////////////////////////
-
-Operator::OperatorTypeEnum ComparisonTreeWindowOperator::get_type() const {
-    return Operator::OperatorTypeEnum::tree_operator;
-}
-
-std::string ComparisonTreeWindowOperator::get_name() const {
-    return "ComparisonTreeWindowOperator";
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-// NodeHeightScaleOperator methods
-//////////////////////////////////////////////////////////////////////////////
-
-Operator::OperatorTypeEnum NodeHeightScaleOperator::get_type() const {
-    return Operator::OperatorTypeEnum::time_operator;
-}
-
-std::string NodeHeightScaleOperator::get_name() const {
-    return "NodeHeightScaleOperator";
-}
-
-std::string NodeHeightScaleOperator::target_parameter() const {
-    return "node height";
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-// NodeHeightWindowOperator methods
-//////////////////////////////////////////////////////////////////////////////
-
-Operator::OperatorTypeEnum NodeHeightWindowOperator::get_type() const {
-    return Operator::OperatorTypeEnum::time_operator;
-}
-
-std::string NodeHeightWindowOperator::get_name() const {
-    return "NodeHeightWindowOperator";
-}
-
-std::string NodeHeightWindowOperator::target_parameter() const {
-    return "node height";
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-// UnivariateCollectionScaler methods
-//////////////////////////////////////////////////////////////////////////////
-
-Operator::OperatorTypeEnum UnivariateCollectionScaler::get_type() const {
-    return Operator::OperatorTypeEnum::model_operator;
-}
-
-double UnivariateCollectionScaler::propose(RandomNumberGenerator& rng,
+template<class DerivedOperatorType>
+void TimeOperatorInterface<DerivedOperatorType>::perform_collection_move(
+        RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    double ln_hastings = 0.0;
-    double size;
-    double height;
-    double hastings;
-    for (unsigned int tree_idx = 0;
-            tree_idx < comparisons.trees_.size();
-            ++tree_idx) {
-        size = comparisons.trees_.at(tree_idx).get_root_population_size();
-        this->update(rng, size, hastings);
-        ln_hastings += hastings;
-        comparisons.trees_.at(tree_idx).set_root_population_size(size);
-        if (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained()) {
-            for (unsigned int i = 0; i < comparisons.trees_.at(tree_idx).get_leaf_node_count(); ++i) {
-                size = comparisons.trees_.at(tree_idx).get_child_population_size(i);
-                this->update(rng, size, hastings);
-                ln_hastings += hastings;
-                comparisons.trees_.at(tree_idx).set_child_population_size(i, size);
+    this->call_store_methods(comparisons);
+
+    std::vector<double> hastings_ratios;
+    hastings_ratios.reserve(comparisons.get_number_of_events());
+    for (unsigned int height_idx = 0; height_idx < comparisons.get_number_of_events(); ++height_idx) {
+        hastings_ratios.push_back(this->propose(rng, *(comparisons.node_heights_.at(height_idx))));
+    }
+    comparisons.make_trees_dirty();
+    comparisons.compute_tree_partials();
+    for (unsigned int height_idx = 0; height_idx < comparisons.node_heights_.size(); ++height_idx) {
+        double old_lnl = 0.0;
+        double new_lnl = 0.0;
+        for (unsigned int tree_idx = 0; tree_idx < comparisons.node_height_indices_.size(); ++tree_idx) {
+            if (comparisons.node_height_indices_.at(tree_idx) == height_idx) {
+                old_lnl += comparisons.trees_.at(tree_idx).get_stored_log_likelihood_value();
+                new_lnl += comparisons.trees_.at(tree_idx).get_log_likelihood_value();
             }
         }
+        double likelihood_ratio = new_lnl - old_lnl;
+        double prior_ratio =
+                comparisons.node_heights_.at(height_idx)->relative_prior_ln_pdf() -
+                comparisons.node_heights_.at(height_idx)->relative_prior_ln_pdf(
+                        comparisons.node_heights_.at(height_idx)->get_stored_value());
+        double hastings_ratio = hastings_ratios.at(height_idx);
+        double acceptance_probability =
+                likelihood_ratio + 
+                prior_ratio +
+                hastings_ratio;
+        double u = rng.uniform_real();
+        if (u < std::exp(acceptance_probability)) {
+            this->accept(comparisons.operator_schedule_);
+        }
+        else {
+            this->reject(comparisons.operator_schedule_);
+            comparisons.node_heights_.at(height_idx)->restore();
+            for (unsigned int tree_idx = 0; tree_idx < comparisons.node_height_indices_.size(); ++tree_idx) {
+                if (comparisons.node_height_indices_.at(tree_idx) == height_idx) {
+                    comparisons.trees_.at(tree_idx).restore_likelihood();
+                }
+            }
+        }
+        this->optimize(comparisons.operator_schedule_, acceptance_probability);
     }
-    for (unsigned int height_idx = 0;
-            height_idx < comparisons.node_heights_.size();
-            ++height_idx) {
-        height = comparisons.node_heights_.at(height_idx)->get_value();
-        this->update(rng, height, hastings);
-        ln_hastings += hastings;
-        comparisons.node_heights_.at(height_idx)->set_value(height);
-    }
-    comparisons.make_trees_dirty();
-
-    return ln_hastings;
-}
-
-std::string UnivariateCollectionScaler::target_parameter() const {
-    return "node heights and population sizes";
-}
-
-std::string UnivariateCollectionScaler::get_name() const {
-    return "UnivariateCollectionScaler";
+    comparisons.make_trees_clean();
+    comparisons.compute_log_likelihood_and_prior(false);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CollectionScaler methods
+// TreeOperatorInterface methods
 //////////////////////////////////////////////////////////////////////////////
 
-Operator::OperatorTypeEnum CollectionScaler::get_type() const {
-    return Operator::OperatorTypeEnum::self_contained_operator;
+template<class DerivedOperatorType>
+OperatorInterface::OperatorTypeEnum TreeOperatorInterface<DerivedOperatorType>::get_type() const {
+    return OperatorInterface::OperatorTypeEnum::tree_operator;
 }
 
-double CollectionScaler::propose(RandomNumberGenerator& rng,
+template<class DerivedOperatorType>
+void TreeOperatorInterface<DerivedOperatorType>::perform_collection_move(
+        RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    comparisons.store_state();
-    double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
-    unsigned int number_of_free_parameters_scaled = 0;
-    for (unsigned int tree_idx = 0;
-            tree_idx < comparisons.trees_.size();
-            ++tree_idx) {
-        number_of_free_parameters_scaled += comparisons.trees_.at(tree_idx).scale_population_sizes(multiplier);
-    }
-    for (unsigned int height_idx = 0;
-            height_idx < comparisons.node_heights_.size();
-            ++height_idx) {
-        comparisons.node_heights_.at(height_idx)->set_value(
-                comparisons.node_heights_.at(height_idx)->get_value() * multiplier);
-        ++number_of_free_parameters_scaled;
-    }
-    comparisons.make_trees_dirty();
+    this->call_store_methods(comparisons);
 
-    double hastings_ratio = std::log(multiplier) * number_of_free_parameters_scaled;
+    std::vector<double> hastings_ratios;
+    hastings_ratios.reserve(comparisons.trees_.size());
+    for (unsigned int tree_idx = 0; tree_idx < comparisons.trees_.size(); ++tree_idx) {
+        hastings_ratios.push_back(this->propose(rng, comparisons.trees_.at(tree_idx)));
+    }
+    comparisons.compute_tree_partials();
+    for (unsigned int tree_idx = 0; tree_idx < comparisons.trees_.size(); ++tree_idx) {
+        // Check to see if we updated a fixed parameter. If so, do
+        // nothing and continue to next tree (to avoid counting toward
+        // operator acceptance ratio).
+        if ((this->target_parameter() == "population size") &&
+                (comparisons.trees_.at(tree_idx).population_sizes_are_fixed())) {
+            ECOEVOLITY_ASSERT(! comparisons.trees_.at(tree_idx).is_dirty());
+            continue;
+        }
+        if ((this->target_parameter() == "freq 1") &&
+                (comparisons.trees_.at(tree_idx).state_frequencies_are_fixed())) {
+            ECOEVOLITY_ASSERT(! comparisons.trees_.at(tree_idx).is_dirty());
+            continue;
+        }
+        if ((this->target_parameter() == "mutation rate") &&
+                (comparisons.trees_.at(tree_idx).mutation_rate_is_fixed())) {
+            ECOEVOLITY_ASSERT(! comparisons.trees_.at(tree_idx).is_dirty());
+            continue;
+        }
+        double likelihood_ratio =
+                comparisons.trees_.at(tree_idx).get_log_likelihood_value() -
+                comparisons.trees_.at(tree_idx).get_stored_log_likelihood_value();
+        double prior_ratio =
+                comparisons.trees_.at(tree_idx).get_log_prior_density_value() -
+                comparisons.trees_.at(tree_idx).get_stored_log_prior_density_value();
+        double hastings_ratio = hastings_ratios.at(tree_idx);
+        double acceptance_probability =
+                likelihood_ratio + 
+                prior_ratio +
+                hastings_ratio;
+        double u = rng.uniform_real();
+        if (u < std::exp(acceptance_probability)) {
+            this->accept(comparisons.operator_schedule_);
+        }
+        else {
+            this->reject(comparisons.operator_schedule_);
+            comparisons.trees_.at(tree_idx).restore_state();
+        }
+        comparisons.trees_.at(tree_idx).make_clean();
+        this->optimize(comparisons.operator_schedule_, acceptance_probability);
+    }
+    comparisons.compute_log_likelihood_and_prior(false);
+}
 
+
+//////////////////////////////////////////////////////////////////////////////
+// CollectionOperatorInterface methods
+//////////////////////////////////////////////////////////////////////////////
+
+template<class DerivedOperatorType>
+OperatorInterface::OperatorTypeEnum CollectionOperatorInterface<DerivedOperatorType>::get_type() const {
+    return OperatorInterface::OperatorTypeEnum::collection_operator;
+}
+
+template<class DerivedOperatorType>
+void CollectionOperatorInterface<DerivedOperatorType>::perform_collection_move(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->call_store_methods(comparisons);
+
+    double hastings_ratio = this->propose(rng, comparisons);
     comparisons.compute_log_likelihood_and_prior(true);
+
     double likelihood_ratio = 
         comparisons.log_likelihood_.get_value() -
         comparisons.log_likelihood_.get_stored_value();
@@ -357,38 +448,205 @@ double CollectionScaler::propose(RandomNumberGenerator& rng,
     }
     else {
         this->reject(comparisons.operator_schedule_);
-        comparisons.restore_state();
+        this->call_restore_methods(comparisons);
     }
     comparisons.make_trees_clean();
     this->optimize(comparisons.operator_schedule_, acceptance_probability);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// UnivariateCollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+UnivariateCollectionScaler::UnivariateCollectionScaler(
+        ) : CollectionOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+UnivariateCollectionScaler::UnivariateCollectionScaler(
+        double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+UnivariateCollectionScaler::UnivariateCollectionScaler(
+        double weight,
+        double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void UnivariateCollectionScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double UnivariateCollectionScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    double hastings_ratio = 0.0;
+    double size;
+    double height;
+    double hastings;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparisons.trees_.size();
+            ++tree_idx) {
+        size = comparisons.trees_.at(tree_idx).get_root_population_size();
+        this->update(rng, size, hastings);
+        hastings_ratio += hastings;
+        comparisons.trees_.at(tree_idx).set_root_population_size(size);
+        if (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained()) {
+            for (unsigned int i = 0; i < comparisons.trees_.at(tree_idx).get_leaf_node_count(); ++i) {
+                size = comparisons.trees_.at(tree_idx).get_child_population_size(i);
+                this->update(rng, size, hastings);
+                hastings_ratio += hastings;
+                comparisons.trees_.at(tree_idx).set_child_population_size(i, size);
+            }
+        }
+    }
+    for (unsigned int height_idx = 0;
+            height_idx < comparisons.node_heights_.size();
+            ++height_idx) {
+        height = comparisons.node_heights_.at(height_idx)->get_value();
+        this->update(rng, height, hastings);
+        hastings_ratio += hastings;
+        comparisons.node_heights_.at(height_idx)->set_value(height);
+    }
+    comparisons.make_trees_dirty();
+    return hastings_ratio;
+}
+
+std::string UnivariateCollectionScaler::target_parameter() const {
+    return "node heights and population sizes";
+}
+
+std::string UnivariateCollectionScaler::get_name() const {
+    return "UnivariateCollectionScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// UnivariateCompositeCollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+UnivariateCompositeCollectionScaler::UnivariateCompositeCollectionScaler(
+        double weight,
+        double scale) : CollectionOperatorInterface<Operator>(weight) {
+    this->height_scaler_.op_.set_scale(scale);
+    this->root_size_scaler_.op_.set_scale(scale);
+    this->child_size_scaler_.op_.set_scale(scale);
+}
+
+void UnivariateCompositeCollectionScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+void UnivariateCompositeCollectionScaler::perform_collection_move(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->height_scaler_.operate(rng, comparisons, nthreads);
+    this->root_size_scaler_.operate(rng, comparisons, nthreads);
+    this->child_size_scaler_.operate(rng, comparisons, nthreads);
+}
+
+double UnivariateCompositeCollectionScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->height_scaler_.operate(rng, comparisons, nthreads);
+    this->root_size_scaler_.operate(rng, comparisons, nthreads);
+    this->child_size_scaler_.operate(rng, comparisons, nthreads);
+    return std::numeric_limits<double>::infinity();
+}
+
+std::string UnivariateCompositeCollectionScaler::target_parameter() const {
+    return "node heights and population sizes";
+}
+
+std::string UnivariateCompositeCollectionScaler::get_name() const {
+    return "UnivariateCompositeCollectionScaler";
+}
+
+std::string UnivariateCompositeCollectionScaler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->height_scaler_.to_string(os);
+    ss << this->root_size_scaler_.to_string(os);
+    ss << this->child_size_scaler_.to_string(os);
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+CollectionScaler::CollectionScaler() : CollectionOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+CollectionScaler::CollectionScaler(
+        double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+CollectionScaler::CollectionScaler(
+        double weight,
+        double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void CollectionScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
 
     // Do sweep of univariate proposals across all the node height and pop size
     // parameters
-    comparisons.store_state();
-    hastings_ratio = this->uni_collection_scaler.propose(rng, comparisons);
-    comparisons.compute_log_likelihood_and_prior(true);
-    likelihood_ratio = 
-        comparisons.log_likelihood_.get_value() -
-        comparisons.log_likelihood_.get_stored_value();
-    prior_ratio = 
-        comparisons.log_prior_density_.get_value() -
-        comparisons.log_prior_density_.get_stored_value();
-    acceptance_probability =
-            likelihood_ratio + 
-            prior_ratio +
-            hastings_ratio;
-    u = rng.uniform_real();
-    if (u < std::exp(acceptance_probability)) {
-        this->uni_collection_scaler.accept(comparisons.operator_schedule_);
-    }
-    else {
-        this->uni_collection_scaler.reject(comparisons.operator_schedule_);
-        comparisons.restore_state();
-    }
-    comparisons.make_trees_clean();
-    this->uni_collection_scaler.optimize(comparisons.operator_schedule_, acceptance_probability);
+    this->uni_collection_scaler_.operate(rng, comparisons, nthreads);
+}
 
-    return std::numeric_limits<double>::infinity();
+double CollectionScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    unsigned int number_of_free_parameters_scaled = 0;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparisons.trees_.size();
+            ++tree_idx) {
+        number_of_free_parameters_scaled += comparisons.trees_.at(tree_idx).scale_population_sizes(multiplier);
+    }
+    for (unsigned int height_idx = 0;
+            height_idx < comparisons.node_heights_.size();
+            ++height_idx) {
+        comparisons.node_heights_.at(height_idx)->set_value(
+                comparisons.node_heights_.at(height_idx)->get_value() * multiplier);
+        ++number_of_free_parameters_scaled;
+    }
+    comparisons.make_trees_dirty();
+
+    return std::log(multiplier) * number_of_free_parameters_scaled;
+
 }
 
 std::string CollectionScaler::target_parameter() const {
@@ -421,7 +679,7 @@ std::string CollectionScaler::to_string(const OperatorSchedule& os) const {
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_collection_scaler.to_string(os);
+    ss << this->uni_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -430,8 +688,25 @@ std::string CollectionScaler::to_string(const OperatorSchedule& os) const {
 // ConcentrationScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-Operator::OperatorTypeEnum ConcentrationScaler::get_type() const {
-    return Operator::OperatorTypeEnum::model_operator;
+ConcentrationScaler::ConcentrationScaler() : CollectionOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+ConcentrationScaler::ConcentrationScaler(
+        double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ConcentrationScaler::ConcentrationScaler(
+        double weight,
+        double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void ConcentrationScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
 }
 
 double ConcentrationScaler::propose(RandomNumberGenerator& rng,
@@ -457,6 +732,26 @@ std::string ConcentrationScaler::get_name() const {
 // FreqMover methods
 //////////////////////////////////////////////////////////////////////////////
 
+FreqMover::FreqMover() : TreeOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+}
+
+FreqMover::FreqMover(
+        double weight) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+FreqMover::FreqMover(
+        double weight,
+        double window_size) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(window_size);
+}
+
+void FreqMover::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
 double FreqMover::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
@@ -479,38 +774,31 @@ std::string FreqMover::get_name() const {
 }
 
 
-
-//////////////////////////////////////////////////////////////////////////////
-// UScaler methods
-//////////////////////////////////////////////////////////////////////////////
-
-// u/v rates no longer being proposed
-// double UScaler::propose(
-//         RandomNumberGenerator& rng,
-//         ComparisonPopulationTree& tree) const {
-//     double val = tree.get_u();
-//     double hastings;
-//     this->update(rng, val, hastings);
-//     if (val < 0.5) {
-//         return -std::numeric_limits<double>::infinity();
-//     }
-//     // v is also set here
-//     tree.set_u(val);
-//     return hastings;
-// }
-// 
-// std::string UScaler::target_parameter() const {
-//     return "u rate";
-// }
-// 
-// std::string UScaler::get_name() const {
-//     return "UScaler";
-// }
-
-
 //////////////////////////////////////////////////////////////////////////////
 // ComparisonMutationRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
+
+ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+        ) : TreeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+        double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void ComparisonMutationRateScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
 
 double ComparisonMutationRateScaler::propose(
         RandomNumberGenerator& rng,
@@ -534,6 +822,28 @@ std::string ComparisonMutationRateScaler::get_name() const {
 //////////////////////////////////////////////////////////////////////////////
 // ChildPopulationSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
+
+ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+        ) : TreeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+        double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void ChildPopulationSizeScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
 
 double ChildPopulationSizeScaler::propose(
         RandomNumberGenerator& rng,
@@ -566,6 +876,28 @@ std::string ChildPopulationSizeScaler::get_name() const {
 // RootPopulationSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
+RootPopulationSizeScaler::RootPopulationSizeScaler(
+        ) : TreeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+RootPopulationSizeScaler::RootPopulationSizeScaler(
+        double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+RootPopulationSizeScaler::RootPopulationSizeScaler(
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void RootPopulationSizeScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
 double RootPopulationSizeScaler::propose(
         RandomNumberGenerator& rng,
         ComparisonPopulationTree& tree) const {
@@ -597,6 +929,28 @@ std::string RootPopulationSizeScaler::get_name() const {
 // ComparisonHeightScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
+ComparisonHeightScaler::ComparisonHeightScaler(
+        ) : TimeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+ComparisonHeightScaler::ComparisonHeightScaler(
+        double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ComparisonHeightScaler::ComparisonHeightScaler(
+        double weight,
+        double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void ComparisonHeightScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
 double ComparisonHeightScaler::propose(
         RandomNumberGenerator& rng,
         PositiveRealParameter& node_height) const {
@@ -611,10 +965,36 @@ std::string ComparisonHeightScaler::get_name() const {
     return "ComparisonHeightScaler";
 }
 
+std::string ComparisonHeightScaler::target_parameter() const {
+    return "node height";
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 // ComparisonHeightMover methods
 //////////////////////////////////////////////////////////////////////////////
+
+ComparisonHeightMover::ComparisonHeightMover(
+        ) : TimeOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+}
+
+ComparisonHeightMover::ComparisonHeightMover(
+        double weight) : TimeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+ComparisonHeightMover::ComparisonHeightMover(
+        double weight,
+        double window_size) : TimeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(window_size);
+}
+
+void ComparisonHeightMover::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
 
 double ComparisonHeightMover::propose(
         RandomNumberGenerator& rng,
@@ -633,6 +1013,10 @@ std::string ComparisonHeightMover::get_name() const {
     return "ComparisonHeightMover";
 }
 
+std::string ComparisonHeightMover::target_parameter() const {
+    return "node height";
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 // DirichletProcessGibbsSampler methods
@@ -640,7 +1024,7 @@ std::string ComparisonHeightMover::get_name() const {
 
 DirichletProcessGibbsSampler::DirichletProcessGibbsSampler(
         double weight,
-        unsigned int number_of_auxiliary_categories) : ModelOperator(weight) {
+        unsigned int number_of_auxiliary_categories) : CollectionOperatorInterface<Operator>(weight) {
     this->set_number_of_auxiliary_categories(number_of_auxiliary_categories);
 }
 
@@ -654,6 +1038,16 @@ unsigned int DirichletProcessGibbsSampler::get_number_of_auxiliary_categories() 
 
 std::string DirichletProcessGibbsSampler::get_name() const {
     return "DirichletProcessGibbsSampler";
+}
+
+std::string DirichletProcessGibbsSampler::target_parameter() const {
+    return "model";
+}
+
+void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
 }
 
 double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
@@ -740,14 +1134,83 @@ std::string ReversibleJumpSampler::get_name() const {
     return "ReversibleJumpSampler";
 }
 
-Operator::OperatorTypeEnum ReversibleJumpSampler::get_type() const {
-    return Operator::OperatorTypeEnum::rj_operator;
+std::string ReversibleJumpSampler::target_parameter() const {
+    return "model";
+}
+
+void ReversibleJumpSampler::call_store_methods(
+        ComparisonPopulationTreeCollection& comparisons) const {
+    comparisons.store_state();
+    comparisons.store_model_state();
+}
+
+void ReversibleJumpSampler::call_restore_methods(
+        ComparisonPopulationTreeCollection& comparisons) const {
+    comparisons.restore_model_state();
+}
+
+OperatorInterface::OperatorTypeEnum ReversibleJumpSampler::get_type() const {
+    return OperatorInterface::OperatorTypeEnum::rj_operator;
+}
+
+void ReversibleJumpSampler::write_split_probabilities(std::ostream& out) const {
+    for (auto const & set_size_probs: this->split_subset_size_probs_) {
+        out << "Set size: " << set_size_probs.first << "\n";
+        double ln_ways_to_split = this->ln_number_of_possible_splits_.at(set_size_probs.first);
+        double ways_to_split = std::exp(ln_ways_to_split);
+        out << "\tlog number of ways to split: " << ln_ways_to_split << "\n";
+        out << "\tnumber of ways to split: " << ways_to_split << "\n";
+        out << "\tprobability of split subset sizes:\n";
+        unsigned int split_size = 1;
+        for (auto const & split_size_prob: set_size_probs.second) {
+            out << "\t\t" << split_size << ": " << split_size_prob << "\n";
+            ++split_size;
+        }
+    }
+}
+
+std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->collection_scaler_.to_string(os);
+    return ss.str();
+}
+
+void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    // this->collection_scaler_.operate(rng, comparisons, nthreads);
+    for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+        this->collection_scaler_.operate(rng, comparisons, nthreads);
+        this->perform_collection_move(rng, comparisons, nthreads);
+        // this->collection_scaler_.uni_collection_scaler_.operate(rng, comparisons, nthreads);
+    }
 }
 
 double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
     return this->propose_jump_to_gap(rng, comparisons);
+
 }
 
 double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
@@ -1079,16 +1542,22 @@ const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabil
 // ReversibleJumpWindowOperator methods
 //////////////////////////////////////////////////////////////////////////////
 
-ReversibleJumpWindowOperator::ReversibleJumpWindowOperator(double weight, double window_size) : ReversibleJumpSampler(weight) {
-    this->height_mover_.set_window_size(window_size);
+ReversibleJumpWindowOperator::ReversibleJumpWindowOperator(
+        double weight,
+        double window_size) : ReversibleJumpSampler(weight) {
+    this->height_mover_.op_.set_window_size(window_size);
 }
 
 std::string ReversibleJumpWindowOperator::get_name() const {
     return "ReversibleJumpWindowOperator";
 }
 
-Operator::OperatorTypeEnum ReversibleJumpWindowOperator::get_type() const {
-    return Operator::OperatorTypeEnum::self_contained_operator;
+std::string ReversibleJumpWindowOperator::target_parameter() const {
+    return "model";
+}
+
+OperatorInterface::OperatorTypeEnum ReversibleJumpWindowOperator::get_type() const {
+    return OperatorInterface::OperatorTypeEnum::rj_operator;
 }
 
 std::string ReversibleJumpWindowOperator::to_string(const OperatorSchedule& os) const {
@@ -1117,92 +1586,29 @@ std::string ReversibleJumpWindowOperator::to_string(const OperatorSchedule& os) 
     return ss.str();
 }
 
-double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
+void ReversibleJumpWindowOperator::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-
-    this->propose_height_moves(rng, comparisons);
-
-    comparisons.store_state();
-    comparisons.store_model_state();
-
-    double hastings_ratio = this->propose_jump(rng, comparisons, nthreads);
-    comparisons.compute_log_likelihood_and_prior(true);
-
-    double likelihood_ratio = 
-        comparisons.log_likelihood_.get_value() -
-        comparisons.log_likelihood_.get_stored_value();
-    double prior_ratio = 
-        comparisons.log_prior_density_.get_value() -
-        comparisons.log_prior_density_.get_stored_value();
-    double acceptance_probability =
-            likelihood_ratio + 
-            prior_ratio +
-            hastings_ratio;
-    double u = rng.uniform_real();
-    if (u < std::exp(acceptance_probability)) {
-        this->accept(comparisons.operator_schedule_);
-    }
-    else {
-        this->reject(comparisons.operator_schedule_);
-        comparisons.restore_model_state();
-    }
-    comparisons.make_trees_clean();
-
-    return std::numeric_limits<double>::infinity();
+    this->propose_height_moves(rng, comparisons, nthreads);
+    this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double ReversibleJumpWindowOperator::propose_height_moves(RandomNumberGenerator& rng,
-        ComparisonPopulationTreeCollection& comparisons) {
-    comparisons.store_state();
-    std::vector<double> hastings_ratios;
-    hastings_ratios.reserve(comparisons.node_heights_.size());
-    for (unsigned int height_idx = 0; height_idx < comparisons.node_heights_.size(); ++height_idx) {
-        hastings_ratios.push_back(this->height_mover_.propose(rng, *(comparisons.node_heights_.at(height_idx))));
-    }
-    comparisons.make_trees_dirty();
-    comparisons.compute_tree_partials();
-    for (unsigned int height_idx = 0; height_idx < comparisons.node_heights_.size(); ++height_idx) {
-        double old_lnl = 0.0;
-        double new_lnl = 0.0;
-        for (unsigned int tree_idx = 0; tree_idx < comparisons.node_height_indices_.size(); ++tree_idx) {
-            if (comparisons.node_height_indices_.at(tree_idx) == height_idx) {
-                old_lnl += comparisons.trees_.at(tree_idx).get_stored_log_likelihood_value();
-                new_lnl += comparisons.trees_.at(tree_idx).get_log_likelihood_value();
-            }
-        }
-        double likelihood_ratio = new_lnl - old_lnl;
-        double prior_ratio =
-                comparisons.node_heights_.at(height_idx)->relative_prior_ln_pdf() -
-                comparisons.node_heights_.at(height_idx)->relative_prior_ln_pdf(
-                        comparisons.node_heights_.at(height_idx)->get_stored_value());
-        double hastings_ratio = hastings_ratios.at(height_idx);
-        double acceptance_probability =
-                likelihood_ratio + 
-                prior_ratio +
-                hastings_ratio;
-        double u = rng.uniform_real();
-        if (u < std::exp(acceptance_probability)) {
-            this->height_mover_.accept(comparisons.operator_schedule_);
-        }
-        else {
-            this->height_mover_.reject(comparisons.operator_schedule_);
-            comparisons.node_heights_.at(height_idx)->restore();
-            for (unsigned int tree_idx = 0; tree_idx < comparisons.node_height_indices_.size(); ++tree_idx) {
-                if (comparisons.node_height_indices_.at(tree_idx) == height_idx) {
-                    comparisons.trees_.at(tree_idx).restore_likelihood();
-                }
-            }
-        }
-        this->height_mover_.optimize(comparisons.operator_schedule_, acceptance_probability);
-    }
-    comparisons.make_trees_clean();
-    comparisons.compute_log_likelihood_and_prior(false);
-
-    return std::numeric_limits<double>::infinity();
+void ReversibleJumpWindowOperator::propose_height_moves(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->height_mover_.operate(rng, comparisons, nthreads);
 }
 
-double ReversibleJumpWindowOperator::propose_jump(RandomNumberGenerator& rng,
+void ReversibleJumpWindowOperator::update_height(RandomNumberGenerator& rng,
+        double& height,
+        double& hastings,
+        double window_size) const {
+    double addend = (rng.uniform_real() * 2 * window_size) - window_size;
+    height += addend;
+    hastings = 0.0;
+}
+
+double ReversibleJumpWindowOperator::propose(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
     const unsigned int nnodes = comparisons.get_number_of_trees();
@@ -1211,7 +1617,8 @@ double ReversibleJumpWindowOperator::propose_jump(RandomNumberGenerator& rng,
     const bool in_shared_state_before = (nevents == 1);
     const bool split_event = ((! in_general_state_before) &&
             (in_shared_state_before || (rng.uniform_real() < 0.5)));
-    double window_size = this->height_mover_.get_window_size();
+    double window_size = (0.5 * this->height_mover_.op_.get_window_size());
+    // double window_size = this->height_mover_.op_.get_window_size();
     if (split_event) {
         std::vector<unsigned int> shared_indices =
                 comparisons.get_shared_event_indices();
@@ -1220,7 +1627,8 @@ double ReversibleJumpWindowOperator::propose_jump(RandomNumberGenerator& rng,
         double old_height = comparisons.get_height(event_index);
         double new_height = old_height;
         double new_height_ln_hastings = 0.0;
-        this->height_mover_.update(rng, new_height, new_height_ln_hastings);
+        this->update_height(rng, new_height, new_height_ln_hastings, window_size);
+        // this->height_mover_.update(rng, new_height, new_height_ln_hastings);
         if (new_height <= 0.0) {
             return -std::numeric_limits<double>::infinity();
         }
@@ -1352,7 +1760,8 @@ double ReversibleJumpWindowOperator::propose_jump(RandomNumberGenerator& rng,
     double old_height = comparisons.get_height(height_index);
     double new_height = old_height;
     double new_height_ln_hastings = 0.0;
-    this->height_mover_.update(rng, new_height, new_height_ln_hastings);
+    this->update_height(rng, new_height, new_height_ln_hastings, window_size);
+    // this->height_mover_.update(rng, new_height, new_height_ln_hastings);
     if (new_height <= 0.0) {
         return -std::numeric_limits<double>::infinity();
     }

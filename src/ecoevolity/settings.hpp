@@ -1111,7 +1111,7 @@ class OperatorScheduleSettings {
         unsigned int get_auto_optimize_delay() const {
             return this->auto_optimize_delay_;
         }
-        const OperatorSettings& get_model_operator_settings() const {
+        const ModelOperatorSettings& get_model_operator_settings() const {
             return this->model_operator_settings_;
         }
         const ScaleOperatorSettings& get_concentration_scaler_settings() const {

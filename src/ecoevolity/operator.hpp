@@ -33,41 +33,206 @@
 #include "operator_schedule.hpp"
 
 
-//////////////////////////////////////////////////////////////////////////////
-// Operator base classes
-//////////////////////////////////////////////////////////////////////////////
+class OperatorInterface {
+    protected:
+        double weight_ = 1.0;
 
-class Operator {
     public:
-        Operator() { }
-        Operator(double weight);
-        virtual ~Operator() { }
+        OperatorInterface() { }
+        OperatorInterface(double weight);
 		enum OperatorTypeEnum {
             tree_operator = 1,
             time_operator = 2,
-            model_operator = 3,
+            collection_operator = 3,
             rj_operator = 4,
-            self_contained_operator = 5
         };
 
-        virtual Operator::OperatorTypeEnum get_type() const = 0;
+        virtual OperatorInterface::OperatorTypeEnum get_type() const = 0;
+
+        double get_weight() const;
+
+        void set_weight(double weight);
+
+        virtual void call_store_methods(
+                ComparisonPopulationTreeCollection& comparisons) const;
+        virtual void call_restore_methods(
+                ComparisonPopulationTreeCollection& comparisons) const;
+
+        virtual std::string get_name() const = 0;
+
+        virtual std::string target_parameter() const = 0;
+
+        virtual void perform_collection_move(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const = 0;
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const = 0;
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
+
+        virtual void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
 
         virtual void optimize(OperatorSchedule& os, double log_alpha) = 0;
 
-        double get_target_acceptance_probability() const;
+        virtual void accept(const OperatorSchedule& os) = 0;
 
-        virtual double get_coercable_parameter_value() const;
+        virtual void reject(const OperatorSchedule& os) = 0;
 
-        virtual void set_coercable_parameter_value(double value) { }
+        virtual double get_coercable_parameter_value() const = 0;
 
-        double get_weight() const { return this->weight_; }
-
-        void set_weight(double weight);
+        virtual void set_coercable_parameter_value(double value) = 0;
 
         virtual void update(
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const = 0;
+
+        virtual double calc_delta(OperatorSchedule& os, double log_alpha) const = 0;
+
+        virtual double get_target_acceptance_probability() const = 0;
+
+        virtual unsigned int get_number_rejected() const = 0;
+        virtual unsigned int get_number_accepted() const = 0;
+        virtual unsigned int get_number_rejected_for_correction() const = 0;
+        virtual unsigned int get_number_accepted_for_correction() const = 0;
+
+        virtual std::string header_string() const = 0;
+
+        virtual std::string to_string(const OperatorSchedule& os) const = 0;
+};
+
+template<class DerivedOperatorType>
+class BaseOperatorInterface : public OperatorInterface {
+
+    public:
+        DerivedOperatorType op_;
+
+        BaseOperatorInterface() : OperatorInterface() { }
+        BaseOperatorInterface(double weight) : OperatorInterface(weight) { }
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha);
+
+        void accept(const OperatorSchedule& os);
+
+        void reject(const OperatorSchedule& os);
+
+        virtual double get_coercable_parameter_value() const;
+
+        virtual void set_coercable_parameter_value(double value);
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const;
+
+        double calc_delta(OperatorSchedule& os, double log_alpha) const;
+
+        double get_target_acceptance_probability() const;
+
+        unsigned int get_number_rejected() const;
+        unsigned int get_number_accepted() const;
+        unsigned int get_number_rejected_for_correction() const;
+        unsigned int get_number_accepted_for_correction() const;
+
+        std::string header_string() const;
+
+        virtual std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+template<class DerivedOperatorType>
+class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
+
+    public:
+        TimeOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
+        TimeOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
+
+        virtual void perform_collection_move(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const = 0;
+
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        virtual OperatorInterface::OperatorTypeEnum get_type() const;
+
+        virtual void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
+};
+
+template<class DerivedOperatorType>
+class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
+
+    public:
+        TreeOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
+        TreeOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
+
+        virtual void perform_collection_move(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const = 0;
+
+        virtual double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        virtual double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        virtual OperatorInterface::OperatorTypeEnum get_type() const;
+
+        virtual void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
+};
+
+template<class DerivedOperatorType>
+class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
+
+    public:
+        CollectionOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
+        CollectionOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
+
+        virtual void perform_collection_move(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
 
         /**
          * @brief   Propose a new state.
@@ -77,61 +242,79 @@ class Operator {
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1) = 0;
+
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
         virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const = 0;
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        virtual OperatorInterface::OperatorTypeEnum get_type() const;
+
+        virtual void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) = 0;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Operator base classes
+//////////////////////////////////////////////////////////////////////////////
+
+class Operator {
+
+    public:
+        Operator() { }
+        virtual ~Operator() { }
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual double get_coercable_parameter_value() const;
+
+        virtual void set_coercable_parameter_value(double value) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { }
+
+        double calc_delta(OperatorSchedule& os, double log_alpha) const;
 
         void accept(const OperatorSchedule& os);
 
         void reject(const OperatorSchedule& os);
 
-        unsigned int get_number_rejected() const {
-            return this->number_rejected_;
-        }
-        unsigned int get_number_accepted() const {
-            return this->number_accepted_;
-        }
-        unsigned int get_number_rejected_for_correction() const {
-            return this->number_rejected_for_correction_;
-        }
-        unsigned int get_number_accepted_for_correction() const {
-            return this->number_accepted_for_correction_;
-        }
+        double get_target_acceptance_probability() const;
 
-        virtual std::string get_name() const;
-
-        virtual std::string target_parameter() const = 0;
-
-        std::string header_string() const;
-
-        virtual std::string to_string(const OperatorSchedule& os) const;
+        unsigned int get_number_rejected() const;
+        unsigned int get_number_accepted() const;
+        unsigned int get_number_rejected_for_correction() const;
+        unsigned int get_number_accepted_for_correction() const;
 
     protected:
-        double weight_ = 1.0;
         unsigned int number_rejected_ = 0;
         unsigned int number_accepted_ = 0;
         unsigned int number_rejected_for_correction_ = 0;
         unsigned int number_accepted_for_correction_ = 0;
-
-        double calc_delta(OperatorSchedule& os, double log_alpha) const;
 };
 
+
 class ScaleOperator : public Operator {
+
     protected:
         double scale_ = 0.5;
 
     public:
         ScaleOperator() : Operator() { }
-        ScaleOperator(double weight) : Operator(weight) { }
-        ScaleOperator(double weight, double scale);
+        ScaleOperator(double scale);
         virtual ~ScaleOperator() { }
 
         void set_scale(double scale);
 
-        double get_scale() const {
-            return this->scale_;
-        }
+        double get_scale() const;
 
         virtual void update(
                 RandomNumberGenerator& rng,
@@ -143,18 +326,17 @@ class ScaleOperator : public Operator {
         double get_coercable_parameter_value() const;
 
         void set_coercable_parameter_value(double value);
-
-        std::string get_name() const;
 };
 
+
 class WindowOperator : public Operator {
+
     protected:
         double window_size_ = 0.1;
 
     public:
         WindowOperator() : Operator() { }
-        WindowOperator(double weight) : Operator(weight) { }
-        WindowOperator(double weight, double window_size);
+        WindowOperator(double window_size);
         virtual ~WindowOperator() { }
 
         void set_window_size(double window_size);
@@ -170,169 +352,6 @@ class WindowOperator : public Operator {
         double get_coercable_parameter_value() const;
 
         void set_coercable_parameter_value(double value);
-
-        std::string get_name() const;
-};
-
-
-//////////////////////////////////////////////////////////////////////////////
-// Operator Type base classes
-//////////////////////////////////////////////////////////////////////////////
-
-class ModelOperator : public Operator {
-    public:
-        ModelOperator() : Operator() { }
-        ModelOperator(double weight) : Operator(weight) { }
-        virtual ~ModelOperator() { }
-
-        Operator::OperatorTypeEnum get_type() const;
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1) = 0;
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
-        std::string get_name() const;
-
-        std::string target_parameter() const;
-
-        void optimize(OperatorSchedule& os, double log_alpha) { }
-        void update(
-                RandomNumberGenerator& rng,
-                double& parameter_value,
-                double& hastings_ratio) const { }
-};
-
-class ComparisonTreeScaleOperator : public ScaleOperator {
-    public:
-        ComparisonTreeScaleOperator() : ScaleOperator() { }
-        ComparisonTreeScaleOperator(double weight) : ScaleOperator(weight) { }
-        ComparisonTreeScaleOperator(double weight, double scale) : ScaleOperator(weight, scale) { }
-        virtual ~ComparisonTreeScaleOperator() { }
-
-        Operator::OperatorTypeEnum get_type() const;
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
-        std::string get_name() const;
-};
-
-class ComparisonTreeWindowOperator : public WindowOperator {
-    public:
-        ComparisonTreeWindowOperator() : WindowOperator() { }
-        ComparisonTreeWindowOperator(double weight) : WindowOperator(weight) { }
-        ComparisonTreeWindowOperator(double weight, double window_size) : WindowOperator(weight, window_size) { }
-        virtual ~ComparisonTreeWindowOperator() { }
-
-        Operator::OperatorTypeEnum get_type() const;
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
-        std::string get_name() const;
-};
-
-class NodeHeightScaleOperator : public ScaleOperator {
-    public:
-        NodeHeightScaleOperator() : ScaleOperator() { }
-        NodeHeightScaleOperator(double weight) : ScaleOperator(weight) { }
-        NodeHeightScaleOperator(double weight, double scale) : ScaleOperator(weight, scale) { }
-        virtual ~NodeHeightScaleOperator() { }
-
-        Operator::OperatorTypeEnum get_type() const;
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const = 0;
-
-        std::string get_name() const;
-
-        std::string target_parameter() const;
-};
-
-class NodeHeightWindowOperator : public WindowOperator {
-    public:
-        NodeHeightWindowOperator() : WindowOperator() { }
-        NodeHeightWindowOperator(double weight) : WindowOperator(weight) { }
-        NodeHeightWindowOperator(double weight, double window_size) : WindowOperator(weight, window_size) { }
-        virtual ~NodeHeightWindowOperator() { }
-
-        Operator::OperatorTypeEnum get_type() const;
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const = 0;
-
-        std::string get_name() const;
-
-        std::string target_parameter() const;
 };
 
 
@@ -340,24 +359,27 @@ class NodeHeightWindowOperator : public WindowOperator {
 // Derived Operator classes
 //////////////////////////////////////////////////////////////////////////////
 
-class UnivariateCollectionScaler : public ScaleOperator {
+class ConcentrationScaler : public CollectionOperatorInterface<ScaleOperator> {
+
     public:
-        UnivariateCollectionScaler() : ScaleOperator() { }
-        UnivariateCollectionScaler(double weight) : ScaleOperator(weight) { }
-        UnivariateCollectionScaler(double weight, double scale) : ScaleOperator(weight, scale) { }
-        virtual ~UnivariateCollectionScaler() { }
+        ConcentrationScaler();
+        ConcentrationScaler(double weight);
+        ConcentrationScaler(double weight, double scale);
+        // virtual ~ConcentrationScaler() { }
 
-        Operator::OperatorTypeEnum get_type() const;
-
-        double propose(RandomNumberGenerator& rng,
+        void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
             throw EcoevolityError("calling wrong propose signature");
         }
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
+                ComparisonPopulationTree& tree) const {
             throw EcoevolityError("calling wrong propose signature");
         }
 
@@ -367,27 +389,291 @@ class UnivariateCollectionScaler : public ScaleOperator {
 };
 
 
-class CollectionScaler : public ScaleOperator {
-    protected:
-        UnivariateCollectionScaler uni_collection_scaler = UnivariateCollectionScaler(0.0, 0.5);
+class FreqMover : public TreeOperatorInterface<WindowOperator> {
 
     public:
-        CollectionScaler() : ScaleOperator() { }
-        CollectionScaler(double weight) : ScaleOperator(weight) { }
-        CollectionScaler(double weight, double scale) : ScaleOperator(weight, scale) { }
-        virtual ~CollectionScaler() { }
+        FreqMover();
+        FreqMover(double weight);
+        FreqMover(double weight, double window_size);
+        // virtual ~FreqMover() { }
 
-        Operator::OperatorTypeEnum get_type() const;
-
-        double propose(RandomNumberGenerator& rng,
+        void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class ComparisonMutationRateScaler : public TreeOperatorInterface<ScaleOperator> {
+
+    public:
+        ComparisonMutationRateScaler();
+        ComparisonMutationRateScaler(double weight);
+        ComparisonMutationRateScaler(double weight, double scale);
+        // virtual ~ComparisonMutationRateScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class ChildPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
+
+    public:
+        ChildPopulationSizeScaler();
+        ChildPopulationSizeScaler(double weight);
+        ChildPopulationSizeScaler(double weight, double scale);
+        // virtual ~ChildPopulationSizeScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class RootPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
+
+    public:
+        RootPopulationSizeScaler();
+        RootPopulationSizeScaler(double weight);
+        RootPopulationSizeScaler(double weight, double scale);
+        // virtual ~RootPopulationSizeScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const;
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class ComparisonHeightScaler : public TimeOperatorInterface<ScaleOperator> {
+
+    public:
+        ComparisonHeightScaler();
+        ComparisonHeightScaler(double weight);
+        ComparisonHeightScaler(double weight, double scale);
+        // virtual ~ComparisonHeightScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(
+                RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const;
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) const {
             throw EcoevolityError("calling wrong propose signature");
         }
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string get_name() const;
+        std::string target_parameter() const;
+};
+
+class ComparisonHeightMover : public TimeOperatorInterface<WindowOperator> {
+
+    public:
+        ComparisonHeightMover();
+        ComparisonHeightMover(double weight);
+        ComparisonHeightMover(double weight, double window_size);
+        // virtual ~ComparisonHeightMover() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(
+                RandomNumberGenerator& rng,
+                PositiveRealParameter& node_height) const;
+
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1) {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string get_name() const;
+        std::string target_parameter() const;
+};
+
+
+class UnivariateCollectionScaler : public CollectionOperatorInterface<ScaleOperator> {
+
+    public:
+        UnivariateCollectionScaler();
+        UnivariateCollectionScaler(double weight);
+        UnivariateCollectionScaler(double weight, double scale);
+        // virtual ~UnivariateCollectionScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class UnivariateCompositeCollectionScaler : public CollectionOperatorInterface<Operator> {
+
+    protected:
+        ComparisonHeightScaler height_scaler_ = ComparisonHeightScaler(0.0, 0.5);
+        RootPopulationSizeScaler root_size_scaler_ = RootPopulationSizeScaler(0.0, 0.5);
+        ChildPopulationSizeScaler child_size_scaler_ = ChildPopulationSizeScaler(0.0, 0.5);
+
+    public:
+        UnivariateCompositeCollectionScaler() : CollectionOperatorInterface<Operator>() { }
+        UnivariateCompositeCollectionScaler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        UnivariateCompositeCollectionScaler(double weight, double scale);
+        virtual ~UnivariateCompositeCollectionScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        void perform_collection_move(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { };
+
+};
+
+
+class CollectionScaler : public CollectionOperatorInterface<ScaleOperator> {
+
+    friend class ReversibleJumpSampler;
+
+    protected:
+        UnivariateCompositeCollectionScaler uni_collection_scaler_ = UnivariateCompositeCollectionScaler(0.0);
+        // UnivariateCollectionScaler uni_collection_scaler_ = UnivariateCollectionScaler(0.0, 0.5);
+
+    public:
+        CollectionScaler();
+        CollectionScaler(double weight);
+        CollectionScaler(double weight, double scale);
+        // virtual ~CollectionScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
             throw EcoevolityError("calling wrong propose signature");
         }
 
@@ -399,175 +685,14 @@ class CollectionScaler : public ScaleOperator {
 };
 
 
-class ConcentrationScaler : public ScaleOperator {
-    public:
-        ConcentrationScaler() : ScaleOperator() { }
-        ConcentrationScaler(double weight) : ScaleOperator(weight) { }
-        ConcentrationScaler(double weight, double scale) : ScaleOperator(weight, scale) { }
-        virtual ~ConcentrationScaler() { }
-
-        Operator::OperatorTypeEnum get_type() const;
-
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
-
-
-class FreqMover : public ComparisonTreeWindowOperator {
-
-    using ComparisonTreeWindowOperator::propose;
-
-    public:
-        FreqMover() : ComparisonTreeWindowOperator() { }
-        FreqMover(double weight) : ComparisonTreeWindowOperator(weight) { }
-        FreqMover(double weight, double window_size) : ComparisonTreeWindowOperator(weight, window_size) { }
-        virtual ~FreqMover() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
-
-// u/v rates no longer being proposed
-// class UScaler : public ComparisonTreeScaleOperator {
-// 
-//     using ComparisonTreeScaleOperator::propose;
-// 
-//     public:
-//         UScaler() : ComparisonTreeScaleOperator() { }
-//         UScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-//         UScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-//         virtual ~UScaler() { }
-// 
-//         double propose(
-//                 RandomNumberGenerator& rng,
-//                 ComparisonPopulationTree& tree) const;
-// 
-//         std::string target_parameter() const;
-// 
-//         std::string get_name() const;
-// };
-
-class ComparisonMutationRateScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        ComparisonMutationRateScaler() : ComparisonTreeScaleOperator() { }
-        ComparisonMutationRateScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ComparisonMutationRateScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ComparisonMutationRateScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
-
-
-class ChildPopulationSizeScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        ChildPopulationSizeScaler() : ComparisonTreeScaleOperator() { }
-        ChildPopulationSizeScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        ChildPopulationSizeScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~ChildPopulationSizeScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
-
-
-class RootPopulationSizeScaler : public ComparisonTreeScaleOperator {
-
-    using ComparisonTreeScaleOperator::propose;
-
-    public:
-        RootPopulationSizeScaler() : ComparisonTreeScaleOperator() { }
-        RootPopulationSizeScaler(double weight) : ComparisonTreeScaleOperator(weight) { }
-        RootPopulationSizeScaler(double weight, double scale) : ComparisonTreeScaleOperator(weight, scale) { }
-        virtual ~RootPopulationSizeScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        std::string target_parameter() const;
-
-        std::string get_name() const;
-};
-
-class ComparisonHeightScaler : public NodeHeightScaleOperator {
-
-    using NodeHeightScaleOperator::propose;
-
-    public:
-        ComparisonHeightScaler() : NodeHeightScaleOperator() { }
-        ComparisonHeightScaler(double weight) : NodeHeightScaleOperator(weight) { }
-        ComparisonHeightScaler(double weight, double scale) : NodeHeightScaleOperator(weight, scale) { }
-        virtual ~ComparisonHeightScaler() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const;
-
-        std::string get_name() const;
-};
-
-class ComparisonHeightMover : public NodeHeightWindowOperator {
-
-    using NodeHeightWindowOperator::propose;
-
-    public:
-        ComparisonHeightMover() : NodeHeightWindowOperator() { }
-        ComparisonHeightMover(double weight) : NodeHeightWindowOperator(weight) { }
-        ComparisonHeightMover(double weight, double window_size) : NodeHeightWindowOperator(weight, window_size) { }
-        virtual ~ComparisonHeightMover() { }
-
-        double propose(
-                RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const;
-
-        std::string get_name() const;
-};
-
-class DirichletProcessGibbsSampler : public ModelOperator {
-
-    using ModelOperator::propose;
+class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
         unsigned int number_of_auxiliary_categories_ = 4;
 
     public:
-        DirichletProcessGibbsSampler() : ModelOperator() { }
-        DirichletProcessGibbsSampler(double weight) : ModelOperator(weight) { }
+        DirichletProcessGibbsSampler() : CollectionOperatorInterface<Operator>() { }
+        DirichletProcessGibbsSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
         DirichletProcessGibbsSampler(double weight,
                 unsigned int number_of_auxiliary_categories);
         virtual ~DirichletProcessGibbsSampler() { }
@@ -577,6 +702,10 @@ class DirichletProcessGibbsSampler : public ModelOperator {
 
         std::string get_name() const;
 
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
         /**
          * @brief   Propose a new state.
          *
@@ -585,33 +714,65 @@ class DirichletProcessGibbsSampler : public ModelOperator {
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+        double propose_gibbs(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string target_parameter() const;
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { };
 };
 
-class ReversibleJumpSampler : public ModelOperator {
-
-    using ModelOperator::propose;
+class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
+        // CollectionScaler collection_scaler_ = CollectionScaler(0.0, 0.5);
+        ComparisonHeightScaler collection_scaler_ = ComparisonHeightScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
         void populate_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
 
     public:
-        ReversibleJumpSampler() : ModelOperator() { }
-        ReversibleJumpSampler(double weight) : ModelOperator(weight) { }
+        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() { }
+        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;
 
-        Operator::OperatorTypeEnum get_type() const;
+        std::string to_string(const OperatorSchedule& os) const;
+
+        virtual void call_store_methods(
+                ComparisonPopulationTreeCollection& comparisons) const;
+        virtual void call_restore_methods(
+                ComparisonPopulationTreeCollection& comparisons) const;
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        OperatorInterface::OperatorTypeEnum get_type() const;
 
         /**
          * @brief   Propose a new state.
          *
          * @return  Log of Hastings Ratio.
          */
-        virtual double propose(RandomNumberGenerator& rng,
+        double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
         virtual double propose_jump_to_prior(RandomNumberGenerator& rng,
@@ -619,24 +780,28 @@ class ReversibleJumpSampler : public ModelOperator {
         virtual double propose_jump_to_gap(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons);
 
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
         const std::vector<double>& get_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
 
-        void write_split_probabilities(std::ostream& out) const {
-            for (auto const & set_size_probs: this->split_subset_size_probs_) {
-                out << "Set size: " << set_size_probs.first << "\n";
-                double ln_ways_to_split = this->ln_number_of_possible_splits_.at(set_size_probs.first);
-                double ways_to_split = std::exp(ln_ways_to_split);
-                out << "\tlog number of ways to split: " << ln_ways_to_split << "\n";
-                out << "\tnumber of ways to split: " << ways_to_split << "\n";
-                out << "\tprobability of split subset sizes:\n";
-                unsigned int split_size = 1;
-                for (auto const & split_size_prob: set_size_probs.second) {
-                    out << "\t\t" << split_size << ": " << split_size_prob << "\n";
-                    ++split_size;
-                }
-            }
-        }
+        void write_split_probabilities(std::ostream& out) const;
+
+        std::string target_parameter() const;
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { };
 };
 
 class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
@@ -650,7 +815,9 @@ class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
         ReversibleJumpWindowOperator(double weight, double window_size);
         virtual ~ReversibleJumpWindowOperator() { }
 
-        Operator::OperatorTypeEnum get_type() const;
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
 
         /**
          * @brief   Propose a new state.
@@ -660,25 +827,39 @@ class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTree& tree) const {
             throw EcoevolityError("calling wrong propose signature");
         }
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& node_height) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
-        double propose_height_moves(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
+        void update_height(RandomNumberGenerator& rng,
+                double& height,
+                double& hastings,
+                double window_size) const;
 
-        double propose_jump(RandomNumberGenerator& rng,
+        void propose_height_moves(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads);
+                unsigned int nthreads = 1);
+
+        OperatorInterface::OperatorTypeEnum get_type() const;
 
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        std::string target_parameter() const;
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { };
 };
 
 #endif

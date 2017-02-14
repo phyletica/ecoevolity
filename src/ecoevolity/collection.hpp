@@ -39,6 +39,16 @@ class ComparisonPopulationTreeCollection {
     friend class ReversibleJumpWindowOperator;
     friend class UnivariateCollectionScaler;
     friend class CollectionScaler;
+    friend class ConcentrationScaler;
+
+    template<class DerivedOperatorType>
+    friend class TimeOperatorInterface;
+
+    template<class DerivedOperatorType>
+    friend class TreeOperatorInterface;
+
+    template<class DerivedOperatorType>
+    friend class CollectionOperatorInterface;
 
     protected:
         std::vector<ComparisonPopulationTree> trees_;

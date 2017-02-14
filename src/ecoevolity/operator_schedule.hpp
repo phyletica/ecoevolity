@@ -31,10 +31,11 @@
 #include "settings.hpp"
 
 class Operator;
+class OperatorInterface;
 
 class OperatorSchedule {
     protected:
-        std::vector< std::shared_ptr<Operator> > operators_;
+        std::vector< std::shared_ptr<OperatorInterface> > operators_;
         double total_weight_ = 0.0;
         std::vector<double> cumulative_probs_;
         unsigned int auto_optimize_delay_ = 10000;
@@ -48,13 +49,13 @@ class OperatorSchedule {
                 bool use_dpp = true);
         virtual ~OperatorSchedule() { }
 
-        void add_operator(std::shared_ptr<Operator> o);
+        void add_operator(std::shared_ptr<OperatorInterface> o);
 
-        Operator& draw_operator(RandomNumberGenerator& rng) const;
-        Operator& get_operator(unsigned int operator_index) const;
+        OperatorInterface& draw_operator(RandomNumberGenerator& rng) const;
+        OperatorInterface& get_operator(unsigned int operator_index) const;
 
-        Operator& get_reversible_jump_operator() const;
-        Operator& get_time_operator() const;
+        OperatorInterface& get_reversible_jump_operator() const;
+        OperatorInterface& get_time_operator() const;
 
         double calc_delta(const Operator& op, double log_alpha);
 
