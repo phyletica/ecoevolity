@@ -804,62 +804,68 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
                 double& hastings_ratio) const { };
 };
 
-class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
 
-    protected:
-        ComparisonHeightMover height_mover_ = ComparisonHeightMover(0.0, 0.5);
-
-    public:
-        ReversibleJumpWindowOperator() : ReversibleJumpSampler() { }
-        ReversibleJumpWindowOperator(double weight) : ReversibleJumpSampler(weight) { }
-        ReversibleJumpWindowOperator(double weight, double window_size);
-        virtual ~ReversibleJumpWindowOperator() { }
-
-        void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1);
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
-        void update_height(RandomNumberGenerator& rng,
-                double& height,
-                double& hastings,
-                double window_size) const;
-
-        void propose_height_moves(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads = 1);
-
-        OperatorInterface::OperatorTypeEnum get_type() const;
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
-
-        std::string target_parameter() const;
-
-        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
-
-        virtual void update(
-                RandomNumberGenerator& rng,
-                double& parameter_value,
-                double& hastings_ratio) const { };
-};
+///////////////////////////////////////////////////////////////////////////////
+// This 'works' but is *very* sensitive to window size and will often fail to
+// sample the target (prior distribution)
+//
+// class ReversibleJumpWindowOperator : public ReversibleJumpSampler {
+// 
+//     protected:
+//         ComparisonHeightMover height_mover_ = ComparisonHeightMover(0.0, 0.5);
+// 
+//     public:
+//         ReversibleJumpWindowOperator() : ReversibleJumpSampler() { }
+//         ReversibleJumpWindowOperator(double weight) : ReversibleJumpSampler(weight) { }
+//         ReversibleJumpWindowOperator(double weight, double window_size);
+//         virtual ~ReversibleJumpWindowOperator() { }
+// 
+//         void operate(RandomNumberGenerator& rng,
+//                 ComparisonPopulationTreeCollection& comparisons,
+//                 unsigned int nthreads = 1);
+// 
+//         /**
+//          * @brief   Propose a new state.
+//          *
+//          * @return  Log of Hastings Ratio.
+//          */
+//         double propose(RandomNumberGenerator& rng,
+//                 ComparisonPopulationTreeCollection& comparisons,
+//                 unsigned int nthreads = 1);
+// 
+//         double propose(RandomNumberGenerator& rng,
+//                 PositiveRealParameter& parameter) const {
+//             throw EcoevolityError("calling wrong propose signature");
+//         }
+//         double propose(RandomNumberGenerator& rng,
+//                 ComparisonPopulationTree& tree) const {
+//             throw EcoevolityError("calling wrong propose signature");
+//         }
+// 
+//         void update_height(RandomNumberGenerator& rng,
+//                 double& height,
+//                 double& hastings,
+//                 double window_size) const;
+// 
+//         void propose_height_moves(RandomNumberGenerator& rng,
+//                 ComparisonPopulationTreeCollection& comparisons,
+//                 unsigned int nthreads = 1);
+// 
+//         OperatorInterface::OperatorTypeEnum get_type() const;
+// 
+//         std::string get_name() const;
+// 
+//         std::string to_string(const OperatorSchedule& os) const;
+// 
+//         std::string target_parameter() const;
+// 
+//         virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+// 
+//         virtual void update(
+//                 RandomNumberGenerator& rng,
+//                 double& parameter_value,
+//                 double& hastings_ratio) const { };
+// };
+///////////////////////////////////////////////////////////////////////////////
 
 #endif
