@@ -1050,6 +1050,22 @@ void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
+void DirichletProcessGibbsSampler::perform_collection_move(
+        RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->call_store_methods(comparisons);
+
+    comparisons.make_trees_dirty();
+    comparisons.compute_log_likelihood_and_prior(true);
+    this->propose(rng, comparisons);
+    comparisons.make_trees_dirty();
+    comparisons.compute_log_likelihood_and_prior(true);
+
+    this->accept(comparisons.operator_schedule_);
+    comparisons.make_trees_clean();
+}
+
 double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {

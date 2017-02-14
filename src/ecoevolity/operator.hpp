@@ -702,6 +702,11 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 
         std::string get_name() const;
 
+        void perform_collection_move(
+                RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads);
+
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
