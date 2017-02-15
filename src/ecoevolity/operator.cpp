@@ -491,16 +491,18 @@ double UnivariateCollectionScaler::propose(RandomNumberGenerator& rng,
     for (unsigned int tree_idx = 0;
             tree_idx < comparisons.trees_.size();
             ++tree_idx) {
-        size = comparisons.trees_.at(tree_idx).get_root_population_size();
-        this->update(rng, size, hastings);
-        hastings_ratio += hastings;
-        comparisons.trees_.at(tree_idx).set_root_population_size(size);
-        if (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained()) {
-            for (unsigned int i = 0; i < comparisons.trees_.at(tree_idx).get_leaf_node_count(); ++i) {
-                size = comparisons.trees_.at(tree_idx).get_child_population_size(i);
-                this->update(rng, size, hastings);
-                hastings_ratio += hastings;
-                comparisons.trees_.at(tree_idx).set_child_population_size(i, size);
+        if (! comparisons.trees_.at(tree_idx).population_sizes_are_fixed()) {
+            size = comparisons.trees_.at(tree_idx).get_root_population_size();
+            this->update(rng, size, hastings);
+            hastings_ratio += hastings;
+            comparisons.trees_.at(tree_idx).set_root_population_size(size);
+            if (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained()) {
+                for (unsigned int i = 0; i < comparisons.trees_.at(tree_idx).get_leaf_node_count(); ++i) {
+                    size = comparisons.trees_.at(tree_idx).get_child_population_size(i);
+                    this->update(rng, size, hastings);
+                    hastings_ratio += hastings;
+                    comparisons.trees_.at(tree_idx).set_child_population_size(i, size);
+                }
             }
         }
     }
@@ -680,6 +682,51 @@ std::string CollectionScaler::to_string(const OperatorSchedule& os) const {
     }
     ss << "\n";
     ss << this->uni_collection_scaler_.to_string(os);
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CompositeCollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+void CompositeCollectionScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Do sweep of univariate proposals across all the node height and pop size
+    // parameters
+    this->uni_composite_collection_scaler_.operate(rng, comparisons, nthreads);
+}
+
+std::string CompositeCollectionScaler::get_name() const {
+    return "CompositeCollectionScaler";
+}
+
+std::string CompositeCollectionScaler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -1214,11 +1261,9 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
 void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    // this->collection_scaler_.operate(rng, comparisons, nthreads);
     for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
         this->collection_scaler_.operate(rng, comparisons, nthreads);
         this->perform_collection_move(rng, comparisons, nthreads);
-        // this->collection_scaler_.uni_collection_scaler_.operate(rng, comparisons, nthreads);
     }
 }
 

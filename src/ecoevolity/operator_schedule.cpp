@@ -51,7 +51,7 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_collection_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CollectionScaler>(
+        this->add_operator(std::make_shared<CompositeCollectionScaler>(
                 settings.get_collection_scaler_settings().get_weight(),
                 settings.get_collection_scaler_settings().get_scale()
                 ));

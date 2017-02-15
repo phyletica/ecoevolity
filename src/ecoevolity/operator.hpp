@@ -652,8 +652,7 @@ class CollectionScaler : public CollectionOperatorInterface<ScaleOperator> {
     friend class ReversibleJumpSampler;
 
     protected:
-        UnivariateCompositeCollectionScaler uni_collection_scaler_ = UnivariateCompositeCollectionScaler(0.0);
-        // UnivariateCollectionScaler uni_collection_scaler_ = UnivariateCollectionScaler(0.0, 0.5);
+        UnivariateCollectionScaler uni_collection_scaler_ = UnivariateCollectionScaler(0.0, 0.5);
 
     public:
         CollectionScaler();
@@ -678,6 +677,31 @@ class CollectionScaler : public CollectionOperatorInterface<ScaleOperator> {
         }
 
         std::string target_parameter() const;
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+class CompositeCollectionScaler : public CollectionScaler {
+
+    friend class ReversibleJumpSampler;
+
+    using CollectionScaler::propose;
+
+    protected:
+        UnivariateCompositeCollectionScaler uni_composite_collection_scaler_ = UnivariateCompositeCollectionScaler(0.0);
+
+    public:
+        CompositeCollectionScaler() : CollectionScaler() { }
+        CompositeCollectionScaler(double weight) : CollectionScaler(weight) { }
+        CompositeCollectionScaler(double weight, double scale) : CollectionScaler(weight, scale) { }
+        // virtual ~CompositeCollectionScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
 
         std::string get_name() const;
 
@@ -745,8 +769,8 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
-        // CollectionScaler collection_scaler_ = CollectionScaler(0.0, 0.5);
-        ComparisonHeightScaler collection_scaler_ = ComparisonHeightScaler(0.0, 0.5);
+        CollectionScaler collection_scaler_ = CollectionScaler(0.0, 0.5);
+        // ComparisonHeightScaler collection_scaler_ = ComparisonHeightScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
         void populate_split_subset_size_probabilities(

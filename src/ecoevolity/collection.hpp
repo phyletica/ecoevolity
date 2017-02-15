@@ -39,6 +39,7 @@ class ComparisonPopulationTreeCollection {
     friend class ReversibleJumpWindowOperator;
     friend class UnivariateCollectionScaler;
     friend class CollectionScaler;
+    friend class CompositeCollectionScaler;
     friend class ConcentrationScaler;
 
     template<class DerivedOperatorType>

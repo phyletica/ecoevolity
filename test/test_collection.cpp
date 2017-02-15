@@ -1259,7 +1259,7 @@ TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
         cfg << "                    scale: " << mult3_scale << "\n";
 
         CollectionSettings settings = CollectionSettings(cfg, cfg_path);
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        RandomNumberGenerator rng = RandomNumberGenerator(84526);
         ComparisonPopulationTreeCollection collection = ComparisonPopulationTreeCollection(
                 settings,
                 rng);
@@ -1268,7 +1268,7 @@ TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
         out_stream.open(log_path);
         collection.write_state_log_header(out_stream);
 
-        unsigned int nsamples = 10000;
+        unsigned int nsamples = 20000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             collection.draw_from_prior(rng);
             collection.log_state(out_stream, i);
