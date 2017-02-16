@@ -1091,7 +1091,7 @@ std::string DirichletProcessGibbsSampler::target_parameter() const {
     return "model";
 }
 
-std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
+std::string DirichletProcessGibbsSampler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
