@@ -1091,9 +1091,36 @@ std::string DirichletProcessGibbsSampler::target_parameter() const {
     return "model";
 }
 
+std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->collection_scaler_.to_string(os);
+    return ss.str();
+}
+
 void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
+    this->collection_scaler_.operate(rng, comparisons, nthreads);
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
@@ -1269,17 +1296,18 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
     }
     ss << "\n";
     ss << this->collection_scaler_.to_string(os);
-    ss << this->collection_height_scaler_.to_string(os);
+    // ss << this->collection_height_scaler_.to_string(os);
     return ss.str();
 }
 
 void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    this->collection_scaler_.operate(rng, comparisons, nthreads);
+    // this->collection_scaler_.operate(rng, comparisons, nthreads);
     for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+        this->collection_scaler_.operate(rng, comparisons, nthreads);
         this->perform_collection_move(rng, comparisons, nthreads);
-        this->collection_height_scaler_.operate(rng, comparisons, nthreads);
+        // this->collection_height_scaler_.operate(rng, comparisons, nthreads);
     }
 }
 
