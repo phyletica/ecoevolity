@@ -40,6 +40,12 @@ class ComparisonPopulationTreeCollection {
     friend class UnivariateCollectionScaler;
     friend class CollectionScaler;
     friend class CompositeCollectionScaler;
+    friend class CollectionLeafScaler;
+    friend class CompositeCollectionLeafScaler;
+    friend class InverseCollectionScaler;
+    friend class CompositeInverseCollectionScaler;
+    friend class InverseCollectionRootScaler;
+    friend class CompositeInverseCollectionRootScaler;
     friend class ConcentrationScaler;
 
     template<class DerivedOperatorType>

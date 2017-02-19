@@ -648,7 +648,6 @@ double CollectionScaler::propose(RandomNumberGenerator& rng,
     comparisons.make_trees_dirty();
 
     return std::log(multiplier) * number_of_free_parameters_scaled;
-
 }
 
 std::string CollectionScaler::target_parameter() const {
@@ -705,6 +704,261 @@ std::string CompositeCollectionScaler::get_name() const {
 }
 
 std::string CompositeCollectionScaler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->uni_composite_collection_scaler_.to_string(os);
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// InverseCollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double InverseCollectionScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    int number_of_free_parameters_scaled = 0;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparisons.trees_.size();
+            ++tree_idx) {
+        if (! comparisons.trees_.at(tree_idx).population_sizes_are_fixed()) {
+            number_of_free_parameters_scaled -= comparisons.trees_.at(tree_idx).scale_root_population_size(1.0/multiplier);
+            if (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained()) {
+                unsigned int nleaves = comparisons.trees_.at(tree_idx).get_leaf_node_count();
+                for (unsigned int i = 0; i < nleaves; ++i) { 
+                    comparisons.trees_.at(tree_idx).set_child_population_size(i, 
+                            comparisons.trees_.at(tree_idx).get_child_population_size(i) * multiplier);
+                    number_of_free_parameters_scaled += nleaves;
+                }
+
+            }
+        }
+    }
+    for (unsigned int height_idx = 0;
+            height_idx < comparisons.node_heights_.size();
+            ++height_idx) {
+        comparisons.node_heights_.at(height_idx)->set_value(
+                comparisons.node_heights_.at(height_idx)->get_value() * multiplier);
+        ++number_of_free_parameters_scaled;
+    }
+    comparisons.make_trees_dirty();
+
+    if (number_of_free_parameters_scaled < 2) {
+        return std::log(multiplier) * number_of_free_parameters_scaled;
+    }
+    return std::log(multiplier) * (number_of_free_parameters_scaled - 2);
+}
+
+std::string InverseCollectionScaler::get_name() const {
+    return "InverseCollectionScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CompositeInverseCollectionScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+void CompositeInverseCollectionScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Do sweep of univariate proposals across all the node height and pop size
+    // parameters
+    this->uni_composite_collection_scaler_.operate(rng, comparisons, nthreads);
+}
+
+std::string CompositeInverseCollectionScaler::get_name() const {
+    return "CompositeInverseCollectionScaler";
+}
+
+std::string CompositeInverseCollectionScaler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->uni_composite_collection_scaler_.to_string(os);
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// InverseCollectionRootScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double InverseCollectionRootScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    int number_of_free_parameters_scaled = 0;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparisons.trees_.size();
+            ++tree_idx) {
+        if (! comparisons.trees_.at(tree_idx).population_sizes_are_fixed()) {
+            number_of_free_parameters_scaled -= comparisons.trees_.at(tree_idx).scale_root_population_size(1.0/multiplier);
+        }
+    }
+    for (unsigned int height_idx = 0;
+            height_idx < comparisons.node_heights_.size();
+            ++height_idx) {
+        comparisons.node_heights_.at(height_idx)->set_value(
+                comparisons.node_heights_.at(height_idx)->get_value() * multiplier);
+        ++number_of_free_parameters_scaled;
+    }
+    comparisons.make_trees_dirty();
+
+    if (number_of_free_parameters_scaled < 2) {
+        return std::log(multiplier) * number_of_free_parameters_scaled;
+    }
+    return std::log(multiplier) * (number_of_free_parameters_scaled - 2);
+}
+
+std::string InverseCollectionRootScaler::get_name() const {
+    return "InverseCollectionRootScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CompositeInverseCollectionRootScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+void CompositeInverseCollectionRootScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Do sweep of univariate proposals across all the node height and pop size
+    // parameters
+    this->uni_composite_collection_scaler_.operate(rng, comparisons, nthreads);
+}
+
+std::string CompositeInverseCollectionRootScaler::get_name() const {
+    return "CompositeInverseCollectionRootScaler";
+}
+
+std::string CompositeInverseCollectionRootScaler::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    ss << this->uni_composite_collection_scaler_.to_string(os);
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CollectionLeafScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+double CollectionLeafScaler::propose(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    unsigned int number_of_free_parameters_scaled = 0;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparisons.trees_.size();
+            ++tree_idx) {
+        if ((! comparisons.trees_.at(tree_idx).population_sizes_are_fixed()) &&
+                (! comparisons.trees_.at(tree_idx).population_sizes_are_constrained())) {
+            unsigned int nleaves = comparisons.trees_.at(tree_idx).get_leaf_node_count();
+            for (unsigned int i = 0; i < nleaves; ++i) { 
+                comparisons.trees_.at(tree_idx).set_child_population_size(i, 
+                        comparisons.trees_.at(tree_idx).get_child_population_size(i) * multiplier);
+                number_of_free_parameters_scaled += nleaves;
+            }
+        }
+    }
+    for (unsigned int height_idx = 0;
+            height_idx < comparisons.node_heights_.size();
+            ++height_idx) {
+        comparisons.node_heights_.at(height_idx)->set_value(
+                comparisons.node_heights_.at(height_idx)->get_value() * multiplier);
+        ++number_of_free_parameters_scaled;
+    }
+    comparisons.make_trees_dirty();
+
+    return std::log(multiplier) * number_of_free_parameters_scaled;
+}
+
+std::string CollectionLeafScaler::get_name() const {
+    return "CollectionLeafScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// CompositeCollectionLeafScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+void CompositeCollectionLeafScaler::operate(RandomNumberGenerator& rng,
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Do sweep of univariate proposals across all the node height and pop size
+    // parameters
+    this->uni_composite_collection_scaler_.operate(rng, comparisons, nthreads);
+}
+
+std::string CompositeCollectionLeafScaler::get_name() const {
+    return "CompositeCollectionLeafScaler";
+}
+
+std::string CompositeCollectionLeafScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"

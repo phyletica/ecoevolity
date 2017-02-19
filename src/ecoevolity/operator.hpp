@@ -709,6 +709,162 @@ class CompositeCollectionScaler : public CollectionScaler {
 };
 
 
+class InverseCollectionScaler : public CollectionScaler {
+
+    friend class ReversibleJumpSampler;
+
+    public:
+        InverseCollectionScaler() : CollectionScaler() { }
+        InverseCollectionScaler(double weight) : CollectionScaler(weight) { }
+        InverseCollectionScaler(double weight, double scale) : CollectionScaler(weight, scale) { }
+        // virtual ~InverseCollectionScaler() { }
+
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string get_name() const;
+};
+
+
+class CompositeInverseCollectionScaler : public InverseCollectionScaler {
+
+    friend class ReversibleJumpSampler;
+
+    using InverseCollectionScaler::propose;
+
+    protected:
+        UnivariateCompositeCollectionScaler uni_composite_collection_scaler_ = UnivariateCompositeCollectionScaler(0.0);
+
+    public:
+        CompositeInverseCollectionScaler() : InverseCollectionScaler() { }
+        CompositeInverseCollectionScaler(double weight) : InverseCollectionScaler(weight) { }
+        CompositeInverseCollectionScaler(double weight, double scale) : InverseCollectionScaler(weight, scale) { }
+        // virtual ~CompositeInverseCollectionScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+class InverseCollectionRootScaler : public CollectionScaler {
+
+    friend class ReversibleJumpSampler;
+
+    public:
+        InverseCollectionRootScaler() : CollectionScaler() { }
+        InverseCollectionRootScaler(double weight) : CollectionScaler(weight) { }
+        InverseCollectionRootScaler(double weight, double scale) : CollectionScaler(weight, scale) { }
+        // virtual ~InverseCollectionRootScaler() { }
+
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string get_name() const;
+};
+
+
+class CompositeInverseCollectionRootScaler : public InverseCollectionRootScaler {
+
+    friend class ReversibleJumpSampler;
+
+    using InverseCollectionRootScaler::propose;
+
+    protected:
+        UnivariateCompositeCollectionScaler uni_composite_collection_scaler_ = UnivariateCompositeCollectionScaler(0.0);
+
+    public:
+        CompositeInverseCollectionRootScaler() : InverseCollectionRootScaler() { }
+        CompositeInverseCollectionRootScaler(double weight) : InverseCollectionRootScaler(weight) { }
+        CompositeInverseCollectionRootScaler(double weight, double scale) : InverseCollectionRootScaler(weight, scale) { }
+        // virtual ~CompositeInverseCollectionRootScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+class CollectionLeafScaler : public CollectionScaler {
+
+    friend class ReversibleJumpSampler;
+
+    public:
+        CollectionLeafScaler() : CollectionScaler() { }
+        CollectionLeafScaler(double weight) : CollectionScaler(weight) { }
+        CollectionLeafScaler(double weight, double scale) : CollectionScaler(weight, scale) { }
+        // virtual ~CollectionLeafScaler() { }
+
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                PositiveRealParameter& parameter) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+        double propose(RandomNumberGenerator& rng,
+                ComparisonPopulationTree& tree) const {
+            throw EcoevolityError("calling wrong propose signature");
+        }
+
+        std::string get_name() const;
+};
+
+
+class CompositeCollectionLeafScaler : public CollectionLeafScaler {
+
+    friend class ReversibleJumpSampler;
+
+    using CollectionLeafScaler::propose;
+
+    protected:
+        UnivariateCompositeCollectionScaler uni_composite_collection_scaler_ = UnivariateCompositeCollectionScaler(0.0);
+
+    public:
+        CompositeCollectionLeafScaler() : CollectionLeafScaler() { }
+        CompositeCollectionLeafScaler(double weight) : CollectionLeafScaler(weight) { }
+        CompositeCollectionLeafScaler(double weight, double scale) : CollectionLeafScaler(weight, scale) { }
+        // virtual ~CompositeCollectionLeafScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                ComparisonPopulationTreeCollection& comparisons,
+                unsigned int nthreads = 1);
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
 class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
