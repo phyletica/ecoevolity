@@ -358,6 +358,13 @@ unsigned int PopulationTree::scale_population_sizes(double scale) {
     unsigned int number_of_free_parameters_scaled = this->root_->scale_all_population_sizes(scale);
     return number_of_free_parameters_scaled;
 }
+unsigned int PopulationTree::scale_root_population_size(double scale) {
+    if (this->population_sizes_are_fixed()) {
+        return 0;
+    }
+    this->root_->set_population_size(this->root_->get_population_size() * scale);
+    return 1;
+}
 
 double PopulationTree::get_root_population_size() const {
     return this->root_->get_population_size();
