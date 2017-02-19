@@ -1550,18 +1550,17 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
     }
     ss << "\n";
     ss << this->collection_scaler_.to_string(os);
-    // ss << this->collection_height_scaler_.to_string(os);
+    ss << this->collection_height_scaler_.to_string(os);
     return ss.str();
 }
 
 void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    // this->collection_scaler_.operate(rng, comparisons, nthreads);
+    this->collection_scaler_.operate(rng, comparisons, nthreads);
     for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
-        this->collection_scaler_.operate(rng, comparisons, nthreads);
         this->perform_collection_move(rng, comparisons, nthreads);
-        // this->collection_height_scaler_.operate(rng, comparisons, nthreads);
+        this->collection_height_scaler_.operate(rng, comparisons, nthreads);
     }
 }
 
