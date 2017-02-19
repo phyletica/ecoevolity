@@ -35,6 +35,9 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->operator_schedule_ = OperatorSchedule(
             settings.get_operator_schedule_settings(),
             settings.using_dpp());
+    if (this->operator_schedule_.get_total_weight() <= 0.0) {
+        throw EcoevolityError("No operators have weight");
+    }
     this->init_trees(settings.get_comparison_settings(),
             rng,
             strict_on_constant_sites,
