@@ -37,25 +37,6 @@ class ComparisonPopulationTreeCollection {
     friend class DirichletProcessGibbsSampler;
     friend class ReversibleJumpSampler;
     friend class ReversibleJumpWindowOperator;
-    friend class UnivariateCollectionScaler;
-    friend class CollectionScaler;
-    friend class CompositeCollectionScaler;
-    friend class CollectionLeafScaler;
-    friend class CompositeCollectionLeafScaler;
-    friend class InverseCollectionScaler;
-    friend class CompositeInverseCollectionScaler;
-    friend class InverseCollectionRootScaler;
-    friend class CompositeInverseCollectionRootScaler;
-    friend class ConcentrationScaler;
-
-    template<class DerivedOperatorType>
-    friend class TimeOperatorInterface;
-
-    template<class DerivedOperatorType>
-    friend class TreeOperatorInterface;
-
-    template<class DerivedOperatorType>
-    friend class CollectionOperatorInterface;
 
     protected:
         std::vector<ComparisonPopulationTree> trees_;
@@ -80,10 +61,6 @@ class ComparisonPopulationTreeCollection {
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true
                 );
-
-        void compute_tree_partials();
-        void make_trees_clean();
-        void make_trees_dirty();
 
         void remap_tree(unsigned int tree_index,
                         unsigned int height_index);
@@ -137,6 +114,10 @@ class ComparisonPopulationTreeCollection {
         void store_model_state();
         void restore_model_state();
         void compute_log_likelihood_and_prior(bool compute_partials = true);
+
+        void compute_tree_partials();
+        void make_trees_clean();
+        void make_trees_dirty();
 
         void set_number_of_threads(unsigned int n) {
             this->number_of_threads_ = n;
@@ -218,8 +199,35 @@ class ComparisonPopulationTreeCollection {
             return this->node_heights_.at(height_index);
         }
 
+        double get_log_likelihood() const {
+            return this->log_likelihood_.get_value();
+        }
+        double get_stored_log_likelihood() const {
+            return this->log_likelihood_.get_stored_value();
+        }
+        double get_log_prior_density() const {
+            return this->log_prior_density_.get_value();
+        }
+        double get_stored_log_prior_density() const {
+            return this->log_prior_density_.get_stored_value();
+        }
+
+        OperatorSchedule & get_operator_schedule() {
+            return this->operator_schedule_;
+        }
+        void set_operator_schedule(OperatorSchedule& os) {
+            this->operator_schedule_ = os;
+        }
+
+        ComparisonPopulationTree & get_tree(unsigned int tree_index) {
+            return this->trees_.at(tree_index);
+        }
+
         double get_height(unsigned int height_index) const {
             return this->node_heights_.at(height_index)->get_value();
+        }
+        void set_height(unsigned int height_index, double height) const {
+            this->node_heights_.at(height_index)->set_value(height);
         }
         double get_height_of_tree(unsigned int tree_index) const {
             return this->get_height(this->get_height_index(tree_index));

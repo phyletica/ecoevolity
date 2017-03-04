@@ -1,0 +1,44 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=15;
+    TAXLABELS
+        pop1d_GH37
+        pop1d_GH38
+        pop1d_GH39
+        pop1d_GH327
+        pop1d_GH328
+        pop1d_GH329
+        pop1d_GH330
+        pop1d_GH331
+        pop1d_GH341
+        pop1d_GH342
+        pop1d_GH343
+        pop1d_GH344
+        pop1d_GH345
+        pop1d_GH346
+        pop1d_GH347
+  ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=9;
+    FORMAT DATATYPE=STANDARD SYMBOLS="012" MISSING=? GAP=-;
+    MATRIX
+        pop1d_GH37     211222001
+        pop1d_GH38     220221001
+        pop1d_GH39     220212011
+        pop1d_GH327    220222001
+        pop1d_GH328    220222001
+        pop1d_GH329    220222001
+        pop1d_GH330    220222001
+        pop1d_GH331    12012200?
+        pop1d_GH341    220222101
+        pop1d_GH342    220222001
+        pop1d_GH343    22022200?
+        pop1d_GH344    220222101
+        pop1d_GH345    220222001
+        pop1d_GH346    220222001
+        pop1d_GH347    220222000
+    ;
+END;

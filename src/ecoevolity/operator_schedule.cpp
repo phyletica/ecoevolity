@@ -37,7 +37,6 @@ OperatorSchedule::OperatorSchedule(
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
         else {
-            // this->add_operator(std::make_shared<ReversibleJumpWindowOperator>(
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
         }
@@ -51,7 +50,7 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_collection_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeCollectionScaler>(
+        this->add_operator(std::make_shared<CompositeSmartHeightSizeMixer>(
                 settings.get_collection_scaler_settings().get_weight(),
                 settings.get_collection_scaler_settings().get_scale()
                 ));

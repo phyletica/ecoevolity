@@ -7,7 +7,274 @@
 
 RandomNumberGenerator _PRIOR_SAMPLING_RNG = RandomNumberGenerator();
 
-TEST_CASE("Testing sampling from prior with CollectionScaler", "[xSamplingPrior]") {
+TEST_CASE("Testing sampling from prior with CollectionScaler with 6 pairs", "[SamplingPrior]") {
+
+    SECTION("Testing 6 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        double size1_shape = 10.0;
+        double size1_scale = 0.1;
+        double size2_shape = 2.0;
+        double size2_scale = 0.2;
+        double size3_shape = 5.0;
+        double size3_scale = 0.2;
+        double size4_shape = 4.0;
+        double size4_scale = 0.5;
+        double size5_shape = 8.0;
+        double size5_scale = 0.2;
+        double size6_shape = 6.0;
+        double size6_scale = 0.2;
+        std::string auto_optimize = "true";
+        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 2000000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            weight: 0.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        CollectionScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.3\n";
+        os << "            weight: 0.0\n";
+        os << "        ComparisonMutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        ChildPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size1_shape << "\n";
+        os << "                    scale: " << size1_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size2_shape << "\n";
+        os << "                    scale: " << size2_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size3_shape << "\n";
+        os << "                    scale: " << size3_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size4_shape << "\n";
+        os << "                    scale: " << size4_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size5_shape << "\n";
+        os << "                    scale: " << size5_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname5.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size6_shape << "\n";
+        os << "                    scale: " << size6_scale << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "ecoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "123456";
+        char arg3[] = "--ignore-data";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+        ret = ecoevolity_main(argc, argv);
+        REQUIRE(ret == 0);
+        REQUIRE(path::exists(log_path));
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = 200001;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
+        SampleSummarizer<double> height_summary4 = prior_sample.summarize<double>("root_height_pop1c");
+        SampleSummarizer<double> height_summary5 = prior_sample.summarize<double>("root_height_pop1d");
+        SampleSummarizer<double> height_summary6 = prior_sample.summarize<double>("root_height_pop1e");
+
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary4.sample_size() == expected_sample_size);
+        REQUIRE(height_summary4.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary5.sample_size() == expected_sample_size);
+        REQUIRE(height_summary5.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary6.sample_size() == expected_sample_size);
+        REQUIRE(height_summary6.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        SampleSummarizer<double> size1_summary_a = prior_sample.summarize<double>("pop_size_kya");
+        SampleSummarizer<double> size1_summary_b = prior_sample.summarize<double>("pop_size_fas");
+        SampleSummarizer<double> size1_summary_c = prior_sample.summarize<double>("pop_size_root_kya");
+        SampleSummarizer<double> size2_summary_a = prior_sample.summarize<double>("pop_size_pop1");
+        SampleSummarizer<double> size2_summary_b = prior_sample.summarize<double>("pop_size_pop2");
+        SampleSummarizer<double> size2_summary_c = prior_sample.summarize<double>("pop_size_root_pop1");
+        SampleSummarizer<double> size3_summary_a = prior_sample.summarize<double>("pop_size_pop1b");
+        SampleSummarizer<double> size3_summary_b = prior_sample.summarize<double>("pop_size_pop2b");
+        SampleSummarizer<double> size3_summary_c = prior_sample.summarize<double>("pop_size_root_pop1b");
+        SampleSummarizer<double> size4_summary_a = prior_sample.summarize<double>("pop_size_pop1c");
+        SampleSummarizer<double> size4_summary_b = prior_sample.summarize<double>("pop_size_pop2c");
+        SampleSummarizer<double> size4_summary_c = prior_sample.summarize<double>("pop_size_root_pop1c");
+        SampleSummarizer<double> size5_summary_a = prior_sample.summarize<double>("pop_size_pop1d");
+        SampleSummarizer<double> size5_summary_b = prior_sample.summarize<double>("pop_size_pop2d");
+        SampleSummarizer<double> size5_summary_c = prior_sample.summarize<double>("pop_size_root_pop1d");
+        SampleSummarizer<double> size6_summary_a = prior_sample.summarize<double>("pop_size_pop1e");
+        SampleSummarizer<double> size6_summary_b = prior_sample.summarize<double>("pop_size_pop2e");
+        SampleSummarizer<double> size6_summary_c = prior_sample.summarize<double>("pop_size_root_pop1e");
+
+        REQUIRE(size1_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        REQUIRE(size4_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size4_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size4_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size4_summary_a.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_a.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_b.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_b.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_c.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_c.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+
+        REQUIRE(size5_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size5_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size5_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size5_summary_a.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_a.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_b.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_b.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_c.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_c.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+
+        REQUIRE(size6_summary_a.sample_size() == expected_sample_size);
+        REQUIRE(size6_summary_b.sample_size() == expected_sample_size);
+        REQUIRE(size6_summary_c.sample_size() == expected_sample_size);
+        REQUIRE(size6_summary_a.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_a.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_b.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_b.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_c.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_c.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+
+        delete[] cfg_path;
+    }
+}
+
+TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior and no optimizing") {
         double time_shape = 10.0;
@@ -25,7 +292,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[xSamplingPrior]
         os << "        shape: " << time_shape << "\n";
         os << "        scale: " << time_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
+        os << "    chain_length: 1000000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -108,7 +375,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[xSamplingPrior]
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
         std::vector<double> samples = prior_sample.get<double>("root_height_kya");
-        REQUIRE(samples.size() == 200001);
+        REQUIRE(samples.size() == 100001);
 
         SampleSummarizer<double> summary = prior_sample.summarize<double>("root_height_kya");
         REQUIRE(summary.mean() == Approx(time_shape * time_scale).epsilon(0.01));
@@ -118,9 +385,9 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[xSamplingPrior]
         SampleSummarizer<double> size_summary2 = prior_sample.summarize<double>("pop_size_fas");
         SampleSummarizer<double> size_summary3 = prior_sample.summarize<double>("pop_size_root_kya");
 
-        REQUIRE(size_summary1.sample_size() == 200001);
-        REQUIRE(size_summary2.sample_size() == 200001);
-        REQUIRE(size_summary3.sample_size() == 200001);
+        REQUIRE(size_summary1.sample_size() == 100001);
+        REQUIRE(size_summary2.sample_size() == 100001);
+        REQUIRE(size_summary3.sample_size() == 100001);
 
         REQUIRE(size_summary1.mean() == Approx(size_shape * size_scale).epsilon(0.01));
         REQUIRE(size_summary1.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.01));
@@ -400,7 +667,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[xSamplingPrior]
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "123456";
+        char arg2[] = "934028";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -7013,7 +7280,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 1000000\n";
+        os << "    chain_length: 2000000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -7079,7 +7346,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "681654";
+        char arg2[] = "68165454";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -7101,7 +7368,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 100001;
+        unsigned int expected_sample_size = 200001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
