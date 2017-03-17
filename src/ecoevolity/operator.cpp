@@ -1822,7 +1822,8 @@ std::string DirichletProcessGibbsSampler::to_string(const OperatorSchedule& os) 
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->collection_scaler_.to_string(os);
+    // ss << this->collection_scaler_.to_string(os);
+    ss << this->height_scaler_.to_string(os);
     return ss.str();
 }
 
