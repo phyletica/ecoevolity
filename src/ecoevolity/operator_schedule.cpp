@@ -49,10 +49,17 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_collection_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeHeightSizeMixer>(
-                settings.get_collection_scaler_settings().get_weight(),
-                settings.get_collection_scaler_settings().get_scale()
+    if (settings.get_composite_height_size_rate_mixer_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<CompositeHeightSizeRateMixer>(
+                settings.get_composite_height_size_rate_mixer_settings().get_weight(),
+                settings.get_composite_height_size_rate_mixer_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_composite_height_size_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<CompositeHeightSizeRateScaler>(
+                settings.get_composite_height_size_rate_scaler_settings().get_weight(),
+                settings.get_composite_height_size_rate_scaler_settings().get_scale()
                 ));
     }
 

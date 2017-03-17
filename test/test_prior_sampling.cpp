@@ -7,7 +7,7 @@
 
 RandomNumberGenerator _PRIOR_SAMPLING_RNG = RandomNumberGenerator();
 
-TEST_CASE("Testing sampling from prior with CollectionScaler with 6 pairs", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer with 6 pairs", "[SamplingPrior]") {
 
     SECTION("Testing 6 pairs with optimizing") {
         double height_shape = 5.0;
@@ -47,7 +47,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler with 6 pairs", "[Sa
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -274,7 +274,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler with 6 pairs", "[Sa
     }
 }
 
-TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior and no optimizing") {
         double time_shape = 10.0;
@@ -304,7 +304,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -461,7 +461,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -618,7 +618,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -771,7 +771,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -937,7 +937,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1033,7 +1033,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1239,7 +1239,7 @@ TEST_CASE("Testing sampling from prior with CollectionScaler", "[SamplingPrior]"
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1397,7 +1397,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1534,7 +1534,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1669,7 +1669,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1806,7 +1806,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -1936,7 +1936,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2081,7 +2081,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2226,7 +2226,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2364,7 +2364,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2505,7 +2505,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2641,7 +2641,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2777,7 +2777,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -2910,7 +2910,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -3042,7 +3042,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler with op
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -3182,7 +3182,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -3342,7 +3342,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -3465,7 +3465,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
     }
 }
 
-TEST_CASE("Testing fully parameterized model for one pair with optimization and CollectionScaler",
+TEST_CASE("Testing fully parameterized model for one pair with optimization and CompositeHeightSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing with optimizing") {
@@ -3502,7 +3502,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -3659,7 +3659,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -3831,7 +3831,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -4003,7 +4003,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -4176,7 +4176,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -4396,7 +4396,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -4616,7 +4616,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -4891,7 +4891,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -5164,7 +5164,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
     }
 }
 
-TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CollectionScaler",
+TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeHeightSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
@@ -5226,7 +5226,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CollectionScaler
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -5538,7 +5538,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -5768,7 +5768,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -5998,7 +5998,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -6254,7 +6254,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -6593,7 +6593,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -6899,7 +6899,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -7069,7 +7069,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -7291,7 +7291,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -7546,7 +7546,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -7823,7 +7823,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -8107,7 +8107,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CollectionScaler",
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CompositeHeightSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
@@ -8159,7 +8159,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -8495,7 +8495,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -8845,7 +8845,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -9112,7 +9112,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
     }
 }
 
-TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and CollectionScaler",
+TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and CompositeHeightSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
@@ -9174,7 +9174,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -9493,7 +9493,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -9771,7 +9771,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionScaler, and fully parameterized",
+TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeHeightSizeRateMixer, and fully parameterized",
         "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
@@ -9823,7 +9823,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CollectionSc
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -10152,7 +10152,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -10422,7 +10422,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing fixed 012 and fully parameterized and CollectionScaler",
+TEST_CASE("Testing fixed 012 and fully parameterized and CompositeHeightSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing fixed 012 pairs") {
@@ -10474,7 +10474,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized and CollectionScaler",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -10795,7 +10795,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        ComparisonHeightScaler:\n";
@@ -11065,7 +11065,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing fixed 000 and fully parameterized and CollectionScaler",
+TEST_CASE("Testing fixed 000 and fully parameterized and CompositeHeightSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing fixed 000 pairs") {
@@ -11117,7 +11117,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CollectionScaler",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CollectionScaler:\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        ComparisonHeightScaler:\n";
