@@ -1829,7 +1829,8 @@ std::string DirichletProcessGibbsSampler::to_string(const OperatorSchedule& os) 
 void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    this->collection_scaler_.operate(rng, comparisons, nthreads);
+    // this->collection_scaler_.operate(rng, comparisons, nthreads);
+    this->height_scaler_.operate(rng, comparisons, nthreads);
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 

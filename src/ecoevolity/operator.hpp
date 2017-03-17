@@ -987,7 +987,8 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 
     protected:
         unsigned int number_of_auxiliary_categories_ = 4;
-        CompositeHeightSizeMixer collection_scaler_ = CompositeHeightSizeMixer(0.0, 0.5);
+        //CompositeHeightSizeRateMixer collection_scaler_ = CompositeHeightSizeRateMixer(0.0, 0.5);
+        ComparisonHeightScaler height_scaler_ = ComparisonHeightScaler(0.0, 0.5);
 
     public:
         DirichletProcessGibbsSampler() : CollectionOperatorInterface<Operator>() { }
