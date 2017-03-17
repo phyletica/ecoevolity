@@ -606,7 +606,7 @@ double UnivariateHeightSizeRateScaler::propose(RandomNumberGenerator& rng,
 }
 
 std::string UnivariateHeightSizeRateScaler::target_parameter() const {
-    return "node heights and population sizes";
+    return "node heights, population sizes, and mutation rates";
 }
 
 std::string UnivariateHeightSizeRateScaler::get_name() const {
@@ -767,7 +767,7 @@ void UnivariateCompositeHeightSizeRateScaler::scale_mutation_rates(RandomNumberG
 }
 
 std::string UnivariateCompositeHeightSizeRateScaler::target_parameter() const {
-    return "node heights and population sizes";
+    return "node heights, population sizes, and mutation rates";
 }
 
 std::string UnivariateCompositeHeightSizeRateScaler::get_name() const {
@@ -1532,7 +1532,7 @@ std::string HeightSizeRateMixer::get_name() const {
 }
 
 std::string HeightSizeRateMixer::target_parameter() const {
-    return "node heights and population sizes";
+    return "node heights, population sizes, and mutation rates";
 }
 
 std::string HeightSizeRateMixer::to_string(const OperatorSchedule& os) const {
@@ -1687,7 +1687,7 @@ std::string HeightSizeRateScaler::get_name() const {
 }
 
 std::string HeightSizeRateScaler::target_parameter() const {
-    return "node heights and population sizes";
+    return "node heights, population sizes, and mutation rates";
 }
 
 std::string HeightSizeRateScaler::to_string(const OperatorSchedule& os) const {
