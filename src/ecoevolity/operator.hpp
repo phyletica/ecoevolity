@@ -1046,7 +1046,7 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
-        HeightSizeScaler collection_scaler_ = HeightSizeScaler(0.0, 0.5);
+        HeightSizeRateMixer collection_scaler_ = HeightSizeRateMixer(0.0, 0.5);
         ComparisonHeightScaler collection_height_scaler_ = ComparisonHeightScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
