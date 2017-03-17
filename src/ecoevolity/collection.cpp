@@ -183,9 +183,9 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
         ///////////////////////////////////////////////////////////////////////
         // This is taken care of within DirichletProcessGibbsSampler
         // Does not seem to affect ConcentrationScaler (surprisingly) 
-        // lnp += get_dpp_log_prior_probability<unsigned int>(
-        //         this->node_height_indices_,
-        //         this->get_concentration());
+        lnp += get_dpp_log_prior_probability<unsigned int>(
+                this->node_height_indices_,
+                this->get_concentration());
         ///////////////////////////////////////////////////////////////////////
         lnp += this->concentration_->relative_prior_ln_pdf();
     }
