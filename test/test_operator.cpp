@@ -2519,8 +2519,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with 4 pairs",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -2528,8 +2528,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2595,7 +2595,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(1234567);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -2665,8 +2665,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -2674,8 +2674,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2741,7 +2741,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -2800,15 +2800,15 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with fixed sizes",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with 4 pairs with fixed sizes",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2862,7 +2862,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -2918,8 +2918,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with 4 singletons",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with 4 singletons",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -2927,8 +2927,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2994,7 +2994,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456789);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3056,8 +3056,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -3065,8 +3065,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3139,7 +3139,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3280,8 +3280,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs and shared event",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with 4 pairs and shared event",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -3289,8 +3289,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3358,7 +3358,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(1234567);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3429,8 +3429,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons and shared event",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons and shared event",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -3438,8 +3438,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons and sha
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3514,7 +3514,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons and sha
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3635,8 +3635,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with mix of pairs and singletons and sha
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes and shared event",
-        "[SmartHeightSizeMixer]") {
+TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes and shared event",
+        "[HeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -3644,8 +3644,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes and 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3713,7 +3713,7 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes and 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3773,8 +3773,8 @@ TEST_CASE("Testing SmartHeightSizeMixer with 4 pairs with constrained sizes and 
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -3782,8 +3782,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3849,7 +3849,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3919,8 +3919,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained sizes",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -3928,8 +3928,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained s
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3995,7 +3995,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4054,15 +4054,15 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained s
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with fixed sizes",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with fixed sizes",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4116,7 +4116,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4172,8 +4172,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 singletons",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -4181,8 +4181,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4248,7 +4248,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4310,8 +4310,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singletons",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -4319,8 +4319,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singleton
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4393,7 +4393,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singleton
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4534,8 +4534,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singleton
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs and shared event",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -4543,8 +4543,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4612,7 +4612,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4683,8 +4683,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singletons and shared event",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and shared event",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -4692,8 +4692,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singleton
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4768,7 +4768,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singleton
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4889,8 +4889,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with mix of pairs and singleton
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained sizes and shared event",
-        "[CompositeSmartHeightSizeMixer]") {
+TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes and shared event",
+        "[CompositeHeightSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -4898,8 +4898,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained s
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4967,7 +4967,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeMixer with 4 pairs with constrained s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -10870,8 +10870,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
 }
 
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -10881,8 +10881,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10969,7 +10969,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11050,8 +11050,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -11061,8 +11061,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes"
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11149,7 +11149,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes"
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11219,8 +11219,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes"
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -11228,8 +11228,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11304,7 +11304,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11371,8 +11371,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 singletons",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -11382,8 +11382,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11470,7 +11470,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11543,8 +11543,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -11554,8 +11554,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11652,7 +11652,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11827,8 +11827,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -11838,8 +11838,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -11928,7 +11928,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12010,8 +12010,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and shared event",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shared event",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -12021,8 +12021,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12121,7 +12121,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12276,8 +12276,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes and shared event",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and shared event",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -12287,8 +12287,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12377,7 +12377,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12448,8 +12448,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -12457,8 +12457,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12524,7 +12524,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(1234);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12601,8 +12601,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and fixed rates",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -12610,8 +12610,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12677,7 +12677,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12743,8 +12743,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes and rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes and rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and rates and optimizing") {
         double height_shape = 5.0;
@@ -12752,8 +12752,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes and ra
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12807,7 +12807,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes and ra
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12871,8 +12871,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with fixed sizes and ra
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 singletons and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -12880,8 +12880,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12947,7 +12947,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13016,8 +13016,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 singletons and fixed rates",
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13025,8 +13025,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13099,7 +13099,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13262,8 +13262,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13271,8 +13271,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event and fi
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13340,7 +13340,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event and fi
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13418,8 +13418,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs and shared event and fi
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13427,8 +13427,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13503,7 +13503,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13646,8 +13646,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with mix of pairs and singletons and
     }
 }
 
-TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
-        "[SmartHeightSizeRateMixer]") {
+TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
+        "[HeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13655,8 +13655,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-smartheightsizeratemixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-smartheightsizeratemixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightsizeratemixer-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightsizeratemixer-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13724,7 +13724,7 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<SmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13791,8 +13791,8 @@ TEST_CASE("Testing SmartHeightSizeRateMixer with 4 pairs with constrained sizes 
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -13802,8 +13802,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13890,7 +13890,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13971,8 +13971,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrained sizes",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -13982,8 +13982,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14070,7 +14070,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14140,8 +14140,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed sizes",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -14149,8 +14149,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed siz
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14225,7 +14225,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed siz
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14292,8 +14292,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed siz
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -14303,8 +14303,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14391,7 +14391,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14464,8 +14464,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singletons",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -14475,8 +14475,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14573,7 +14573,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14748,8 +14748,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared event",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -14759,8 +14759,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared eve
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -14849,7 +14849,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared eve
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14931,8 +14931,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared eve
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singletons and shared event",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons and shared event",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -14942,8 +14942,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15042,7 +15042,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15197,8 +15197,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrained sizes and shared event",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes and shared event",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -15208,8 +15208,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15298,7 +15298,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15369,8 +15369,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -15378,8 +15378,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and fixed rate
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15445,7 +15445,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and fixed rate
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15522,8 +15522,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and fixed rate
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -15531,8 +15531,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15598,7 +15598,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15664,8 +15664,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed sizes and rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes and rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and rates and optimizing") {
         double height_shape = 5.0;
@@ -15673,8 +15673,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed siz
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15728,7 +15728,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed siz
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15792,8 +15792,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with fixed siz
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -15801,8 +15801,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons and fixed
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15868,7 +15868,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons and fixed
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15937,8 +15937,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 singletons and fixed
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singletons and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -15946,8 +15946,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16020,7 +16020,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16183,8 +16183,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared event and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16192,8 +16192,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared eve
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16261,7 +16261,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared eve
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16339,8 +16339,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs and shared eve
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16348,8 +16348,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16424,7 +16424,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16567,8 +16567,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with mix of pairs and singl
     }
 }
 
-TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
-        "[CompositeSmartHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
+        "[CompositeHeightSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16576,8 +16576,8 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compsmartheightsizeratemixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compsmartheightsizeratemixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compheightsizeratemixer-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compheightsizeratemixer-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16645,7 +16645,7 @@ TEST_CASE("Testing CompositeSmartHeightSizeRateMixer with 4 pairs with constrain
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeSmartHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
