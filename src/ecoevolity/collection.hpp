@@ -292,6 +292,23 @@ class ComparisonPopulationTreeCollection {
         std::map<std::string, BiallelicData> simulate_biallelic_data_sets(
                 RandomNumberGenerator& rng,
                 bool validate = true) const;
+
+        bool all_population_sizes_are_fixed() const {
+            for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
+                if (! this->trees_.at(i).population_sizes_are_fixed()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        bool all_mutation_rates_are_fixed() const {
+            for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
+                if (! this->trees_.at(i).mutation_rate_is_fixed()) {
+                    return false;
+                }
+            }
+            return true;
+        }
 };
 
 #endif
