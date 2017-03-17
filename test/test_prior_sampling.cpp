@@ -4671,7 +4671,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "6455152";
+        char arg2[] = "64551529";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6047,7 +6047,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "5486654";
+        char arg2[] = "54866549";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -8149,7 +8149,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
         os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -8252,7 +8252,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "58961543";
+        char arg2[] = "589615439";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -8274,7 +8274,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 100001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
