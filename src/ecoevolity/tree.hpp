@@ -284,7 +284,7 @@ class PopulationTree {
         void estimate_mutation_rate() {
             this->mutation_rate_->estimate();
         }
-        bool mutation_rate_is_fixed() {
+        bool mutation_rate_is_fixed() const {
             return this->mutation_rate_->is_fixed();
         }
 
