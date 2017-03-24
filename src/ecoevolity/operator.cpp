@@ -1871,31 +1871,27 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                 this->get_number_of_auxiliary_categories());
 
         // store height associated with this tree
-        // comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->store();
-        comparisons.store_state();
+        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->store();
         for (auto height_idx : other_height_indices) {
             unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height(height_idx);
             if (height_idx == comparisons.get_height_index(tree_idx)) {
                 --number_of_elements;
-                // if (! comparisons.trees_.at(tree_idx).is_dirty()) {
-                //     double lnl = comparisons.trees_.at(tree_idx).get_log_likelihood_value();
-                //     ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
-                //     ln_tree_likelihoods.push_back(lnl);
-                //     continue;
-                // }
-                // else {
-                //     raise EcoevolityError("Unexpected dirty tree in DirichletProcessGibbsSampler::propose");
-                // }
+                if (! comparisons.trees_.at(tree_idx).is_dirty()) {
+                    double lnl = comparisons.trees_.at(tree_idx).get_log_likelihood_value();
+                    ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
+                    ln_tree_likelihoods.push_back(lnl);
+                    continue;
+                }
+                else {
+                    raise EcoevolityError("Unexpected dirty tree in DirichletProcessGibbsSampler::propose");
+                }
             }
             else {
                 comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx)->get_value());
             }
-            // double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
-            comparisons.compute_log_likelihood_and_prior(true);
-            double lnl = comparisons.log_likelihood_.get_value();
+            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
             ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
-            // ln_tree_likelihoods.push_back(lnl);
-            ln_tree_likelihoods.push_back(comparisons.trees_.at(tree_idx).get_log_likelihood_value());
+            ln_tree_likelihoods.push_back(lnl);
         }
 
         std::vector<double> auxiliary_heights;
@@ -1904,17 +1900,13 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
             double fresh_height = comparisons.node_height_prior_->draw(rng);
             auxiliary_heights.push_back(fresh_height);
             comparisons.trees_.at(tree_idx).set_height(fresh_height);
-            // double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
-            comparisons.compute_log_likelihood_and_prior(true);
-            double lnl = comparisons.log_likelihood_.get_value();
+            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
             ln_category_likelihoods.push_back(lnl + ln_concentration_over_num_aux);
-            // ln_tree_likelihoods.push_back(lnl);
-            ln_tree_likelihoods.push_back(comparisons.trees_.at(tree_idx).get_log_likelihood_value());
+            ln_tree_likelihoods.push_back(lnl);
         }
 
         // restore height associated with this tree
-        // comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->restore();
-        comparisons.restore_state();
+        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->restore();
 
         std::vector<double> category_probs(ln_category_likelihoods);
         normalize_log_likelihoods(category_probs);
@@ -1932,9 +1924,6 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
                             other_height_indices.size()),
                     ln_tree_likelihoods.at(prob_index));
         }
-        comparisons.make_trees_dirty();
-        comparisons.compute_log_likelihood_and_prior(true);
-        comparisons.make_trees_clean();
     }
     // Always accept, so returning inf
     return std::numeric_limits<double>::infinity();
