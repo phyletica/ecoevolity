@@ -1831,7 +1831,7 @@ void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
     // this->collection_scaler_.operate(rng, comparisons, nthreads);
-    this->height_scaler_.operate(rng, comparisons, nthreads);
+    // this->height_scaler_.operate(rng, comparisons, nthreads);
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
@@ -1839,13 +1839,16 @@ void DirichletProcessGibbsSampler::perform_collection_move(
         RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
-    this->call_store_methods(comparisons);
+    // this->call_store_methods(comparisons);
 
-    comparisons.make_trees_dirty();
-    comparisons.compute_log_likelihood_and_prior(true);
+    // comparisons.make_trees_dirty();
+    // comparisons.compute_log_likelihood_and_prior(true);
     this->propose(rng, comparisons, nthreads);
-    comparisons.make_trees_dirty();
-    comparisons.compute_log_likelihood_and_prior(true);
+    // comparisons.make_trees_dirty();
+    // comparisons.compute_log_likelihood_and_prior(true);
+
+    // Likelihoods are clean, but update priors
+    comparisons.compute_log_likelihood_and_prior(false);
 
     this->accept(comparisons.operator_schedule_);
     comparisons.make_trees_clean();
@@ -1862,6 +1865,11 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
     for (unsigned int tree_idx = 0;
             tree_idx < comparisons.get_number_of_trees();
             ++tree_idx) {
+        ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+        const unsigned int original_height_index = comparisons.get_height_index(tree_idx);
+        const double original_height = tree.get_height();
+        const double original_likelihood = tree.get_log_likelihood_value();
+
         std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
         std::vector<double> ln_category_likelihoods;
         std::vector<double> ln_tree_likelihoods;
@@ -1870,26 +1878,16 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         ln_tree_likelihoods.reserve(other_height_indices.size() +
                 this->get_number_of_auxiliary_categories());
 
-        // store height associated with this tree
-        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->store();
         for (auto height_idx : other_height_indices) {
             unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height(height_idx);
-            if (height_idx == comparisons.get_height_index(tree_idx)) {
+            if (height_idx == original_height_index) {
                 --number_of_elements;
-                if (! comparisons.trees_.at(tree_idx).is_dirty()) {
-                    double lnl = comparisons.trees_.at(tree_idx).get_log_likelihood_value();
-                    ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
-                    ln_tree_likelihoods.push_back(lnl);
-                    continue;
-                }
-                else {
-                    raise EcoevolityError("Unexpected dirty tree in DirichletProcessGibbsSampler::propose");
-                }
+                ln_category_likelihoods.push_back(original_likelihood + std::log(number_of_elements));
+                ln_tree_likelihoods.push_back(original_likelihood);
+                continue;
             }
-            else {
-                comparisons.trees_.at(tree_idx).set_height(comparisons.node_heights_.at(height_idx)->get_value());
-            }
-            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
+            tree.set_height(comparisons.get_height(height_idx));
+            double lnl = tree.compute_log_likelihood(nthreads);
             ln_category_likelihoods.push_back(lnl + std::log(number_of_elements));
             ln_tree_likelihoods.push_back(lnl);
         }
@@ -1899,14 +1897,14 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         for (unsigned int i = 0; i < this->get_number_of_auxiliary_categories(); ++i) {
             double fresh_height = comparisons.node_height_prior_->draw(rng);
             auxiliary_heights.push_back(fresh_height);
-            comparisons.trees_.at(tree_idx).set_height(fresh_height);
-            double lnl = comparisons.trees_.at(tree_idx).compute_log_likelihood(nthreads);
+            tree.set_height(fresh_height);
+            double lnl = tree.compute_log_likelihood(nthreads);
             ln_category_likelihoods.push_back(lnl + ln_concentration_over_num_aux);
             ln_tree_likelihoods.push_back(lnl);
         }
 
         // restore height associated with this tree
-        comparisons.node_heights_.at(comparisons.get_height_index(tree_idx))->restore();
+        tree.set_height(original_height);
 
         std::vector<double> category_probs(ln_category_likelihoods);
         normalize_log_likelihoods(category_probs);

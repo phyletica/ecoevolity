@@ -17894,3 +17894,146 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
     }
 }
+
+TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1.4142",
+        "[DirichletProcessGibbsSampler]") {
+
+    SECTION("Testing 3 pairs, conc 1.4142, with optimizing") {
+        double concentration = 1.4142;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-dpgibbssamper-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-dpgibbssampler-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                value: " << concentration << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<DirichletProcessGibbsSampler>(1.0, 2.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree.get_height());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
+                    get_dpp_log_prior_probability(kv.first, concentration))).epsilon(0.001));
+        }
+    }
+}
