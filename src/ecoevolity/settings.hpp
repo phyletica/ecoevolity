@@ -1501,11 +1501,14 @@ class CollectionSettings {
             else if (this->use_dpp_) {
                 out << indent << "dirichlet_process:\n"
                     << indent << indent << "parameters:\n"
-                    << indent << indent <<  indent <<"concentration:\n";
+                    << indent << indent <<  indent << "concentration:\n";
                 out << this->concentration_settings_.to_string(4);
             }
             else {
-                out << indent << "uniform:\n";
+                out << indent << "uniform:\n"
+                    << indent << indent << "parameters:\n"
+                    << indent << indent <<  indent << "split_weight:\n";
+                out << this->concentration_settings_.to_string(4);
             }
 
             out << "event_time_prior:\n";
@@ -1686,6 +1689,8 @@ class CollectionSettings {
             }
             else {
                 this->use_dpp_ = false;
+                this->concentration_settings_.value_ = 1.0;
+                this->concentration_settings_.is_fixed_ = true;
             }
             std::unordered_map<std::string, double> default_parameters;
             default_parameters["shape"] = default_shape;
@@ -1851,6 +1856,9 @@ class CollectionSettings {
             }
             else if (model_prior_node["uniform"]) {
                 this->use_dpp_ = false;
+                this->concentration_settings_.value_ = 1.0;
+                this->concentration_settings_.is_fixed_ = true;
+                this->parse_uniform_model_prior(model_prior_node["uniform"]);
             }
             else if(model_prior_node["fixed"]) {
                 this->use_dpp_ = false;
@@ -1915,6 +1923,7 @@ class CollectionSettings {
                 this->fixed_event_model_indices_.push_back(model_node[i].as<unsigned int>());
             }
         }
+
         void parse_dirichlet_process_prior(const YAML::Node& dpp_node) {
             if (! dpp_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
@@ -1935,6 +1944,29 @@ class CollectionSettings {
                         "dirichlet_process must specify concentration parameter settings");
             }
             this->parse_concentration_parameter(dpp_node["parameters"]["concentration"]);
+        }
+
+        void parse_uniform_model_prior(const YAML::Node& uniform_node) {
+            if ((uniform_node.IsNull()) || (uniform_node.size() < 1)) {
+                return;
+            }
+            if (! uniform_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting event_model_prior -> uniform to be a map, but found: " +
+                        YamlCppUtils::get_node_type(uniform_node));
+            }
+            if (uniform_node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "event_model_prior -> uniform node must have a single key");
+            }
+            if (! uniform_node["parameters"]) {
+                return;
+            }
+            if ((uniform_node["parameters"].size() != 1) || (! uniform_node["parameters"]["split_weight"])) {
+                throw EcoevolityYamlConfigError(
+                        "split_weight is the only parameter setting for event_model_prior -> uniform");
+            }
+            this->parse_split_weight_parameter(uniform_node["parameters"]["split_weight"]);
         }
 
         void parse_concentration_parameter(const YAML::Node& node) {
@@ -1970,6 +2002,44 @@ class CollectionSettings {
                 }
                 else {
                     std::string message = "Unrecognized concentration key: " +
+                            arg->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void parse_split_weight_parameter(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting split_weight node to be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty split_weight parameter node");
+            }
+
+            for (YAML::const_iterator arg = node.begin();
+                    arg != node.end();
+                    ++arg) {
+                if (arg->first.as<std::string>() == "value") {
+                    double v = arg->second.as<double>();
+                        if (v < 0.0) {
+                            throw EcoevolityPositiveRealParameterSettingError(
+                                    "split_weight parameter cannot be less than 0"
+                                    );
+                        }
+                    this->concentration_settings_.value_ = v;
+                }
+                else if (arg->first.as<std::string>() == "estimate") {
+                    bool f = arg->second.as<bool>();
+                    this->concentration_settings_.is_fixed_ = (! f);
+                }
+                else if (arg->first.as<std::string>() == "prior") {
+                    this->concentration_settings_.prior_settings_ = ContinuousDistributionSettings(arg->second);
+                }
+                else {
+                    std::string message = "Unrecognized split_weight key: " +
                             arg->first.as<std::string>();
                     throw EcoevolityYamlConfigError(message);
                 }

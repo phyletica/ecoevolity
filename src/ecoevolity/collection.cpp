@@ -589,6 +589,9 @@ void ComparisonPopulationTreeCollection::write_state_log_header(
     if (this->using_dpp()) {
         out << this->logging_delimiter_ << "concentration";
     }
+    else {
+        out << this->logging_delimiter_ << "split_weight";
+    }
     if (short_summary) {
         out << std::endl;
         return;
@@ -610,10 +613,8 @@ void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
     out << generation_index << this->logging_delimiter_
         << this->log_likelihood_.get_value() << this->logging_delimiter_
         << this->log_prior_density_.get_value() << this->logging_delimiter_
-        << this->get_number_of_events();
-    if (this->using_dpp()) {
-        out << this->logging_delimiter_ << this->get_concentration();
-    }
+        << this->get_number_of_events()
+        << this->logging_delimiter_ << this->get_concentration();
     if (short_summary) {
         out << std::endl;
         return;
@@ -869,12 +870,12 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
         }
     }
     else if (this->using_reversible_jump()) {
-        // Not aware of an "easy" way to uniformly sampling set partitions, so
+        // Not aware of an "easy" way of uniformly sampling set partitions, so
         // (hackily) using reversible jump MCMC to do so.
         bool was_ignoring_data = this->ignoring_data();
         this->ignore_data();
         OperatorInterface& op = this->operator_schedule_.get_reversible_jump_operator();
-        for (unsigned int i = 0; i < 100; ++i) {
+        for (unsigned int i = 0; i < (this->get_number_of_trees() * 2); ++i) {
             op.operate(rng, *this);
         }
         if (! was_ignoring_data) {

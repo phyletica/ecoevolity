@@ -2206,6 +2206,8 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
         // TODO: check this
         double ln_jacobian = 0.0;
 
+        double ln_model_prior_ratio = std::log(comparisons.get_concentration());
+
         // The probability of forward split move (just proposed) is the product of the probabilites of
         //   1) choosing the shared event to split
         //          = 1 / number of shared events
@@ -2248,7 +2250,7 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
         else if (in_general_state_after && (! in_shared_state_before)) {
             ln_hastings += std::log(2.0);
         }
-        return ln_hastings + ln_jacobian;
+        return ln_model_prior_ratio + ln_hastings + ln_jacobian;
     }
     // Merge move
     std::vector<unsigned int> candidate_indices =
@@ -2265,6 +2267,8 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
 
     // TODO: check this
     double ln_jacobian = 0.0;
+
+    double ln_model_prior_ratio = std::log(1.0 / comparisons.get_concentration());
 
     // The probability of the forward merge move is simply the probability of
     // randomly selecting the height to merge from among all but the
@@ -2312,7 +2316,7 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
     else if (in_shared_state_after && (! in_general_state_before)) {
         ln_hastings += std::log(2.0);
     }
-    return ln_hastings + ln_jacobian;
+    return ln_model_prior_ratio + ln_hastings + ln_jacobian;
 }
 
 const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabilities(

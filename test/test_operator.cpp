@@ -18014,7 +18014,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         REQUIRE(model_counts.at("000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("012") == nevent_counts.at(3));
         REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
-        unsigned int tally;
+        unsigned int tally = 0;
         for (auto const & kv: model_counts) {
             tally += kv.second;
         }
@@ -18034,6 +18034,779 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
                     get_dpp_log_prior_probability(kv.first, concentration))).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
+        "[ReversibleJumpSampler]") {
+
+    SECTION("Testing 3 pairs and split weight 1.0,") {
+        double split_weight = 1.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> split_weight_summary;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                split_weight_summary.add_sample(comparisons.get_concentration());
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree.get_height());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.001));
+        }
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+        REQUIRE(split_weight_summary.sample_size() == nsamples);
+        REQUIRE(split_weight_summary.mean() == Approx(1.0));
+        REQUIRE(split_weight_summary.variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
+        "[ReversibleJumpSampler]") {
+
+    SECTION("Testing 3 pairs and split weight 2.0,") {
+        double split_weight = 2.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test2-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> split_weight_summary;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                split_weight_summary.add_sample(comparisons.get_concentration());
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree.get_height());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(split_weight_summary.sample_size() == nsamples);
+        REQUIRE(split_weight_summary.mean() == Approx(2.0));
+        REQUIRE(split_weight_summary.variance() == Approx(0.0));
+        for (std::string m: {"001", "010", "011"}) {
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(2.0/11.0).epsilon(0.001));
+        }
+        REQUIRE((model_counts.at("000") / (double)nsamples) == Approx(1.0/11.0).epsilon(0.001));
+        REQUIRE((model_counts.at("012") / (double)nsamples) == Approx(4.0/11.0).epsilon(0.001));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
+        "[ReversibleJumpSampler]") {
+
+    SECTION("Testing 3 pairs and split weight 0.5,") {
+        double split_weight = 0.5;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test3-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> split_weight_summary;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                split_weight_summary.add_sample(comparisons.get_concentration());
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree.get_height());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(split_weight_summary.sample_size() == nsamples);
+        REQUIRE(split_weight_summary.mean() == Approx(0.5));
+        REQUIRE(split_weight_summary.variance() == Approx(0.0));
+        for (std::string m: {"001", "010", "011"}) {
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(2.0/11.0).epsilon(0.001));
+        }
+        REQUIRE((model_counts.at("012") / (double)nsamples) == Approx(1.0/11.0).epsilon(0.001));
+        REQUIRE((model_counts.at("000") / (double)nsamples) == Approx(4.0/11.0).epsilon(0.001));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
+        "[ReversibleJumpSampler]") {
+
+    SECTION("Testing 4 pairs and split weight 3.0,") {
+        double split_weight = 3.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test4-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> split_weight_summary;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                split_weight_summary.add_sample(comparisons.get_concentration());
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree.get_height());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(split_weight_summary.sample_size() == nsamples);
+        REQUIRE(split_weight_summary.mean() == Approx(3.0));
+        REQUIRE(split_weight_summary.variance() == Approx(0.0));
+
+        // Below are the expected results. 'k' is the number of categories,
+        // 'S(n,k)' is the number of possible partitions of n elements into k
+        // categories (Stirling number of second kind), 'w' is the relative split
+        // weight for any one of those possible partitions, 'total_w' is the
+        // overall weight of the k class (w * S(n,k)), and 'prob' is the
+        // probability of any one possible partition in the k class.
+        //
+        // k    S(n,k)  w       total_w     prob
+        // -------------------------------------
+        // 1    1       1       1           1/103
+        // 2    7       3       21          3/103
+        // 3    6       9       54          9/103
+        // 4    1       27      27          27/103
+        //                      103
+
+        REQUIRE((model_counts.at("0123") / (double)nsamples) == Approx(27.0/103.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0122") / (double)nsamples) == Approx(9.0/103.0).epsilon(0.001));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
+        "[ReversibleJumpSampler]") {
+
+    SECTION("Testing 4 pairs and split weight 1/3.0,") {
+        double split_weight = 1.0/3.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test5-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    use_empirical_starting_value_for_freq_1: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    equal_state_frequencies: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> split_weight_summary;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                split_weight_summary.add_sample(comparisons.get_concentration());
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    ComparisonPopulationTree & tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree.get_height());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(split_weight_summary.sample_size() == nsamples);
+        REQUIRE(split_weight_summary.mean() == Approx(1.0/3.0));
+        REQUIRE(split_weight_summary.variance() == Approx(0.0));
+
+        // Below are the expected results. 'k' is the number of categories,
+        // 'S(n,k)' is the number of possible partitions of n elements into k
+        // categories (Stirling number of second kind), 'w' is the relative split
+        // weight for any one of those possible partitions, 'total_w' is the
+        // overall weight of the k class (w * S(n,k)), and 'prob' is the
+        // probability of any one possible partition in the k class.
+        //
+        // k    S(n,k)  w       total_w     prob
+        // -------------------------------------
+        // 1    1       27      27          27/109
+        // 2    7       9       63          9/109
+        // 3    6       3       18          3/109
+        // 4    1       1       1           1/109
+        //                      109
+
+        REQUIRE((model_counts.at("0000") / (double)nsamples) == Approx(27.0/109.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0001") / (double)nsamples) == Approx(9.0/109.0).epsilon(0.001));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
         }
     }
 }

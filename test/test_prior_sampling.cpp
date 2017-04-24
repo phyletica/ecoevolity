@@ -2629,8 +2629,8 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "        shape: 10.0\n";
         os << "        scale: 0.001\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 100000\n";
-        os << "    sample_frequency: 10\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 5\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -2689,7 +2689,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "1234";
+        char arg2[] = "1234567";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -2711,7 +2711,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
         std::vector<double> samples = prior_sample.get<double>("freq_1_kya");
-        REQUIRE(samples.size() == 10001);
+        REQUIRE(samples.size() == 40001);
 
         SampleSummarizer<double> summary = prior_sample.summarize<double>("freq_1_kya");
         REQUIRE(summary.mean() == Approx(expected_mean).epsilon(0.001));
@@ -2765,8 +2765,8 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "        shape: 10.0\n";
         os << "        scale: 0.001\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 100000\n";
-        os << "    sample_frequency: 10\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 5\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -2825,7 +2825,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "1234";
+        char arg2[] = "123456";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -2847,7 +2847,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
         std::vector<double> samples = prior_sample.get<double>("freq_1_kya");
-        REQUIRE(samples.size() == 10001);
+        REQUIRE(samples.size() == 40001);
 
         SampleSummarizer<double> summary = prior_sample.summarize<double>("freq_1_kya");
         REQUIRE(summary.mean() == Approx(expected_mean).epsilon(0.001));
@@ -3490,8 +3490,8 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "        shape: " << height_shape << "\n";
         os << "        scale: " << height_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 10\n";
+        os << "    chain_length: 800000\n";
+        os << "    sample_frequency: 8\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -3556,7 +3556,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "9876987345";
+        char arg2[] = "9876345";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -3585,12 +3585,12 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         SampleSummarizer<double> f_summary = prior_sample.summarize<double>("freq_1_kya");
         SampleSummarizer<double> mult_summary = prior_sample.summarize<double>("mutation_rate_kya");
 
-        REQUIRE(height_summary.sample_size() == 50001);
-        REQUIRE(size_summary1.sample_size() == 50001);
-        REQUIRE(size_summary2.sample_size() == 50001);
-        REQUIRE(size_summary3.sample_size() == 50001);
-        REQUIRE(f_summary.sample_size() == 50001);
-        REQUIRE(mult_summary.sample_size() == 50001);
+        REQUIRE(height_summary.sample_size() == 100001);
+        REQUIRE(size_summary1.sample_size() == 100001);
+        REQUIRE(size_summary2.sample_size() == 100001);
+        REQUIRE(size_summary3.sample_size() == 100001);
+        REQUIRE(f_summary.sample_size() == 100001);
+        REQUIRE(mult_summary.sample_size() == 100001);
 
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -3606,7 +3606,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         REQUIRE(mult_summary.variance() == Approx(mult_shape * mult_scale * mult_scale).epsilon(0.01));
 
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
-        REQUIRE(lnl_summary.sample_size() == 50001);
+        REQUIRE(lnl_summary.sample_size() == 100001);
         REQUIRE(lnl_summary.mean() == 0.0);
         REQUIRE(lnl_summary.variance() == 0.0);
 
@@ -4671,7 +4671,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "64551529";
+        char arg2[] = "7654321";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -4701,22 +4701,22 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         SampleSummarizer<double> height_summary6 = prior_sample.summarize<double>("root_height_pop1e");
         REQUIRE(height_summary1.sample_size() == 100001);
         REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.002));
         REQUIRE(height_summary2.sample_size() == 100001);
         REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.002));
         REQUIRE(height_summary3.sample_size() == 100001);
         REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.002));
         REQUIRE(height_summary4.sample_size() == 100001);
         REQUIRE(height_summary4.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary4.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.002));
         REQUIRE(height_summary5.sample_size() == 100001);
         REQUIRE(height_summary5.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary5.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.002));
         REQUIRE(height_summary6.sample_size() == 100001);
         REQUIRE(height_summary6.mean() == Approx(height_shape * height_scale).epsilon(0.001));
-        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.001));
+        REQUIRE(height_summary6.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.002));
 
         std::vector<int> nevents = prior_sample.get<int>("number_of_events");
         std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
@@ -7536,7 +7536,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
         os << "    chain_length: 1000000\n";
-        os << "    sample_frequency: 10\n";
+        os << "    sample_frequency: 5\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -7601,7 +7601,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "4826624";
+        char arg2[] = "482662423";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -7623,7 +7623,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 100001;
+        unsigned int expected_sample_size = 200001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
