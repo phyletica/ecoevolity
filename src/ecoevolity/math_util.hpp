@@ -23,6 +23,7 @@
 #include <vector>
 #include <cmath>
 #include <map>
+#include <algorithm>
 
 #include "assert.hpp"
 #include "error.hpp"
@@ -183,6 +184,7 @@ inline double get_dpp_log_prior_probability(
     return get_dpp_log_prior_probability<char>(partition_vector, concentration);
 }
 
+
 // Recursion is much slower (~ 1000 times slower!) than dynamic programming
 // approach below.
 // inline unsigned long long stirling2_recurse(int n, int k) {
@@ -232,6 +234,117 @@ inline unsigned long long bell_number(int n) {
 
 inline long double bell_float(int n) {
     return bell_number_base<long double>(n);
+}
+
+template <typename T>
+inline double get_uniform_model_log_prior_probability(
+        const unsigned int number_of_elements,
+        const unsigned int number_of_categories,
+        const double split_weight) {
+    ECOEVOLITY_ASSERT(split_weight > 0.0);
+    ECOEVOLITY_ASSERT(number_of_elements > 0);
+    ECOEVOLITY_ASSERT(number_of_categories > 0);
+    ECOEVOLITY_ASSERT(number_of_categories <= number_of_elements);
+    T denom = 0;
+    for (unsigned int k = 1; k <= number_of_elements; ++k) {
+        denom += stirling2_base<T>(number_of_elements, k) * std::pow(split_weight, (k - 1));
+    }
+    return ((number_of_categories - 1) * std::log(split_weight)) - std::log(denom);
+}
+
+inline double get_uniform_model_log_prior_probability(
+        const unsigned int number_of_elements,
+        const unsigned int number_of_categories,
+        const double split_weight) {
+    return get_uniform_model_log_prior_probability<long double>(
+            number_of_elements,
+            number_of_categories,
+            split_weight);
+}
+
+/**
+ * Get all possible integer partitions of n into m parts.
+ *
+ * @note    This is an implementation of Algorithm H on Page 2 of:
+ *          Donald E. Knuth. Generating all partitions, 2004. Pre-fascicle 3B
+ *          of The Art of Computer Programming, A draft of sections 7.2.1.4–5
+ *          http://www-cs-faculty.stanford.edu/~knuth/fasc3b.ps.gz
+ */
+inline std::vector< std::vector<unsigned int> > get_integer_partitions(
+        int n,
+        int m) {
+    ECOEVOLITY_ASSERT(n >= m);
+    ECOEVOLITY_ASSERT(m > 1);
+    std::vector< std::vector<unsigned int> > partitions;
+    std::vector<int> a(m + 1, 1);
+    a.at(0) = n - m + 1;
+    a.back() = -1;
+    while (true) {
+        std::vector<unsigned int> p(a.begin(), a.end()-1);
+        partitions.push_back(p);
+        while (a.at(1) < (a.at(0) - 1)) {
+            --a.at(0);
+            ++a.at(1);
+            std::vector<unsigned int> p(a.begin(), a.end()-1);
+            partitions.push_back(p);
+        }
+        int j = 3;
+        int s = a.at(0) + a.at(1) - 1;
+        while (a.at(j-1) >= (a.at(0) - 1)) {
+            s = s + a.at(j-1);
+            ++j;
+        }
+        if (j > m) {
+            break;
+        }
+        int x = a.at(j-1) + 1;
+        a.at(j-1) = x;
+        --j;
+        while (j > 1) {
+            a.at(j-1) = x;
+            s = s - x;
+            --j;
+        }
+        a.at(0) = s;
+    }
+    return partitions;
+}
+
+/**
+ * Calculate log factorial.
+ *
+ * @note    Adapted from Daniel's post on stackoverflow.com
+ *          (http://stackoverflow.com/a/30630392)
+ */
+inline double log_factorial(unsigned int x) {
+    if (x == 0 || x == 1) return 0;
+    if (x == 2) {
+        return std::log(2); // can add more for efficiency
+    }
+    if (x > 100) {
+        return x * std::log(x) - x; // Stirling's approximation
+    }
+    std::vector<unsigned int> lx(x);
+    std::iota(lx.begin(), lx.end(), 1);
+    std::vector<double> tx(x);
+    std::transform(lx.cbegin(), lx.cend(), tx.begin(),
+                   [] (unsigned int a) { return std::log(static_cast<double>(a)); });
+    return std::accumulate(tx.cbegin(), tx.cend(), double {});
+}
+
+/**
+ * Calculate log multinomial coefficient
+ *
+ * @note    Adapted from Daniel's post on stackoverflow.com
+ *          (http://stackoverflow.com/a/30630392)
+ */
+inline double log_multinomial_coefficient(const std::vector<unsigned int>& il) {
+    ECOEVOLITY_ASSERT(il.size() > 1);
+    std::vector<double> denoms(il.size());
+    std::transform(il.begin(), il.end(), denoms.begin(), log_factorial);
+    unsigned int numerator = std::accumulate(il.begin(), il.end(), 0);
+    double denominator = std::accumulate(denoms.begin(), denoms.end(), 0.0);
+    return log_factorial(numerator) - denominator;
 }
 
 #endif

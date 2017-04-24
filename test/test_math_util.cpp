@@ -1,6 +1,305 @@
 #include "catch.hpp"
 #include "ecoevolity/math_util.hpp"
 
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=1, split_weight=1.0",
+        "[math_util]") {
+    SECTION("Testing n=1, weight=1.0") {
+        unsigned int n = 1;
+        double w = 1.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=1, split_weight=12.9",
+        "[math_util]") {
+    SECTION("Testing n=1, weight=12.9") {
+        unsigned int n = 1;
+        double w = 12.9;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=2, split_weight=1.0",
+        "[math_util]") {
+    SECTION("Testing n=2, weight=1.0") {
+        unsigned int n = 2;
+        double w = 1.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(0.5)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(0.5)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=2, split_weight=2.0",
+        "[math_util]") {
+    SECTION("Testing n=2, weight=2.0") {
+        unsigned int n = 2;
+        double w = 2.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/3.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(2.0/3.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=2, split_weight=2.5",
+        "[math_util]") {
+    SECTION("Testing n=2, weight=2.5") {
+        unsigned int n = 2;
+        double w = 2.5;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(2.0/7.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(5.0/7.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=2, split_weight=0.5",
+        "[math_util]") {
+    SECTION("Testing n=2, weight=0.5") {
+        unsigned int n = 2;
+        double w = 0.5;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(2.0/3.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(1.0/3.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=2, split_weight=1/2.5",
+        "[math_util]") {
+    SECTION("Testing n=2, weight=1/2.5") {
+        unsigned int n = 2;
+        double w = 1.0/2.5;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(5.0/7.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(2.0/7.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=3, split_weight=1.0",
+        "[math_util]") {
+    SECTION("Testing n=3, weight=1.0") {
+        unsigned int n = 3;
+        double w = 1.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/5.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(1.0/5.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(1.0/5.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=3, split_weight=2.0",
+        "[math_util]") {
+    SECTION("Testing n=3, weight=2.0") {
+        unsigned int n = 3;
+        double w = 2.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/11.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(2.0/11.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(4.0/11.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=3, split_weight=1/2.0",
+        "[math_util]") {
+    SECTION("Testing n=3, weight=1/2.0") {
+        unsigned int n = 3;
+        double w = 1.0/2.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(4.0/11.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(2.0/11.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(1.0/11.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=3, split_weight=3.0",
+        "[math_util]") {
+    SECTION("Testing n=3, weight=3.0") {
+        unsigned int n = 3;
+        double w = 3.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/19.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(3.0/19.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(9.0/19.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=3, split_weight=1/3.0",
+        "[math_util]") {
+    SECTION("Testing n=3, weight=1/3.0") {
+        unsigned int n = 3;
+        double w = 1.0/3.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(9.0/19.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(3.0/19.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(1.0/19.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=4, split_weight=1.0",
+        "[math_util]") {
+    SECTION("Testing n=4, weight=1.0") {
+        unsigned int n = 4;
+        double w = 1.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/15.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(1.0/15.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(1.0/15.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(1.0/15.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=4, split_weight=2.0",
+        "[math_util]") {
+    // Below are the expected results. 'k' is the number of categories,
+    // 'S(n,k)' is the number of possible partitions of n elements into k
+    // categories (Stirling number of second kind), 'w' is the relative split
+    // weight for any one of those possible partitions, 'total_w' is the
+    // overall weight of the k class (w * S(n,k)), and 'prob' is the
+    // probability of any one possible partition in the k class.
+    //
+    // k    S(n,k)  w       total_w     prob
+    // -------------------------------------
+    // 1    1       1       1           1/47
+    // 2    7       2       14          2/47
+    // 3    6       4       24          4/47
+    // 4    1       8       8           8/47
+    //                      47
+    SECTION("Testing n=4, weight=2.0") {
+        unsigned int n = 4;
+        double w = 2.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/47.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(2.0/47.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(4.0/47.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(8.0/47.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=4, split_weight=1/2.0",
+        "[math_util]") {
+    // Below are the expected results. 'k' is the number of categories,
+    // 'S(n,k)' is the number of possible partitions of n elements into k
+    // categories (Stirling number of second kind), 'w' is the relative split
+    // weight for any one of those possible partitions, 'total_w' is the
+    // overall weight of the k class (w * S(n,k)), and 'prob' is the
+    // probability of any one possible partition in the k class.
+    //
+    // k    S(n,k)  w       total_w     prob
+    // -------------------------------------
+    // 1    1       8       8           8/49
+    // 2    7       4       28          4/49
+    // 3    6       2       12          2/49
+    // 4    1       1       1           1/49
+    //                      49
+
+    SECTION("Testing n=4, weight=1/2.0") {
+        unsigned int n = 4;
+        double w = 1.0/2.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(8.0/49.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(4.0/49.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(2.0/49.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(1.0/49.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=4, split_weight=3.0",
+        "[math_util]") {
+    // Below are the expected results. 'k' is the number of categories,
+    // 'S(n,k)' is the number of possible partitions of n elements into k
+    // categories (Stirling number of second kind), 'w' is the relative split
+    // weight for any one of those possible partitions, 'total_w' is the
+    // overall weight of the k class (w * S(n,k)), and 'prob' is the
+    // probability of any one possible partition in the k class.
+    //
+    // k    S(n,k)  w       total_w     prob
+    // -------------------------------------
+    // 1    1       1       1           1/103
+    // 2    7       3       21          3/103
+    // 3    6       9       54          9/103
+    // 4    1       27      27          27/103
+    //                      103
+
+    SECTION("Testing n=4, weight=3.0") {
+        unsigned int n = 4;
+        double w = 3.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/103.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(3.0/103.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(9.0/103.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(27.0/103.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=4, split_weight=1/3.0",
+        "[math_util]") {
+    // Below are the expected results. 'k' is the number of categories,
+    // 'S(n,k)' is the number of possible partitions of n elements into k
+    // categories (Stirling number of second kind), 'w' is the relative split
+    // weight for any one of those possible partitions, 'total_w' is the
+    // overall weight of the k class (w * S(n,k)), and 'prob' is the
+    // probability of any one possible partition in the k class.
+    //
+    // k    S(n,k)  w       total_w     prob
+    // -------------------------------------
+    // 1    1       27      27          27/109
+    // 2    7       9       63          9/109
+    // 3    6       3       18          3/109
+    // 4    1       1       1           1/109
+    //                      109
+
+    SECTION("Testing n=4, weight=1/3.0") {
+        unsigned int n = 4;
+        double w = 1.0/3.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(27.0/109.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(9.0/109.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(3.0/109.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(1.0/109.0)));
+    }
+}
+
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=5, split_weight=3.0",
+        "[math_util]") {
+    // Below are the expected results. 'k' is the number of categories,
+    // 'S(n,k)' is the number of possible partitions of n elements into k
+    // categories (Stirling number of second kind), 'w' is the relative split
+    // weight for any one of those possible partitions, 'total_w' is the
+    // overall weight of the k class (w * S(n,k)), and 'prob' is the
+    // probability of any one possible partition in the k class.
+    //
+    // k    S(n,k)  w       total_w     prob
+    // -------------------------------------
+    // 1    1       1       1           1/622
+    // 2    15      3       45          3/622
+    // 3    25      9       225         9/622
+    // 4    10      27      270         27/622
+    // 5    1       81      81          81/622
+    //                      622
+
+    SECTION("Testing n=5, weight=3.0") {
+        unsigned int n = 5;
+        double w = 3.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(1.0/622.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(3.0/622.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(9.0/622.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(27.0/622.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 5, w) == Approx(std::log(81.0/622.0)));
+    }
+}
+TEST_CASE("Testing get_uniform_model_log_prior_probability with n=5, split_weight=1/3.0",
+        "[math_util]") {
+    // Below are the expected results. 'k' is the number of categories,
+    // 'S(n,k)' is the number of possible partitions of n elements into k
+    // categories (Stirling number of second kind), 'w' is the relative split
+    // weight for any one of those possible partitions, 'total_w' is the
+    // overall weight of the k class (w * S(n,k)), and 'prob' is the
+    // probability of any one possible partition in the k class.
+    //
+    // k    S(n,k)  w       total_w     prob
+    // -------------------------------------
+    // 1    1       81      81          81/742
+    // 2    15      27      405         27/742
+    // 3    25      9       225         9/742
+    // 4    10      3       30          3/742
+    // 5    1       1       1           1/742
+    //                      742
+
+    SECTION("Testing n=5, weight=1/3.0") {
+        unsigned int n = 5;
+        double w = 1.0/3.0;
+        REQUIRE(get_uniform_model_log_prior_probability(n, 1, w) == Approx(std::log(81.0/742.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 2, w) == Approx(std::log(27.0/742.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 3, w) == Approx(std::log(9.0/742.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 4, w) == Approx(std::log(3.0/742.0)));
+        REQUIRE(get_uniform_model_log_prior_probability(n, 5, w) == Approx(std::log(1.0/742.0)));
+    }
+}
+
 TEST_CASE("Testing normalize_log_likelihoods", "[math_util]") {
 
     SECTION("Testing round trip") {
@@ -657,5 +956,240 @@ TEST_CASE("Testing bell number functions", "[math_util]") {
         REQUIRE(bell_float(9) == 21147);
         REQUIRE(bell_float(10) == 115975);
         REQUIRE(bell_float(15) == 1382958545);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(2, 2)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({1, 1});
+        REQUIRE(get_integer_partitions(2, 2) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(3, 2)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({2, 1});
+        REQUIRE(get_integer_partitions(3, 2) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(3, 3)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({1, 1, 1});
+        REQUIRE(get_integer_partitions(3, 3) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(4, 2)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({3, 1});
+        expected_partitions.push_back({2, 2});
+        REQUIRE(get_integer_partitions(4, 2) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(4, 3)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({2, 1, 1});
+        REQUIRE(get_integer_partitions(4, 3) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(4, 4)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({1, 1, 1, 1});
+        REQUIRE(get_integer_partitions(4, 4) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(5, 2)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({4, 1});
+        expected_partitions.push_back({3, 2});
+        REQUIRE(get_integer_partitions(5, 2) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(5, 3)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({3, 1, 1});
+        expected_partitions.push_back({2, 2, 1});
+        REQUIRE(get_integer_partitions(5, 3) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(5, 4)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({2, 1, 1, 1});
+        REQUIRE(get_integer_partitions(5, 4) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(5, 5)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({1, 1, 1, 1, 1});
+        REQUIRE(get_integer_partitions(5, 5) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(6, 2)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({5, 1});
+        expected_partitions.push_back({4, 2});
+        expected_partitions.push_back({3, 3});
+        REQUIRE(get_integer_partitions(6, 2) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(6, 3)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({4, 1, 1});
+        expected_partitions.push_back({3, 2, 1});
+        expected_partitions.push_back({2, 2, 2});
+        REQUIRE(get_integer_partitions(6, 3) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(6, 4)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({3, 1, 1, 1});
+        expected_partitions.push_back({2, 2, 1, 1});
+        REQUIRE(get_integer_partitions(6, 4) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(6, 5)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({2, 1, 1, 1, 1});
+        REQUIRE(get_integer_partitions(6, 5) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(6, 6)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({1, 1, 1, 1, 1, 1});
+        REQUIRE(get_integer_partitions(6, 6) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing get_integer_partitions(11, 4)", "[math_util]") {
+    SECTION("Testing get_integer_partitions") {
+        std::vector< std::vector<unsigned int> > expected_partitions;
+        expected_partitions.push_back({8, 1, 1, 1});
+        expected_partitions.push_back({7, 2, 1, 1});
+        expected_partitions.push_back({6, 3, 1, 1});
+        expected_partitions.push_back({5, 4, 1, 1});
+        expected_partitions.push_back({6, 2, 2, 1});
+        expected_partitions.push_back({5, 3, 2, 1});
+        expected_partitions.push_back({4, 4, 2, 1});
+        expected_partitions.push_back({4, 3, 3, 1});
+        expected_partitions.push_back({5, 2, 2, 2});
+        expected_partitions.push_back({4, 3, 2, 2});
+        expected_partitions.push_back({3, 3, 3, 2});
+        REQUIRE(get_integer_partitions(11, 4) == expected_partitions);
+    }
+}
+
+TEST_CASE("Testing log_factorial", "[math_util]") {
+    SECTION("Testing log_factorial(0)") {
+        REQUIRE(log_factorial(0) == 0.0);
+    }
+    SECTION("Testing log_factorial(1)") {
+        REQUIRE(log_factorial(1) == 0.0);
+    }
+    SECTION("Testing log_factorial(2)") {
+        REQUIRE(log_factorial(2) == Approx(std::log(2)));
+    }
+    SECTION("Testing log_factorial(3)") {
+        REQUIRE(log_factorial(3) == Approx(std::log(6)));
+    }
+    SECTION("Testing log_factorial(4)") {
+        REQUIRE(log_factorial(4) == Approx(std::log(24)));
+    }
+    SECTION("Testing log_factorial(5)") {
+        REQUIRE(log_factorial(5) == Approx(std::log(120)));
+    }
+    SECTION("Testing log_factorial(6)") {
+        REQUIRE(log_factorial(6) == Approx(std::log(720)));
+    }
+    SECTION("Testing log_factorial(12)") {
+        REQUIRE(log_factorial(12) == Approx(std::log(479001600)));
+    }
+}
+
+TEST_CASE("Testing log_multinomial_coefficient", "[math_util]") {
+    SECTION("Testing log_factorial(1, 1)") {
+        std::vector<unsigned int> x {1, 1};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(2.0)));
+    }
+
+    SECTION("Testing log_factorial(2, 1)") {
+        std::vector<unsigned int> x {2, 1};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(3.0)));
+    }
+
+    SECTION("Testing log_factorial(1, 2)") {
+        std::vector<unsigned int> x {1, 2};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(3.0)));
+    }
+
+    SECTION("Testing log_factorial(2, 2)") {
+        std::vector<unsigned int> x {2, 2};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(6.0)));
+    }
+
+    SECTION("Testing log_factorial(3, 1)") {
+        std::vector<unsigned int> x {3, 1};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(4.0)));
+    }
+
+    SECTION("Testing log_factorial(1, 3)") {
+        std::vector<unsigned int> x {1, 3};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(4.0)));
+    }
+
+    SECTION("Testing log_factorial(3, 2)") {
+        std::vector<unsigned int> x {3, 2};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(10.0)));
+    }
+
+    SECTION("Testing log_factorial(2, 3)") {
+        std::vector<unsigned int> x {2, 3};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(10.0)));
+    }
+
+    SECTION("Testing log_factorial(3, 3)") {
+        std::vector<unsigned int> x {3, 3};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(20.0)));
+    }
+
+    SECTION("Testing log_factorial(1, 1, 1)") {
+        std::vector<unsigned int> x {1, 1, 1};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(6.0)));
+    }
+
+    SECTION("Testing log_factorial(4, 3, 2)") {
+        std::vector<unsigned int> x {4, 3, 2};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(1260.0)));
+    }
+
+    SECTION("Testing log_factorial(2, 4, 3)") {
+        std::vector<unsigned int> x {2, 4, 3};
+        REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(1260.0)));
     }
 }
