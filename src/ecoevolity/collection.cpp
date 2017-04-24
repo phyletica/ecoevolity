@@ -481,7 +481,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_shared_event_i
 void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
         unsigned int height_index) {
-    if (! (this->get_height_index(tree_index) == height_index)) {
+    if (this->get_height_index(tree_index) != height_index) {
         unsigned int num_partners = this->get_number_of_partners(tree_index);
         unsigned int old_height_index = this->get_height_index(tree_index);
         this->node_height_indices_.at(tree_index) = height_index;

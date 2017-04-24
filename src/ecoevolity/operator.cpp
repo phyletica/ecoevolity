@@ -1831,8 +1831,8 @@ void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
         ComparisonPopulationTreeCollection& comparisons,
         unsigned int nthreads) {
     // this->collection_scaler_.operate(rng, comparisons, nthreads);
-    // this->height_scaler_.operate(rng, comparisons, nthreads);
     this->perform_collection_move(rng, comparisons, nthreads);
+    this->height_scaler_.operate(rng, comparisons, nthreads);
 }
 
 void DirichletProcessGibbsSampler::perform_collection_move(
@@ -1873,17 +1873,33 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<unsigned int> other_height_indices = comparisons.get_other_height_indices(tree_idx);
         std::vector<double> ln_category_likelihoods;
         std::vector<double> ln_tree_likelihoods;
+        unsigned int number_of_aux_categories = this->get_number_of_auxiliary_categories();
+        bool tree_in_singleton_category = false;
+        if (other_height_indices.size() < comparisons.get_number_of_events()) {
+            // Tree is in a singleton category. Need to consider singleton
+            // category as one of the auxillary categories.
+            tree_in_singleton_category = true;
+            other_height_indices.push_back(original_height_index);
+            --number_of_aux_categories;
+        }
         ln_category_likelihoods.reserve(other_height_indices.size() +
-                this->get_number_of_auxiliary_categories());
+                number_of_aux_categories);
         ln_tree_likelihoods.reserve(other_height_indices.size() +
-                this->get_number_of_auxiliary_categories());
+                number_of_aux_categories);
 
         for (auto height_idx : other_height_indices) {
             unsigned int number_of_elements = comparisons.get_number_of_trees_mapped_to_height(height_idx);
             if (height_idx == original_height_index) {
-                --number_of_elements;
-                ln_category_likelihoods.push_back(original_likelihood + std::log(number_of_elements));
-                ln_tree_likelihoods.push_back(original_likelihood);
+                if (tree_in_singleton_category) {
+                    // Considering singleton category as one of the auxillary categories
+                    ln_category_likelihoods.push_back(original_likelihood + ln_concentration_over_num_aux);
+                    ln_tree_likelihoods.push_back(original_likelihood);
+                }
+                else {
+                    --number_of_elements;
+                    ln_category_likelihoods.push_back(original_likelihood + std::log(number_of_elements));
+                    ln_tree_likelihoods.push_back(original_likelihood);
+                }
                 continue;
             }
             tree.set_height(comparisons.get_height(height_idx));
@@ -1893,8 +1909,8 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         }
 
         std::vector<double> auxiliary_heights;
-        auxiliary_heights.reserve(this->get_number_of_auxiliary_categories());
-        for (unsigned int i = 0; i < this->get_number_of_auxiliary_categories(); ++i) {
+        auxiliary_heights.reserve(number_of_aux_categories);
+        for (unsigned int i = 0; i < number_of_aux_categories; ++i) {
             double fresh_height = comparisons.node_height_prior_->draw(rng);
             auxiliary_heights.push_back(fresh_height);
             tree.set_height(fresh_height);

@@ -24,6 +24,7 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
+#include <numeric>
 
 #include "assert.hpp"
 #include "error.hpp"
