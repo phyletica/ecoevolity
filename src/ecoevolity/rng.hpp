@@ -22,8 +22,10 @@
 
 #include <ctime>
 #include <random>
+#include <unordered_map>
 
 #include "assert.hpp"
+#include "math_util.hpp"
 
 class RandomNumberGenerator {
     public:
@@ -116,6 +118,19 @@ class RandomNumberGenerator {
         inline unsigned int weighted_index(
                 const std::vector<double>& probabilities) {
             double u = this->uniform_real();
+            for (unsigned int i = 0; i < probabilities.size(); ++i) {
+                u -= probabilities.at(i);
+                if (u < 0.0) {
+                    return i;
+                }
+            }
+            ECOEVOLITY_ASSERT_APPROX_EQUAL(u, 0.0);
+            return probabilities.size() - 1;
+        }
+
+        inline unsigned int weighted_index(
+                const std::vector<long double>& probabilities) {
+            long double u = this->uniform_real();
             for (unsigned int i = 0; i < probabilities.size(); ++i) {
                 u -= probabilities.at(i);
                 if (u < 0.0) {
@@ -235,6 +250,79 @@ class RandomNumberGenerator {
             return std::make_pair(num_subsets, elements);
         }
 
+        /**
+         * A function for generating a random set partition.
+         */
+        inline unsigned int random_set_partition(
+                std::vector<unsigned int>& elements,
+                double split_weight = 1.0) {
+            // This is very inefficent. It would be better to draw the sizes of
+            // the 'ncats' categories weighted by how many possible partitions
+            // there are for each (i.e., the sum of all possible set partitions
+            // for each possible integer partition with 'ncats' categories.
+            // NOTE: adding 'ncats' categories to random elements, and then
+            // randomly assigning the remaining elements to categories (or
+            // using shuffling) does NOT work. This produces a multinomial
+            // distribution over partitions, which is not uniform.
+
+            ECOEVOLITY_ASSERT (split_weight > 0.0);
+            unsigned int n = elements.size();
+            ECOEVOLITY_ASSERT(n > 0);
+            std::vector<long double> ncat_probs;
+            ncat_probs.reserve(n);
+            long double denom = 0.0;
+            long double p = 0.0;
+            for (unsigned int k = 1; k <= n; ++k) {
+                p = stirling2_base<long double>(n, k) * std::pow(split_weight, (k - 1));
+                ncat_probs.push_back(p);
+                denom += p;
+            }
+            for (unsigned int i = 0; i < n; ++i) {
+                ncat_probs.at(i) = ncat_probs.at(i) / denom;
+            }
+            unsigned int ncats = this->weighted_index(ncat_probs) + 1;
+            if (ncats == 1) {
+                for (unsigned int i = 0; i < n; ++i) {
+                    elements.at(i) = 0;
+                }
+                return ncats;
+            }
+            for (unsigned int i = 0; i < n; ++i) {
+                elements.at(i) = i;
+            }
+            if (ncats == n) {
+                for (unsigned int i = 0; i < n; ++i) {
+                    elements.at(i) = i;
+                }
+                return ncats;
+            }
+            std::unordered_map<unsigned int, unsigned int> standardizing_map;
+            standardizing_map.reserve(ncats);
+            while(true) {
+                standardizing_map.clear();
+                unsigned int next_idx = 0;
+                for (unsigned int i = 0; i < n; ++i) {
+                    unsigned int raw_idx = this->uniform_int(0, ncats-1);
+                    if (standardizing_map.count(raw_idx) == 0) {
+                        standardizing_map[raw_idx] = next_idx;
+                        ++next_idx;
+                    }
+                    elements.at(i) = standardizing_map.at(raw_idx);
+                }
+                if (next_idx == ncats) {
+                    break;
+                }
+            }
+            return ncats;
+        }
+
+        inline std::pair< unsigned int, std::vector<unsigned int> > random_set_partition(
+                unsigned int number_of_elements,
+                double split_weight = 1.0) {
+            std::vector<unsigned int> elements (number_of_elements, 0);
+            unsigned int num_subsets = this->random_set_partition(elements, split_weight);
+            return std::make_pair(num_subsets, elements);
+        }
 };
 
 #endif

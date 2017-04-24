@@ -833,3 +833,716 @@ TEST_CASE("Testing vector return version of dirichet_process(3, 0.6)",
         }
     }
 }
+
+TEST_CASE("Testing random_set_partition (1, 1.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(1, 1.0)") {
+        unsigned int nsamples = 100;
+        unsigned int n = 1;
+        double split_weight = 1.0;
+
+        std::vector<unsigned int> expected_model(1, 0);
+        unsigned int expected_nevents = 1;
+
+        RandomNumberGenerator rng(654321);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            REQUIRE(ret.second == expected_model);
+            REQUIRE(ret.first == expected_nevents);
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition (1, 124.9)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(1, 124.9)") {
+        unsigned int nsamples = 100;
+        unsigned int n = 1;
+        double split_weight = 124.9;
+
+        std::vector<unsigned int> expected_model(1, 0);
+        unsigned int expected_nevents = 1;
+
+        RandomNumberGenerator rng(654321);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            REQUIRE(ret.second == expected_model);
+            REQUIRE(ret.first == expected_nevents);
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition (2, 1.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(2, 1.0)") {
+        unsigned int nsamples = 200000;
+        unsigned int n = 2;
+        double split_weight = 1.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(54321);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("00") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("01") == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition (2, 0.5)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(2, 0.5)") {
+        unsigned int nsamples = 100000;
+        unsigned int n = 2;
+        double split_weight = 0.5;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(4321);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("00") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("01") == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(model_counts.at("00")/(double)nsamples == Approx(2.0/3.0).epsilon(0.001));
+        REQUIRE(model_counts.at("01")/(double)nsamples == Approx(1.0/3.0).epsilon(0.001));
+    }
+}
+
+
+TEST_CASE("Testing random_set_partition (3, 1.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(3, 1.0)") {
+        unsigned int nsamples = 750000;
+        unsigned int n = 3;
+        double split_weight = 1.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(654321);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition (3, 3.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(3, 3.0)") {
+        unsigned int nsamples = 500000;
+        unsigned int n = 3;
+        double split_weight = 3.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(1234);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(model_counts.at("000")/(double)nsamples == Approx(1.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("001")/(double)nsamples == Approx(3.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("010")/(double)nsamples == Approx(3.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("011")/(double)nsamples == Approx(3.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("012")/(double)nsamples == Approx(9.0/19.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing random_set_partition (3, 1/3.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(3, 1/3.0)") {
+        unsigned int nsamples = 500000;
+        unsigned int n = 3;
+        double split_weight = 1.0/3.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(1234);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        REQUIRE(model_counts.at("012")/(double)nsamples == Approx(1.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("001")/(double)nsamples == Approx(3.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("010")/(double)nsamples == Approx(3.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("011")/(double)nsamples == Approx(3.0/19.0).epsilon(0.001));
+        REQUIRE(model_counts.at("000")/(double)nsamples == Approx(9.0/19.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing random_set_partition (4, 1.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(4, 1.0)") {
+        unsigned int nsamples = 1000000;
+        unsigned int n = 4;
+        double split_weight = 1.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(333333);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition (4, 3.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(4, 3.0)") {
+        unsigned int nsamples = 1000000;
+        unsigned int n = 4;
+        double split_weight = 3.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(333333);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+
+        // Below are the expected results. 'k' is the number of categories,
+        // 'S(n,k)' is the number of possible partitions of n elements into k
+        // categories (Stirling number of second kind), 'w' is the relative split
+        // weight for any one of those possible partitions, 'total_w' is the
+        // overall weight of the k class (w * S(n,k)), and 'prob' is the
+        // probability of any one possible partition in the k class.
+        //
+        // k    S(n,k)  w       total_w     prob
+        // -------------------------------------
+        // 1    1       1       1           1/103
+        // 2    7       3       21          3/103
+        // 3    6       9       54          9/103
+        // 4    1       27      27          27/103
+        //                      103
+
+        REQUIRE((model_counts.at("0000") / (double)nsamples) == Approx(1.0/103.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0010") / (double)nsamples) == Approx(3.0/103.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0122") / (double)nsamples) == Approx(9.0/103.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0123") / (double)nsamples) == Approx(27.0/103.0).epsilon(0.001));
+        REQUIRE((nevent_counts.at(2) / (double)nsamples) == Approx(21.0/103.0).epsilon(0.001));
+        REQUIRE((nevent_counts.at(3) / (double)nsamples) == Approx(54.0/103.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing random_set_partition (4, 1/3.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(4, 1/3.0)") {
+        unsigned int nsamples = 1000000;
+        unsigned int n = 4;
+        double split_weight = 1.0/3.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(333333);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+
+        // Below are the expected results. 'k' is the number of categories,
+        // 'S(n,k)' is the number of possible partitions of n elements into k
+        // categories (Stirling number of second kind), 'w' is the relative split
+        // weight for any one of those possible partitions, 'total_w' is the
+        // overall weight of the k class (w * S(n,k)), and 'prob' is the
+        // probability of any one possible partition in the k class.
+        //
+        // k    S(n,k)  w       total_w     prob
+        // -------------------------------------
+        // 1    1       27      27          27/109
+        // 2    7       9       63          9/109
+        // 3    6       3       18          3/109
+        // 4    1       1       1           1/109
+        //                      109
+
+        REQUIRE((model_counts.at("0000") / (double)nsamples) == Approx(27.0/109.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0010") / (double)nsamples) == Approx(9.0/109.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0122") / (double)nsamples) == Approx(3.0/109.0).epsilon(0.001));
+        REQUIRE((model_counts.at("0123") / (double)nsamples) == Approx(1.0/109.0).epsilon(0.001));
+        REQUIRE((nevent_counts.at(2) / (double)nsamples) == Approx(63.0/109.0).epsilon(0.001));
+        REQUIRE((nevent_counts.at(3) / (double)nsamples) == Approx(18.0/109.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing random_set_partition (5, 1.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(5, 1.0)") {
+        unsigned int nsamples = 1000000;
+        unsigned int n = 5;
+        double split_weight = 1.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(333333);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("00000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("01234") == nevent_counts.at(5));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition (6, 1.0)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition(6, 1.0)") {
+        unsigned int nsamples = 1000000;
+        unsigned int n = 6;
+        double split_weight = 1.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        RandomNumberGenerator rng(333333);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.random_set_partition(n, split_weight);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int nevents = ret.first;
+            REQUIRE(max_index + 1 == nevents);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+            if (nevent_counts.count(nevents) < 1) {
+                nevent_counts[nevents] = 1;
+            }
+            else {
+                ++nevent_counts[nevents];
+            }
+        }
+
+        REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.005));
+        }
+    }
+}
