@@ -441,4 +441,130 @@ class ExponentialDistribution: public OffsetExponentialDistribution {
         }
 };
 
+class DirichletDistribution {
+    protected:
+        double min_ = 0.0;
+        double max_ = 1.0;
+        std::vector<double> parameters_ = {1.0, 1.0, 1.0};
+
+    public:
+        DirichletDistribution() { }
+        ~DirichletDistribution() { }
+        DirichletDistribution(const std::vector<double> & parameters) {
+            this->parameters_.clear();
+            this->parameters_.reserve(parameters.size());
+            for (auto p : parameters) {
+                if (p <= 0.0) {
+                    throw EcoevolityProbabilityDistributionError(
+                            "all parameters must be greater than zero for dirichlet distribution");
+                }
+                this->parameters_.push_back(p);
+            }
+        }
+
+        DirichletDistribution& operator=(const DirichletDistribution& other) {
+            this->min_ = other.min_;
+            this->max_ = other.max_;
+            this->parameters_ = other.parameters_;
+            return * this;
+        }
+
+        double ln_gamma_function(double x) const {
+            return std::lgamma(x);
+        }
+
+        double ln_pdf(const std::vector<double> & x) const {
+            ECOEVOLITY_ASSERT(x.size() == this->parameters_.size());
+            double r = 0.0;
+            double sum_p = 0.0;
+            double sum_x = 0.0;
+            for (unsigned int i = 0; i < x.size(); ++i) {
+                if ((x.at(i) <= this->min_) || (x.at(i) >= this->max_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                double p_i = this->parameters_.at(i);
+                sum_p += p_i;
+                r += (p_i - 1.0) * std::log(x.at(i));
+                r -= this->ln_gamma_function(p_i);
+                sum_x += x.at(i);
+            }
+            ECOEVOLITY_ASSERT_APPROX_EQUAL(sum_x, 1.0);
+            r += this->ln_gamma_function(sum_p);
+            return r;
+        }
+
+        double relative_ln_pdf(const std::vector<double> & x) const {
+            ECOEVOLITY_ASSERT(x.size() == this->parameters_.size());
+            double r = 0.0;
+            double sum_x = 0.0;
+            for (unsigned int i = 0; i < x.size(); ++i) {
+                if ((x.at(i) <= this->min_) || (x.at(i) >= this->max_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                r += (this->parameters_.at(i) - 1.0) * std::log(x.at(i));
+                sum_x += x.at(i);
+            }
+            ECOEVOLITY_ASSERT_APPROX_EQUAL(sum_x, 1.0);
+            return r;
+        }
+
+        std::vector<double> get_mean() const {
+            std::vector<double> means;
+            means.reserve(this->parameters_.size());
+            double p = this->get_parameter_sum();
+            for (auto p_i : this->parameters_) {
+                means.push_back(p_i / p);
+            }
+            return means;
+        }
+
+        std::vector<double> get_variance() const {
+            std::vector<double> variances;
+            variances.reserve(this->parameters_.size());
+            double p = this->get_parameter_sum();
+            double denom = p * p * (p + 1.0);
+            for (auto p_i : this->parameters_) {
+                variances.push_back((p_i * (p - p_i)) / denom);
+            }
+            return variances;
+        }
+
+        double get_parameter_sum() const{
+            double s = 0.0;
+            for (auto p : this->parameters_) {
+                s += p;
+            }
+            return s;
+        }
+
+        double get_min() const {
+            return this->min_;
+        }
+
+        double get_max() const {
+            return this->max_;
+        }
+
+        const std::vector<double>& get_parameters() const {
+            return this->parameters_;
+        }
+
+        std::string get_name() const {
+            return "dirichlet";
+        }
+        std::string to_string() const {
+            std::ostringstream ss;
+            ss << this->get_name() << "(" << this->parameters_.at(0);
+            for (unsigned int i = 1; i < this->parameters_.size(); ++i) {
+                ss << ", " << this->parameters_.at(i);
+            }
+            ss << ")";
+            return ss.str();
+        }
+
+        std::vector<double> draw(RandomNumberGenerator & rng) const {
+            return rng.dirichlet(this->parameters_);
+        }
+};
+
 #endif

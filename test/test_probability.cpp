@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "ecoevolity/probability.hpp"
+#include "ecoevolity/stats_util.hpp"
 
 #include <limits>
 #include <memory>
@@ -859,5 +860,171 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
         REQUIRE(variance == Approx(f->get_variance()).epsilon(0.01));
         REQUIRE(mn >= 0.0);
         REQUIRE(mn == Approx(0.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing DirichletDistribution constructor errors",
+        "[DirichletDistribution]") {
+
+    SECTION("Testing constructor errors") {
+        std::vector<double> parameters = {0.0, 2.0};
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        parameters = {2.0, 0.0};
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        parameters = {1.0, -1.0};
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        parameters = {-1.0, 1.0};
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+    }
+}
+
+TEST_CASE("Testing DirichletDistribution(1, 1, 1) bare constructor",
+        "[DirichletDistribution]") {
+
+    SECTION("Testing bare constructor") {
+        std::vector<double> parameters {1.0, 1.0, 1.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        DirichletDistribution f = DirichletDistribution();
+        REQUIRE(f.to_string() == "dirichlet(1, 1, 1)");
+        REQUIRE(f.get_min() == 0.0);
+        REQUIRE(f.get_max() == 1.0);
+        REQUIRE(f.get_parameters() == parameters);
+        std::vector<double> means = f.get_mean();
+        std::vector<double> variances = f.get_variance();
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(means.at(i) == Approx(expected_means.at(i)));
+            REQUIRE(variances.at(i) == Approx(expected_variances.at(i)));
+        }
+
+        std::vector<double> values = {0.0, 0.5, 0.5};
+        REQUIRE(f.ln_pdf(values) == -std::numeric_limits<double>::infinity());
+        values = {1.0, 0.0, 0.0};
+        REQUIRE(f.ln_pdf(values) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.dirichlet.logpdf
+        values = {0.1, 0.3, 0.6};
+        double expected1 = 0.69314718055994529;
+        double ln_p1 = f.ln_pdf(values);
+        double rln_p1 = f.relative_ln_pdf(values);
+        REQUIRE(ln_p1 == Approx(expected1));
+        REQUIRE(rln_p1 == Approx(0.0));
+
+        values = {0.3, 0.4, 0.3};
+        double expected2 = 0.69314718055994529;
+        double ln_p2 = f.ln_pdf(values);
+        double rln_p2 = f.relative_ln_pdf(values);
+        REQUIRE(ln_p2 == Approx(expected2));
+        REQUIRE(rln_p2 == Approx(0.0));
+
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = f.draw(rng);
+            double s = 0.0;
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing DirichletDistribution(0.5, 3, 1, 5)",
+        "[DirichletDistribution]") {
+
+    SECTION("Testing p = 0.5, 3, 1, 5") {
+        std::vector<double> parameters {0.5, 3.0, 1.0, 5.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        DirichletDistribution f = DirichletDistribution(parameters);
+        REQUIRE(f.to_string() == "dirichlet(0.5, 3, 1, 5)");
+        REQUIRE(f.get_min() == 0.0);
+        REQUIRE(f.get_max() == 1.0);
+        REQUIRE(f.get_parameters() == parameters);
+        std::vector<double> means = f.get_mean();
+        std::vector<double> variances = f.get_variance();
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(means.at(i) == Approx(expected_means.at(i)));
+            REQUIRE(variances.at(i) == Approx(expected_variances.at(i)));
+        }
+
+        std::vector<double> values = {0.0, 0.3, 0.3, 0.4};
+        REQUIRE(f.ln_pdf(values) == -std::numeric_limits<double>::infinity());
+
+        // numbers from scipy.stats.dirichlet.logpdf
+        values = {0.25, 0.25, 0.25, 0.25};
+        double expected1 = -0.37885151919472015;
+        double ln_p1 = f.ln_pdf(values);
+        double rln_p1 = f.relative_ln_pdf(values);
+        REQUIRE(ln_p1 == Approx(expected1));
+
+        values = {0.4, 0.1, 0.3, 0.2};
+        double expected2 = -3.3390090028227366;
+        double ln_p2 = f.ln_pdf(values);
+        double rln_p2 = f.relative_ln_pdf(values);
+        REQUIRE(ln_p2 == Approx(expected2));
+
+        REQUIRE((rln_p1 - rln_p2) == Approx(ln_p1 - ln_p2));
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = f.draw(rng);
+            double s = 0.0;
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
     }
 }
