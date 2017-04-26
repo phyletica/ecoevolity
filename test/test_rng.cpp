@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "ecoevolity/rng.hpp"
 #include "ecoevolity/math_util.hpp"
+#include "ecoevolity/stats_util.hpp"
 
 #include <limits>
 #include <map>
@@ -1543,6 +1544,272 @@ TEST_CASE("Testing random_set_partition (6, 1.0)",
         }
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)nsamples) == Approx(1.0/model_counts.size()).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(1, 1)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({1, 1})") {
+        std::vector<double> parameters {1.0, 1.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(3, 3)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({3, 3})") {
+        std::vector<double> parameters {3.0, 3.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(0.3, 0.3)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({0.3, 0.3})") {
+        std::vector<double> parameters {0.3, 0.3};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(6, 1)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({6, 1})") {
+        std::vector<double> parameters {6.0, 1.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(1, 4)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({1, 4})") {
+        std::vector<double> parameters {1.0, 4.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(1, 1, 1, 1, 1)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({1, 1, 1, 1, 1})") {
+        std::vector<double> parameters {1.0, 1.0, 1.0, 1.0, 1.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
+        }
+    }
+}
+
+TEST_CASE("Testing dirichlet(1, 0.5, 1, 10, 5)", "[xRandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet({1, 0.5, 1, 10, 5})") {
+        std::vector<double> parameters {1.0, 0.5, 1.0, 10.0, 5.0};
+        double sum = 0.0;
+        for (auto p: parameters) {
+            sum += p;
+        }
+        double k = parameters.size();
+        std::vector<double> expected_means(k, 0.0);
+        std::vector<double> expected_variances(k, 0.0);
+        for (unsigned int i = 0; i < k; ++i) {
+            double p_i = parameters.at(i);
+            expected_means.at(i) = p_i / sum;
+            expected_variances.at(i) = (p_i * (sum - p_i)) / (sum * sum * (sum + 1));
+        }
+
+        std::vector< SampleSummarizer<double> > summaries(k);
+        std::vector<double> x(k);
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            x = rng.dirichlet(parameters);
+            for (unsigned int j = 0; j < k; ++j) {
+                summaries.at(j).add_sample(x.at(j));
+            }
+        }
+        
+        for (unsigned int i = 0; i < k; ++i) {
+            REQUIRE(summaries.at(i).sample_size() == nsamples);
+            REQUIRE(summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.001));
+            REQUIRE(summaries.at(i).min() > 0.0);
+            REQUIRE(summaries.at(i).max() <= 1.0);
         }
     }
 }

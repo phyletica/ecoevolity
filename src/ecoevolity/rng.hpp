@@ -115,6 +115,22 @@ class RandomNumberGenerator {
             return (x / (x + y));
         }
 
+        inline std::vector<double> dirichlet(const std::vector<double> & parameters) {
+            ECOEVOLITY_ASSERT(parameters.size() > 1);
+            std::vector<double> x;
+            x.reserve(parameters.size());
+            double sum = 0.0;
+            for (unsigned int i = 0; i < parameters.size(); ++i) {
+                double g = this->gamma(parameters.at(i), 1.0);
+                x.push_back(g);
+                sum += g;
+            }
+            for (unsigned int i = 0; i < parameters.size(); ++i) {
+                x.at(i) = x.at(i) / sum;
+            }
+            return x;
+        }
+
         inline unsigned int weighted_index(
                 const std::vector<double>& probabilities) {
             double u = this->uniform_real();
