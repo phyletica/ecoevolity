@@ -1571,8 +1571,13 @@ TEST_CASE("Testing dirichlet(1, 1)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
@@ -1609,8 +1614,13 @@ TEST_CASE("Testing dirichlet(3, 3)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
@@ -1647,8 +1657,13 @@ TEST_CASE("Testing dirichlet(0.3, 0.3)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
@@ -1685,8 +1700,13 @@ TEST_CASE("Testing dirichlet(6, 1)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
@@ -1723,8 +1743,13 @@ TEST_CASE("Testing dirichlet(1, 4)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
@@ -1761,8 +1786,13 @@ TEST_CASE("Testing dirichlet(1, 1, 1, 1, 1)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
@@ -1799,8 +1829,13 @@ TEST_CASE("Testing dirichlet(1, 0.5, 1, 10, 5)", "[xRandomNumberGenerator]") {
         RandomNumberGenerator rng(123);
         for (unsigned int i = 0; i < nsamples; ++i) {
             x = rng.dirichlet(parameters);
+            double s = 0.0;
             for (unsigned int j = 0; j < k; ++j) {
                 summaries.at(j).add_sample(x.at(j));
+                s += x.at(j);
+            }
+            if (i < 100) {
+                REQUIRE(s == Approx(1.0));
             }
         }
         
