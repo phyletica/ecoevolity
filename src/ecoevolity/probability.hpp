@@ -518,6 +518,11 @@ class DirichletDistribution {
             return means;
         }
 
+        double get_mean(unsigned int i) const {
+            double p = this->get_parameter_sum();
+            return this->parameters_.at(i) / p;
+        }
+
         std::vector<double> get_variance() const {
             std::vector<double> variances;
             variances.reserve(this->parameters_.size());
@@ -527,6 +532,12 @@ class DirichletDistribution {
                 variances.push_back((p_i * (p - p_i)) / denom);
             }
             return variances;
+        }
+
+        double get_variance(unsigned int i) const {
+            double p = this->get_parameter_sum();
+            double denom = p * p * (p + 1.0);
+            return (this->parameters_.at(i) * (p - this->parameters_.at(i))) / denom;
         }
 
         double get_parameter_sum() const{
