@@ -67,6 +67,7 @@ class ContinuousDistributionSettings {
     private:
         std::string name_ = "none";
         std::unordered_map<std::string, double> parameters_;
+        std::vector<double> concentration_parameters_; // For Dirichlet dist
 
     public:
         ContinuousDistributionSettings() { };
@@ -336,6 +337,36 @@ class ContinuousDistributionSettings {
                             "beta must be greater than 0 for BetaDistribution");
                 }
             }
+            // Dirichlet 
+            else if (node["dirichlet_distribution"]) {
+                this->name_ = "dirichlet_distribution";
+                YAML::Node parameters = node["dirichlet_distribution"];
+                if (! parameters["alpha"]) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "alpha parameter missing for dirichlet_distribution"
+                            );
+                }
+                if (parameters.size() > 1) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "unrecognized parameters for dirichlet_distribution (recognized parameters: alpha)"
+                            );
+                }
+                YAML::Node alphas;
+                alphas = parameters["alpha"];
+                for (YAML::const_iterator a = alphas.begin(); a != alphas.end(); ++a) {
+                    double conc_parameter = a->as<double>();
+                    if (conc_parameter <= 0.0) {
+                        throw EcoevolityContinuousDistributionSettingError(
+                                "alphas must be greater than 0 for DirichletDistribution");
+                    }
+                    this->concentration_parameters_.push_back(conc_parameter);
+                }
+                if (this->concentration_parameters_.size() < 2) {
+                    throw EcoevolityContinuousDistributionSettingError(
+                            "at least two alphas must be specified for dirichlet_distribution"
+                            );
+                }
+            }
             else {
                 std::string message = "unrecognized distribution: " + node.begin()->first.as<std::string>();
                 throw EcoevolityContinuousDistributionSettingError(message);
@@ -345,6 +376,7 @@ class ContinuousDistributionSettings {
         ContinuousDistributionSettings& operator=(const ContinuousDistributionSettings& other) {
             this->name_ = other.name_;
             this->parameters_ = other.parameters_;
+            this->concentration_parameters_ = other.concentration_parameters_;
             return * this;
         }
 
@@ -355,6 +387,10 @@ class ContinuousDistributionSettings {
         void nullify() {
             this->name_ = "none";
             this->parameters_.clear();
+        }
+
+        const std::vector<double> & get_concentration_parameters() const {
+            return this->concentration_parameters_;
         }
 
         std::shared_ptr<ContinuousProbabilityDistribution> get_instance() const {
@@ -393,11 +429,26 @@ class ContinuousDistributionSettings {
                         this->parameters_.at("alpha"),
                         this->parameters_.at("beta"));
             }
+            else if (this->name_ == "dirichlet_distribution") {
+                throw EcoevolityError("Call get_dirichlet_distribution_instance");
+            }
             else if (this->name_ == "none") {
                 return p;
             }
             else {
                 ECOEVOLITY_ASSERT(0 == 1);
+            }
+            return p;
+        }
+
+        std::shared_ptr<DirichletDistribution> get_dirichlet_distribution_instance() const {
+            std::shared_ptr<DirichletDistribution> p;
+            if ((this->name_ != "dirichlet_distribution") && (this->name_ != "none")) {
+                throw EcoevolityError("Call get_instance");
+            }
+            if (this->name_ == "dirichlet_distribution") {
+                p = std::make_shared<DirichletDistribution>(
+                        this->concentration_parameters_);
             }
             return p;
         }
@@ -431,6 +482,13 @@ class ContinuousDistributionSettings {
                 ss << margin << indent << "alpha: " << this->parameters_.at("alpha") << "\n";
                 ss << margin << indent << "beta: " << this->parameters_.at("beta") << "\n";
             }
+            else if (this->name_ == "dirichlet_distribution") {
+                ss << margin << indent << "alpha: [" << this->concentration_parameters_.at(0);
+                for (unsigned int i = 1; i < this->concentration_parameters_.size(); ++i) {
+                    ss << ", " << this->concentration_parameters_.at(i);
+                }
+                ss << "]\n";
+            }
             else {
                 ECOEVOLITY_ASSERT(0 == 1);
             }
@@ -441,11 +499,15 @@ class ContinuousDistributionSettings {
 class PositiveRealParameterSettings {
 
     friend class ComparisonSettings;
-    friend class CollectionSettings;
+    friend class DirichletComparisonSettings;
+    template<typename T> friend class BaseCollectionSettings;
 
     private:
         double value_ = std::numeric_limits<double>::quiet_NaN();
+        std::vector<double> values_; // For Dirichlet distribution
         bool is_fixed_ = false;
+        bool is_vector_ = false;
+        bool use_empirical_value_ = false;
         ContinuousDistributionSettings prior_settings_;
 
     public:
@@ -478,6 +540,7 @@ class PositiveRealParameterSettings {
             }
         }
         PositiveRealParameterSettings(const YAML::Node& node) {
+            bool prior_specified = false;
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "parameter node should be a map, but found: " +
@@ -491,19 +554,51 @@ class PositiveRealParameterSettings {
                     arg != node.end();
                     ++arg) {
                 if (arg->first.as<std::string>() == "value") {
-                    double v = arg->second.as<double>();
-                        if (v < 0.0) {
+                    if (arg->second.IsSequence()) {
+                        std::vector<double> temp_values;
+                        double sum = 0.0;
+                        YAML::Node value_node = arg->second;
+                        for (YAML::const_iterator v = value_node.begin();
+                                v != value_node.end();
+                                ++v) {
+                            double val = v->as<double>();
+                            if (val <= 0.0) {
+                                throw EcoevolityPositiveRealParameterSettingError(
+                                        "dirichlet distribution values must be greater than 0"
+                                        );
+                            }
+                            temp_values.push_back(val);
+                            sum += val;
+                        }
+                        if (temp_values.size() < 2) {
                             throw EcoevolityPositiveRealParameterSettingError(
-                                    "positive real parameter cannot be less than 0"
+                                    "parameter vector must have at least 2 values"
                                     );
                         }
-                    this->value_ = v;
+                        for (auto x : temp_values) {
+                            this->values_.push_back(temp_values.size() * (x / sum));
+                        }
+                        this->is_vector_ = true;
+                    }
+                    else if (arg->second.as<std::string>() == "empirical") {
+                        this->use_empirical_value_ = true;
+                    }
+                    else {
+                        double v = arg->second.as<double>();
+                            if (v < 0.0) {
+                                throw EcoevolityPositiveRealParameterSettingError(
+                                        "positive real parameter cannot be less than 0"
+                                        );
+                            }
+                        this->value_ = v;
+                    }
                 }
                 else if (arg->first.as<std::string>() == "estimate") {
                     bool f = arg->second.as<bool>();
                     this->is_fixed_ = (! f);
                 }
                 else if (arg->first.as<std::string>() == "prior") {
+                    prior_specified = true;
                     this->prior_settings_ = ContinuousDistributionSettings(
                             arg->second);
                 }
@@ -514,12 +609,29 @@ class PositiveRealParameterSettings {
                 }
             }
 
+            if ((this->is_vector_) && (prior_specified)) {
+                if (this->prior_settings_.get_name() != "dirichlet_distribution") {
+                    throw EcoevolityPositiveRealParameterSettingError(
+                            "multiple values requires dirichlet distribution prior"
+                            );
+                }
+                std::vector<double> parameters = this->prior_settings_.get_concentration_parameters();
+                if (parameters.size() != this->values_.size()) {
+                    throw EcoevolityPositiveRealParameterSettingError(
+                            "number of values must match number of dirichlet distribution parameters"
+                            );
+                }
+            }
+
             if (this->is_fixed_) {
                 std::unordered_map<std::string, double> prior_parameters;
                 this->prior_settings_ = ContinuousDistributionSettings("none",
                         prior_parameters);
             }
-            if ((this->is_fixed_) && (std::isnan(this->value_))) {
+            if ((this->is_fixed_) &&
+                    (std::isnan(this->value_)) &&
+                    (! this->is_vector_) &&
+                    (! this->use_empirical_value_)) {
                 throw EcoevolityPositiveRealParameterSettingError(
                         "cannot fix parameter without a value"
                         );
@@ -528,13 +640,19 @@ class PositiveRealParameterSettings {
         virtual ~PositiveRealParameterSettings() { }
         PositiveRealParameterSettings& operator=(const PositiveRealParameterSettings& other) {
             this->value_ = other.value_;
+            this->values_ = other.values_;
             this->is_fixed_ = other.is_fixed_;
+            this->is_vector_ =  other.is_vector_;
+            this->use_empirical_value_ = other.use_empirical_value_;
             this->prior_settings_ = other.prior_settings_;
             return * this;
         }
 
         double get_value() const {
             return this->value_;
+        }
+        const std::vector<double> & get_values() const {
+            return this->values_;
         }
         bool is_fixed() const {
             return this->is_fixed_;
@@ -543,12 +661,28 @@ class PositiveRealParameterSettings {
             return this->prior_settings_;
         }
 
+        bool use_empirical_value() const {
+            return this->use_empirical_value_;
+        }
+
         virtual std::string to_string(unsigned int indent_level = 0) const {
             std::ostringstream ss;
             ss << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
-            if (! std::isnan(this->get_value())) {
+            if (this->is_vector_) {
+                if (this->values_.size() > 0) {
+                    ss << margin << "value: [" << this->values_.at(0);
+                    for (unsigned int i = 1; i < this->values_.size(); ++i) {
+                        ss << ", " << this->values_.at(i);
+                    }
+                    ss << "]\n";
+                }
+            }
+            else if (! std::isnan(this->get_value())) {
                 ss << margin << "value: " << this->get_value() << "\n";
+            }
+            else if (this->use_empirical_value_) {
+                ss << margin << "value: empirical\n";
             }
             ss << margin << "estimate: " << (! this->is_fixed()) << "\n";
             if (! this->is_fixed()) {
@@ -561,11 +695,12 @@ class PositiveRealParameterSettings {
 
 class ComparisonSettings {
 
-    friend class CollectionSettings;
+    template<typename T1> friend class BaseCollectionSettings;
 
-    private:
+    protected:
         std::string path_;
         PositiveRealParameterSettings population_size_settings_;
+        PositiveRealParameterSettings population_size_multiplier_settings_;
         PositiveRealParameterSettings freq_1_settings_;
         PositiveRealParameterSettings mutation_rate_settings_;
 
@@ -575,27 +710,27 @@ class ComparisonSettings {
         bool markers_are_dominant_ = false;
         bool constant_sites_removed_ = true;
 
-        bool use_empirical_starting_value_for_freq_1_ = false;
         bool constrain_population_sizes_ = false;
-        bool constrain_state_frequencies_ = true;
         double ploidy_ = 2.0;
 
-        void make_consistent() {
+        virtual void make_consistent() {
+            if (this->population_size_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for population_size");
+            }
+            if (this->mutation_rate_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for mutation_rate");
+            }
             if (this->genotypes_are_diploid_ && (this->ploidy_ != 2.0)) {
                 throw EcoevolityComparisonSettingError(
                         "Genotypes cannot be diploid when ploidy is not 2",
                         this->path_);
             }
-            if (this->constrain_state_frequencies_) {
-                this->use_empirical_starting_value_for_freq_1_ = false;
-                this->freq_1_settings_.prior_settings_.nullify();
-                this->freq_1_settings_.value_ = 0.5;
-                this->freq_1_settings_.is_fixed_ = true;
-            }
         }
 
-        void init_empirical_freq_1_starting_value() {
-            if (this->use_empirical_starting_value_for_freq_1_) {
+        virtual void update_settings_contingent_upon_data() {
+            if (this->freq_1_settings_.use_empirical_value_) {
                 BiallelicData d = BiallelicData(
                         this->path_,
                         this->population_name_delimiter_,
@@ -607,7 +742,7 @@ class ComparisonSettings {
             }
         }
 
-        void parse_parameter_settings(const YAML::Node& node) {
+        virtual void parse_parameter_settings(const YAML::Node& node) {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison parameters node should be a map, but found: " +
@@ -639,6 +774,234 @@ class ComparisonSettings {
 
         void set_path(const std::string& path) {
             this->path_ = path;
+        }
+
+        virtual void update_from_config(
+                const YAML::Node& comparison_node,
+                const std::string& config_path,
+                bool global_defaults = false) {
+            if (! comparison_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "comparison node should be a map, but found: " +
+                        YamlCppUtils::get_node_type(comparison_node));
+            }
+            if (comparison_node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty comparison node");
+            }
+            this->path_ = "";
+            for (YAML::const_iterator arg = comparison_node.begin();
+                    arg != comparison_node.end();
+                    ++arg) {
+                if (arg->first.as<std::string>() == "path") {
+                    std::string p = string_util::strip(arg->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), p);
+                }
+                else if (arg->first.as<std::string>() == "ploidy") {
+                    this->ploidy_ = arg->second.as<double>();
+                }
+                else if (arg->first.as<std::string>() == "genotypes_are_diploid") {
+                    this->genotypes_are_diploid_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "markers_are_dominant") {
+                    this->markers_are_dominant_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_delimiter") {
+                    this->population_name_delimiter_ = arg->second.as<char>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_is_prefix") {
+                    this->population_name_is_prefix_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "constant_sites_removed") {
+                    this->constant_sites_removed_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "equal_population_sizes") {
+                    this->constrain_population_sizes_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "parameters") {
+                    this->parse_parameter_settings(arg->second);
+                }
+                else {
+                    std::string message = "Unrecognized comparison key: " +
+                            arg->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+            if ((this->path_ == "") && (! global_defaults)) {
+                throw EcoevolityYamlConfigError("Every comparison must include a path");
+            }
+            this->make_consistent();
+            if (! global_defaults) {
+                this->update_settings_contingent_upon_data();
+            }
+        }
+
+    public:
+        ComparisonSettings() { }
+        ComparisonSettings(
+                const std::string& path,
+                const PositiveRealParameterSettings& population_size_settings,
+                const PositiveRealParameterSettings& freq_1_settings,
+                const PositiveRealParameterSettings& mutation_rate_settings,
+                char population_name_delimiter = ' ',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool constrain_population_sizes = false,
+                double ploidy = 2.0) {
+
+            this->path_ = path;
+            this->population_size_settings_ = population_size_settings;
+            this->freq_1_settings_ = freq_1_settings;
+            this->mutation_rate_settings_ = mutation_rate_settings;
+            this->population_name_delimiter_ = population_name_delimiter;
+            this->population_name_is_prefix_ = population_name_is_prefix;
+            this->genotypes_are_diploid_ = genotypes_are_diploid;
+            this->markers_are_dominant_ = markers_are_dominant;
+            this->constant_sites_removed_ = constant_sites_removed;
+            this->constrain_population_sizes_ = constrain_population_sizes;
+            this->ploidy_ = ploidy;
+            this->make_consistent();
+
+            // TODO:
+            // Not very efficient to parse data just to get rates, but might be
+            // more awkward than it's worth to defer it.
+            // Make a copy operator for BiallelicData and parse and store here, then
+            // can copy it in get_instance method
+            this->update_settings_contingent_upon_data();
+        }
+        ComparisonSettings(
+                const YAML::Node& comparison_node,
+                const std::string& config_path,
+                bool global_defaults = false) {
+            this->update_from_config(comparison_node, config_path, global_defaults);
+        }
+
+        virtual ~ComparisonSettings() { }
+        ComparisonSettings& operator=(const ComparisonSettings& other) {
+            this->path_                                = other.path_;
+            this->population_size_settings_            = other.population_size_settings_;
+            this->freq_1_settings_                     = other.freq_1_settings_;
+            this->mutation_rate_settings_              = other.mutation_rate_settings_;
+            this->population_name_delimiter_           = other.population_name_delimiter_;
+            this->population_name_is_prefix_           = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_               = other.genotypes_are_diploid_;
+            this->markers_are_dominant_                = other.markers_are_dominant_;
+            this->constant_sites_removed_              = other.constant_sites_removed_;
+            this->constrain_population_sizes_          = other.constrain_population_sizes_;
+            this->ploidy_                              = other.ploidy_;
+            return * this;
+        }
+
+        virtual bool using_population_size_multipliers() const {
+            return false;
+        }
+
+        virtual bool population_size_multipliers_are_fixed() const {
+            throw EcoevolityComparisonSettingError(
+                    "ComparisonSettings does not support pop size multipliers");
+        }
+
+        double get_ploidy() const {
+            return this->ploidy_;
+        }
+        const std::string& get_path() const {
+            return this->path_;
+        }
+        char get_population_name_delimiter() const {
+            return this->population_name_delimiter_;
+        }
+        bool population_name_is_prefix() const {
+            return this->population_name_is_prefix_;
+        }
+        bool genotypes_are_diploid() const {
+            return this->genotypes_are_diploid_;
+        }
+        bool markers_are_dominant() const {
+            return this->markers_are_dominant_;
+        }
+        bool constant_sites_removed() const {
+            return this->constant_sites_removed_;
+        }
+        virtual bool constrain_population_sizes() const {
+            return this->constrain_population_sizes_;
+        }
+        bool constrain_state_frequencies() const {
+            return ((this->freq_1_settings_.is_fixed()) &&
+                    (this->freq_1_settings_.get_value() == 0.5));
+        }
+        const PositiveRealParameterSettings& get_population_size_settings() const {
+            return this->population_size_settings_;
+        }
+        const PositiveRealParameterSettings& get_freq_1_settings() const {
+            return this->freq_1_settings_;
+        }
+        const PositiveRealParameterSettings& get_mutation_rate_settings() const {
+            return this->mutation_rate_settings_;
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "path: " << this->path_ << "\n";
+            ss << margin << "ploidy: " << this->get_ploidy() << "\n";
+            ss << margin << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
+            ss << margin << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
+            ss << margin << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
+            ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
+            ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
+            ss << margin << "equal_population_sizes: " << this->constrain_population_sizes_ << "\n";
+            ss << margin << "parameters:\n";
+
+            ss << margin << indent << "population_size:\n";
+            ss << this->population_size_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "mutation_rate:\n";
+            ss << this->mutation_rate_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "freq_1:\n";
+            ss << this->freq_1_settings_.to_string(indent_level + 2);
+
+            return ss.str();
+        }
+};
+
+class DirichletComparisonSettings : public ComparisonSettings {
+
+    template<typename T1> friend class BaseCollectionSettings;
+
+    protected:
+        PositiveRealParameterSettings population_size_multiplier_settings_;
+        std::vector<std::string> population_labels_;
+        bool pop_size_multipliers_specified_ = false;
+
+        void make_consistent() {
+            if (this->population_size_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for population_size");
+            }
+            if (this->population_size_multiplier_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for population_size_multipliers");
+            }
+            if (this->mutation_rate_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for mutation_rate");
+            }
+            if (this->genotypes_are_diploid_ && (this->ploidy_ != 2.0)) {
+                throw EcoevolityComparisonSettingError(
+                        "Genotypes cannot be diploid when ploidy is not 2",
+                        this->path_);
+            }
+            std::string multiplier_prior_name = this->population_size_multiplier_settings_.prior_settings_.get_name();
+            if ((multiplier_prior_name != "none") &&
+                (multiplier_prior_name != "dirichlet_distribution")) {
+                std::string message = "Invalid prior distribution for population size multipliers: " + multiplier_prior_name;
+                throw EcoevolityComparisonSettingError(message);
+            }
         }
 
         void update_from_config(
@@ -680,15 +1043,6 @@ class ComparisonSettings {
                 else if (arg->first.as<std::string>() == "constant_sites_removed") {
                     this->constant_sites_removed_ = arg->second.as<bool>();
                 }
-                else if (arg->first.as<std::string>() == "use_empirical_starting_value_for_freq_1") {
-                    this->use_empirical_starting_value_for_freq_1_ = arg->second.as<bool>();
-                }
-                else if (arg->first.as<std::string>() == "equal_population_sizes") {
-                    this->constrain_population_sizes_ = arg->second.as<bool>();
-                }
-                else if (arg->first.as<std::string>() == "equal_state_frequencies") {
-                    this->constrain_state_frequencies_ = arg->second.as<bool>();
-                }
                 else if (arg->first.as<std::string>() == "parameters") {
                     this->parse_parameter_settings(arg->second);
                 }
@@ -703,15 +1057,114 @@ class ComparisonSettings {
             }
             this->make_consistent();
             if (! global_defaults) {
-                this->init_empirical_freq_1_starting_value();
+                this->update_settings_contingent_upon_data();
+            }
+        }
+
+        void parse_parameter_settings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "comparison parameters node should be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty comparison parameters node");
+            }
+            for (YAML::const_iterator parameter = node.begin();
+                    parameter != node.end();
+                    ++parameter) {
+                if (parameter->first.as<std::string>() == "population_size") {
+                    this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "population_size_multipliers") {
+                    this->population_size_multiplier_settings_ = PositiveRealParameterSettings(parameter->second);
+                    this->pop_size_multipliers_specified_ = true;
+                }
+                else if (parameter->first.as<std::string>() == "freq_1") {
+                    this->freq_1_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "mutation_rate") {
+                    this->mutation_rate_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else {
+                    std::string message = "Unrecognized comparison parameter: " +
+                            parameter->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void update_settings_contingent_upon_data() {
+            BiallelicData d = BiallelicData(
+                    this->path_,
+                    this->population_name_delimiter_,
+                    this->population_name_is_prefix_,
+                    this->genotypes_are_diploid_,
+                    this->markers_are_dominant_,
+                    true);
+            unsigned int npops = d.get_number_of_populations();
+            if (npops < 1) {
+                throw EcoevolityParsingError(
+                        "No populations found in nexus file",
+                        this->path_);
+            }
+            else if (npops > 2) {
+                throw EcoevolityParsingError(
+                        "More than two populations found in nexus file",
+                        this->path_);
+            }
+            for (unsigned int i = 0; i < npops; ++i) {
+                this->population_labels_.push_back(d.get_population_label(i));
+            }
+            if (this->pop_size_multipliers_specified_) {
+                unsigned int num_dirichlet_vals = this->population_size_multiplier_settings_.values_.size();
+                if (num_dirichlet_vals > 0) {
+                    if (num_dirichlet_vals != (this->population_labels_.size() + 1)) {
+                        throw EcoevolityParsingError(
+                                "Mismatch between number of multiplier values in config and number of populations in nexus file",
+                                this->path_);
+
+                    }
+                }
+                if (this->population_size_multiplier_settings_.prior_settings_.get_name() == "dirichlet_distribution") {
+                    if (this->population_size_multiplier_settings_.prior_settings_.get_concentration_parameters().size() != (this->population_labels_.size() + 1)) {
+                        throw EcoevolityParsingError(
+                                "Mismatch between number of dirichlet alphas in config and number of populations in nexus file",
+                                this->path_);
+                    }
+                }
+            }
+            else {
+                this->population_size_multiplier_settings_.is_vector_ = true;
+                this->population_size_multiplier_settings_.values_.clear();
+                this->population_size_multiplier_settings_.is_fixed_ = false;
+                this->population_size_multiplier_settings_.prior_settings_.nullify();
+            }
+            if ((! this->population_size_multiplier_settings_.is_fixed_) &&
+                    (this->population_size_multiplier_settings_.prior_settings_.get_name() == "none")) {
+                std::stringstream ss;
+                ss << "dirichlet_distribution:\n";
+                ss << "    alpha: [10.0";
+                for (unsigned int i = 1; i < (npops + 1); ++i) {
+                    ss << ", 10.0";
+                }
+                ss << "]\n";
+                YAML::Node n;
+                n = YAML::Load(ss);
+                this->population_size_multiplier_settings_.prior_settings_ = ContinuousDistributionSettings(n);
+            }
+            if (this->freq_1_settings_.use_empirical_value_) {
+                this->freq_1_settings_.value_ = d.get_proportion_1();
             }
         }
 
     public:
-        ComparisonSettings() { }
-        ComparisonSettings(
+        DirichletComparisonSettings() { }
+        DirichletComparisonSettings(
                 const std::string& path,
                 const PositiveRealParameterSettings& population_size_settings,
+                const PositiveRealParameterSettings& population_size_multiplier_settings,
                 const PositiveRealParameterSettings& freq_1_settings,
                 const PositiveRealParameterSettings& mutation_rate_settings,
                 char population_name_delimiter = ' ',
@@ -719,13 +1172,11 @@ class ComparisonSettings {
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
                 bool constant_sites_removed = true,
-                bool use_empirical_starting_value_for_freq_1 = false,
-                bool constrain_population_sizes = false,
-                bool constrain_state_frequencies = true,
                 double ploidy = 2.0) {
 
             this->path_ = path;
             this->population_size_settings_ = population_size_settings;
+            this->population_size_multiplier_settings_ = population_size_multiplier_settings;
             this->freq_1_settings_ = freq_1_settings;
             this->mutation_rate_settings_ = mutation_rate_settings;
             this->population_name_delimiter_ = population_name_delimiter;
@@ -733,9 +1184,6 @@ class ComparisonSettings {
             this->genotypes_are_diploid_ = genotypes_are_diploid;
             this->markers_are_dominant_ = markers_are_dominant;
             this->constant_sites_removed_ = constant_sites_removed;
-            this->use_empirical_starting_value_for_freq_1_ = use_empirical_starting_value_for_freq_1;
-            this->constrain_population_sizes_ = constrain_population_sizes;
-            this->constrain_state_frequencies_ = constrain_state_frequencies;
             this->ploidy_ = ploidy;
             this->make_consistent();
 
@@ -744,71 +1192,52 @@ class ComparisonSettings {
             // more awkward than it's worth to defer it.
             // Make a copy operator for BiallelicData and parse and store here, then
             // can copy it in get_instance method
-            this->init_empirical_freq_1_starting_value();
+            this->update_settings_contingent_upon_data();
         }
-        ComparisonSettings(
+        DirichletComparisonSettings(
                 const YAML::Node& comparison_node,
                 const std::string& config_path,
                 bool global_defaults = false) {
             this->update_from_config(comparison_node, config_path, global_defaults);
         }
-
-        virtual ~ComparisonSettings() { }
-        ComparisonSettings& operator=(const ComparisonSettings& other) {
-            this->path_                                = other.path_;
-            this->population_size_settings_            = other.population_size_settings_;
-            this->freq_1_settings_                     = other.freq_1_settings_;
-            this->mutation_rate_settings_              = other.mutation_rate_settings_;
-            this->population_name_delimiter_           = other.population_name_delimiter_;
-            this->population_name_is_prefix_           = other.population_name_is_prefix_;
-            this->genotypes_are_diploid_               = other.genotypes_are_diploid_;
-            this->markers_are_dominant_                = other.markers_are_dominant_;
-            this->constant_sites_removed_              = other.constant_sites_removed_;
-            this->use_empirical_starting_value_for_freq_1_ = other.use_empirical_starting_value_for_freq_1_;
-            this->constrain_population_sizes_          = other.constrain_population_sizes_;
-            this->constrain_state_frequencies_         = other.constrain_state_frequencies_;
-            this->ploidy_                              = other.ploidy_;
+        virtual ~DirichletComparisonSettings() { }
+        DirichletComparisonSettings& operator=(const DirichletComparisonSettings& other) {
+            this->path_                                    = other.path_;
+            this->population_size_settings_                = other.population_size_settings_;
+            this->population_size_multiplier_settings_     = other.population_size_multiplier_settings_;
+            this->population_labels_                       = other.population_labels_;
+            this->freq_1_settings_                         = other.freq_1_settings_;
+            this->mutation_rate_settings_                  = other.mutation_rate_settings_;
+            this->population_name_delimiter_               = other.population_name_delimiter_;
+            this->population_name_is_prefix_               = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_                   = other.genotypes_are_diploid_;
+            this->markers_are_dominant_                    = other.markers_are_dominant_;
+            this->constant_sites_removed_                  = other.constant_sites_removed_;
+            this->ploidy_                                  = other.ploidy_;
             return * this;
         }
 
-        double get_ploidy() const {
-            return this->ploidy_;
+        bool using_population_size_multipliers() const {
+            return true;
         }
-        const std::string& get_path() const {
-            return this->path_;
+
+        bool population_size_multipliers_are_fixed() const {
+            return this->population_size_multiplier_settings_.is_fixed();
         }
-        char get_population_name_delimiter() const {
-            return this->population_name_delimiter_;
+
+        const PositiveRealParameterSettings& get_population_size_multiplier_settings() const {
+            return this->population_size_multiplier_settings_;
         }
-        bool population_name_is_prefix() const {
-            return this->population_name_is_prefix_;
-        }
-        bool genotypes_are_diploid() const {
-            return this->genotypes_are_diploid_;
-        }
-        bool markers_are_dominant() const {
-            return this->markers_are_dominant_;
-        }
-        bool constant_sites_removed() const {
-            return this->constant_sites_removed_;
-        }
-        bool constrain_state_frequencies() const {
-            return this->constrain_state_frequencies_;
-        }
+
         bool constrain_population_sizes() const {
-            return this->constrain_population_sizes_;
-        }
-        bool use_empirical_starting_value_for_freq_1() const {
-            return this->use_empirical_starting_value_for_freq_1_;
-        }
-        const PositiveRealParameterSettings& get_population_size_settings() const {
-            return this->population_size_settings_;
-        }
-        const PositiveRealParameterSettings& get_freq_1_settings() const {
-            return this->freq_1_settings_;
-        }
-        const PositiveRealParameterSettings& get_mutation_rate_settings() const {
-            return this->mutation_rate_settings_;
+            throw EcoevolityError(
+                    "Do not use this method for comparison settings that support population size multipliers");
+            // if (this->population_size_multiplier_settings_.values_.size() < 1) {
+            //     return false;
+            // }
+            // std::vector<double> v (this->population_size_multiplier_settings_.values_.size(), 1.0);
+            // return ((this->population_size_multiplier_settings_.is_fixed()) &&
+            //     (this->population_size_multiplier_settings_.values_ == v));
         }
 
         std::string to_string(unsigned int indent_level = 0) const {
@@ -823,13 +1252,19 @@ class ComparisonSettings {
             ss << margin << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
             ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
             ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
-            ss << margin << "use_empirical_starting_value_for_freq_1: " << this->use_empirical_starting_value_for_freq_1_ << "\n";
-            ss << margin << "equal_population_sizes: " << this->constrain_population_sizes_ << "\n";
-            ss << margin << "equal_state_frequencies: " << this->constrain_state_frequencies_ << "\n";
             ss << margin << "parameters:\n";
 
             ss << margin << indent << "population_size:\n";
             ss << this->population_size_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "population_size_multipliers:\n";
+            ss << margin << indent << indent
+               << "# Multiplier settings map to [" << this->population_labels_.at(0);
+            for (unsigned int i = 1; i < this->population_labels_.size(); ++i) {
+                ss << ", " << this->population_labels_.at(i);
+            }
+            ss << ", root]\n";
+            ss << this->population_size_multiplier_settings_.to_string(indent_level + 2);
 
             ss << margin << indent << "mutation_rate:\n";
             ss << this->mutation_rate_settings_.to_string(indent_level + 2);
@@ -1066,11 +1501,12 @@ class WindowOperatorSettings : public OperatorSettings {
 
 class OperatorScheduleSettings {
 
-    friend class CollectionSettings;
+    template<typename T1> friend class BaseCollectionSettings;
 
     private:
         bool auto_optimize_ = true;
         unsigned int auto_optimize_delay_ = 10000;
+        bool using_population_size_multipliers_ = false;
         ModelOperatorSettings model_operator_settings_ = ModelOperatorSettings(
                 3.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
@@ -1086,6 +1522,10 @@ class OperatorScheduleSettings {
         ScaleOperatorSettings root_population_size_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
         ScaleOperatorSettings child_population_size_scaler_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        ScaleOperatorSettings population_size_scaler_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        ScaleOperatorSettings population_size_multiplier_mixer_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
         WindowOperatorSettings freq_mover_settings_ = WindowOperatorSettings(
                 1.0, 0.1);
@@ -1104,8 +1544,18 @@ class OperatorScheduleSettings {
             this->comparison_mutation_rate_scaler_settings_ = other.comparison_mutation_rate_scaler_settings_;
             this->root_population_size_scaler_settings_ = other.root_population_size_scaler_settings_;
             this->child_population_size_scaler_settings_ = other.child_population_size_scaler_settings_;
+            this->population_size_scaler_settings_ = other.population_size_scaler_settings_;
+            this->population_size_multiplier_mixer_settings_ = other.population_size_multiplier_mixer_settings_;
             this->freq_mover_settings_ = other.freq_mover_settings_;
             return * this;
+        }
+
+        bool using_population_size_multipliers() const {
+            return this->using_population_size_multipliers_;
+        }
+
+        void turn_on_population_size_multipliers() {
+            this->using_population_size_multipliers_ = true;
         }
 
         bool auto_optimizing() const {
@@ -1137,6 +1587,12 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_child_population_size_scaler_settings() const {
             return this->child_population_size_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_population_size_scaler_settings() const {
+            return this->population_size_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_population_size_multiplier_mixer_settings() const {
+            return this->population_size_multiplier_mixer_settings_;
         }
         const WindowOperatorSettings& get_freq_mover_settings() const {
             return this->freq_mover_settings_;
@@ -1211,6 +1667,9 @@ class OperatorScheduleSettings {
                     }
                 }
                 else if (op->first.as<std::string>() == "CompositeHeightSizeRateScaler") {
+                    if (this->using_population_size_multipliers()) {
+                        throw EcoevolityYamlConfigError("Unsupported operator: CompositeHeightSizeRateScaler");
+                    }
                     try {
                         this->composite_height_size_rate_scaler_settings_.update_from_config(op->second);
                     }
@@ -1241,6 +1700,9 @@ class OperatorScheduleSettings {
                     }
                 }
                 else if (op->first.as<std::string>() == "RootPopulationSizeScaler") {
+                    if (this->using_population_size_multipliers()) {
+                        throw EcoevolityYamlConfigError("Unsupported operator: RootPopulationSizeScaler");
+                    }
                     try {
                         this->root_population_size_scaler_settings_.update_from_config(op->second);
                     }
@@ -1251,12 +1713,41 @@ class OperatorScheduleSettings {
                     }
                 }
                 else if (op->first.as<std::string>() == "ChildPopulationSizeScaler") {
+                    if (this->using_population_size_multipliers()) {
+                        throw EcoevolityYamlConfigError("Unsupported operator: ChildPopulationSizeScaler");
+                    }
                     try {
                         this->child_population_size_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
                                   << "Problem parsing ChildPopulationSizeScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "PopulationSizeScaler") {
+                    if (! this->using_population_size_multipliers()) {
+                        throw EcoevolityYamlConfigError("Unsupported operator: PopulationSizeScaler");
+                    }
+                    try {
+                        this->population_size_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing PopulationSizeScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "PopulationSizeMultiplierMixer") {
+                    if (! this->using_population_size_multipliers()) {
+                        throw EcoevolityYamlConfigError("Unsupported operator: PopulationSizeMultiplierMixer");
+                    }
+                    try {
+                        this->population_size_multiplier_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing PopulationSizeMultiplierMixer settings\n";
                         throw;
                     }
                 }
@@ -1294,16 +1785,26 @@ class OperatorScheduleSettings {
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "CompositeHeightSizeRateMixer:\n";
             ss << this->composite_height_size_rate_mixer_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "CompositeHeightSizeRateScaler:\n";
-            ss << this->composite_height_size_rate_scaler_settings_.to_string(indent_level + 3);
+            if (! this->using_population_size_multipliers()) {
+                ss << margin << indent << indent << "CompositeHeightSizeRateScaler:\n";
+                ss << this->composite_height_size_rate_scaler_settings_.to_string(indent_level + 3);
+            }
             ss << margin << indent << indent << "ComparisonHeightScaler:\n";
             ss << this->comparison_height_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonMutationRateScaler:\n";
             ss << this->comparison_mutation_rate_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "RootPopulationSizeScaler:\n";
-            ss << this->root_population_size_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "ChildPopulationSizeScaler:\n";
-            ss << this->child_population_size_scaler_settings_.to_string(indent_level + 3);
+            if (! this->using_population_size_multipliers()) {
+                ss << margin << indent << indent << "RootPopulationSizeScaler:\n";
+                ss << this->root_population_size_scaler_settings_.to_string(indent_level + 3);
+                ss << margin << indent << indent << "ChildPopulationSizeScaler:\n";
+                ss << this->child_population_size_scaler_settings_.to_string(indent_level + 3);
+            }
+            else {
+                ss << margin << indent << indent << "PopulationSizeScaler:\n";
+                ss << this->population_size_scaler_settings_.to_string(indent_level + 3);
+                ss << margin << indent << indent << "PopulationSizeMultiplierMixer:\n";
+                ss << this->population_size_multiplier_mixer_settings_.to_string(indent_level + 3);
+            }
             ss << margin << indent << indent << "FreqMover:\n";
             ss << this->freq_mover_settings_.to_string(indent_level + 3);
             return ss.str();
@@ -1311,39 +1812,49 @@ class OperatorScheduleSettings {
 };
 
 
-class CollectionSettings {
+template<class ComparisonSettingsType>
+class BaseCollectionSettings {
 
     public:
 
-        CollectionSettings() {
+        BaseCollectionSettings() {
             this->init_default_priors();
         }
-        CollectionSettings(
+        BaseCollectionSettings(bool use_population_size_multipliers) {
+            if (use_population_size_multipliers) {
+                this->operator_schedule_settings_.turn_on_population_size_multipliers();
+            }
+            this->init_default_priors();
+        }
+        BaseCollectionSettings(
                 const ContinuousDistributionSettings& time_prior,
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
-                bool use_dpp)
-                : CollectionSettings() {
+                bool use_dpp,
+                bool use_population_size_multipliers = false)
+                : BaseCollectionSettings(use_population_size_multipliers) {
             this->time_prior_settings_ = time_prior;
             this->chain_length_ = chain_length;
             this->sample_frequency_ = sample_frequency;
             this->concentration_settings_ = concentration_settings;
             this->use_dpp_ = use_dpp;
         }
-        CollectionSettings(
-                const std::string & yaml_config_path)
-                : CollectionSettings() {
+        BaseCollectionSettings(
+                const std::string & yaml_config_path,
+                bool use_population_size_multipliers = false)
+                : BaseCollectionSettings(use_population_size_multipliers) {
             this->init_from_config_file(yaml_config_path);
         }
-        CollectionSettings(
+        BaseCollectionSettings(
                 std::istream& yaml_config_stream,
-                const std::string& yaml_config_path)
-                : CollectionSettings() {
+                const std::string& yaml_config_path,
+                bool use_population_size_multipliers = false)
+                : BaseCollectionSettings(use_population_size_multipliers) {
             this->init_from_config_stream(yaml_config_stream, yaml_config_path);
         }
-        virtual ~CollectionSettings() { }
-        CollectionSettings& operator=(const CollectionSettings& other) {
+        virtual ~BaseCollectionSettings() { }
+        BaseCollectionSettings& operator=(const BaseCollectionSettings& other) {
             this->path_ = other.path_;
             this->operator_schedule_settings_ = other.operator_schedule_settings_;
             this->global_comparison_settings_ = other.global_comparison_settings_;
@@ -1363,7 +1874,7 @@ class CollectionSettings {
             return * this;
         }
 
-        void add_comparison(ComparisonSettings comparison_settings) {
+        void add_comparison(ComparisonSettingsType comparison_settings) {
             this->comparisons_.push_back(comparison_settings);
         }
 
@@ -1394,7 +1905,7 @@ class CollectionSettings {
 
         unsigned int get_number_of_comparisons_with_free_mutation_rate() const {
             unsigned int nfree = 0;
-            for (const ComparisonSettings& comparison : this->comparisons_) {
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
                 if (! comparison.mutation_rate_settings_.is_fixed()) {
                     ++nfree;
                 }
@@ -1404,8 +1915,18 @@ class CollectionSettings {
 
         unsigned int get_number_of_comparisons_with_free_population_size() const {
             unsigned int nfree = 0;
-            for (const ComparisonSettings& comparison : this->comparisons_) {
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
                 if (! comparison.population_size_settings_.is_fixed()) {
+                    ++nfree;
+                }
+            }
+            return nfree;
+        }
+
+        unsigned int get_number_of_comparisons_with_free_population_size_multipliers() const {
+            unsigned int nfree = 0;
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
+                if ((comparison.using_population_size_multipliers()) && (! comparison.population_size_multipliers_are_fixed())) {
                     ++nfree;
                 }
             }
@@ -1414,7 +1935,7 @@ class CollectionSettings {
 
         unsigned int get_number_of_comparisons_with_free_state_frequencies() const {
             unsigned int nfree = 0;
-            for (const ComparisonSettings& comparison : this->comparisons_) {
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
                 if (! comparison.freq_1_settings_.is_fixed()) {
                     ++nfree;
                 }
@@ -1430,17 +1951,17 @@ class CollectionSettings {
             return this->concentration_settings_;
         }
 
-        const std::vector<ComparisonSettings>& get_comparison_settings() const { 
+        const std::vector<ComparisonSettingsType>& get_comparison_settings() const { 
             return this->comparisons_;
         }
 
-        const ComparisonSettings& get_comparison_setting(
+        const ComparisonSettingsType& get_comparison_setting(
                 unsigned int comparison_index) const { 
             ECOEVOLITY_ASSERT(comparison_index < this->comparisons_.size());
             return this->comparisons_.at(comparison_index);
         }
 
-        bool same_comparison_paths(const CollectionSettings& s) const {
+        bool same_comparison_paths(const BaseCollectionSettings& s) const {
             if (this->get_number_of_comparisons() != s.get_number_of_comparisons()) {
                 return false;
             }
@@ -1555,7 +2076,7 @@ class CollectionSettings {
         }
 
 
-    private:
+    protected:
 
         std::string path_ = "";
         bool use_dpp_ = true;
@@ -1571,9 +2092,9 @@ class CollectionSettings {
 
         PositiveRealParameterSettings concentration_settings_;
 
-        ComparisonSettings global_comparison_settings_;
+        ComparisonSettingsType global_comparison_settings_;
 
-        std::vector<ComparisonSettings> comparisons_;
+        std::vector<ComparisonSettingsType> comparisons_;
 
         ContinuousDistributionSettings default_time_prior_;
         ContinuousDistributionSettings default_population_size_prior_;
@@ -1615,6 +2136,7 @@ class CollectionSettings {
             this->path_ = path;
             this->set_output_paths_to_config_directory();
             this->parse_yaml_config(stream);
+            ECOEVOLITY_ASSERT(this->operator_schedule_settings_.using_population_size_multipliers() == this->comparisons_.at(0).using_population_size_multipliers());
         }
         void init_from_config_file(const std::string& path) {
             std::ifstream in_stream;
@@ -1659,6 +2181,9 @@ class CollectionSettings {
             // Set default mutation rate
             this->global_comparison_settings_.mutation_rate_settings_.value_ = 1.0;
             this->global_comparison_settings_.mutation_rate_settings_.is_fixed_ = true;
+            // Set default freq 1
+            this->global_comparison_settings_.freq_1_settings_.value_ = 0.5;
+            this->global_comparison_settings_.freq_1_settings_.is_fixed_ = true;
             ///////////////////////////////////////////////////////////////////
 
             if (! top_level_node["comparisons"]) {
@@ -1763,14 +2288,27 @@ class CollectionSettings {
             if (this->get_number_of_comparisons_with_free_state_frequencies() < 1) {
                 this->operator_schedule_settings_.freq_mover_settings_.set_weight(0.0);
             }
-            if (this->get_number_of_comparisons_with_free_population_size() < 1) {
-                this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
-                this->operator_schedule_settings_.child_population_size_scaler_settings_.set_weight(0.0);
-            }
             if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
                 (this->get_number_of_comparisons_with_free_population_size() < 1)) {
                 this->operator_schedule_settings_.composite_height_size_rate_mixer_settings_.set_weight(0.0);
                 this->operator_schedule_settings_.composite_height_size_rate_scaler_settings_.set_weight(0.0);
+            }
+            if (this->get_number_of_comparisons_with_free_population_size() < 1) {
+                this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.child_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.population_size_scaler_settings_.set_weight(0.0);
+            }
+            if (this->get_number_of_comparisons_with_free_population_size_multipliers() < 1) {
+                this->operator_schedule_settings_.population_size_multiplier_mixer_settings_.set_weight(0.0);
+            }
+            if (this->operator_schedule_settings_.using_population_size_multipliers()) {
+                this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.child_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.composite_height_size_rate_scaler_settings_.set_weight(0.0);
+            }
+            else {
+                this->operator_schedule_settings_.population_size_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.population_size_multiplier_mixer_settings_.set_weight(0.0);
             }
         }
 
@@ -1906,7 +2444,7 @@ class CollectionSettings {
                     throw EcoevolityYamlConfigError(
                             "Each comparison should have a comparison key");
                 }
-                ComparisonSettings c = this->global_comparison_settings_;
+                ComparisonSettingsType c = this->global_comparison_settings_;
                 c.update_from_config(comp["comparison"], this->path_);
                 this->comparisons_.push_back(c);
             }
@@ -1984,6 +2522,10 @@ class CollectionSettings {
                     arg != node.end();
                     ++arg) {
                 if (arg->first.as<std::string>() == "value") {
+                    if (arg->second.as<std::string>() == "empirical") {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "empirical value not supported for concentration_parameter");
+                    }
                     double v = arg->second.as<double>();
                         if (v < 0.0) {
                             throw EcoevolityPositiveRealParameterSettingError(
@@ -2108,6 +2650,74 @@ class CollectionSettings {
             p["shape"] = shape;
             p["scale"] = scale;
             return ContinuousDistributionSettings("gamma_distribution", p);
+        }
+};
+
+
+class CollectionSettings: public BaseCollectionSettings<ComparisonSettings>{
+    private:
+        typedef BaseCollectionSettings<ComparisonSettings> BaseClass;
+
+    public:
+        CollectionSettings() : BaseClass() { }
+        CollectionSettings(
+                const ContinuousDistributionSettings& time_prior,
+                unsigned int chain_length,
+                unsigned int sample_frequency,
+                const PositiveRealParameterSettings& concentration_settings,
+                bool use_dpp)
+                : BaseClass(
+                        time_prior,
+                        chain_length,
+                        sample_frequency,
+                        concentration_settings,
+                        use_dpp) { }
+        CollectionSettings(
+                const std::string & yaml_config_path)
+                : BaseClass(
+                        yaml_config_path) { }
+        CollectionSettings(
+                std::istream& yaml_config_stream,
+                const std::string& yaml_config_path)
+                : BaseClass(
+                        yaml_config_stream,
+                        yaml_config_path) { }
+};
+
+
+class DirichletCollectionSettings: public BaseCollectionSettings<DirichletComparisonSettings>{
+    private:
+        typedef BaseCollectionSettings<DirichletComparisonSettings> BaseClass;
+
+    public:
+        DirichletCollectionSettings() : BaseClass(true) { }
+        DirichletCollectionSettings(
+                const ContinuousDistributionSettings& time_prior,
+                unsigned int chain_length,
+                unsigned int sample_frequency,
+                const PositiveRealParameterSettings& concentration_settings,
+                bool use_dpp)
+                : BaseClass(
+                        time_prior,
+                        chain_length,
+                        sample_frequency,
+                        concentration_settings,
+                        use_dpp,
+                        true) {
+        }
+        DirichletCollectionSettings(
+                const std::string & yaml_config_path)
+                : BaseClass(
+                        yaml_config_path,
+                        true) {
+        }
+        DirichletCollectionSettings(
+                std::istream& yaml_config_stream,
+                const std::string& yaml_config_path)
+                : BaseClass(
+                        yaml_config_stream,
+                        yaml_config_path,
+                        true) {
         }
 };
 

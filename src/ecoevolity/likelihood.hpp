@@ -41,7 +41,8 @@ void compute_top_of_branch_partials(
         const double u,
         const double v,
         const double mutation_rate, 
-        const double ploidy
+        const double ploidy,
+        const double reference_population_size
         );
 
 void compute_internal_partials(
@@ -55,7 +56,8 @@ void compute_pattern_partials(
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        const double reference_population_size
         );
 
 std::vector< std::vector<double> > compute_root_probabilities(
@@ -63,7 +65,8 @@ std::vector< std::vector<double> > compute_root_probabilities(
         const double u,
         const double v,
         const double mutation_rate,
-        const double ploidy
+        const double ploidy,
+        const double reference_population_size
         );
 
 double compute_root_likelihood(
@@ -71,7 +74,8 @@ double compute_root_likelihood(
         const double u,
         const double v,
         const double mutation_rate,
-        const double ploidy
+        const double ploidy,
+        const double reference_population_size
         );
 
 double compute_pattern_likelihood(
@@ -82,7 +86,8 @@ double compute_pattern_likelihood(
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        const double reference_population_size
         );
 
 void compute_constant_pattern_likelihoods(
@@ -95,7 +100,8 @@ void compute_constant_pattern_likelihoods(
         const bool markers_are_dominant,
         const bool state_frequencies_are_constrained,
         double& all_red_pattern_likelihood,
-        double& all_green_pattern_likelihood
+        double& all_green_pattern_likelihood,
+        const double reference_population_size
         );
 
 double get_log_likelihood_for_pattern_range(
@@ -109,7 +115,8 @@ double get_log_likelihood_for_pattern_range(
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        const double reference_population_size
         );
 
 double get_log_likelihood(
@@ -127,7 +134,8 @@ double get_log_likelihood(
         const bool constant_sites_removed,
         double& all_red_pattern_likelihood,
         double& all_green_pattern_likelihood,
-        unsigned int nthreads = 1
+        unsigned int nthreads = 1,
+        const double reference_population_size = 1.0
         );
 
 #endif

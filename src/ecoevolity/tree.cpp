@@ -142,7 +142,7 @@ void PopulationTree::init(
 
 void PopulationTree::init_tree() {
     if (this->data_.get_number_of_populations() < 3) {
-        this->root_ = std::make_shared<PopulationNode>(0.0);
+        this->root_ = std::make_shared<PopulationNode>(this->data_.get_number_of_populations(), 0.0);
         for (unsigned int pop_idx = 0;
                 pop_idx < this->data_.get_number_of_populations();
                 ++pop_idx) {
@@ -156,13 +156,26 @@ void PopulationTree::init_tree() {
         }
         return;
     }
-    std::shared_ptr<PopulationNode> ancestor = std::make_shared<PopulationNode>(0.0);
-    ancestor->add_child(std::make_shared<PopulationNode>(this->data_.get_population_label(0)));
-    ancestor->add_child(std::make_shared<PopulationNode>(this->data_.get_population_label(1)));
+    unsigned int next_index = this->data_.get_number_of_populations();
+    std::shared_ptr<PopulationNode> ancestor = std::make_shared<PopulationNode>(next_index, 0.0);
+    ++next_index;
+    ancestor->add_child(std::make_shared<PopulationNode>(
+                0,
+                this->data_.get_population_label(0),
+                0.0,
+                this->data_.get_max_allele_count(0)
+                ));
+    ancestor->add_child(std::make_shared<PopulationNode>(
+                1,
+                this->data_.get_population_label(1),
+                0.0,
+                this->data_.get_max_allele_count(1)
+                ));
     for (unsigned int pop_idx = 2;
             pop_idx < this->data_.get_number_of_populations();
             ++pop_idx) {
-        std::shared_ptr<PopulationNode> next_ancestor = std::make_shared<PopulationNode>(0.0);
+        std::shared_ptr<PopulationNode> next_ancestor = std::make_shared<PopulationNode>(next_index, 0.0);
+        ++next_index;
         next_ancestor->add_child(ancestor);
         std::shared_ptr<PopulationNode> tip = std::make_shared<PopulationNode>(
                 pop_idx,
@@ -175,6 +188,7 @@ void PopulationTree::init_tree() {
     }
     this->root_ = ancestor;
 }
+
 
 void PopulationTree::calculate_likelihood_correction() {
     double log_likelihood_correction = 0.0;
@@ -499,6 +513,213 @@ void PopulationTree::provide_number_of_constant_sites(
     this->provided_number_of_constant_green_sites_ = number_all_green;
 }
 
+void PopulationTree::simulate_gene_tree(
+        const std::shared_ptr<PopulationNode> node,
+        std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
+        const unsigned int pattern_index,
+        RandomNumberGenerator & rng) const {
+
+    std::vector< std::shared_ptr<GeneTreeSimNode> > lineages;
+    if (node->has_children()) {
+        // Handle internal branch: must get uncoalesced lineages from children
+        for (unsigned int i = 0;
+                i < node->get_number_of_children();
+                ++i) {
+            std::shared_ptr<PopulationNode> child = node->get_child(i);
+            int child_idx = child->get_population_index();
+            ECOEVOLITY_ASSERT(child_idx >= 0);
+            if (branch_lineages.count(child_idx) < 1) {
+                this->simulate_gene_tree(child, branch_lineages, pattern_index, rng);
+            }
+            for (unsigned int j = 0; j < branch_lineages.at(child_idx).size(); ++j) {
+                lineages.push_back(branch_lineages.at(child_idx).at(j));
+            }
+            branch_lineages.at(child_idx).clear();
+        }
+        if (node->get_number_of_parents() < 1) {
+            // At root node: coalesce until 1 gene lineage and return
+            if (lineages.size() < 2) {
+                branch_lineages[node->get_population_index()] = lineages;
+                return;
+            }
+            double node_height = this->get_node_height_in_subs_per_site(*node);
+            this->coalesce_in_branch(
+                    lineages,
+                    this->get_node_theta(*node),
+                    rng,
+                    node_height,
+                    std::numeric_limits<double>::infinity()
+                    );
+            branch_lineages[node->get_population_index()] = lineages;
+            return;
+        }
+        // Internal branch that is not the root: Coalesce from bottom to top of
+        // branch
+        double node_length = this->get_node_length_in_subs_per_site(*node);
+        double node_height = this->get_node_height_in_subs_per_site(*node);
+        this->coalesce_in_branch(
+                lineages,
+                this->get_node_theta(*node),
+                rng,
+                node_height,
+                node_height + node_length
+                );
+        branch_lineages[node->get_population_index()] = lineages;
+    } else {
+        // Handle terminal branch: create genealogy tips and coalesce to top of
+        // branch
+        unsigned int allele_count;
+        allele_count = this->data_.get_allele_count(
+                pattern_index,
+                node->get_population_index());
+        if (this->data_.markers_are_dominant()) {
+            allele_count *= 2;
+        }
+        lineages.reserve(allele_count);
+        for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
+            std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
+                        node->get_population_index(),
+                        0.0);
+                tip->fix_node_height();
+                lineages.push_back(tip);
+        }
+
+        double node_length = this->get_node_length_in_subs_per_site(*node);
+        double node_height = this->get_node_height_in_subs_per_site(*node);
+        this->coalesce_in_branch(
+                lineages,
+                this->get_node_theta(*node),
+                rng,
+                node_height,
+                node_height + node_length
+                );
+        branch_lineages[node->get_population_index()] = lineages;
+    }
+}
+
+std::shared_ptr<GeneTreeSimNode> PopulationTree::simulate_gene_tree(
+        const unsigned int pattern_index,
+        RandomNumberGenerator& rng) const {
+    std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > branch_lineages;
+    branch_lineages.reserve(this->get_node_count());
+    this->simulate_gene_tree(
+            this->root_,
+            branch_lineages,
+            pattern_index,
+            rng);
+    ECOEVOLITY_ASSERT(branch_lineages.at(this->root_->get_population_index()).size() == 1);
+    return branch_lineages.at(this->root_->get_population_index()).at(0);
+}
+
+double PopulationTree::coalesce_in_branch(
+        std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
+        double population_size,
+        RandomNumberGenerator& rng,
+        double bottom_of_branch_height,
+        double top_of_branch_height
+        ) {
+    ECOEVOLITY_ASSERT(lineages.size() > 0);
+    ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
+    double current_height = bottom_of_branch_height;
+    unsigned int k = lineages.size();
+    while (true) {
+        if (k == 1) {
+            ECOEVOLITY_ASSERT(lineages.size() == k);
+            break;
+        }
+        double scale = population_size / (((double)k) * (k - 1.0));
+        double wait = rng.gamma(1.0, scale);
+        
+        if ((current_height + wait) >= top_of_branch_height) {
+            break;
+        }
+        current_height += wait;
+        std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
+                current_height);
+        for (int i = 0; i < 2; ++i) {
+            int idx = rng.uniform_int(0, lineages.size() - 1);
+            mrca->add_child(lineages.at(idx));
+            lineages.erase(lineages.begin() + idx);
+        }
+        lineages.push_back(mrca);
+        --k;
+        ECOEVOLITY_ASSERT(lineages.size() == k);
+    }
+    return current_height;
+}
+
+BiallelicData PopulationTree::simulate_biallelic_data_set(
+        RandomNumberGenerator& rng,
+        bool validate) const {
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    const bool filtering_constant_sites = this->constant_sites_removed_;
+    // Looping over patterns to make sure simulated dataset has exact same
+    // sample configuration (i.e., the same pattern of missing data) as the
+    // member dataset.
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < this->data_.get_number_of_patterns();
+            ++pattern_idx) {
+        for (unsigned int i = 0;
+                i < this->data_.get_pattern_weight(pattern_idx);
+                ++i) {
+            bool site_added = false;
+            while (! site_added) {
+                auto pattern_tree = this->simulate_biallelic_site(
+                        pattern_idx,
+                        rng);
+                auto pattern = pattern_tree.first;
+                std::vector<unsigned int> red_allele_counts = pattern.first;
+                std::vector<unsigned int> allele_counts = pattern.second;
+                std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
+                site_added = sim_data.add_site(red_allele_counts,
+                        allele_counts,
+                        filtering_constant_sites);
+            }
+        }
+    }
+    sim_data.update_max_allele_counts();
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
+    // What about gene trees? Write to stream/path (don't want to store/return
+    // giant vector)
+    return sim_data;
+}
+
+std::pair<
+        std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
+        std::shared_ptr<GeneTreeSimNode> >
+PopulationTree::simulate_biallelic_site(
+        const unsigned int pattern_idx,
+        RandomNumberGenerator& rng) const {
+
+    std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(pattern_idx, rng);
+    gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
+    gene_tree->simulate_binary_character(this->get_freq_0(), rng);
+
+    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
+    std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
+    std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
+    if (this->data_.markers_are_dominant()) {
+        std::vector<int> last_allele(expected_allele_counts.size(), -1);
+        gene_tree->get_allele_counts(
+                allele_counts,
+                red_allele_counts,
+                last_allele);
+    }
+    else {
+        gene_tree->get_allele_counts(
+                allele_counts,
+                red_allele_counts);
+    }
+
+    ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
+    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
+            std::make_pair(red_allele_counts, allele_counts);
+    return std::make_pair(pattern, gene_tree);
+}
+
 
 ComparisonPopulationTree::ComparisonPopulationTree(
         std::string path, 
@@ -611,12 +832,12 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                 <<   "###############################  ERROR  ###############################\n"
                 << "The alignment in:\n    \'"
                 << this->data_.get_path() << "\'\n"
-                << "contains only a single population, but you have fixed and/or "
-                << "constrained the population sizes for this comparison. The timing of "
-                << "population expansion/contraction cannot be estimated if the ancestral "
-                << "and descendant population sizes for this comparison are either "
-                << "fixed or constrained to be equal. Please update your configuration "
-                << "file to estimate the unconstrained population sizes for this "
+                << "contains only a single population, but you have fixed and/or\n"
+                << "constrained the population sizes for this comparison. The timing of\n"
+                << "population expansion/contraction cannot be estimated if the ancestral\n"
+                << "and descendant population sizes for this comparison are either\n"
+                << "fixed or constrained to be equal. Please update your configuration\n"
+                << "file to estimate the unconstrained population sizes for this\n"
                 << "comparison and re-run the analysis.\n"
                 << "#######################################################################\n";
         throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
@@ -740,200 +961,6 @@ std::string ComparisonPopulationTree::get_state_string(
     return ss.str();
 }
 
-// TODO: This is a hack. The more general solution would be a recursive method
-// of PopulationTree
-std::shared_ptr<GeneTreeSimNode> ComparisonPopulationTree::simulate_gene_tree(
-        const unsigned int pattern_index,
-        RandomNumberGenerator& rng) const {
-
-    std::vector< std::shared_ptr<GeneTreeSimNode> > left_lineages;
-    std::vector< std::shared_ptr<GeneTreeSimNode> > right_lineages;
-    std::vector< std::shared_ptr<GeneTreeSimNode> > root_lineages;
-    unsigned int allele_count;
-    allele_count = this->data_.get_allele_count(
-            pattern_index,
-            this->data_.get_population_index(
-                    this->root_->get_child(0)->get_label()));
-    if (this->data_.markers_are_dominant()) {
-        allele_count *= 2;
-    }
-    left_lineages.reserve(allele_count);
-    for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
-        std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                    0,
-                    0.0);
-            tip->fix_node_height();
-            left_lineages.push_back(tip);
-    }
-
-    double top_of_branch_height = this->get_node_length_in_subs_per_site(
-            *this->root_->get_child(0));
-    double current_height = 0.0;
-    double last_left_coal_height = this->coalesce_in_branch(
-            left_lineages,
-            this->get_node_theta(*this->root_->get_child(0)),
-            rng,
-            current_height,
-            top_of_branch_height
-            );
-
-    if (this->root_->get_number_of_children() > 1) {
-        allele_count = this->data_.get_allele_count(
-                pattern_index,
-                this->data_.get_population_index(
-                        this->root_->get_child(1)->get_label()));
-        if (this->data_.markers_are_dominant()) {
-            allele_count *= 2;
-        }
-        right_lineages.reserve(allele_count);
-        for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
-            std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                        1,
-                        0.0);
-                tip->fix_node_height();
-                right_lineages.push_back(tip);
-        }
-
-        double last_right_coal_height = this->coalesce_in_branch(
-                right_lineages,
-                this->get_node_theta(*this->root_->get_child(1)),
-                rng,
-                current_height,
-                top_of_branch_height
-                );
-    }
-
-    for (unsigned int i = 0; i < left_lineages.size(); ++i) {
-        root_lineages.push_back(left_lineages.at(i));
-    }
-    left_lineages.clear();
-    for (unsigned int i = 0; i < right_lineages.size(); ++i) {
-        root_lineages.push_back(right_lineages.at(i));
-    }
-    right_lineages.clear();
-    ECOEVOLITY_ASSERT(root_lineages.size() > 0);
-    if (root_lineages.size() == 1) {
-        return root_lineages.at(0);
-    }
-    double last_root_coal_height = this->coalesce_in_branch(
-            root_lineages,
-            this->get_node_theta(*this->root_),
-            rng,
-            top_of_branch_height,
-            std::numeric_limits<double>::infinity()
-            );
-    ECOEVOLITY_ASSERT(root_lineages.size() == 1);
-    return root_lineages.at(0);
-}
-
-double ComparisonPopulationTree::coalesce_in_branch(
-        std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
-        double population_size,
-        RandomNumberGenerator& rng,
-        double bottom_of_branch_height,
-        double top_of_branch_height
-        ) {
-    ECOEVOLITY_ASSERT(lineages.size() > 0);
-    ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
-    double current_height = bottom_of_branch_height;
-    unsigned int k = lineages.size();
-    while (true) {
-        if (k == 1) {
-            ECOEVOLITY_ASSERT(lineages.size() == k);
-            break;
-        }
-        double scale = population_size / (((double)k) * (k - 1.0));
-        double wait = rng.gamma(1.0, scale);
-        
-        if ((current_height + wait) >= top_of_branch_height) {
-            break;
-        }
-        current_height += wait;
-        std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
-                current_height);
-        for (int i = 0; i < 2; ++i) {
-            int idx = rng.uniform_int(0, lineages.size() - 1);
-            mrca->add_child(lineages.at(idx));
-            lineages.erase(lineages.begin() + idx);
-        }
-        lineages.push_back(mrca);
-        --k;
-        ECOEVOLITY_ASSERT(lineages.size() == k);
-    }
-    return current_height;
-}
-
-BiallelicData ComparisonPopulationTree::simulate_biallelic_data_set(
-        RandomNumberGenerator& rng,
-        bool validate) const {
-    BiallelicData sim_data = this->data_.get_empty_copy();
-    const bool filtering_constant_sites = this->constant_sites_removed_;
-    // Looping over patterns to make sure simulated dataset has exact same
-    // sample configuration (i.e., the same pattern of missing data) as the
-    // member dataset.
-    for (unsigned int pattern_idx = 0;
-            pattern_idx < this->data_.get_number_of_patterns();
-            ++pattern_idx) {
-        for (unsigned int i = 0;
-                i < this->data_.get_pattern_weight(pattern_idx);
-                ++i) {
-            bool site_added = false;
-            while (! site_added) {
-                auto pattern_tree = this->simulate_biallelic_site(
-                        pattern_idx,
-                        rng);
-                auto pattern = pattern_tree.first;
-                std::vector<unsigned int> red_allele_counts = pattern.first;
-                std::vector<unsigned int> allele_counts = pattern.second;
-                std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
-                site_added = sim_data.add_site(red_allele_counts,
-                        allele_counts,
-                        filtering_constant_sites);
-            }
-        }
-    }
-    sim_data.update_max_allele_counts();
-    sim_data.update_pattern_booleans();
-    if (validate) {
-        sim_data.validate();
-    }
-    // What about gene trees? Write to stream/path (don't want to store/return
-    // giant vector)
-    return sim_data;
-}
-
-std::pair<
-        std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
-        std::shared_ptr<GeneTreeSimNode> >
-ComparisonPopulationTree::simulate_biallelic_site(
-        const unsigned int pattern_idx,
-        RandomNumberGenerator& rng) const {
-
-    std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(pattern_idx, rng);
-    gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
-    gene_tree->simulate_binary_character(this->get_freq_0(), rng);
-
-    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
-    std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
-    std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
-    if (this->data_.markers_are_dominant()) {
-        std::vector<int> last_allele(expected_allele_counts.size(), -1);
-        gene_tree->get_allele_counts(
-                allele_counts,
-                red_allele_counts,
-                last_allele);
-    }
-    else {
-        gene_tree->get_allele_counts(
-                allele_counts,
-                red_allele_counts);
-    }
-    ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
-    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
-            std::make_pair(red_allele_counts, allele_counts);
-    return std::make_pair(pattern, gene_tree);
-}
-
 void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
     if ((! this->state_frequencies_are_fixed()) && (! this->state_frequencies_are_constrained())) {
         this->freq_1_->set_value_from_prior(rng);
@@ -975,7 +1002,8 @@ double PopulationTree::compute_log_likelihood(
             this->constant_sites_removed(),
             all_red_pattern_prob,
             all_green_pattern_prob,
-            nthreads);
+            nthreads,
+            this->get_population_size());
 
     this->all_red_pattern_likelihood_.set_value(all_red_pattern_prob);
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_prob);
@@ -1017,4 +1045,414 @@ double PopulationTree::compute_log_likelihood(
 
     this->log_likelihood_.set_value(log_likelihood);
     return log_likelihood;
+}
+
+
+
+void DirichletPopulationTree::set_population_size_multipliers(
+        std::shared_ptr<PopulationNode> node,
+        const std::vector<double> & multipliers) {
+    node->set_population_size(multipliers.at(node->get_population_index()));
+    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
+        this->set_population_size_multipliers(node->get_child(i), multipliers);
+    }
+}
+
+void DirichletPopulationTree::get_population_size_multipliers(
+        std::shared_ptr<PopulationNode> node,
+        std::vector<double> & multipliers) const {
+    multipliers.at(node->get_population_index()) = node->get_population_size();
+    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
+        this->get_population_size_multipliers(node->get_child(i), multipliers);
+    }
+}
+
+DirichletPopulationTree::DirichletPopulationTree(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
+    this->init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+    std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
+    this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
+    this->set_population_size_multipliers(dirichlet_parameters);
+}
+
+
+void DirichletPopulationTree::set_population_size(double size) {
+    if (this->population_size_is_fixed()) {
+        return;
+    }
+    this->population_size_->set_value(size);
+    this->make_dirty();
+}
+double DirichletPopulationTree::get_population_size() const {
+    return this->population_size_->get_value();
+}
+void DirichletPopulationTree::scale_population_size(double scale) {
+    this->set_population_size(this->get_population_size() * scale);
+}
+
+void DirichletPopulationTree::set_population_size_multipliers(
+        const std::vector<double> & multipliers) {
+    if (this->population_size_multipliers_are_fixed()) {
+        return;
+    }
+    ECOEVOLITY_ASSERT(multipliers.size() == this->get_node_count());
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(
+            std::accumulate(multipliers.begin(), multipliers.end(), 0.0),
+            (double)multipliers.size());
+    this->set_population_size_multipliers(this->root_, multipliers);
+}
+
+void DirichletPopulationTree::set_population_size_multipliers_from_proportions(
+        const std::vector<double> & proportions) {
+    if (this->population_size_multipliers_are_fixed()) {
+        return;
+    }
+    unsigned int nnodes = this->get_node_count();
+    ECOEVOLITY_ASSERT(proportions.size() == nnodes);
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(
+            std::accumulate(proportions.begin(), proportions.end(), 0.0),
+            1.0);
+    std::vector<double> multipliers = proportions;
+    for (unsigned int i = 0; i < multipliers.size(); ++i) {
+        multipliers.at(i) *= nnodes;
+    }
+    this->set_population_size_multipliers(multipliers);
+}
+
+std::vector<double> DirichletPopulationTree::get_population_size_multipliers() const {
+    std::vector<double> multipliers(this->get_node_count(), 0.0);
+    this->get_population_size_multipliers(this->root_, multipliers);
+    return multipliers;
+}
+
+std::shared_ptr<PositiveRealParameter> DirichletPopulationTree::get_population_size_parameter() const {
+    return this->population_size_;
+}
+
+double DirichletPopulationTree::get_root_population_size_multiplier() const {
+    return this->root_->get_population_size();
+}
+
+double DirichletPopulationTree::get_root_population_size() const {
+    return (this->get_population_size() * this->get_root_population_size_multiplier());
+}
+
+void DirichletPopulationTree::store_all_population_sizes() {
+    this->store_population_size();
+    this->store_population_size_multipliers();
+}
+void DirichletPopulationTree::store_population_size() {
+    this->population_size_->store();
+}
+void DirichletPopulationTree::store_population_size_multipliers() {
+    this->root_->store_all_population_sizes();
+}
+void DirichletPopulationTree::restore_all_population_sizes() {
+    this->restore_population_size();
+    this->restore_population_size_multipliers();
+}
+void DirichletPopulationTree::restore_population_size() {
+    this->population_size_->restore();
+}
+void DirichletPopulationTree::restore_population_size_multipliers() {
+    this->root_->restore_all_population_sizes();
+}
+
+void DirichletPopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+    this->population_size_->set_prior(prior);
+    this->make_dirty();
+}
+
+void DirichletPopulationTree::set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
+    this->population_size_multiplier_prior_ = prior;
+    this->make_dirty();
+}
+
+double DirichletPopulationTree::compute_log_prior_density_of_population_sizes() const {
+    return (this->compute_log_prior_density_of_population_size() +
+            this->compute_log_prior_density_of_population_size_multipliers());
+}
+double DirichletPopulationTree::compute_log_prior_density_of_population_size() const {
+    return this->population_size_->relative_prior_ln_pdf();
+}
+double DirichletPopulationTree::compute_log_prior_density_of_population_size_multipliers() const {
+    if (this->population_size_multipliers_are_fixed()) {
+        return 0.0;
+    }
+    std::vector<double> multipliers = this->get_population_size_multipliers();
+    double number_of_nodes = (double)this->get_node_count();
+    for (unsigned int i = 0; i < multipliers.size(); ++i) {
+        multipliers.at(i) /= number_of_nodes;
+    }
+    return this->population_size_multiplier_prior_->relative_ln_pdf(multipliers);
+}
+
+
+ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
+    this->comparison_init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+    std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
+    this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
+    this->set_population_size_multipliers(dirichlet_parameters);
+}
+
+void ComparisonDirichletPopulationTree::comparison_init(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
+    this->init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+    if (this->data_.get_number_of_populations() > 2) {
+        throw EcoevolityComparisonSettingError(
+                "ComparisonDirichletPopulationTree() does not support more than 2 populations",
+                path);
+    }
+    this->root_->set_label("root-" + this->root_->get_child(0)->get_label());
+}
+
+ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
+        const DirichletComparisonSettings& settings,
+        RandomNumberGenerator& rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites) {
+    this->comparison_init(settings.get_path(),
+               settings.get_population_name_delimiter(),
+               settings.population_name_is_prefix(),
+               settings.genotypes_are_diploid(),
+               settings.markers_are_dominant(),
+               settings.constant_sites_removed(),
+               true, // validate
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               settings.get_ploidy());
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
+        this->fold_patterns();
+    }
+    this->set_population_size_prior(
+            settings.get_population_size_settings().get_prior_settings().get_instance());
+    PositiveRealParameter p = PositiveRealParameter(
+            settings.get_population_size_settings(),
+            rng);
+    this->set_population_size(p.get_value());
+    if (settings.get_population_size_settings().is_fixed()) {
+        this->fix_population_size();
+    }
+
+    this->set_population_size_multiplier_prior(
+            settings.get_population_size_multiplier_settings().get_prior_settings().get_dirichlet_distribution_instance());
+    std::vector<double> multiplier_values = settings.get_population_size_multiplier_settings().get_values();
+    // if (settings.constrain_population_sizes()) {
+    //     this->constrain_population_sizes();
+    // }
+    if (multiplier_values.size() < 1) {
+        multiplier_values = this->population_size_multiplier_prior_->draw(rng);
+        this->set_population_size_multipliers_from_proportions(multiplier_values);
+    }
+    else {
+        this->set_population_size_multipliers(multiplier_values);
+        if (settings.get_population_size_multiplier_settings().is_fixed()) {
+            this->fix_population_size_multipliers();
+        }
+    }
+    
+    this->set_freq_1_prior(settings.get_freq_1_settings().get_prior_settings().get_instance());
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
+    }
+    else {
+        PositiveRealParameter freq_1 = PositiveRealParameter(
+                settings.get_freq_1_settings(),
+                rng);
+        this->set_freq_1(freq_1.get_value());
+        if (freq_1.is_fixed()) {
+            this->fix_state_frequencies();
+        }
+    }
+    this->set_mutation_rate_parameter(
+            std::make_shared<PositiveRealParameter>(
+                    settings.get_mutation_rate_settings(),
+                    rng));
+    if ((this->data_.get_number_of_populations() == 1) &&
+            (this->population_size_multipliers_are_fixed()) &&
+            (this->get_root_population_size() == this->get_child_population_size(0)))
+    {
+        std::ostringstream message;
+        message << "\n#######################################################################\n"
+                <<   "###############################  ERROR  ###############################\n"
+                << "The alignment in:\n    \'"
+                << this->data_.get_path() << "\'\n"
+                << "contains only a single population, but you have fixed the population\n"
+                << "sizes for this comparison to be equal. The timing of population\n"
+                << "expansion/contraction cannot be estimated if the ancestral and\n"
+                << "descendant population sizes for this comparison are fixed to be equal.\n"
+                << "Please update your configuration for this comparison accordingly and\n"
+                << "re-run the analysis.\n"
+                << "#######################################################################\n";
+        throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
+    }
+}
+
+double ComparisonDirichletPopulationTree::get_child_population_size_multiplier(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size();
+}
+
+double ComparisonDirichletPopulationTree::get_child_population_size(
+        unsigned int child_index) const {
+    return (this->get_population_size() *
+            this->get_child_population_size_multiplier(child_index));
+}
+
+// Node height sharing needs to be dealt with in next level up in
+// class hierarchy (ComparisonDirichletPopulationTreeCollection)
+double ComparisonDirichletPopulationTree::compute_log_prior_density() {
+    double d = 0.0;
+    d += this->compute_log_prior_density_of_state_frequencies();
+    d += this->compute_log_prior_density_of_mutation_rate();
+    // d += this->compute_log_prior_density_of_node_heights();
+    d += this->compute_log_prior_density_of_population_sizes();
+    this->log_prior_density_.set_value(d);
+    return d;
+}
+
+// Node height (re)storing is managed by ComparisonDirichletPopulationTree.
+void ComparisonDirichletPopulationTree::store_parameters() {
+    this->store_freq_1();
+    this->store_mutation_rate();
+    this->store_all_population_sizes();
+    // this->store_all_heights();
+}
+void ComparisonDirichletPopulationTree::restore_parameters() {
+    this->restore_freq_1();
+    this->restore_mutation_rate();
+    this->restore_all_population_sizes();
+    // this->restore_all_heights();
+}
+
+void ComparisonDirichletPopulationTree::write_state_log_header(
+        std::ostream& out,
+        bool include_event_index,
+        const std::string& delimiter) const {
+    std::string suffix = "_" + this->root_->get_child(0)->get_label();
+    if (include_event_index) {
+        out << "root_height_index" << suffix << delimiter;
+    }
+    out << "ln_likelihood" << suffix << delimiter
+        << "ln_prior" << suffix << delimiter
+        << "root_height" << suffix << delimiter
+        << "mutation_rate" << suffix << delimiter
+        << "freq_1" << suffix << delimiter
+        << "pop_size" << suffix << delimiter
+        << "pop_size_multiplier" << suffix << delimiter;
+    if (this->root_->get_number_of_children() > 1) {
+        out << "pop_size_multiplier" << "_" << this->root_->get_child(1)->get_label() << delimiter;
+    }
+    out << "pop_size_multiplier_root" << suffix;
+}
+
+void ComparisonDirichletPopulationTree::log_state(
+        std::ostream& out,
+        const std::string& delimiter) const {
+    out << this->log_likelihood_.get_value() << delimiter
+        << this->log_prior_density_.get_value() << delimiter
+        << this->get_height() << delimiter
+        << this->get_mutation_rate() << delimiter
+        << this->get_freq_1() << delimiter
+        << this->get_population_size() << delimiter
+        << this->get_child_population_size_multiplier(0) << delimiter;
+    if (this->root_->get_number_of_children() > 1) {
+        out << this->get_child_population_size_multiplier(1) << delimiter;
+    }
+    out << this->get_root_population_size_multiplier();
+}
+
+void ComparisonDirichletPopulationTree::log_state(
+        std::ostream& out,
+        unsigned int event_index,
+        const std::string& delimiter) const {
+    out << event_index << delimiter;
+    this->log_state(out, delimiter);
+}
+
+std::string ComparisonDirichletPopulationTree::get_state_header_string(
+        const std::string& delimiter) const {
+    std::ostringstream ss;
+    this->write_state_log_header(ss, false, delimiter);
+    return ss.str();
+}
+
+std::string ComparisonDirichletPopulationTree::get_state_string(
+        const std::string& delimiter,
+        unsigned int precision) const {
+    std::ostringstream ss;
+    ss.precision(precision);
+    this->log_state(ss, delimiter);
+    return ss.str();
+}
+
+void ComparisonDirichletPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
+    if ((! this->state_frequencies_are_fixed()) && (! this->state_frequencies_are_constrained())) {
+        this->freq_1_->set_value_from_prior(rng);
+    }
+    if (! this->mutation_rate_is_fixed()) {
+        this->mutation_rate_->set_value_from_prior(rng);
+    }
+    if (! this->population_size_is_fixed()) {
+        this->population_size_->set_value_from_prior(rng);
+    }
+    if (! this->population_size_multipliers_are_fixed()) {
+        this->set_population_size_multipliers_from_proportions(this->population_size_multiplier_prior_->draw(rng));
+    }
 }

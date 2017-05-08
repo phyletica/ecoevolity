@@ -61,15 +61,16 @@ void compute_top_of_branch_partials(
         const double u,
         const double v,
         const double mutation_rate, 
-        const double ploidy
+        const double ploidy,
+        const double reference_population_size
         ) {
     if (node.get_allele_count() == 0) {
         node.copy_top_pattern_probs(node.get_bottom_pattern_probs());
         return;
     }
 
-    double theta = 2 * ploidy * node.get_population_size() * mutation_rate;
-    double length = node.get_length() * mutation_rate;;
+    double theta = 2 * ploidy * node.get_population_size() * reference_population_size * mutation_rate;
+    double length = node.get_length() * mutation_rate;
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node.get_allele_count(),
             u,
@@ -156,7 +157,8 @@ void compute_pattern_partials(
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        const double reference_population_size
         ) {
     ECOEVOLITY_ASSERT(red_allele_counts.size() == allele_counts.size());
     if (node.is_leaf()) {
@@ -174,8 +176,9 @@ void compute_pattern_partials(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
-        compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy);
+                markers_are_dominant,
+                reference_population_size);
+        compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy, reference_population_size);
         compute_internal_partials(node);
     }
     else if (node.get_number_of_children() == 2) {
@@ -186,7 +189,8 @@ void compute_pattern_partials(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
+                markers_are_dominant,
+                reference_population_size);
         compute_pattern_partials(*node.get_child(1),
                 red_allele_counts,
                 allele_counts,
@@ -194,9 +198,10 @@ void compute_pattern_partials(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
-        compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy);
-        compute_top_of_branch_partials(*node.get_child(1), u, v, mutation_rate, ploidy);
+                markers_are_dominant,
+                reference_population_size);
+        compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy, reference_population_size);
+        compute_top_of_branch_partials(*node.get_child(1), u, v, mutation_rate, ploidy, reference_population_size);
         compute_internal_partials(node);
     }
     else {
@@ -213,7 +218,8 @@ std::vector< std::vector<double> > compute_root_probabilities(
         const double u,
         const double v,
         const double mutation_rate,
-        const double ploidy
+        const double ploidy,
+        const double reference_population_size
         ) {
     unsigned int N = root.get_allele_count();
     std::vector< std::vector<double> > x (N + 1); 
@@ -221,7 +227,7 @@ std::vector< std::vector<double> > compute_root_probabilities(
             N,
             u,
             v,
-            2 * ploidy * root.get_population_size() * mutation_rate);
+            2 * ploidy * root.get_population_size() * reference_population_size * mutation_rate);
     std::vector<double> xcol = q.find_orthogonal_vector();
 
     // ECOEVOLITY_DEBUG(
@@ -254,10 +260,11 @@ double compute_root_likelihood(
         const double u,
         const double v,
         const double mutation_rate,
-        const double ploidy
+        const double ploidy,
+        const double reference_population_size
         ) {
     unsigned int N = root.get_allele_count();
-    std::vector< std::vector<double> > conditionals = compute_root_probabilities(root, u, v, mutation_rate, ploidy);
+    std::vector< std::vector<double> > conditionals = compute_root_probabilities(root, u, v, mutation_rate, ploidy, reference_population_size);
 
     // ECOEVOLITY_DEBUG(
     //     for (unsigned int n = 1; n <= N; ++n) {
@@ -294,7 +301,8 @@ double compute_pattern_likelihood(
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        const double reference_population_size
         ) {
     compute_pattern_partials(root,
             red_allele_counts,
@@ -303,8 +311,9 @@ double compute_pattern_likelihood(
             v,
             mutation_rate,
             ploidy,
-            markers_are_dominant);
-    return compute_root_likelihood(root, u, v, mutation_rate, ploidy);
+            markers_are_dominant,
+            reference_population_size);
+    return compute_root_likelihood(root, u, v, mutation_rate, ploidy, reference_population_size);
 }
 
 void compute_constant_pattern_likelihoods(
@@ -317,7 +326,8 @@ void compute_constant_pattern_likelihoods(
         const bool markers_are_dominant,
         const bool state_frequencies_are_constrained,
         double& all_red_pattern_likelihood,
-        double& all_green_pattern_likelihood
+        double& all_green_pattern_likelihood,
+        const double reference_population_size
         ) {
     std::vector<unsigned int> red_allele_counts (max_allele_counts.size(), 0); 
     all_green_pattern_likelihood = compute_pattern_likelihood(root,
@@ -327,7 +337,8 @@ void compute_constant_pattern_likelihoods(
             v,
             mutation_rate,
             ploidy,
-            markers_are_dominant);
+            markers_are_dominant,
+            reference_population_size);
     all_red_pattern_likelihood = all_green_pattern_likelihood;
     if (! state_frequencies_are_constrained) {
         all_red_pattern_likelihood = compute_pattern_likelihood(root,
@@ -337,7 +348,8 @@ void compute_constant_pattern_likelihoods(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
+                markers_are_dominant,
+                reference_population_size);
     }
 }
 
@@ -352,7 +364,8 @@ double get_log_likelihood_for_pattern_range(
         const double v,
         const double mutation_rate,
         const double ploidy,
-        const bool markers_are_dominant
+        const bool markers_are_dominant,
+        const double reference_population_size
         ) {
     ECOEVOLITY_ASSERT((red_allele_count_matrix.size() == allele_count_matrix.size()) &&
                       (red_allele_count_matrix.size() == pattern_weights.size()));
@@ -367,7 +380,8 @@ double get_log_likelihood_for_pattern_range(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
+                markers_are_dominant,
+                reference_population_size);
         if (pattern_likelihood == 0.0) {
             return -std::numeric_limits<double>::infinity();
         }
@@ -392,7 +406,8 @@ double get_log_likelihood(
         const bool constant_sites_removed,
         double& all_red_pattern_likelihood,
         double& all_green_pattern_likelihood,
-        unsigned int nthreads
+        unsigned int nthreads,
+        const double reference_population_size
         ) {
     if (nthreads < 2) {
         if (constant_sites_removed) {
@@ -406,7 +421,8 @@ double get_log_likelihood(
                     markers_are_dominant,
                     state_frequencies_are_constrained,
                     all_red_pattern_likelihood,
-                    all_green_pattern_likelihood);
+                    all_green_pattern_likelihood,
+                    reference_population_size);
         }
         return get_log_likelihood_for_pattern_range(
                 root,
@@ -419,7 +435,8 @@ double get_log_likelihood(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant);
+                markers_are_dominant,
+                reference_population_size);
     }
     double log_likelihood = 0.0;
     const unsigned int npatterns = pattern_weights.size();
@@ -447,7 +464,8 @@ double get_log_likelihood(
                 v,
                 mutation_rate,
                 ploidy,
-                markers_are_dominant
+                markers_are_dominant,
+                reference_population_size
                 );
         start_idx += batch_size;
     }
@@ -464,7 +482,8 @@ double get_log_likelihood(
                 markers_are_dominant,
                 state_frequencies_are_constrained,
                 all_red_pattern_likelihood,
-                all_green_pattern_likelihood);
+                all_green_pattern_likelihood,
+                reference_population_size);
     }
     log_likelihood += get_log_likelihood_for_pattern_range(
             root,
@@ -477,7 +496,8 @@ double get_log_likelihood(
             v,
             mutation_rate,
             ploidy,
-            markers_are_dominant);
+            markers_are_dominant,
+            reference_population_size);
 
     // Join the launched threads
     for (auto &t : threads) {

@@ -57,9 +57,7 @@ global_comparison_settings:
     population_name_delimiter: " "
     population_name_is_prefix: true
     constant_sites_removed: true
-    use_empirical_starting_value_for_freq_1: false
     equal_population_sizes: false
-    equal_state_frequencies: false
     parameters:
         population_size:
             value: 0.005
@@ -96,7 +94,6 @@ comparisons:
         
 - comparison:
     path: "data2.nex"
-    equal_state_frequencies: true
     constant_sites_removed: false
     population_name_delimiter: "-"
     population_name_is_prefix: false
@@ -107,3 +104,6 @@ comparisons:
                 gamma_distribution:
                     shape: 100.0
                     scale: 0.01
+        freq_1:
+            value: 0.5
+            estimate: false
