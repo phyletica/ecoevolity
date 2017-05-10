@@ -34,9 +34,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -180,9 +178,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -313,9 +309,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -433,9 +427,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -571,9 +563,7 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -797,9 +787,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -946,9 +934,7 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons and shared 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -1152,9 +1138,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes and shar
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -1288,9 +1272,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -1434,9 +1416,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -1567,9 +1547,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -1687,9 +1665,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -1825,9 +1801,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2051,9 +2025,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2200,9 +2172,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2406,9 +2376,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2542,9 +2510,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2688,9 +2654,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2821,9 +2785,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -2941,9 +2903,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -3079,9 +3039,7 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -3305,9 +3263,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -3454,9 +3410,7 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons and shared e
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -3660,9 +3614,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes and share
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -3796,9 +3748,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -3942,9 +3892,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -4075,9 +4023,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -4195,9 +4141,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -4333,9 +4277,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -4559,9 +4501,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -4708,9 +4648,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -4914,9 +4852,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -5052,9 +4988,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -5232,9 +5166,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -5399,9 +5331,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -5553,9 +5483,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -5725,9 +5653,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -6011,9 +5937,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -6194,9 +6118,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -6460,9 +6382,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -6628,9 +6548,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and fixed rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -6781,9 +6699,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -6923,9 +6839,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes and rates"
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -7051,9 +6965,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons and fixed rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -7196,9 +7108,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and fix
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -7444,9 +7354,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event and fixed 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -7600,9 +7508,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -7828,9 +7734,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -7973,9 +7877,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -8153,9 +8055,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -8320,9 +8220,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -8474,9 +8372,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -8646,9 +8542,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -8932,9 +8826,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -9115,9 +9007,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -9381,9 +9271,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -9549,9 +9437,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -9702,9 +9588,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -9844,9 +9728,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes a
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -9972,9 +9854,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -10117,9 +9997,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -10365,9 +10243,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -10521,9 +10397,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -10749,9 +10623,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -10895,9 +10767,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -11075,9 +10945,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -11242,9 +11110,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -11396,9 +11262,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -11568,9 +11432,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -11854,9 +11716,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -12037,9 +11897,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -12303,9 +12161,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -12471,9 +12327,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and fixed rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -12624,9 +12478,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and f
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -12766,9 +12618,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes and rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -12894,9 +12744,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons and fixed rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -13039,9 +12887,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and fixe
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -13287,9 +13133,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event and fixed r
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -13443,9 +13287,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -13671,9 +13513,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -13816,9 +13656,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -13996,9 +13834,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -14163,9 +13999,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -14317,9 +14151,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -14489,9 +14321,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -14775,9 +14605,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -14958,9 +14786,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -15224,9 +15050,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -15392,9 +15216,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -15545,9 +15367,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -15687,9 +15507,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes an
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -15815,9 +15633,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -15960,9 +15776,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -16208,9 +16022,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -16364,9 +16176,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -16592,9 +16402,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -16732,9 +16540,7 @@ TEST_CASE("Testing ComparisonHeightScaler", "[ComparisonHeightScaler]") {
         out << "    population_name_delimiter: \" \"\n";
         out << "    population_name_is_prefix: true\n";
         out << "    constant_sites_removed: true\n";
-        out << "    use_empirical_starting_value_for_freq_1: false\n";
         out << "    equal_population_sizes: true\n";
-        out << "    equal_state_frequencies: true\n";
         out << "    parameters:\n";
         out << "        population_size:\n";
         out << "            value: 0.005\n";
@@ -16810,9 +16616,7 @@ TEST_CASE("Testing ComparisonHeightScaler", "[ComparisonHeightScaler]") {
         out << "    population_name_delimiter: \" \"\n";
         out << "    population_name_is_prefix: true\n";
         out << "    constant_sites_removed: true\n";
-        out << "    use_empirical_starting_value_for_freq_1: false\n";
         out << "    equal_population_sizes: true\n";
-        out << "    equal_state_frequencies: true\n";
         out << "    parameters:\n";
         out << "        population_size:\n";
         out << "            value: 0.005\n";
@@ -16892,9 +16696,7 @@ TEST_CASE("Testing ComparisonHeightMover", "[ComparisonHeightMover]") {
         out << "    population_name_delimiter: \" \"\n";
         out << "    population_name_is_prefix: true\n";
         out << "    constant_sites_removed: true\n";
-        out << "    use_empirical_starting_value_for_freq_1: false\n";
         out << "    equal_population_sizes: true\n";
-        out << "    equal_state_frequencies: true\n";
         out << "    parameters:\n";
         out << "        population_size:\n";
         out << "            value: 0.005\n";
@@ -16970,9 +16772,7 @@ TEST_CASE("Testing ComparisonHeightMover", "[ComparisonHeightMover]") {
         out << "    population_name_delimiter: \" \"\n";
         out << "    population_name_is_prefix: true\n";
         out << "    constant_sites_removed: true\n";
-        out << "    use_empirical_starting_value_for_freq_1: false\n";
         out << "    equal_population_sizes: true\n";
-        out << "    equal_state_frequencies: true\n";
         out << "    parameters:\n";
         out << "        population_size:\n";
         out << "            value: 0.005\n";
@@ -17923,9 +17723,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -18066,9 +17864,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 6 pairs and concentration 1
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -18214,9 +18010,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -18361,9 +18155,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -18510,9 +18302,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -18659,9 +18449,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -18823,9 +18611,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: false\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";

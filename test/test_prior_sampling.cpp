@@ -71,9 +71,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer with 6 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -328,9 +326,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -485,9 +481,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -642,9 +636,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -795,9 +787,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -961,9 +951,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -1057,9 +1045,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -1263,9 +1249,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -1421,9 +1405,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -1558,9 +1540,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -1693,9 +1673,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -1830,9 +1808,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -1960,9 +1936,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -2105,9 +2079,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -2250,9 +2222,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -2388,9 +2358,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -2529,9 +2497,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: false\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -2665,9 +2631,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: false\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -2801,9 +2765,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: false\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -2934,9 +2896,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.001\n";
@@ -3066,9 +3026,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler with op
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.001\n";
@@ -3206,9 +3164,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -3366,9 +3322,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -3526,9 +3480,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -3683,9 +3635,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -3855,9 +3805,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -4027,9 +3975,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -4200,9 +4146,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -4420,9 +4364,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -4640,9 +4582,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -4915,9 +4855,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -5250,9 +5188,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeHeightS
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -5562,9 +5498,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -5792,9 +5726,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -6022,9 +5954,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -6278,9 +6208,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -6617,9 +6545,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -6923,9 +6849,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -7093,9 +7017,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -7315,9 +7237,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -7570,9 +7490,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: true\n";
-        os << "    equal_state_frequencies: true\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -7847,9 +7765,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -8183,9 +8099,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -8519,9 +8433,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -8869,9 +8781,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -9198,9 +9108,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -9517,9 +9425,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -9847,9 +9753,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeHei
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -10176,9 +10080,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -10498,9 +10400,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized and CompositeHeightSizeRate
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -10819,9 +10719,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -11141,9 +11039,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CompositeHeightSizeRate
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";

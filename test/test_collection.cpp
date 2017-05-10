@@ -63,15 +63,13 @@ TEST_CASE("Testing draw_heights_from_prior for DPP with 3 pairs and alpha 1.0",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: true\n";
-        cfg << "    equal_state_frequencies: true\n";
         cfg << "    parameters:\n";
         cfg << "        population_size:\n";
         cfg << "            value: 0.005\n";
         cfg << "            estimate: false\n";
         cfg << "        freq_1:\n";
-        cfg << "            value: 1.0\n";
+        cfg << "            value: 0.5\n";
         cfg << "            estimate: false\n";
         cfg << "        mutation_rate:\n";
         cfg << "            value: 1.0\n";
@@ -251,9 +249,7 @@ TEST_CASE("Testing draw_from_prior for DPP with 3 pairs and alpha 1.0",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -576,9 +572,7 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -881,9 +875,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -1193,9 +1185,7 @@ TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -1532,9 +1522,7 @@ TEST_CASE("Testing draw_from_prior logging for DPP with variable alpha",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -1848,9 +1836,7 @@ TEST_CASE("Testing draw_from_prior for fixed 012",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -2147,9 +2133,7 @@ TEST_CASE("Testing draw_from_prior for fixed 000",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -2449,9 +2433,7 @@ TEST_CASE("Testing draw_from_prior logging for fixed 012",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -2765,9 +2747,7 @@ TEST_CASE("Testing draw_from_prior logging for fixed 000",
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -3091,9 +3071,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";
@@ -3496,9 +3474,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         cfg << "    population_name_delimiter: \" \"\n";
         cfg << "    population_name_is_prefix: true\n";
         cfg << "    constant_sites_removed: true\n";
-        cfg << "    use_empirical_starting_value_for_freq_1: false\n";
         cfg << "    equal_population_sizes: false\n";
-        cfg << "    equal_state_frequencies: false\n";
         cfg << "comparisons:\n";
         cfg << "- comparison:\n";
         cfg << "    path: hemi129.nex\n";

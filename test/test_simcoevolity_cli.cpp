@@ -82,9 +82,7 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-constant.nex\n";
@@ -255,9 +253,7 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-constant.nex\n";
@@ -448,9 +444,7 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-missing.nex\n";
@@ -621,9 +615,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-missing.nex\n";
@@ -815,9 +807,7 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    equal_population_sizes: true\n";
@@ -989,9 +979,7 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -1162,9 +1150,7 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
