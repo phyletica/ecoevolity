@@ -498,7 +498,7 @@ void ComparisonPopulationTreeCollection::remap_tree(
         unsigned int height_index,
         double log_likelihood) {
     this->remap_tree(tree_index, height_index);
-    this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
+    this->trees_.at(tree_index).set_log_likelihood_value(log_likelihood);
     this->trees_.at(tree_index).make_clean();
 }
 
@@ -532,7 +532,7 @@ void ComparisonPopulationTreeCollection::map_tree_to_new_height(
         double height,
         double log_likelihood) {
     this->map_tree_to_new_height(tree_index, height);
-    this->trees_.at(tree_index).log_likelihood_.set_value(log_likelihood);
+    this->trees_.at(tree_index).set_log_likelihood_value(log_likelihood);
     this->trees_.at(tree_index).make_clean();
 }
 
@@ -911,7 +911,7 @@ std::map<std::string, BiallelicData> ComparisonPopulationTreeCollection::simulat
         bool validate) const {
     std::map<std::string, BiallelicData> alignments;
     for (auto const & tree: this->trees_) {
-        alignments[tree.data_.get_path()] = tree.simulate_biallelic_data_set(rng, validate);
+        alignments[tree.get_data().get_path()] = tree.simulate_biallelic_data_set(rng, validate);
     }
     return alignments;
 }

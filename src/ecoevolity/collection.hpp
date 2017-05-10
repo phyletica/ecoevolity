@@ -34,10 +34,6 @@
 
 class ComparisonPopulationTreeCollection {
 
-    friend class DirichletProcessGibbsSampler;
-    friend class ReversibleJumpSampler;
-    friend class ReversibleJumpWindowOperator;
-
     protected:
         std::vector<ComparisonPopulationTree> trees_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
@@ -62,42 +58,11 @@ class ComparisonPopulationTreeCollection {
                 bool strict_on_missing_sites = true
                 );
 
-        void remap_tree(unsigned int tree_index,
-                        unsigned int height_index);
-        void remap_tree(unsigned int tree_index,
-                        unsigned int height_index,
-                        double log_likelihood);
-        unsigned int remap_trees(
-                const std::vector<unsigned int>& tree_indices,
-                unsigned int height_index);
-
-        unsigned int merge_height(
-                unsigned int height_index,
-                unsigned int target_height_index);
-
-        void map_tree_to_new_height(
-                unsigned int tree_index,
-                double height);
-        void map_tree_to_new_height(
-                unsigned int tree_index,
-                double height,
-                double log_likelihood);
-        unsigned int map_trees_to_new_height(
-                const std::vector<unsigned int>& tree_indices,
-                double height);
-
-        void set_node_height_indices(
-                const std::vector<unsigned int>& indices,
-                RandomNumberGenerator & rng);
-
         void add_height(
                 double height,
                 const std::vector<unsigned int>& mapped_tree_indices);
 
         void remove_height(unsigned int height_index);
-
-        void update_log_paths(unsigned int max_number_of_attempts = 10000);
-        void increment_log_paths();
 
     public:
         ComparisonPopulationTreeCollection() { }
@@ -150,6 +115,14 @@ class ComparisonPopulationTreeCollection {
 
         bool sampling_models() const {
             return this->operator_schedule_.sampling_models();
+        }
+
+        double get_draw_from_node_height_prior(RandomNumberGenerator& rng) {
+            return this->node_height_prior_->draw(rng);
+        }
+
+        double get_node_height_prior_mean() const {
+            return this->node_height_prior_->get_mean();
         }
 
         unsigned int get_logging_precision() const {
@@ -309,6 +282,37 @@ class ComparisonPopulationTreeCollection {
             }
             return true;
         }
+
+        void remap_tree(unsigned int tree_index,
+                        unsigned int height_index);
+        void remap_tree(unsigned int tree_index,
+                        unsigned int height_index,
+                        double log_likelihood);
+        unsigned int remap_trees(
+                const std::vector<unsigned int>& tree_indices,
+                unsigned int height_index);
+
+        unsigned int merge_height(
+                unsigned int height_index,
+                unsigned int target_height_index);
+
+        void map_tree_to_new_height(
+                unsigned int tree_index,
+                double height);
+        void map_tree_to_new_height(
+                unsigned int tree_index,
+                double height,
+                double log_likelihood);
+        unsigned int map_trees_to_new_height(
+                const std::vector<unsigned int>& tree_indices,
+                double height);
+
+        void set_node_height_indices(
+                const std::vector<unsigned int>& indices,
+                RandomNumberGenerator & rng);
+
+        void update_log_paths(unsigned int max_number_of_attempts = 10000);
+        void increment_log_paths();
 };
 
 #endif

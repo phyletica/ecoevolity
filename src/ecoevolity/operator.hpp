@@ -72,10 +72,6 @@ class OperatorInterface {
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const = 0;
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
-        virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads) = 0;
 
@@ -171,15 +167,6 @@ class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index) = 0;
 
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
         virtual OperatorInterface::OperatorTypeEnum get_type() const;
 
         virtual void operate(RandomNumberGenerator& rng,
@@ -204,17 +191,8 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
-
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                unsigned int tree_index) = 0;
 
         virtual OperatorInterface::OperatorTypeEnum get_type() const;
 
@@ -242,15 +220,6 @@ class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperator
         virtual double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads) = 0;
-
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         virtual OperatorInterface::OperatorTypeEnum get_type() const;
 
@@ -370,18 +339,10 @@ class ConcentrationScaler : public CollectionOperatorInterface<ScaleOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -395,24 +356,15 @@ class FreqMover : public TreeOperatorInterface<WindowOperator> {
         FreqMover();
         FreqMover(double weight);
         FreqMover(double weight, double window_size);
-        // virtual ~FreqMover() { }
 
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
@@ -425,24 +377,15 @@ class ComparisonMutationRateScaler : public TreeOperatorInterface<ScaleOperator>
         ComparisonMutationRateScaler();
         ComparisonMutationRateScaler(double weight);
         ComparisonMutationRateScaler(double weight, double scale);
-        // virtual ~ComparisonMutationRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
@@ -456,24 +399,15 @@ class ChildPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
         ChildPopulationSizeScaler();
         ChildPopulationSizeScaler(double weight);
         ChildPopulationSizeScaler(double weight, double scale);
-        // virtual ~ChildPopulationSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
@@ -492,19 +426,11 @@ class RootPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
@@ -522,18 +448,10 @@ class ComparisonHeightScaler : public TimeOperatorInterface<ScaleOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
         std::string target_parameter() const;
@@ -550,18 +468,10 @@ class ComparisonHeightMover : public TimeOperatorInterface<WindowOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
         std::string target_parameter() const;
@@ -579,18 +489,10 @@ class UnivariateHeightSizeScaler : public CollectionOperatorInterface<ScaleOpera
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -608,18 +510,11 @@ class UnivariateHeightSizeRateScaler : public CollectionOperatorInterface<ScaleO
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads);
 
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -658,15 +553,6 @@ class UnivariateCompositeHeightSizeScaler : public CollectionOperatorInterface<O
         void scale_child_population_sizes(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -720,15 +606,6 @@ class UnivariateCompositeHeightSizeRateScaler : public CollectionOperatorInterfa
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
 
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
         std::string target_parameter() const;
 
         std::string get_name() const;
@@ -764,15 +641,6 @@ class HeightSizeMixer : public TimeOperatorInterface<ScaleOperator> {
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
 
@@ -820,18 +688,10 @@ class HeightSizeScaler : public TimeOperatorInterface<ScaleOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
 
@@ -880,18 +740,10 @@ class HeightSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
 
@@ -940,18 +792,10 @@ class HeightSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
         void operate(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
 
@@ -1021,18 +865,10 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
         double propose(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads);
+
         double propose_gibbs(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons,
                 unsigned int nthreads);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -1087,15 +923,6 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
         virtual double propose_jump_to_gap(RandomNumberGenerator& rng,
                 ComparisonPopulationTreeCollection& comparisons);
 
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-
         const std::vector<double>& get_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
 
@@ -1139,15 +966,6 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 //         double propose(RandomNumberGenerator& rng,
 //                 ComparisonPopulationTreeCollection& comparisons,
 //                 unsigned int nthreads);
-// 
-//         double propose(RandomNumberGenerator& rng,
-//                 PositiveRealParameter& parameter) const {
-//             throw EcoevolityError("calling wrong propose signature");
-//         }
-//         double propose(RandomNumberGenerator& rng,
-//                 ComparisonPopulationTree& tree) const {
-//             throw EcoevolityError("calling wrong propose signature");
-//         }
 // 
 //         void update_height(RandomNumberGenerator& rng,
 //                 double& height,

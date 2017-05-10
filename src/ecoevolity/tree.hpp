@@ -485,8 +485,6 @@ class DirichletPopulationTree: public PopulationTree {
 
 class ComparisonPopulationTree: public PopulationTree {
 
-    friend class ComparisonPopulationTreeCollection;
-
     public:
         ComparisonPopulationTree() { }
         ComparisonPopulationTree(
@@ -571,8 +569,6 @@ class ComparisonPopulationTree: public PopulationTree {
 };
 
 class ComparisonDirichletPopulationTree: public DirichletPopulationTree {
-
-    friend class ComparisonPopulationTreeCollection;
 
     public:
         ComparisonDirichletPopulationTree() { }

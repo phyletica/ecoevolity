@@ -370,7 +370,7 @@ void TreeOperatorInterface<DerivedOperatorType>::perform_collection_move(
     std::vector<double> hastings_ratios;
     hastings_ratios.reserve(comparisons.get_number_of_trees());
     for (unsigned int tree_idx = 0; tree_idx < comparisons.get_number_of_trees(); ++tree_idx) {
-        hastings_ratios.push_back(this->propose(rng, comparisons.get_tree(tree_idx)));
+        hastings_ratios.push_back(this->propose(rng, comparisons, tree_idx));
     }
     comparisons.compute_tree_partials();
     for (unsigned int tree_idx = 0; tree_idx < comparisons.get_number_of_trees(); ++tree_idx) {
@@ -874,14 +874,15 @@ void FreqMover::operate(RandomNumberGenerator& rng,
 
 double FreqMover::propose(
         RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    double freq_1 = tree.get_freq_1();
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int tree_index) {
+    double freq_1 = comparisons.get_tree(tree_index).get_freq_1();
     double hastings;
     this->update(rng, freq_1, hastings);
     if ((freq_1 <= 0.0) || (freq_1 > 1.0)) {
         return -std::numeric_limits<double>::infinity();
     }
-    tree.set_freq_1(freq_1);
+    comparisons.get_tree(tree_index).set_freq_1(freq_1);
     return hastings; 
 }
 
@@ -922,11 +923,12 @@ void ComparisonMutationRateScaler::operate(RandomNumberGenerator& rng,
 
 double ComparisonMutationRateScaler::propose(
         RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    double v = tree.get_mutation_rate();
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int tree_index) {
+    double v = comparisons.get_tree(tree_index).get_mutation_rate();
     double hastings;
     this->update(rng, v, hastings);
-    tree.set_mutation_rate(v);
+    comparisons.get_tree(tree_index).set_mutation_rate(v);
     return hastings;
 }
 
@@ -967,9 +969,10 @@ void ChildPopulationSizeScaler::operate(RandomNumberGenerator& rng,
 
 double ChildPopulationSizeScaler::propose(
         RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    int pop_idx = rng.uniform_int(0, tree.get_leaf_node_count() - 1);
-    double size = tree.get_child_population_size(pop_idx);
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int tree_index) {
+    int pop_idx = rng.uniform_int(0, comparisons.get_tree(tree_index).get_leaf_node_count() - 1);
+    double size = comparisons.get_tree(tree_index).get_child_population_size(pop_idx);
 
     double hastings;
     this->update(rng, size, hastings);
@@ -979,7 +982,7 @@ double ChildPopulationSizeScaler::propose(
         return -std::numeric_limits<double>::infinity();
     }
 
-    tree.set_child_population_size(pop_idx, size);
+    comparisons.get_tree(tree_index).set_child_population_size(pop_idx, size);
     return hastings;
 }
 
@@ -1020,8 +1023,9 @@ void RootPopulationSizeScaler::operate(RandomNumberGenerator& rng,
 
 double RootPopulationSizeScaler::propose(
         RandomNumberGenerator& rng,
-        ComparisonPopulationTree& tree) const {
-    double size = tree.get_root_population_size();
+        ComparisonPopulationTreeCollection& comparisons,
+        unsigned int tree_index) {
+    double size = comparisons.get_tree(tree_index).get_root_population_size();
 
     double hastings;
     this->update(rng, size, hastings);
@@ -1031,7 +1035,7 @@ double RootPopulationSizeScaler::propose(
         return -std::numeric_limits<double>::infinity();
     }
 
-    tree.set_root_population_size(size);
+    comparisons.get_tree(tree_index).set_root_population_size(size);
 
     return hastings;
 }
@@ -1850,7 +1854,7 @@ void DirichletProcessGibbsSampler::perform_collection_move(
     // Likelihoods are clean, but update priors
     comparisons.compute_log_likelihood_and_prior(false);
 
-    this->accept(comparisons.operator_schedule_);
+    this->accept(comparisons.get_operator_schedule());
     comparisons.make_trees_clean();
 }
 
@@ -1911,7 +1915,7 @@ double DirichletProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<double> auxiliary_heights;
         auxiliary_heights.reserve(number_of_aux_categories);
         for (unsigned int i = 0; i < number_of_aux_categories; ++i) {
-            double fresh_height = comparisons.node_height_prior_->draw(rng);
+            double fresh_height = comparisons.get_draw_from_node_height_prior(rng);
             auxiliary_heights.push_back(fresh_height);
             tree.set_height(fresh_height);
             double lnl = tree.compute_log_likelihood(nthreads);
@@ -2049,13 +2053,13 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
     const bool in_shared_state_before = (nevents == 1);
     const bool split_event = ((! in_general_state_before) &&
             (in_shared_state_before || (rng.uniform_real() < 0.5)));
-    double mean_height = comparisons.node_height_prior_->get_mean();
+    double mean_height = comparisons.get_node_height_prior_mean();
     if (split_event) {
         std::vector<unsigned int> shared_indices =
                 comparisons.get_shared_event_indices();
         unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
         unsigned int event_index = shared_indices.at(i);
-        double new_height = comparisons.node_height_prior_->draw(rng);
+        double new_height = comparisons.get_draw_from_node_height_prior(rng);
 
         std::vector<unsigned int> tree_indices = comparisons.get_indices_of_mapped_trees(event_index);
         unsigned int num_mapped_nodes = tree_indices.size();
