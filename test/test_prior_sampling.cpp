@@ -6082,8 +6082,8 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
 
         // Expected prior probs estimated by 10 million simulations using the
         // 'dmc_estimate_prior_probs.py' tool from the PyMsBayes package
-        REQUIRE((model_counts.at("000") / (double)expected_sample_size) == Approx(0.554).epsilon(0.01));
-        REQUIRE((model_counts.at("012") / (double)expected_sample_size) == Approx(0.140).epsilon(0.01));
+        REQUIRE((model_counts.at("000") / (double)expected_sample_size) == Approx(0.673).epsilon(0.01));
+        REQUIRE((model_counts.at("012") / (double)expected_sample_size) == Approx(0.0725).epsilon(0.01));
 
         // Make sure the rest of the prior sample is as expected
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
