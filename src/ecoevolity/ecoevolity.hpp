@@ -34,6 +34,6 @@
 
 void write_splash(std::ostream& out);
 
-int ecoevolity_main(int argc, char * argv[]);
+int ecoevolity_main(int argc, char * argv[], bool using_population_size_multipliers = false);
 
 #endif

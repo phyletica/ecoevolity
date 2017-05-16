@@ -852,25 +852,9 @@ void ComparisonPopulationTree::set_child_population_size(
     }
     this->root_->get_child(child_index)->set_population_size(size);
 }
-void ComparisonPopulationTree::update_child_population_size(
-        unsigned int child_index,
-        double size) {
-    if (this->population_sizes_are_fixed()) {
-        return;
-    }
-    this->root_->get_child(child_index)->update_population_size(size);
-}
 double ComparisonPopulationTree::get_child_population_size(
         unsigned int child_index) const {
     return this->root_->get_child(child_index)->get_population_size();
-}
-void ComparisonPopulationTree::store_child_population_size(
-        unsigned int child_index) {
-    this->root_->get_child(child_index)->store_population_size();
-}
-void ComparisonPopulationTree::restore_child_population_size(
-        unsigned int child_index) {
-    this->root_->get_child(child_index)->restore_population_size();
 }
 std::shared_ptr<PositiveRealParameter> ComparisonPopulationTree::get_child_population_size_parameter(
         unsigned int child_index) const {
@@ -928,7 +912,7 @@ void ComparisonPopulationTree::log_state(
         const std::string& delimiter) const {
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
-        << this->get_height() << delimiter
+        << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
         << this->get_freq_1() << delimiter
         << this->get_child_population_size(0) << delimiter;
@@ -943,22 +927,6 @@ void ComparisonPopulationTree::log_state(
         const std::string& delimiter) const {
     out << event_index << delimiter;
     this->log_state(out, delimiter);
-}
-
-std::string ComparisonPopulationTree::get_state_header_string(
-        const std::string& delimiter) const {
-    std::ostringstream ss;
-    this->write_state_log_header(ss, false, delimiter);
-    return ss.str();
-}
-
-std::string ComparisonPopulationTree::get_state_string(
-        const std::string& delimiter,
-        unsigned int precision) const {
-    std::ostringstream ss;
-    ss.precision(precision);
-    this->log_state(ss, delimiter);
-    return ss.str();
 }
 
 void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
@@ -1140,6 +1108,16 @@ void DirichletPopulationTree::set_population_size_multipliers_from_proportions(
 std::vector<double> DirichletPopulationTree::get_population_size_multipliers() const {
     std::vector<double> multipliers(this->get_node_count(), 0.0);
     this->get_population_size_multipliers(this->root_, multipliers);
+    return multipliers;
+}
+
+std::vector<double> DirichletPopulationTree::get_population_size_multipliers_as_proportions() const {
+    unsigned int num_nodes = this->get_node_count();
+    std::vector<double> multipliers(num_nodes, 0.0);
+    this->get_population_size_multipliers(this->root_, multipliers);
+    for (unsigned int i = 0; i < multipliers.size(); ++i) {
+        multipliers.at(i) /= num_nodes;
+    }
     return multipliers;
 }
 
@@ -1407,7 +1385,7 @@ void ComparisonDirichletPopulationTree::log_state(
         const std::string& delimiter) const {
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
-        << this->get_height() << delimiter
+        << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
         << this->get_freq_1() << delimiter
         << this->get_population_size() << delimiter
@@ -1424,22 +1402,6 @@ void ComparisonDirichletPopulationTree::log_state(
         const std::string& delimiter) const {
     out << event_index << delimiter;
     this->log_state(out, delimiter);
-}
-
-std::string ComparisonDirichletPopulationTree::get_state_header_string(
-        const std::string& delimiter) const {
-    std::ostringstream ss;
-    this->write_state_log_header(ss, false, delimiter);
-    return ss.str();
-}
-
-std::string ComparisonDirichletPopulationTree::get_state_string(
-        const std::string& delimiter,
-        unsigned int precision) const {
-    std::ostringstream ss;
-    ss.precision(precision);
-    this->log_state(ss, delimiter);
-    return ss.str();
 }
 
 void ComparisonDirichletPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {

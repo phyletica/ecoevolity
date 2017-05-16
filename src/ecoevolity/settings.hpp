@@ -1874,6 +1874,10 @@ class BaseCollectionSettings {
             return * this;
         }
 
+        virtual bool using_population_size_multipliers() const {
+            return false;
+        }
+
         void add_comparison(ComparisonSettingsType comparison_settings) {
             this->comparisons_.push_back(comparison_settings);
         }
@@ -2718,6 +2722,10 @@ class DirichletCollectionSettings: public BaseCollectionSettings<DirichletCompar
                         yaml_config_stream,
                         yaml_config_path,
                         true) {
+        }
+
+        bool using_population_size_multipliers() const {
+            return true;
         }
 };
 

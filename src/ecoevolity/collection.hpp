@@ -32,10 +32,10 @@
 #include "assert.hpp"
 #include "rng.hpp"
 
-class ComparisonPopulationTreeCollection {
+class BaseComparisonPopulationTreeCollection {
 
     protected:
-        std::vector<ComparisonPopulationTree> trees_;
+        std::vector< std::shared_ptr<PopulationTree> > trees_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
         std::vector<double> stored_node_heights_;
         std::vector<unsigned int> node_height_indices_;
@@ -51,13 +51,6 @@ class ComparisonPopulationTreeCollection {
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
 
-        void init_trees(
-                const std::vector<ComparisonSettings> & comparison_settings,
-                RandomNumberGenerator & rng,
-                bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
-                );
-
         void add_height(
                 double height,
                 const std::vector<unsigned int>& mapped_tree_indices);
@@ -65,14 +58,7 @@ class ComparisonPopulationTreeCollection {
         void remove_height(unsigned int height_index);
 
     public:
-        ComparisonPopulationTreeCollection() { }
-        ComparisonPopulationTreeCollection(
-                const CollectionSettings & settings,
-                RandomNumberGenerator & rng,
-                bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
-                );
-        // virtual ~ComparisonPopulationTreeCollection() { }
+        BaseComparisonPopulationTreeCollection() { }
 
         void store_state();
         void restore_state();
@@ -92,17 +78,17 @@ class ComparisonPopulationTreeCollection {
         }
         void ignore_data() {
             for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-                this->trees_.at(i).ignore_data();
+                this->trees_.at(i)->ignore_data();
             }
         }
         void use_data() {
             for (unsigned int i = 0; i < this->trees_.size();  ++i) {
-                this->trees_.at(i).use_data();
+                this->trees_.at(i)->use_data();
             }
         }
 
         bool ignoring_data() const {
-            return this->trees_.at(0).ignoring_data();
+            return this->trees_.at(0)->ignoring_data();
         }
 
         bool using_dpp() const {
@@ -138,7 +124,7 @@ class ComparisonPopulationTreeCollection {
             this->logging_delimiter_ = delimiter;
         }
 
-        const ComparisonPopulationTree& get_tree(
+        std::shared_ptr<PopulationTree> get_tree(
                 unsigned int tree_index) const {
             return this->trees_.at(tree_index);
         }
@@ -190,10 +176,6 @@ class ComparisonPopulationTreeCollection {
         }
         void set_operator_schedule(OperatorSchedule& os) {
             this->operator_schedule_ = os;
-        }
-
-        ComparisonPopulationTree & get_tree(unsigned int tree_index) {
-            return this->trees_.at(tree_index);
         }
 
         double get_height(unsigned int height_index) const {
@@ -268,7 +250,7 @@ class ComparisonPopulationTreeCollection {
 
         bool all_population_sizes_are_fixed() const {
             for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
-                if (! this->trees_.at(i).population_sizes_are_fixed()) {
+                if (! this->trees_.at(i)->population_sizes_are_fixed()) {
                     return false;
                 }
             }
@@ -276,7 +258,7 @@ class ComparisonPopulationTreeCollection {
         }
         bool all_mutation_rates_are_fixed() const {
             for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
-                if (! this->trees_.at(i).mutation_rate_is_fixed()) {
+                if (! this->trees_.at(i)->mutation_rate_is_fixed()) {
                     return false;
                 }
             }
@@ -313,6 +295,46 @@ class ComparisonPopulationTreeCollection {
 
         void update_log_paths(unsigned int max_number_of_attempts = 10000);
         void increment_log_paths();
+};
+
+class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCollection {
+
+    public:
+        ComparisonPopulationTreeCollection() : BaseComparisonPopulationTreeCollection() { }
+        ComparisonPopulationTreeCollection(
+                const CollectionSettings & settings,
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
+
+    protected:
+        void init_trees(
+                const std::vector<ComparisonSettings> & comparison_settings,
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
+};
+
+class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulationTreeCollection {
+
+    public:
+        ComparisonDirichletPopulationTreeCollection() : BaseComparisonPopulationTreeCollection() { }
+        ComparisonDirichletPopulationTreeCollection(
+                const DirichletCollectionSettings & settings,
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
+
+    protected:
+        void init_trees(
+                const std::vector<DirichletComparisonSettings> & comparison_settings,
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
 };
 
 #endif

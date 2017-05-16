@@ -20,86 +20,11 @@
 #include "collection.hpp"
 #include "operator.hpp"
 
-ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
-        const CollectionSettings & settings,
-        RandomNumberGenerator & rng,
-        bool strict_on_constant_sites,
-        bool strict_on_missing_sites
-        ) {
-    this->state_log_path_ = settings.get_state_log_path();
-    this->operator_log_path_ = settings.get_operator_log_path();
-    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
-    this->concentration_ = std::make_shared<PositiveRealParameter>(
-            settings.get_concentration_settings(),
-            rng);
-    this->operator_schedule_ = OperatorSchedule(
-            settings.get_operator_schedule_settings(),
-            settings.using_dpp());
-    if (this->operator_schedule_.get_total_weight() <= 0.0) {
-        throw EcoevolityError("No operators have weight");
-    }
-    this->init_trees(settings.get_comparison_settings(),
-            rng,
-            strict_on_constant_sites,
-            strict_on_missing_sites);
-    this->stored_node_heights_.reserve(this->trees_.size());
-    this->stored_node_height_indices_.reserve(this->trees_.size());
-    if (settings.event_model_is_fixed()) {
-        this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
-    }
-}
-
-void ComparisonPopulationTreeCollection::init_trees(
-        const std::vector<ComparisonSettings> & comparison_settings,
-        RandomNumberGenerator & rng,
-        bool strict_on_constant_sites,
-        bool strict_on_missing_sites
-        ) {
-    std::unordered_set<std::string> population_labels;
-    double fresh_height;
-    for (unsigned int tree_idx = 0;
-            tree_idx < comparison_settings.size();
-            ++tree_idx) {
-        fresh_height = this->node_height_prior_->draw(rng);
-        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
-        ComparisonPopulationTree new_tree = ComparisonPopulationTree(
-                comparison_settings.at(tree_idx),
-                rng,
-                strict_on_constant_sites,
-                strict_on_missing_sites
-                );
-        for (auto const& pop_label: new_tree.get_population_labels()) {
-            auto p = population_labels.insert(pop_label);
-            if (! p.second) {
-                std::ostringstream message;
-                message << "\n#######################################################################\n"
-                        <<   "###############################  ERROR  ###############################\n"
-                        << "Population label conflict. The population label:\n"
-                        << "\'" << pop_label << "\'\n"
-                        << "is used in multiple alignments.\n"
-                        << "#######################################################################\n";
-                throw EcoevolityCollectionSettingError(message.str());
-            }
-        }
-        new_tree.set_node_height_prior(this->node_height_prior_);
-        new_tree.set_height_parameter(new_height_parameter);
-        this->node_heights_.push_back(new_height_parameter);
-        this->trees_.push_back(new_tree);
-        this->node_height_indices_.push_back(tree_idx);
-        ECOEVOLITY_ASSERT(
-                this->trees_.at(tree_idx).get_height_parameter() ==
-                this->node_heights_.at(this->node_height_indices_.at(tree_idx))
-                );
-    }
-    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
-    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
-}
-
-void ComparisonPopulationTreeCollection::store_state() {
+void BaseComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
     for (unsigned int t = 0; t < this->trees_.size(); ++t) {
-        this->trees_.at(t).store_state();
+        this->trees_.at(t)->store_state();
     }
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         this->node_heights_.at(h)->store();
@@ -108,11 +33,11 @@ void ComparisonPopulationTreeCollection::store_state() {
         this->concentration_->store();
     }
 }
-void ComparisonPopulationTreeCollection::restore_state() {
+void BaseComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
     for (unsigned int t = 0; t < this->trees_.size(); ++t) {
-        this->trees_.at(t).restore_state();
+        this->trees_.at(t)->restore_state();
     }
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         this->node_heights_.at(h)->restore();
@@ -122,7 +47,7 @@ void ComparisonPopulationTreeCollection::restore_state() {
     }
 }
 
-void ComparisonPopulationTreeCollection::store_model_state() {
+void BaseComparisonPopulationTreeCollection::store_model_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
     this->stored_node_heights_.resize(this->get_number_of_events());
@@ -134,7 +59,7 @@ void ComparisonPopulationTreeCollection::store_model_state() {
     this->stored_node_height_indices_ = this->node_height_indices_;
 }
 
-void ComparisonPopulationTreeCollection::restore_model_state() {
+void BaseComparisonPopulationTreeCollection::restore_model_state() {
     ECOEVOLITY_ASSERT(
             (this->node_heights_.size() <= this->stored_node_heights_.size() + 1)
             &&
@@ -162,19 +87,19 @@ void ComparisonPopulationTreeCollection::restore_model_state() {
             ++t_idx) {
         unsigned int orig_index = this->stored_node_height_indices_.at(t_idx);
         this->node_height_indices_.at(t_idx) = orig_index;
-        this->trees_.at(t_idx).set_height_parameter(this->node_heights_.at(orig_index));
+        this->trees_.at(t_idx)->set_root_height_parameter(this->node_heights_.at(orig_index));
     }
 }
 
-void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
+void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
     double lnl = 0.0;
     double lnp = 0.0;
     if (compute_partials) {
         this->compute_tree_partials();
     }
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        lnl += this->trees_.at(i).get_log_likelihood_value();
-        lnp += this->trees_.at(i).get_log_prior_density_value();
+        lnl += this->trees_.at(i)->get_log_likelihood_value();
+        lnp += this->trees_.at(i)->get_log_prior_density_value();
     }
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
@@ -194,13 +119,13 @@ void ComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool c
     this->log_prior_density_.set_value(lnp);
 }
 
-void ComparisonPopulationTreeCollection::compute_tree_partials() {
+void BaseComparisonPopulationTreeCollection::compute_tree_partials() {
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        this->trees_.at(i).compute_log_likelihood_and_prior(this->number_of_threads_);
+        this->trees_.at(i)->compute_log_likelihood_and_prior(this->number_of_threads_);
     }
 }
 
-// void ComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
+// void BaseComparisonPopulationTreeCollection::compute_tree_partials_threaded() {
 //     // TODO: get multithreading working
 //     unsigned int tree_index = 0;
 //     unsigned int max_tree_index = this->trees_.size() - 1;
@@ -236,18 +161,18 @@ void ComparisonPopulationTreeCollection::compute_tree_partials() {
 //     ECOEVOLITY_ASSERT(thread_count == this->trees_.size());
 // }
 
-void ComparisonPopulationTreeCollection::make_trees_clean() {
+void BaseComparisonPopulationTreeCollection::make_trees_clean() {
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        this->trees_.at(i).make_clean();
+        this->trees_.at(i)->make_clean();
     }
 }
-void ComparisonPopulationTreeCollection::make_trees_dirty() {
+void BaseComparisonPopulationTreeCollection::make_trees_dirty() {
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        this->trees_.at(i).make_dirty();
+        this->trees_.at(i)->make_dirty();
     }
 }
 
-std::vector<unsigned int> ComparisonPopulationTreeCollection::get_standardized_height_indices() const {
+std::vector<unsigned int> BaseComparisonPopulationTreeCollection::get_standardized_height_indices() const {
     std::vector<unsigned int> standardized_indices;
     standardized_indices.reserve(this->node_height_indices_.size());
     std::map<unsigned int, unsigned int> standardizing_map;
@@ -262,7 +187,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_standardized_h
     return standardized_indices;
 }
 
-unsigned int ComparisonPopulationTreeCollection::get_largest_height_index() const {
+unsigned int BaseComparisonPopulationTreeCollection::get_largest_height_index() const {
     unsigned int current_ht_idx = 0;
     for (unsigned int h_idx = 1;
             h_idx < this->get_number_of_events();
@@ -274,7 +199,7 @@ unsigned int ComparisonPopulationTreeCollection::get_largest_height_index() cons
     return current_ht_idx;
 }
 
-std::vector<unsigned int> ComparisonPopulationTreeCollection::get_height_indices_sans_largest() const {
+std::vector<unsigned int> BaseComparisonPopulationTreeCollection::get_height_indices_sans_largest() const {
     std::vector<unsigned int> indices;
     indices.reserve(this->get_number_of_events() - 1);
     unsigned int largest_height_index = this->get_largest_height_index();
@@ -286,7 +211,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_height_indices
     return indices;
 }
 
-double ComparisonPopulationTreeCollection::get_nearest_smaller_height(
+double BaseComparisonPopulationTreeCollection::get_nearest_smaller_height(
         unsigned int height_index) const {
     double nearest_smaller_height = 0.0;
     double ref_height = this->get_height(height_index);
@@ -305,7 +230,7 @@ double ComparisonPopulationTreeCollection::get_nearest_smaller_height(
     return nearest_smaller_height;
 }
 
-unsigned int ComparisonPopulationTreeCollection::get_nearest_smaller_height_index(
+unsigned int BaseComparisonPopulationTreeCollection::get_nearest_smaller_height_index(
         unsigned int height_index,
         bool allow_smallest_index) const {
     double ref_height = this->get_height(height_index);
@@ -332,14 +257,14 @@ unsigned int ComparisonPopulationTreeCollection::get_nearest_smaller_height_inde
         }
         else {
             throw EcoevolityError(
-                    "ComparisonPopulationTreeCollection::get_nearest_smaller_height_index "
+                    "BaseComparisonPopulationTreeCollection::get_nearest_smaller_height_index "
                     "was called with smallest height index");
         }
     }
     return current_nearest_idx;
 }
 
-unsigned int ComparisonPopulationTreeCollection::get_nearest_larger_height_index(
+unsigned int BaseComparisonPopulationTreeCollection::get_nearest_larger_height_index(
         unsigned int height_index,
         bool allow_largest_index) const {
     double ref_height = this->get_height(height_index);
@@ -366,14 +291,14 @@ unsigned int ComparisonPopulationTreeCollection::get_nearest_larger_height_index
         }
         else {
             throw EcoevolityError(
-                    "ComparisonPopulationTreeCollection::get_nearest_larger_height_index "
+                    "BaseComparisonPopulationTreeCollection::get_nearest_larger_height_index "
                     "was called with largest height index");
         }
     }
     return current_nearest_idx;
 }
 
-unsigned int ComparisonPopulationTreeCollection::get_distal_height_index_within_move(
+unsigned int BaseComparisonPopulationTreeCollection::get_distal_height_index_within_move(
                 unsigned int starting_height_index,
                 double delta_height) const {
 
@@ -413,7 +338,7 @@ unsigned int ComparisonPopulationTreeCollection::get_distal_height_index_within_
     return current_ht_idx;
 }
 
-unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
+unsigned int BaseComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_height(
         unsigned int height_index) const {
     unsigned int count = 0;
     for (auto h_index_iter : this->node_height_indices_) {
@@ -424,7 +349,7 @@ unsigned int ComparisonPopulationTreeCollection::get_number_of_trees_mapped_to_h
     return count;
 }
 
-std::vector<unsigned int> ComparisonPopulationTreeCollection::get_other_height_indices(
+std::vector<unsigned int> BaseComparisonPopulationTreeCollection::get_other_height_indices(
         unsigned int tree_index) const {
     std::vector<unsigned int> others;
     others.reserve(this->node_heights_.size());
@@ -444,7 +369,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_other_height_i
     return others;
 }
 
-std::vector<unsigned int> ComparisonPopulationTreeCollection::get_indices_of_mapped_trees(
+std::vector<unsigned int> BaseComparisonPopulationTreeCollection::get_indices_of_mapped_trees(
         unsigned int height_index) const {
     std::vector<unsigned int> indices;
     for (unsigned int tree_idx = 0;
@@ -457,7 +382,7 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_indices_of_map
     return indices;
 }
 
-unsigned int ComparisonPopulationTreeCollection::get_number_of_partners(
+unsigned int BaseComparisonPopulationTreeCollection::get_number_of_partners(
         unsigned int tree_index) const {
     unsigned int h_index = this->node_height_indices_.at(tree_index);
     unsigned int count = this->get_number_of_trees_mapped_to_height(h_index);
@@ -466,7 +391,7 @@ unsigned int ComparisonPopulationTreeCollection::get_number_of_partners(
     return count - 1;
 }
 
-std::vector<unsigned int> ComparisonPopulationTreeCollection::get_shared_event_indices() const {
+std::vector<unsigned int> BaseComparisonPopulationTreeCollection::get_shared_event_indices() const {
     std::vector<unsigned int> shared_indices;
     for (unsigned int event_idx = 0;
             event_idx < this->get_number_of_events();
@@ -478,14 +403,14 @@ std::vector<unsigned int> ComparisonPopulationTreeCollection::get_shared_event_i
     return shared_indices;
 }
 
-void ComparisonPopulationTreeCollection::remap_tree(
+void BaseComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
         unsigned int height_index) {
     if (this->get_height_index(tree_index) != height_index) {
         unsigned int num_partners = this->get_number_of_partners(tree_index);
         unsigned int old_height_index = this->get_height_index(tree_index);
         this->node_height_indices_.at(tree_index) = height_index;
-        this->trees_.at(tree_index).set_height_parameter(
+        this->trees_.at(tree_index)->set_root_height_parameter(
                 this->get_height_parameter(height_index));
         if (num_partners == 0) {
             this->remove_height(old_height_index);
@@ -493,16 +418,16 @@ void ComparisonPopulationTreeCollection::remap_tree(
     }
 }
 
-void ComparisonPopulationTreeCollection::remap_tree(
+void BaseComparisonPopulationTreeCollection::remap_tree(
         unsigned int tree_index,
         unsigned int height_index,
         double log_likelihood) {
     this->remap_tree(tree_index, height_index);
-    this->trees_.at(tree_index).set_log_likelihood_value(log_likelihood);
-    this->trees_.at(tree_index).make_clean();
+    this->trees_.at(tree_index)->set_log_likelihood_value(log_likelihood);
+    this->trees_.at(tree_index)->make_clean();
 }
 
-unsigned int ComparisonPopulationTreeCollection::remap_trees(
+unsigned int BaseComparisonPopulationTreeCollection::remap_trees(
         const std::vector<unsigned int>& tree_indices,
         unsigned int height_index) {
     ECOEVOLITY_ASSERT(tree_indices.size() > 0);
@@ -515,7 +440,7 @@ unsigned int ComparisonPopulationTreeCollection::remap_trees(
     return current_target_index;
 }
 
-void ComparisonPopulationTreeCollection::map_tree_to_new_height(
+void BaseComparisonPopulationTreeCollection::map_tree_to_new_height(
         unsigned int tree_index,
         double height) {
     unsigned int num_partners = this->get_number_of_partners(tree_index);
@@ -527,16 +452,16 @@ void ComparisonPopulationTreeCollection::map_tree_to_new_height(
     }
 }
 
-void ComparisonPopulationTreeCollection::map_tree_to_new_height(
+void BaseComparisonPopulationTreeCollection::map_tree_to_new_height(
         unsigned int tree_index,
         double height,
         double log_likelihood) {
     this->map_tree_to_new_height(tree_index, height);
-    this->trees_.at(tree_index).set_log_likelihood_value(log_likelihood);
-    this->trees_.at(tree_index).make_clean();
+    this->trees_.at(tree_index)->set_log_likelihood_value(log_likelihood);
+    this->trees_.at(tree_index)->make_clean();
 }
 
-unsigned int ComparisonPopulationTreeCollection::map_trees_to_new_height(
+unsigned int BaseComparisonPopulationTreeCollection::map_trees_to_new_height(
         const std::vector<unsigned int>& tree_indices,
         double height) {
     ECOEVOLITY_ASSERT(tree_indices.size() > 0);
@@ -548,7 +473,7 @@ unsigned int ComparisonPopulationTreeCollection::map_trees_to_new_height(
     return new_height_index;
 }
 
-unsigned int ComparisonPopulationTreeCollection::merge_height(
+unsigned int BaseComparisonPopulationTreeCollection::merge_height(
         unsigned int height_index,
         unsigned int target_height_index) {
     std::vector<unsigned int> mapped_trees = this->get_indices_of_mapped_trees(height_index);
@@ -556,7 +481,7 @@ unsigned int ComparisonPopulationTreeCollection::merge_height(
     return final_index;
 }
 
-void ComparisonPopulationTreeCollection::remove_height(
+void BaseComparisonPopulationTreeCollection::remove_height(
         unsigned int height_index) {
     ECOEVOLITY_ASSERT(this->get_number_of_trees_mapped_to_height(height_index) == 0);
     // ECOEVOLITY_ASSERT(this->node_heights_.at(height_index).use_count() < 2);
@@ -569,17 +494,17 @@ void ComparisonPopulationTreeCollection::remove_height(
     }
 }
 
-void ComparisonPopulationTreeCollection::add_height(
+void BaseComparisonPopulationTreeCollection::add_height(
         double height,
         const std::vector<unsigned int>& mapped_tree_indices) {
     this->node_heights_.push_back(std::make_shared<PositiveRealParameter>(this->node_height_prior_, height));
     for (auto tree_idx : mapped_tree_indices) {
         this->node_height_indices_.at(tree_idx) = this->node_heights_.size() - 1;
-        this->trees_.at(tree_idx).set_height_parameter(this->node_heights_.back());
+        this->trees_.at(tree_idx)->set_root_height_parameter(this->node_heights_.back());
     }
 }
 
-void ComparisonPopulationTreeCollection::write_state_log_header(
+void BaseComparisonPopulationTreeCollection::write_state_log_header(
         std::ostream& out,
         bool short_summary) const {
     out << "generation" << this->logging_delimiter_
@@ -600,14 +525,14 @@ void ComparisonPopulationTreeCollection::write_state_log_header(
             tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
-        this->trees_.at(tree_idx).write_state_log_header(out,
+        this->trees_.at(tree_idx)->write_state_log_header(out,
                 true,
                 this->logging_delimiter_);
     }
     out << std::endl;
 }
 
-void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
+void BaseComparisonPopulationTreeCollection::log_state(std::ostream& out,
         unsigned int generation_index,
         bool short_summary) const {
     out << generation_index << this->logging_delimiter_
@@ -625,14 +550,14 @@ void ComparisonPopulationTreeCollection::log_state(std::ostream& out,
             tree_idx < this->trees_.size();
             ++tree_idx) {
         out << this->logging_delimiter_;
-        this->trees_.at(tree_idx).log_state(out,
+        this->trees_.at(tree_idx)->log_state(out,
                 standardized_height_indices.at(tree_idx),
                 this->logging_delimiter_);
     }
     out << std::endl;
 }
 
-void ComparisonPopulationTreeCollection::update_log_paths(
+void BaseComparisonPopulationTreeCollection::update_log_paths(
         unsigned int max_number_of_attempts) {
     if (! path::exists(this->get_state_log_path())) {
         return;
@@ -650,7 +575,7 @@ void ComparisonPopulationTreeCollection::update_log_paths(
     }
 }
 
-void ComparisonPopulationTreeCollection::increment_log_paths() {
+void BaseComparisonPopulationTreeCollection::increment_log_paths() {
     std::vector<std::string> path_elements;
     std::pair<std::string, std::string> prefix_ext;
     std::string new_suffix;
@@ -674,7 +599,7 @@ void ComparisonPopulationTreeCollection::increment_log_paths() {
             string_util::join(path_elements, "-") + new_suffix);
 }
 
-void ComparisonPopulationTreeCollection::mcmc(
+void BaseComparisonPopulationTreeCollection::mcmc(
         RandomNumberGenerator& rng,
         unsigned int chain_length,
         unsigned int sample_frequency) {
@@ -733,7 +658,7 @@ void ComparisonPopulationTreeCollection::mcmc(
     unsigned int gen_of_last_operator_log = 0;
     for (gen = 0; gen < chain_length; ++gen) {
         OperatorInterface& op = this->operator_schedule_.draw_operator(rng);
-        op.operate(rng, *this, this->get_number_of_threads());
+        op.operate(rng, this, this->get_number_of_threads());
 
         if ((gen + 1) % sample_frequency == 0) {
             this->log_state(state_log_stream, gen + 1);
@@ -787,18 +712,18 @@ void ComparisonPopulationTreeCollection::mcmc(
     operator_log_stream.close();
 }
 
-void ComparisonPopulationTreeCollection::write_summary(
+void BaseComparisonPopulationTreeCollection::write_summary(
         std::ostream& out,
         unsigned int indent_level) const {
     std::string margin = string_util::get_indent(indent_level);
     std::string indent = string_util::get_indent(1);
     out << "Summary of data from " << this->get_number_of_trees() << " comparisons:\n";
-    for (auto const & tree: this->trees_) {
-        tree.write_data_summary(out, indent_level + 1);
+    for (auto tree: this->trees_) {
+        tree->write_data_summary(out, indent_level + 1);
     }
 }
 
-void ComparisonPopulationTreeCollection::set_node_height_indices(
+void BaseComparisonPopulationTreeCollection::set_node_height_indices(
         const std::vector<unsigned int>& indices,
         RandomNumberGenerator & rng) {
     std::unordered_set<unsigned int> index_set;
@@ -837,12 +762,12 @@ void ComparisonPopulationTreeCollection::set_node_height_indices(
             tree_idx < this->trees_.size();
             ++tree_idx) {
         unsigned int height_index = this->node_height_indices_.at(tree_idx);
-        this->trees_.at(tree_idx).set_height_parameter(
+        this->trees_.at(tree_idx)->set_root_height_parameter(
                 this->get_height_parameter(height_index));
     }
 }
 
-void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
+void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
     if (this->using_dpp()) {
         unsigned int num_heights = this->node_heights_.size();
         unsigned int new_num_heights = rng.dirichlet_process(this->node_height_indices_, this->get_concentration());
@@ -865,7 +790,7 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
                 tree_idx < this->trees_.size();
                 ++tree_idx) {
             unsigned int height_index = this->node_height_indices_.at(tree_idx);
-            this->trees_.at(tree_idx).set_height_parameter(
+            this->trees_.at(tree_idx)->set_root_height_parameter(
                     this->get_height_parameter(height_index));
         }
     }
@@ -876,7 +801,7 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
         this->ignore_data();
         OperatorInterface& op = this->operator_schedule_.get_reversible_jump_operator();
         for (unsigned int i = 0; i < (this->get_number_of_trees() * 2); ++i) {
-            op.operate(rng, *this);
+            op.operate(rng, this);
         }
         if (! was_ignoring_data) {
             this->use_data();
@@ -898,20 +823,176 @@ void ComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGen
     }
 }
 
-void ComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
+void BaseComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
     this->concentration_->set_value_from_prior(rng);
     this->draw_heights_from_prior(rng);
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
-        this->trees_.at(i).draw_from_prior(rng);
+        this->trees_.at(i)->draw_from_prior(rng);
     }
 }
 
-std::map<std::string, BiallelicData> ComparisonPopulationTreeCollection::simulate_biallelic_data_sets(
+std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::simulate_biallelic_data_sets(
         RandomNumberGenerator& rng,
         bool validate) const {
     std::map<std::string, BiallelicData> alignments;
-    for (auto const & tree: this->trees_) {
-        alignments[tree.get_data().get_path()] = tree.simulate_biallelic_data_set(rng, validate);
+    for (auto tree: this->trees_) {
+        alignments[tree->get_data().get_path()] = tree->simulate_biallelic_data_set(rng, validate);
     }
     return alignments;
+}
+
+
+
+
+ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
+        const CollectionSettings & settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) : BaseComparisonPopulationTreeCollection() {
+    this->state_log_path_ = settings.get_state_log_path();
+    this->operator_log_path_ = settings.get_operator_log_path();
+    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->concentration_ = std::make_shared<PositiveRealParameter>(
+            settings.get_concentration_settings(),
+            rng);
+    this->operator_schedule_ = OperatorSchedule(
+            settings.get_operator_schedule_settings(),
+            settings.using_dpp());
+    if (this->operator_schedule_.get_total_weight() <= 0.0) {
+        throw EcoevolityError("No operators have weight");
+    }
+    this->init_trees(settings.get_comparison_settings(),
+            rng,
+            strict_on_constant_sites,
+            strict_on_missing_sites);
+    this->stored_node_heights_.reserve(this->trees_.size());
+    this->stored_node_height_indices_.reserve(this->trees_.size());
+    if (settings.event_model_is_fixed()) {
+        this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
+    }
+}
+
+void ComparisonPopulationTreeCollection::init_trees(
+        const std::vector<ComparisonSettings> & comparison_settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) {
+    std::unordered_set<std::string> population_labels;
+    double fresh_height;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparison_settings.size();
+            ++tree_idx) {
+        fresh_height = this->node_height_prior_->draw(rng);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        std::shared_ptr<PopulationTree> new_tree = std::make_shared<ComparisonPopulationTree>(
+                comparison_settings.at(tree_idx),
+                rng,
+                strict_on_constant_sites,
+                strict_on_missing_sites
+                );
+        for (auto const& pop_label: new_tree->get_population_labels()) {
+            auto p = population_labels.insert(pop_label);
+            if (! p.second) {
+                std::ostringstream message;
+                message << "\n#######################################################################\n"
+                        <<   "###############################  ERROR  ###############################\n"
+                        << "Population label conflict. The population label:\n"
+                        << "\'" << pop_label << "\'\n"
+                        << "is used in multiple alignments.\n"
+                        << "#######################################################################\n";
+                throw EcoevolityCollectionSettingError(message.str());
+            }
+        }
+        new_tree->set_node_height_prior(this->node_height_prior_);
+        new_tree->set_root_height_parameter(new_height_parameter);
+        this->node_heights_.push_back(new_height_parameter);
+        this->trees_.push_back(new_tree);
+        this->node_height_indices_.push_back(tree_idx);
+        ECOEVOLITY_ASSERT(
+                this->trees_.at(tree_idx)->get_root_height_parameter() ==
+                this->node_heights_.at(this->node_height_indices_.at(tree_idx))
+                );
+    }
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
+}
+
+
+
+
+ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCollection(
+        const DirichletCollectionSettings & settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) : BaseComparisonPopulationTreeCollection() {
+    this->state_log_path_ = settings.get_state_log_path();
+    this->operator_log_path_ = settings.get_operator_log_path();
+    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->concentration_ = std::make_shared<PositiveRealParameter>(
+            settings.get_concentration_settings(),
+            rng);
+    this->operator_schedule_ = OperatorSchedule(
+            settings.get_operator_schedule_settings(),
+            settings.using_dpp());
+    if (this->operator_schedule_.get_total_weight() <= 0.0) {
+        throw EcoevolityError("No operators have weight");
+    }
+    this->init_trees(settings.get_comparison_settings(),
+            rng,
+            strict_on_constant_sites,
+            strict_on_missing_sites);
+    this->stored_node_heights_.reserve(this->trees_.size());
+    this->stored_node_height_indices_.reserve(this->trees_.size());
+    if (settings.event_model_is_fixed()) {
+        this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
+    }
+}
+
+void ComparisonDirichletPopulationTreeCollection::init_trees(
+        const std::vector<DirichletComparisonSettings> & comparison_settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) {
+    std::unordered_set<std::string> population_labels;
+    double fresh_height;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparison_settings.size();
+            ++tree_idx) {
+        fresh_height = this->node_height_prior_->draw(rng);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        std::shared_ptr<PopulationTree> new_tree = std::make_shared<ComparisonDirichletPopulationTree>(
+                comparison_settings.at(tree_idx),
+                rng,
+                strict_on_constant_sites,
+                strict_on_missing_sites
+                );
+        for (auto const& pop_label: new_tree->get_population_labels()) {
+            auto p = population_labels.insert(pop_label);
+            if (! p.second) {
+                std::ostringstream message;
+                message << "\n#######################################################################\n"
+                        <<   "###############################  ERROR  ###############################\n"
+                        << "Population label conflict. The population label:\n"
+                        << "\'" << pop_label << "\'\n"
+                        << "is used in multiple alignments.\n"
+                        << "#######################################################################\n";
+                throw EcoevolityCollectionSettingError(message.str());
+            }
+        }
+        new_tree->set_node_height_prior(this->node_height_prior_);
+        new_tree->set_root_height_parameter(new_height_parameter);
+        this->node_heights_.push_back(new_height_parameter);
+        this->trees_.push_back(new_tree);
+        this->node_height_indices_.push_back(tree_idx);
+        ECOEVOLITY_ASSERT(
+                this->trees_.at(tree_idx)->get_root_height_parameter() ==
+                this->node_heights_.at(this->node_height_indices_.at(tree_idx))
+                );
+    }
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
 }

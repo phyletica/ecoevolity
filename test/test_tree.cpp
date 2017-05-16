@@ -921,7 +921,7 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
         ComparisonPopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         REQUIRE(tree.get_root().get_label() == "root-pop1");
-        tree.set_height(0.01);
+        tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
@@ -939,7 +939,7 @@ TEST_CASE("Testing simple threaded likelihood of ComparisonPopulationTree", "[Co
         ComparisonPopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         REQUIRE(tree.get_root().get_label() == "root-pop1");
-        tree.set_height(0.01);
+        tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
         REQUIRE(l == Approx(-31.77866581319647));
@@ -1045,8 +1045,8 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_height(0.01);
-        REQUIRE(tree.get_height() == 0.01);
+        tree.set_root_height(0.01);
+        REQUIRE(tree.get_root_height() == 0.01);
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
@@ -1078,8 +1078,8 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
         tree.store_state();
-        tree.set_height(0.0);
-        REQUIRE(tree.get_height() == 0.0);
+        tree.set_root_height(0.0);
+        REQUIRE(tree.get_root_height() == 0.0);
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1091,7 +1091,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.restore_state();
         // ComparisonPopulationTree does not store/restore heights
-        REQUIRE(tree.get_height() == 0.0);
+        REQUIRE(tree.get_root_height() == 0.0);
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1109,14 +1109,14 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.store_state();
-        tree.set_height(0.0);
+        tree.set_root_height(0.0);
         tree.compute_log_likelihood_and_prior();
         REQUIRE(tree.get_number_of_likelihood_calculations() == 4);
 
 
         tree.store_state();
-        tree.set_height(0.2);
-        REQUIRE(tree.get_height() == 0.2);
+        tree.set_root_height(0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -1128,7 +1128,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
 
         tree.store_state();
-        tree.set_height(0.03);
+        tree.set_root_height(0.03);
         tree.set_freq_1(0.05);
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_freq_1() == 0.05);
@@ -1150,7 +1150,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.store_state();
         tree.set_freq_1(0.95);
-        REQUIRE(tree.get_height() == 0.03);
+        REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.get_freq_1() == 0.95);
@@ -1167,7 +1167,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.store_state();
         tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
-        REQUIRE(tree.get_height() == 0.03);
+        REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.get_root_population_size() == 2.0/(111.1 * 2 * tree.get_ploidy()));
@@ -1185,8 +1185,8 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.store_state();
         tree.constrain_state_frequencies();
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
-        tree.set_height(0.2);
-        REQUIRE(tree.get_height() == 0.2);
+        tree.set_root_height(0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -1204,7 +1204,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.store_state();
         tree.fold_patterns();
-        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -1222,7 +1222,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.store_state();
         tree.constrain_population_sizes();
-        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -1246,7 +1246,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
         tree.set_mutation_rate_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
-        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -1264,11 +1264,11 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.store_state();
         tree.set_mutation_rate(2.0);
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.set_root_population_size(2.0/(20.0 * 2 * tree.get_ploidy()));
         tree.set_child_population_size(0, 2.0/(20.0 * 2 * tree.get_ploidy()));
         tree.set_child_population_size(1, 2.0/(20.0 * 2 * tree.get_ploidy()));
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 2.0);
@@ -1286,7 +1286,7 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.restore_state();
         // ComparisonPopulationTree does not store/restore node heights
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -2384,7 +2384,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
         tree.set_root_population_size(Ne * mu);
         tree.set_child_population_size(0, (Ne * mu));
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
 
         tree.set_freq_1(0.5);
 
@@ -2431,7 +2431,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for singleton",
         tree.set_mutation_rate(mu);
         tree.set_root_population_size(Ne);
         tree.set_child_population_size(0, Ne);
-        tree.set_height(0.1 / mu);
+        tree.set_root_height(0.1 / mu);
 
         n = 0;
         mean = 0.0;
@@ -2488,7 +2488,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for pair",
         tree.set_child_population_size(0, (Ne_0));
         tree.set_child_population_size(1, (Ne_1));
 
-        tree.set_height(time);
+        tree.set_root_height(time);
 
         tree.set_freq_1(0.5);
 
@@ -2583,7 +2583,7 @@ TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.constrain_population_sizes();
         tree.set_population_size(0.005);
         tree.fix_population_sizes();
@@ -2632,7 +2632,7 @@ TEST_CASE("Testing draw_from_prior for fully fixed", "[ComparisonPopulationTree]
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.constrain_population_sizes();
         tree.set_population_size(0.001);
         tree.fix_population_sizes();
@@ -2645,7 +2645,7 @@ TEST_CASE("Testing draw_from_prior for fully fixed", "[ComparisonPopulationTree]
         for (unsigned int i = 0; i < 10; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
             REQUIRE(tree.get_root_population_size() == 0.001);
             REQUIRE(tree.get_child_population_size(0) == 0.001);
             REQUIRE(tree.get_child_population_size(1) == 0.001);
@@ -2673,7 +2673,7 @@ TEST_CASE("Testing draw_from_prior for constrained sizes", "[ComparisonPopulatio
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.constrain_population_sizes();
         tree.set_population_size(0.001);
         tree.estimate_mutation_rate();
@@ -2687,7 +2687,7 @@ TEST_CASE("Testing draw_from_prior for constrained sizes", "[ComparisonPopulatio
         for (unsigned int i = 0; i < 10000; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
             REQUIRE(tree.get_u() == Approx(1.0));
             REQUIRE(tree.get_v() == Approx(1.0));
             REQUIRE(tree.get_freq_1() == 0.5);
@@ -2720,7 +2720,7 @@ TEST_CASE("Testing draw_from_prior for unconstrained sizes", "[ComparisonPopulat
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.set_population_size(0.001);
         tree.estimate_mutation_rate();
         tree.set_mutation_rate(0.8);
@@ -2735,7 +2735,7 @@ TEST_CASE("Testing draw_from_prior for unconstrained sizes", "[ComparisonPopulat
         for (unsigned int i = 0; i < 10000; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
             REQUIRE(tree.get_u() == Approx(1.0));
             REQUIRE(tree.get_v() == Approx(1.0));
             REQUIRE(tree.get_freq_1() == 0.5);
@@ -2775,7 +2775,7 @@ TEST_CASE("Testing draw_from_prior for fully parameterized", "[ComparisonPopulat
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.set_population_size(0.001);
         tree.estimate_mutation_rate();
         tree.set_mutation_rate(0.8);
@@ -2792,7 +2792,7 @@ TEST_CASE("Testing draw_from_prior for fully parameterized", "[ComparisonPopulat
         for (unsigned int i = 0; i < 10000; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
 
             REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
             REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
@@ -4256,7 +4256,7 @@ TEST_CASE("Testing simple likelihood of ComparisonDirichletPopulationTree", "[Co
         ComparisonDirichletPopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         REQUIRE(tree.get_root().get_label() == "root-pop1");
-        tree.set_height(0.01);
+        tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
@@ -4274,7 +4274,7 @@ TEST_CASE("Testing simple threaded likelihood of ComparisonDirichletPopulationTr
         ComparisonDirichletPopulationTree tree(nex_path, ' ', true, true);
         REQUIRE(tree.get_degree_of_root() == 2);
         REQUIRE(tree.get_root().get_label() == "root-pop1");
-        tree.set_height(0.01);
+        tree.set_root_height(0.01);
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
         REQUIRE(l == Approx(-31.77866581319647));
@@ -4323,8 +4323,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_height(0.01);
-        REQUIRE(tree.get_height() == 0.01);
+        tree.set_root_height(0.01);
+        REQUIRE(tree.get_root_height() == 0.01);
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
@@ -4352,8 +4352,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
         tree.store_state();
-        tree.set_height(0.0);
-        REQUIRE(tree.get_height() == 0.0);
+        tree.set_root_height(0.0);
+        REQUIRE(tree.get_root_height() == 0.0);
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -4365,7 +4365,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.restore_state();
         // ComparisonDirichletPopulationTree does not store/restore heights
-        REQUIRE(tree.get_height() == 0.0);
+        REQUIRE(tree.get_root_height() == 0.0);
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -4383,14 +4383,14 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.store_state();
-        tree.set_height(0.0);
+        tree.set_root_height(0.0);
         tree.compute_log_likelihood_and_prior();
         REQUIRE(tree.get_number_of_likelihood_calculations() == 4);
 
 
         tree.store_state();
-        tree.set_height(0.2);
-        REQUIRE(tree.get_height() == 0.2);
+        tree.set_root_height(0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
@@ -4402,7 +4402,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
 
         tree.store_state();
-        tree.set_height(0.03);
+        tree.set_root_height(0.03);
         tree.set_freq_1(0.05);
         REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_freq_1() == 0.05);
@@ -4424,7 +4424,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.store_state();
         tree.set_freq_1(0.95);
-        REQUIRE(tree.get_height() == 0.03);
+        REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.get_freq_1() == 0.95);
@@ -4441,7 +4441,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.store_state();
         tree.set_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
-        REQUIRE(tree.get_height() == 0.03);
+        REQUIRE(tree.get_root_height() == 0.03);
         REQUIRE(tree.get_v() == Approx(10.0));
         REQUIRE(tree.get_u() == Approx(10.0/19.0));
         REQUIRE(tree.get_root_population_size() == 2.0/(111.1 * 2 * tree.get_ploidy()));
@@ -4459,8 +4459,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.store_state();
         tree.constrain_state_frequencies();
         tree.set_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
-        tree.set_height(0.2);
-        REQUIRE(tree.get_height() == 0.2);
+        tree.set_root_height(0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -4478,7 +4478,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.store_state();
         tree.fold_patterns();
-        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
@@ -4496,7 +4496,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.store_state();
         tree.fix_population_size_multipliers();
-        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -4520,7 +4520,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
         tree.set_mutation_rate_prior(std::make_shared<GammaDistribution>(10.0, 0.1));
-        REQUIRE(tree.get_height() == 0.2);
+        REQUIRE(tree.get_root_height() == 0.2);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -4538,9 +4538,9 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.store_state();
         tree.set_mutation_rate(2.0);
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.set_population_size(2.0/(20.0 * 2 * tree.get_ploidy()));
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 2.0);
@@ -4558,7 +4558,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.restore_state();
         // ComparisonDirichletPopulationTree does not store/restore node heights
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -4583,7 +4583,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         m = {0.5, 1.0, 1.5};
         tree.set_population_size_multipliers(m);
         REQUIRE(tree.get_population_size_multipliers() == m);
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -4601,7 +4601,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.store_state();
         tree.fix_population_size();
         REQUIRE(tree.get_population_size_multipliers() == m);
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -4619,7 +4619,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.store_state();
         tree.fix_population_size_multipliers();
         REQUIRE(tree.get_population_size_multipliers() == m);
-        REQUIRE(tree.get_height() == 0.1);
+        REQUIRE(tree.get_root_height() == 0.1);
         REQUIRE(tree.get_v() == Approx(1.0));
         REQUIRE(tree.get_u() == Approx(1.0));
         REQUIRE(tree.get_mutation_rate() == 1.0);
@@ -5271,7 +5271,7 @@ TEST_CASE("Testing scaling of ComparisonDirichletPopulationTree.simulate_gene_tr
 
         tree.set_population_size(Ne * mu);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
 
         tree.set_freq_1(0.5);
 
@@ -5317,7 +5317,7 @@ TEST_CASE("Testing scaling of ComparisonDirichletPopulationTree.simulate_gene_tr
 
         tree.set_mutation_rate(mu);
         tree.set_population_size(Ne);
-        tree.set_height(0.1 / mu);
+        tree.set_root_height(0.1 / mu);
 
         n = 0;
         mean = 0.0;
@@ -5383,7 +5383,7 @@ TEST_CASE("Testing scaling of ComparisonDirichletPopulationTree.simulate_gene_tr
         // tree.set_child_population_size(0, (Ne_0));
         // tree.set_child_population_size(1, (Ne_1));
 
-        tree.set_height(time);
+        tree.set_root_height(time);
 
         tree.set_freq_1(0.5);
 
@@ -5479,7 +5479,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree dataset simulation",
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.fix_population_size_multipliers();
         tree.set_population_size(0.005);
         tree.fix_population_size();
@@ -5529,7 +5529,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for fully f
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.fix_population_size_multipliers();
         tree.set_population_size(0.001);
         tree.fix_population_size();
@@ -5542,7 +5542,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for fully f
         for (unsigned int i = 0; i < 10; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
             REQUIRE(tree.get_root_population_size() == 0.001);
             REQUIRE(tree.get_child_population_size(0) == 0.001);
             REQUIRE(tree.get_child_population_size(1) == 0.001);
@@ -5571,7 +5571,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for constra
         tree.set_freq_1_prior(f_prior);
         tree.set_mutation_rate_prior(rate_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.fix_population_size_multipliers();
         tree.set_population_size(0.001);
         tree.estimate_mutation_rate();
@@ -5585,7 +5585,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for constra
         for (unsigned int i = 0; i < 10000; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
             REQUIRE(tree.get_u() == Approx(1.0));
             REQUIRE(tree.get_v() == Approx(1.0));
             REQUIRE(tree.get_freq_1() == 0.5);
@@ -5622,7 +5622,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for unconst
         tree.set_mutation_rate_prior(rate_prior);
         tree.set_population_size_multiplier_prior(multiplier_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.set_population_size(0.001);
         tree.estimate_mutation_rate();
         tree.set_mutation_rate(0.8);
@@ -5638,7 +5638,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for unconst
         for (unsigned int i = 0; i < 100000; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
             REQUIRE(tree.get_u() == Approx(1.0));
             REQUIRE(tree.get_v() == Approx(1.0));
             REQUIRE(tree.get_freq_1() == 0.5);
@@ -5685,7 +5685,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for fully p
         tree.set_mutation_rate_prior(rate_prior);
         tree.set_population_size_multiplier_prior(multiplier_prior);
 
-        tree.set_height(0.1);
+        tree.set_root_height(0.1);
         tree.set_population_size(0.001);
         tree.estimate_mutation_rate();
         tree.set_mutation_rate(0.8);
@@ -5703,7 +5703,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree.draw_from_prior for fully p
         for (unsigned int i = 0; i < 100000; ++i) {
             tree.draw_from_prior(rng);
 
-            REQUIRE(tree.get_height() == 0.1);
+            REQUIRE(tree.get_root_height() == 0.1);
 
             REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
             REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));

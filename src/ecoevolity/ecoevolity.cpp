@@ -29,7 +29,7 @@ void write_splash(std::ostream& out) {
         << string_util::banner('=') << "\n";
 }
 
-int ecoevolity_main(int argc, char * argv[]) {
+int ecoevolity_main(int argc, char * argv[], bool using_population_size_multipliers) {
 
     write_splash(std::cout);
     std::cout << "\n";
@@ -146,52 +146,102 @@ int ecoevolity_main(int argc, char * argv[]) {
     }
     std::cout << "Config path: " << config_path << std::endl;
 
-    std::cout << "Parsing config file..." << std::endl;
-    CollectionSettings settings = CollectionSettings(config_path);
+    if (using_population_size_multipliers) {
+        std::cout << "Parsing config file..." << std::endl;
+        DirichletCollectionSettings settings = DirichletCollectionSettings(config_path);
 
-    std::cout << "\n" << string_util::banner('-') << "\n";
-    settings.write_settings(std::cout);
-    std::cout << string_util::banner('-') << "\n\n";
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        settings.write_settings(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
 
-    std::cout << "Configuring model..." << std::endl;
-    ComparisonPopulationTreeCollection comparisons =
-            ComparisonPopulationTreeCollection(
-                    settings,
-                    rng,
-                    strict_on_constant_sites,
-                    strict_on_missing_sites);
+        std::cout << "Configuring model..." << std::endl;
+        ComparisonDirichletPopulationTreeCollection comparisons =
+                ComparisonDirichletPopulationTreeCollection(
+                        settings,
+                        rng,
+                        strict_on_constant_sites,
+                        strict_on_missing_sites);
 
-    if (ignore_data) {
-        comparisons.ignore_data();
+        if (ignore_data) {
+            comparisons.ignore_data();
+        }
+        else {
+            comparisons.use_data();
+        }
+
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        comparisons.write_summary(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
+
+        comparisons.set_number_of_threads(nthreads);
+        std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
+
+        if (dry_run) {
+            return 0;
+        }
+
+        time_t start;
+        time_t finish;
+        time(&start);
+
+        std::cout << "Firing up MCMC..." << std::endl;
+        comparisons.mcmc(
+                rng,
+                settings.get_chain_length(),
+                settings.get_sample_frequency());
+
+        time(&finish);
+        double duration = difftime(finish, start);
+        std::cout << "Runtime: " << duration << " seconds." << std::endl;
     }
     else {
-        comparisons.use_data();
+        std::cout << "Parsing config file..." << std::endl;
+        CollectionSettings settings = CollectionSettings(config_path);
+
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        settings.write_settings(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
+
+        std::cout << "Configuring model..." << std::endl;
+        ComparisonPopulationTreeCollection comparisons =
+                ComparisonPopulationTreeCollection(
+                        settings,
+                        rng,
+                        strict_on_constant_sites,
+                        strict_on_missing_sites);
+
+        if (ignore_data) {
+            comparisons.ignore_data();
+        }
+        else {
+            comparisons.use_data();
+        }
+
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        comparisons.write_summary(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
+
+        comparisons.set_number_of_threads(nthreads);
+        std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
+
+        if (dry_run) {
+            return 0;
+        }
+
+        time_t start;
+        time_t finish;
+        time(&start);
+
+        std::cout << "Firing up MCMC..." << std::endl;
+        comparisons.mcmc(
+                rng,
+                settings.get_chain_length(),
+                settings.get_sample_frequency());
+
+        time(&finish);
+        double duration = difftime(finish, start);
+        std::cout << "Runtime: " << duration << " seconds." << std::endl;
     }
-
-    std::cout << "\n" << string_util::banner('-') << "\n";
-    comparisons.write_summary(std::cout);
-    std::cout << string_util::banner('-') << "\n\n";
-
-    comparisons.set_number_of_threads(nthreads);
-    std::cout << "Number of threads: " << comparisons.get_number_of_threads() << std::endl;
-
-    if (dry_run) {
-        return 0;
-    }
-
-    time_t start;
-    time_t finish;
-    time(&start);
-
-    std::cout << "Firing up MCMC..." << std::endl;
-    comparisons.mcmc(
-            rng,
-            settings.get_chain_length(),
-            settings.get_sample_frequency());
-
-    time(&finish);
-    double duration = difftime(finish, start);
-    std::cout << "Runtime: " << duration << " seconds." << std::endl;
 
     return 0;
 }

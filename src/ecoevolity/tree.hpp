@@ -95,6 +95,10 @@ class PopulationTree {
                 double ploidy = 2.0
                 );
 
+        virtual bool using_population_size_multipliers() const {
+            return false;
+        }
+
         void fold_patterns();
 
         bool constant_sites_removed() const {
@@ -352,6 +356,114 @@ class PopulationTree {
                 unsigned int indent_level = 0) const {
             this->data_.write_summary(out, indent_level);
         }
+
+
+        // TODO: This PopulationTree hierarchy of classes is messy. The problem
+        // is that each derived class has its own subset of methods in addition
+        // to the base class methodds. Thus, I can't simply use "virtual ... =
+        // 0;" here, because some of the derived classes would be left with
+        // invalid methods. Declaring methods here that throw errors if not
+        // overloaded works for now.
+        // Methods to be overloaded
+        virtual void set_child_population_size(unsigned int child_index, double size) {
+            throw EcoevolityError("set_child_population_size called from PopulationTree");
+        }
+        virtual double get_child_population_size(unsigned int child_index) const {
+            throw EcoevolityError("get_child_population_size called from PopulationTree");
+        }
+        virtual std::shared_ptr<PositiveRealParameter> get_child_population_size_parameter(
+                unsigned int child_index) const {
+            throw EcoevolityError("get_child_population_size_parameter called from PopulationTree");
+        }
+
+        virtual void write_state_log_header(std::ostream& out,
+                bool include_event_index,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("write_state_log_header called from PopulationTree");
+        }
+        virtual void log_state(std::ostream& out,
+                unsigned int event_index,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("log_state called from PopulationTree");
+        }
+        virtual void log_state(std::ostream& out,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("log_state called from PopulationTree");
+        }
+
+        virtual void draw_from_prior(RandomNumberGenerator& rng) {
+            throw EcoevolityError("draw_from_prior called from PopulationTree");
+        }
+
+        virtual void set_population_size_multipliers(const std::vector<double> & multipliers) {
+            throw EcoevolityError("set_population_size_multipliers called from PopulationTree");
+        }
+        virtual void set_population_size_multipliers_from_proportions(const std::vector<double> & proportions) {
+            throw EcoevolityError("set_population_size_multipliers_from_proportions called from PopulationTree");
+        }
+        virtual std::vector<double> get_population_size_multipliers() const {
+            throw EcoevolityError("get_population_size_multipliers called from PopulationTree");
+        }
+        virtual std::vector<double> get_population_size_multipliers_as_proportions() const {
+            throw EcoevolityError("get_population_size_multipliers_as_proportions called from PopulationTree");
+        }
+
+        virtual std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const {
+            throw EcoevolityError("get_population_size_parameter() called from PopulationTree");
+        }
+        virtual double get_root_population_size_multiplier() const {
+            throw EcoevolityError("get_root_population_size_multiplier called from PopulationTree");
+        }
+        virtual double get_child_population_size_multiplier(unsigned int child_index) const {
+            throw EcoevolityError("get_child_population_size_multiplier called from PopulationTree");
+        }
+
+        virtual void store_population_size() {
+            throw EcoevolityError("store_population_size called from PopulationTree");
+        }
+        virtual void store_population_size_multipliers() {
+            throw EcoevolityError("store_population_size_multipliers called from PopulationTree");
+        }
+        virtual void restore_population_size() {
+            throw EcoevolityError("restore_population_size called from PopulationTree");
+        }
+        virtual void restore_population_size_multipliers() {
+            throw EcoevolityError("restore_population_size_multipliers called from PopulationTree");
+        }
+
+        virtual void set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
+            throw EcoevolityError("set_population_size_multiplier_prior called from PopulationTree");
+        }
+        virtual std::shared_ptr<DirichletDistribution> get_population_size_multiplier_prior() const {
+            throw EcoevolityError("get_population_size_multiplier_prior called from PopulationTree");
+        }
+
+        virtual void fix_population_size_multipliers() {
+            throw EcoevolityError("fix_population_size_multipliers called from PopulationTree");
+        }
+        virtual void estimate_population_size_multipliers() {
+            throw EcoevolityError("estimate_population_size_multipliers called from PopulationTree");
+        }
+        virtual bool population_size_multipliers_are_fixed() const {
+            throw EcoevolityError("population_size_multipliers_are_fixed called from PopulationTree");
+        }
+
+        virtual void fix_population_size() {
+            throw EcoevolityError("fix_population_size called from PopulationTree");
+        }
+        virtual void estimate_population_size() {
+            throw EcoevolityError("estimate_population_size called from PopulationTree");
+        }
+        virtual bool population_size_is_fixed() const {
+            throw EcoevolityError("population_size_is_fixed called from PopulationTree");
+        }
+
+        virtual double compute_log_prior_density_of_population_size() const {
+            throw EcoevolityError("compute_log_prior_density_of_population_size called from PopulationTree");
+        }
+        virtual double compute_log_prior_density_of_population_size_multipliers() const {
+            throw EcoevolityError("compute_log_prior_density_of_population_size_multipliers called from PopulationTree");
+        }
 };
 
 class DirichletPopulationTree: public PopulationTree {
@@ -386,6 +498,10 @@ class DirichletPopulationTree: public PopulationTree {
                 double ploidy = 2.0
                 );
 
+        bool using_population_size_multipliers() const {
+            return true;
+        }
+
         double get_node_theta(const PopulationNode& node) const {
             return (2 * this->get_ploidy() *
                     this->get_population_size() *
@@ -409,6 +525,7 @@ class DirichletPopulationTree: public PopulationTree {
         void set_population_size_multipliers(const std::vector<double> & multipliers);
         void set_population_size_multipliers_from_proportions(const std::vector<double> & proportions);
         std::vector<double> get_population_size_multipliers() const;
+        std::vector<double> get_population_size_multipliers_as_proportions() const;
 
         std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const;
         std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const {
@@ -519,30 +636,15 @@ class ComparisonPopulationTree: public PopulationTree {
                 );
 
         void set_child_population_size(unsigned int child_index, double size);
-        void update_child_population_size(unsigned int child_index, double size);
         double get_child_population_size(unsigned int child_index) const;
-        void store_child_population_size(unsigned int child_index);
-        void restore_child_population_size(unsigned int child_index);
         std::shared_ptr<PositiveRealParameter> get_child_population_size_parameter(
                 unsigned int child_index) const;
 
-        void set_height(double height) {this->set_root_height(height);}
-        void update_height(double height) {this->update_root_height(height);}
-        double get_height() const {return this->get_root_height();}
-        void store_height() {this->store_root_height();}
-        void restore_height() {this->restore_root_height();}
-        void set_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
-            this->set_root_height_parameter(h);
-        }
-        std::shared_ptr<PositiveRealParameter> get_height_parameter() const {
-            return this->get_root_height_parameter();
-        }
-
         void store_all_heights() {
-            this->store_height();
+            this->store_root_height();
         }
         void restore_all_heights() {
-            this->restore_height();
+            this->restore_root_height();
         }
         void store_parameters();
         void restore_parameters();
@@ -557,12 +659,6 @@ class ComparisonPopulationTree: public PopulationTree {
                 const std::string& delimiter = "\t") const;
         void log_state(std::ostream& out,
                 const std::string& delimiter = "\t") const;
-
-        std::string get_state_header_string(
-                const std::string& delimiter = "\t") const;
-        std::string get_state_string(
-                const std::string& delimiter = "\t",
-                unsigned int precision = 18) const;
 
         void draw_from_prior(RandomNumberGenerator& rng);
 
@@ -606,23 +702,11 @@ class ComparisonDirichletPopulationTree: public DirichletPopulationTree {
         double get_child_population_size_multiplier(unsigned int child_index) const;
         double get_child_population_size(unsigned int child_index) const;
 
-        void set_height(double height) {this->set_root_height(height);}
-        void update_height(double height) {this->update_root_height(height);}
-        double get_height() const {return this->get_root_height();}
-        void store_height() {this->store_root_height();}
-        void restore_height() {this->restore_root_height();}
-        void set_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
-            this->set_root_height_parameter(h);
-        }
-        std::shared_ptr<PositiveRealParameter> get_height_parameter() const {
-            return this->get_root_height_parameter();
-        }
-
         void store_all_heights() {
-            this->store_height();
+            this->store_root_height();
         }
         void restore_all_heights() {
-            this->restore_height();
+            this->restore_root_height();
         }
         void store_parameters();
         void restore_parameters();
@@ -637,12 +721,6 @@ class ComparisonDirichletPopulationTree: public DirichletPopulationTree {
                 const std::string& delimiter = "\t") const;
         void log_state(std::ostream& out,
                 const std::string& delimiter = "\t") const;
-
-        std::string get_state_header_string(
-                const std::string& delimiter = "\t") const;
-        std::string get_state_string(
-                const std::string& delimiter = "\t",
-                unsigned int precision = 18) const;
 
         void draw_from_prior(RandomNumberGenerator& rng);
 };

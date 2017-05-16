@@ -382,21 +382,21 @@ TEST_CASE("Testing draw_from_prior for DPP with 3 pairs and alpha 1.0",
                 REQUIRE(collection.get_height_of_tree(1) != collection.get_height_of_tree(2));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
             conc_summary.add_sample(collection.get_concentration());
         }
 
@@ -705,21 +705,21 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
                 REQUIRE(collection.get_height_of_tree(1) != collection.get_height_of_tree(2));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
             conc_summary.add_sample(collection.get_concentration());
         }
 
@@ -1007,21 +1007,21 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
                 REQUIRE(collection.get_height_of_tree(1) != collection.get_height_of_tree(2));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
         }
 
         REQUIRE(height_summary1.sample_size() == nsamples);
@@ -1968,21 +1968,21 @@ TEST_CASE("Testing draw_from_prior for fixed 012",
                 REQUIRE(collection.get_height_of_tree(1) != collection.get_height_of_tree(2));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
         }
 
         REQUIRE(height_summary1.sample_size() == nsamples);
@@ -2265,21 +2265,21 @@ TEST_CASE("Testing draw_from_prior for fixed 000",
                 REQUIRE(collection.get_height_of_tree(1) != collection.get_height_of_tree(2));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
         }
 
         REQUIRE(height_summary1.sample_size() == nsamples);
@@ -3190,7 +3190,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         SampleSummarizer<double> mult3_summary;
         SampleSummarizer<double> mult4_summary;
 
-        unsigned int nsamples = 100000;
+        unsigned int nsamples = 200000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             collection.draw_from_prior(rng);
             split_weight_summary.add_sample(collection.get_concentration());
@@ -3241,26 +3241,26 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
                 REQUIRE(collection.get_height_of_tree(2) != collection.get_height_of_tree(3));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            size4_summary_a.add_sample(collection.get_tree(3).get_root_population_size());
-            size4_summary_b.add_sample(collection.get_tree(3).get_child_population_size(0));
-            size4_summary_c.add_sample(collection.get_tree(3).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            f4_summary.add_sample(collection.get_tree(3).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
-            mult4_summary.add_sample(collection.get_tree(3).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            size4_summary_a.add_sample(collection.get_tree(3)->get_root_population_size());
+            size4_summary_b.add_sample(collection.get_tree(3)->get_child_population_size(0));
+            size4_summary_c.add_sample(collection.get_tree(3)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            f4_summary.add_sample(collection.get_tree(3)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
+            mult4_summary.add_sample(collection.get_tree(3)->get_mutation_rate());
         }
 
         REQUIRE(height_summary1.sample_size() == nsamples);
@@ -3593,7 +3593,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         SampleSummarizer<double> mult3_summary;
         SampleSummarizer<double> mult4_summary;
 
-        unsigned int nsamples = 100000;
+        unsigned int nsamples = 200000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             collection.draw_from_prior(rng);
             split_weight_summary.add_sample(collection.get_concentration());
@@ -3644,26 +3644,26 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
                 REQUIRE(collection.get_height_of_tree(2) != collection.get_height_of_tree(3));
             }
 
-            size1_summary_a.add_sample(collection.get_tree(0).get_root_population_size());
-            size1_summary_b.add_sample(collection.get_tree(0).get_child_population_size(0));
-            size1_summary_c.add_sample(collection.get_tree(0).get_child_population_size(1));
-            size2_summary_a.add_sample(collection.get_tree(1).get_root_population_size());
-            size2_summary_b.add_sample(collection.get_tree(1).get_child_population_size(0));
-            size2_summary_c.add_sample(collection.get_tree(1).get_child_population_size(1));
-            size3_summary_a.add_sample(collection.get_tree(2).get_root_population_size());
-            size3_summary_b.add_sample(collection.get_tree(2).get_child_population_size(0));
-            size3_summary_c.add_sample(collection.get_tree(2).get_child_population_size(1));
-            size4_summary_a.add_sample(collection.get_tree(3).get_root_population_size());
-            size4_summary_b.add_sample(collection.get_tree(3).get_child_population_size(0));
-            size4_summary_c.add_sample(collection.get_tree(3).get_child_population_size(1));
-            f1_summary.add_sample(collection.get_tree(0).get_freq_1());
-            f2_summary.add_sample(collection.get_tree(1).get_freq_1());
-            f3_summary.add_sample(collection.get_tree(2).get_freq_1());
-            f4_summary.add_sample(collection.get_tree(3).get_freq_1());
-            mult1_summary.add_sample(collection.get_tree(0).get_mutation_rate());
-            mult2_summary.add_sample(collection.get_tree(1).get_mutation_rate());
-            mult3_summary.add_sample(collection.get_tree(2).get_mutation_rate());
-            mult4_summary.add_sample(collection.get_tree(3).get_mutation_rate());
+            size1_summary_a.add_sample(collection.get_tree(0)->get_root_population_size());
+            size1_summary_b.add_sample(collection.get_tree(0)->get_child_population_size(0));
+            size1_summary_c.add_sample(collection.get_tree(0)->get_child_population_size(1));
+            size2_summary_a.add_sample(collection.get_tree(1)->get_root_population_size());
+            size2_summary_b.add_sample(collection.get_tree(1)->get_child_population_size(0));
+            size2_summary_c.add_sample(collection.get_tree(1)->get_child_population_size(1));
+            size3_summary_a.add_sample(collection.get_tree(2)->get_root_population_size());
+            size3_summary_b.add_sample(collection.get_tree(2)->get_child_population_size(0));
+            size3_summary_c.add_sample(collection.get_tree(2)->get_child_population_size(1));
+            size4_summary_a.add_sample(collection.get_tree(3)->get_root_population_size());
+            size4_summary_b.add_sample(collection.get_tree(3)->get_child_population_size(0));
+            size4_summary_c.add_sample(collection.get_tree(3)->get_child_population_size(1));
+            f1_summary.add_sample(collection.get_tree(0)->get_freq_1());
+            f2_summary.add_sample(collection.get_tree(1)->get_freq_1());
+            f3_summary.add_sample(collection.get_tree(2)->get_freq_1());
+            f4_summary.add_sample(collection.get_tree(3)->get_freq_1());
+            mult1_summary.add_sample(collection.get_tree(0)->get_mutation_rate());
+            mult2_summary.add_sample(collection.get_tree(1)->get_mutation_rate());
+            mult3_summary.add_sample(collection.get_tree(2)->get_mutation_rate());
+            mult4_summary.add_sample(collection.get_tree(3)->get_mutation_rate());
         }
 
         REQUIRE(height_summary1.sample_size() == nsamples);
@@ -3789,5 +3789,430 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
         REQUIRE(mult4_summary.mean() == Approx(mult4_shape * mult4_scale).epsilon(0.01));
         REQUIRE(mult4_summary.variance() == Approx(mult4_shape * mult4_scale * mult4_scale).epsilon(0.01));
+    }
+}
+
+TEST_CASE("Testing draw_from_prior logging for dirichlet collectin and DPP with variable alpha",
+        "[ComparisonDirichletPopulationTreeCollection]") {
+
+    SECTION("Testing draw_from_prior logging for dirichlet collection DPP with variable alpha") {
+        std::string cfg_path = "data/dummy.yml";
+
+        double height_shape = 10.0;
+        double height_scale = 0.1;
+        double concentration = 1.0;
+
+        double size1_shape = 10.0;
+        double size1_scale = 0.0001;
+        double size2_shape = 2.0;
+        double size2_scale = 0.001;
+        double size3_shape = 5.0;
+        double size3_scale = 0.0005;
+
+        std::vector<double> mult1_alpha = {10.0, 10.0, 10.0};
+        std::vector<double> mult2_alpha = {10.0, 15.0, 5.0};
+        std::vector<double> mult3_alpha = {15.0, 5.0, 10.0};
+
+        double f1_a = 2.0;
+        double f1_b = 1.1;
+        double f2_a = 1.0;
+        double f2_b = 0.5;
+        double f3_a = 1.5;
+        double f3_b = 1.8;
+        double expected_f1_mean = f1_a / (f1_a + f1_b);
+        double expected_f1_variance = (f1_a * f1_b) / ((f1_a + f1_b) * (f1_a + f1_b) * (f1_a + f1_b + 1.0));
+        double expected_f2_mean = f2_a / (f2_a + f2_b);
+        double expected_f2_variance = (f2_a * f2_b) / ((f2_a + f2_b) * (f2_a + f2_b) * (f2_a + f2_b + 1.0));
+        double expected_f3_mean = f3_a / (f3_a + f3_b);
+        double expected_f3_variance = (f3_a * f3_b) / ((f3_a + f3_b) * (f3_a + f3_b) * (f3_a + f3_b + 1.0));
+        double mult2_shape = 100.0;
+        double mult2_scale = 0.005;
+        double mult3_shape = 100.0;
+        double mult3_scale = 0.02;
+
+        double concentration_shape = 5.0;
+        double concentration_scale = 0.2;
+
+        std::string auto_optimize = "true";
+
+        std::string tag = _COLLECTION_RNG.random_string(10);
+        std::string log_path = "data/tmp-prior-sampling-" + tag + ".log";
+
+        std::stringstream os;
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                estimate: true\n";
+        os << "                prior:\n";
+        os << "                    gamma_distribution:\n";
+        os << "                        shape: " << concentration_shape << "\n";
+        os << "                        scale: " << concentration_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 100000\n";
+        os << "    sample_frequency: 10\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 10000\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 3\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonHeightScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        ComparisonMutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        PopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size1_shape << "\n";
+        os << "                    scale: " << size1_scale << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << mult1_alpha.at(0);
+        for (unsigned int i = 1; i < mult1_alpha.size(); ++i) {
+            os << ", " << mult1_alpha.at(i);
+        }
+        os << "]\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f1_a << "\n";
+        os << "                    beta: " << f1_b << "\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size2_shape << "\n";
+        os << "                    scale: " << size2_scale << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << mult2_alpha.at(0);
+        for (unsigned int i = 1; i < mult2_alpha.size(); ++i) {
+            os << ", " << mult2_alpha.at(i);
+        }
+        os << "]\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f2_a << "\n";
+        os << "                    beta: " << f2_b << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult2_shape << "\n";
+        os << "                    scale: " << mult2_scale << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size3_shape << "\n";
+        os << "                    scale: " << size3_scale << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << mult3_alpha.at(0);
+        for (unsigned int i = 1; i < mult3_alpha.size(); ++i) {
+            os << ", " << mult3_alpha.at(i);
+        }
+        os << "]\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f3_a << "\n";
+        os << "                    beta: " << f3_b << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult3_shape << "\n";
+        os << "                    scale: " << mult3_scale << "\n";
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(os, cfg_path);
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonDirichletPopulationTreeCollection collection = ComparisonDirichletPopulationTreeCollection(
+                settings,
+                rng);
+
+        std::ofstream out_stream;
+        out_stream.open(log_path);
+        collection.write_state_log_header(out_stream);
+
+        unsigned int nsamples = 10000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            collection.draw_from_prior(rng);
+            collection.log_state(out_stream, i);
+        }
+        out_stream.close();
+        
+
+        REQUIRE(path::exists(log_path));
+
+        unsigned int nnodes = 3;
+        DirichletDistribution dir_dist1 = DirichletDistribution(mult1_alpha);
+        std::vector<double> dir1_expected_means = dir_dist1.get_mean();
+        for (unsigned int i = 0; i < dir1_expected_means.size(); ++i) {
+            dir1_expected_means.at(i) *= (double)nnodes;
+        }
+        std::vector<double> dir1_expected_variances = dir_dist1.get_variance();
+        for (unsigned int i = 0; i < dir1_expected_variances.size(); ++i) {
+            dir1_expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
+        }
+
+        DirichletDistribution dir_dist2 = DirichletDistribution(mult2_alpha);
+        std::vector<double> dir2_expected_means = dir_dist2.get_mean();
+        for (unsigned int i = 0; i < dir2_expected_means.size(); ++i) {
+            dir2_expected_means.at(i) *= (double)nnodes;
+        }
+        std::vector<double> dir2_expected_variances = dir_dist2.get_variance();
+        for (unsigned int i = 0; i < dir2_expected_variances.size(); ++i) {
+            dir2_expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
+        }
+
+        DirichletDistribution dir_dist3 = DirichletDistribution(mult3_alpha);
+        std::vector<double> dir3_expected_means = dir_dist3.get_mean();
+        for (unsigned int i = 0; i < dir3_expected_means.size(); ++i) {
+            dir3_expected_means.at(i) *= (double)nnodes;
+        }
+        std::vector<double> dir3_expected_variances = dir_dist3.get_variance();
+        for (unsigned int i = 0; i < dir3_expected_variances.size(); ++i) {
+            dir3_expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
+        }
+
+        spreadsheet::Spreadsheet prior_sample;
+        prior_sample.update(log_path);
+
+        unsigned int expected_sample_size = nsamples;
+
+        SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
+        SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
+        SampleSummarizer<double> height_summary3 = prior_sample.summarize<double>("root_height_pop1b");
+        REQUIRE(height_summary1.sample_size() == expected_sample_size);
+        REQUIRE(height_summary1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.sample_size() == expected_sample_size);
+        REQUIRE(height_summary2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.sample_size() == expected_sample_size);
+        REQUIRE(height_summary3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        SampleSummarizer<double> size_mult1_summary_0 = prior_sample.summarize<double>("pop_size_multiplier_kya");
+        SampleSummarizer<double> size_mult1_summary_1 = prior_sample.summarize<double>("pop_size_multiplier_fas");
+        SampleSummarizer<double> size_mult1_summary_2 = prior_sample.summarize<double>("pop_size_multiplier_root_kya");
+        SampleSummarizer<double> size_mult2_summary_0 = prior_sample.summarize<double>("pop_size_multiplier_pop1");
+        SampleSummarizer<double> size_mult2_summary_1 = prior_sample.summarize<double>("pop_size_multiplier_pop2");
+        SampleSummarizer<double> size_mult2_summary_2 = prior_sample.summarize<double>("pop_size_multiplier_root_pop1");
+        SampleSummarizer<double> size_mult3_summary_0 = prior_sample.summarize<double>("pop_size_multiplier_pop1b");
+        SampleSummarizer<double> size_mult3_summary_1 = prior_sample.summarize<double>("pop_size_multiplier_pop2b");
+        SampleSummarizer<double> size_mult3_summary_2 = prior_sample.summarize<double>("pop_size_multiplier_root_pop1b");
+
+        std::cout << "\n";
+        std::cout << "kya: "  << size_mult1_summary_0.mean() << "\n";
+        std::cout << "fas: "  << size_mult1_summary_1.mean() << "\n";
+        std::cout << "root: " << size_mult1_summary_2.mean() << "\n";
+        REQUIRE(size_mult1_summary_0.sample_size() == expected_sample_size);
+        REQUIRE(size_mult1_summary_1.sample_size() == expected_sample_size);
+        REQUIRE(size_mult1_summary_2.sample_size() == expected_sample_size);
+        REQUIRE(size_mult1_summary_0.mean() == Approx(dir1_expected_means.at(0)).epsilon(0.01));
+        REQUIRE(size_mult1_summary_0.variance() == Approx(dir1_expected_variances.at(0)).epsilon(0.01));
+        REQUIRE(size_mult1_summary_1.mean() == Approx(dir1_expected_means.at(1)).epsilon(0.01));
+        REQUIRE(size_mult1_summary_1.variance() == Approx(dir1_expected_variances.at(1)).epsilon(0.01));
+        REQUIRE(size_mult1_summary_2.mean() == Approx(dir1_expected_means.at(2)).epsilon(0.01));
+        REQUIRE(size_mult1_summary_2.variance() == Approx(dir1_expected_variances.at(2)).epsilon(0.01));
+
+        std::cout << "\n";
+        std::cout << "pop1: " << size_mult2_summary_0.mean() << "\n";
+        std::cout << "pop2: " << size_mult2_summary_1.mean() << "\n";
+        std::cout << "root: " << size_mult2_summary_2.mean() << "\n";
+        REQUIRE(size_mult2_summary_0.sample_size() == expected_sample_size);
+        REQUIRE(size_mult2_summary_1.sample_size() == expected_sample_size);
+        REQUIRE(size_mult2_summary_2.sample_size() == expected_sample_size);
+        REQUIRE(size_mult2_summary_0.mean() == Approx(dir2_expected_means.at(0)).epsilon(0.01));
+        REQUIRE(size_mult2_summary_0.variance() == Approx(dir2_expected_variances.at(0)).epsilon(0.01));
+        REQUIRE(size_mult2_summary_1.mean() == Approx(dir2_expected_means.at(1)).epsilon(0.01));
+        REQUIRE(size_mult2_summary_1.variance() == Approx(dir2_expected_variances.at(1)).epsilon(0.01));
+        REQUIRE(size_mult2_summary_2.mean() == Approx(dir2_expected_means.at(2)).epsilon(0.01));
+        REQUIRE(size_mult2_summary_2.variance() == Approx(dir2_expected_variances.at(2)).epsilon(0.01));
+
+        std::cout << "\n";
+        std::cout << "pop1b: " << size_mult3_summary_0.mean() << "\n";
+        std::cout << "pop2b: " << size_mult3_summary_1.mean() << "\n";
+        std::cout << "root: "  << size_mult3_summary_2.mean() << "\n";
+        REQUIRE(size_mult3_summary_0.sample_size() == expected_sample_size);
+        REQUIRE(size_mult3_summary_1.sample_size() == expected_sample_size);
+        REQUIRE(size_mult3_summary_2.sample_size() == expected_sample_size);
+        REQUIRE(size_mult3_summary_0.mean() == Approx(dir3_expected_means.at(0)).epsilon(0.01));
+        REQUIRE(size_mult3_summary_0.variance() == Approx(dir3_expected_variances.at(0)).epsilon(0.01));
+        REQUIRE(size_mult3_summary_1.mean() == Approx(dir3_expected_means.at(1)).epsilon(0.01));
+        REQUIRE(size_mult3_summary_1.variance() == Approx(dir3_expected_variances.at(1)).epsilon(0.01));
+        REQUIRE(size_mult3_summary_2.mean() == Approx(dir3_expected_means.at(2)).epsilon(0.01));
+        REQUIRE(size_mult3_summary_2.variance() == Approx(dir3_expected_variances.at(2)).epsilon(0.01));
+
+
+        SampleSummarizer<double> size1_summary = prior_sample.summarize<double>("pop_size_kya");
+        SampleSummarizer<double> size2_summary = prior_sample.summarize<double>("pop_size_pop1");
+        SampleSummarizer<double> size3_summary = prior_sample.summarize<double>("pop_size_pop1b");
+
+        REQUIRE(size1_summary.sample_size() == expected_sample_size);
+        REQUIRE(size1_summary.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+
+        REQUIRE(size2_summary.sample_size() == expected_sample_size);
+        REQUIRE(size2_summary.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+
+        REQUIRE(size3_summary.sample_size() == expected_sample_size);
+        REQUIRE(size3_summary.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+
+        SampleSummarizer<double> f1_summary = prior_sample.summarize<double>("freq_1_kya");
+        SampleSummarizer<double> f2_summary = prior_sample.summarize<double>("freq_1_pop1");
+        SampleSummarizer<double> f3_summary = prior_sample.summarize<double>("freq_1_pop1b");
+        REQUIRE(f1_summary.sample_size() == expected_sample_size);
+        REQUIRE(f2_summary.sample_size() == expected_sample_size);
+        REQUIRE(f3_summary.sample_size() == expected_sample_size);
+        REQUIRE(f1_summary.mean() ==     Approx(expected_f1_mean).epsilon(0.01));
+        REQUIRE(f2_summary.mean() ==     Approx(expected_f2_mean).epsilon(0.01));
+        REQUIRE(f3_summary.mean() ==     Approx(expected_f3_mean).epsilon(0.01));
+        REQUIRE(f1_summary.variance() == Approx(expected_f1_variance).epsilon(0.01));
+        REQUIRE(f2_summary.variance() == Approx(expected_f2_variance).epsilon(0.01));
+        REQUIRE(f3_summary.variance() == Approx(expected_f3_variance).epsilon(0.01));
+
+        SampleSummarizer<double> mult1_summary = prior_sample.summarize<double>("mutation_rate_kya");
+        SampleSummarizer<double> mult2_summary = prior_sample.summarize<double>("mutation_rate_pop1");
+        SampleSummarizer<double> mult3_summary = prior_sample.summarize<double>("mutation_rate_pop1b");
+        REQUIRE(mult1_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult2_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult3_summary.sample_size() == expected_sample_size);
+        REQUIRE(mult1_summary.mean() == 1.0);
+        REQUIRE(mult1_summary.variance() == 0.0);
+        REQUIRE(mult2_summary.mean() == Approx(mult2_shape * mult2_scale).epsilon(0.01));
+        REQUIRE(mult2_summary.variance() == Approx(mult2_shape * mult2_scale * mult2_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.mean() == Approx(mult3_shape * mult3_scale).epsilon(0.01));
+        REQUIRE(mult3_summary.variance() == Approx(mult3_shape * mult3_scale * mult3_scale).epsilon(0.01));
+
+        SampleSummarizer<double> conc_summary = prior_sample.summarize<double>("concentration");
+        REQUIRE(conc_summary.sample_size() == expected_sample_size);
+        REQUIRE(conc_summary.mean() == Approx(concentration_shape * concentration_scale).epsilon(0.01));
+        REQUIRE(conc_summary.variance() == Approx(concentration_shape * concentration_scale * concentration_scale).epsilon(0.01));
+
+        std::vector<int> nevents = prior_sample.get<int>("number_of_events");
+        std::vector<int> event_indices1 = prior_sample.get<int>("root_height_index_kya");
+        std::vector<int> event_indices2 = prior_sample.get<int>("root_height_index_pop1");
+        std::vector<int> event_indices3 = prior_sample.get<int>("root_height_index_pop1b");
+        std::vector<double> heights1 = prior_sample.get<double>("root_height_kya");
+        std::vector<double> heights2 = prior_sample.get<double>("root_height_pop1");
+        std::vector<double> heights3 = prior_sample.get<double>("root_height_pop1b");
+
+        std::map<std::string, int> model_counts = {
+                {"000", 0},
+                {"001", 0},
+                {"010", 0},
+                {"011", 0},
+                {"012", 0}
+        };
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0}
+        };
+        for (size_t i = 0; i < nevents.size(); ++i) {
+            std::ostringstream stream;
+            stream << event_indices1.at(i);
+            stream << event_indices2.at(i);
+            stream << event_indices3.at(i);
+            std::string model_str = stream.str();
+            REQUIRE(model_counts.count(model_str) == 1);
+            REQUIRE(nevent_counts.count(nevents.at(i)) == 1);
+            ++model_counts[model_str];
+            ++nevent_counts[nevents.at(i)];
+            if (nevents.at(i) == 1) {
+                REQUIRE(event_indices1.at(i) == event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) == event_indices3.at(i));
+                REQUIRE(heights1.at(i) == heights2.at(i));
+                REQUIRE(heights1.at(i) == heights3.at(i));
+            }
+            else if (nevents.at(i) == 3) {
+                REQUIRE(event_indices1.at(i) != event_indices2.at(i));
+                REQUIRE(event_indices1.at(i) != event_indices3.at(i));
+                REQUIRE(event_indices2.at(i) != event_indices3.at(i));
+                REQUIRE(heights1.at(i) != heights2.at(i));
+                REQUIRE(heights1.at(i) != heights3.at(i));
+                REQUIRE(heights2.at(i) != heights3.at(i));
+            }
+        }
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == expected_sample_size);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+
+        REQUIRE((model_counts.at("000") / (double)expected_sample_size) == Approx(0.367).epsilon(0.01));
+        REQUIRE((model_counts.at("012") / (double)expected_sample_size) == Approx(0.163).epsilon(0.01));
+
+        // Make sure the rest of the prior sample is as expected
+        SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
+        REQUIRE(lnl_summary.mean() == 0.0);
+        REQUIRE(lnl_summary.variance() == 0.0);
     }
 }
