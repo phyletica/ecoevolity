@@ -2608,7 +2608,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs",
 
         CollectionSettings settings = CollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(1111);
+        RandomNumberGenerator rng = RandomNumberGenerator(2222);
         std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
@@ -2633,7 +2633,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1200000;
+        unsigned int niterations = 1500000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
@@ -6119,7 +6119,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
 
         CollectionSettings settings = CollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(121212);
+        RandomNumberGenerator rng = RandomNumberGenerator(33333);
         std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
@@ -6146,7 +6146,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1200000;
+        unsigned int niterations = 1500000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {

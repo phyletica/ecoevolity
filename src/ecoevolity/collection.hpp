@@ -210,6 +210,9 @@ class BaseComparisonPopulationTreeCollection {
         void set_concentration(double value) {
             this->concentration_->set_value(value);
         }
+        bool concentration_is_fixed() const {
+            return this->concentration_->is_fixed();
+        }
 
         std::vector<unsigned int> get_other_height_indices(
                 unsigned int tree_index) const;

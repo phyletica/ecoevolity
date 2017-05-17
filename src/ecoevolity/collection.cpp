@@ -29,7 +29,7 @@ void BaseComparisonPopulationTreeCollection::store_state() {
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         this->node_heights_.at(h)->store();
     }
-    if (this->using_dpp()) {
+    if (! this->concentration_is_fixed()) {
         this->concentration_->store();
     }
 }
@@ -42,7 +42,7 @@ void BaseComparisonPopulationTreeCollection::restore_state() {
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         this->node_heights_.at(h)->restore();
     }
-    if (this->using_dpp()) {
+    if (! this->concentration_is_fixed()) {
         this->concentration_->restore();
     }
 }
@@ -104,13 +104,13 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bo
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
     }
-    if (this->using_dpp()) {
+    if (! this->concentration_is_fixed()) {
         ///////////////////////////////////////////////////////////////////////
         // This is taken care of within DirichletProcessGibbsSampler
-        // Does not seem to affect ConcentrationScaler (surprisingly) 
-        lnp += get_dpp_log_prior_probability<unsigned int>(
-                this->node_height_indices_,
-                this->get_concentration());
+        // Should not affect ConcentrationScaler
+        // lnp += get_dpp_log_prior_probability<unsigned int>(
+        //         this->node_height_indices_,
+        //         this->get_concentration());
         ///////////////////////////////////////////////////////////////////////
         lnp += this->concentration_->relative_prior_ln_pdf();
     }
