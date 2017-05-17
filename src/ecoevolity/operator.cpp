@@ -1960,8 +1960,8 @@ double HeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
         int number_of_free_parameters_inverse_scaled = 0;
         std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
         if (! tree->population_size_is_fixed()) {
-            tree->set_population_size(tree->get_population_size() * multiplier);
-            ++number_of_free_parameters_scaled;
+            tree->set_population_size(tree->get_population_size() * (1.0/multiplier));
+            ++number_of_free_parameters_inverse_scaled;
             this->updated_sizes_ = true;
         }
         if (! tree->mutation_rate_is_fixed()) {
