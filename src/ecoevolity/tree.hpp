@@ -35,6 +35,7 @@ class PopulationTree {
         std::shared_ptr<PopulationNode> root_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
+        std::shared_ptr<DirichletDistribution> population_size_multiplier_prior_;
         double ploidy_ = 2.0;
         std::shared_ptr<PositiveRealParameter> freq_1_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<BetaDistribution>(1.0, 1.0),
@@ -53,6 +54,8 @@ class PopulationTree {
         int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool population_sizes_are_constrained_ = false;
+        bool population_size_multipliers_are_fixed_ = false;
+        bool mean_population_size_is_fixed_ = false;
         bool state_frequencies_are_constrained_ = false;
         bool is_dirty_ = true;
         bool ignore_data_ = false;
@@ -66,6 +69,14 @@ class PopulationTree {
         double calculate_log_binomial(
                 unsigned int red_allele_count,
                 unsigned int allele_count) const;
+
+        void set_population_sizes(
+                std::shared_ptr<PopulationNode> node,
+                const std::vector<double> & sizes);
+        
+        void get_population_sizes(
+                std::shared_ptr<PopulationNode> node,
+                std::vector<double> & sizes) const;
 
     public:
         PopulationTree() { }
@@ -194,12 +205,21 @@ class PopulationTree {
         std::shared_ptr<PositiveRealParameter> get_mutation_rate_parameter() const;
 
         virtual void set_root_population_size(double size);
-        virtual void set_population_size(double size);
-        virtual unsigned int scale_population_sizes(double scale);
+        virtual void set_all_population_sizes(double size);
+        virtual unsigned int scale_all_population_sizes(double scale);
         virtual unsigned int scale_root_population_size(double scale);
         virtual double get_root_population_size() const;
         virtual std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const;
-        virtual double get_population_size() const {return 1.0;}
+
+        std::vector<double> get_population_sizes() const;
+
+        double get_mean_population_size() const;
+        void set_mean_population_size(double size);
+
+        std::vector<double> get_population_sizes_as_proportions() const;
+        std::vector<double> get_population_sizes_as_multipliers() const;
+        void set_population_sizes_as_proportions(const std::vector<double> & proportions);
+        void set_population_sizes(const std::vector<double> & sizes);
 
         double get_likelihood_correction(bool force = false);
 
@@ -263,13 +283,49 @@ class PopulationTree {
         }
 
         virtual void fix_population_sizes() {
+            this->fix_mean_population_size();
+            this->fix_population_size_multipliers();
             this->root_->fix_all_population_sizes();
         }
         virtual void estimate_population_sizes() {
+            this->estimate_mean_population_size();
+            this->estimate_population_size_multipliers();
             this->root_->estimate_all_population_sizes();
         }
         virtual bool population_sizes_are_fixed() const {
             return this->root_->all_population_sizes_are_fixed();
+        }
+
+        void fix_population_size_multipliers() {
+            this->population_size_multipliers_are_fixed_ = true;
+            this->make_dirty();
+        }
+        void estimate_population_size_multipliers() {
+            this->population_size_multipliers_are_fixed_ = false;
+            this->make_dirty();
+        }
+        bool population_size_multipliers_are_fixed() const {
+            return this->population_size_multipliers_are_fixed_;
+        }
+
+        void fix_mean_population_size() {
+            this->mean_population_size_is_fixed_ = true;
+            this->make_dirty();
+        }
+        void estimate_mean_population_size() {
+            this->mean_population_size_is_fixed_ = false;
+            this->make_dirty();
+        }
+        bool mean_population_size_is_fixed() const {
+            return this->mean_population_size_is_fixed_;
+        }
+
+        virtual void constrain_population_sizes() {
+            this->population_sizes_are_constrained_ = true;
+            this->root_->set_all_population_size_parameters();
+        }
+        virtual bool population_sizes_are_constrained() const {
+            return this->population_sizes_are_constrained_;
         }
 
         void fix_state_frequencies() {
@@ -295,13 +351,6 @@ class PopulationTree {
             return this->mutation_rate_->is_fixed();
         }
 
-        virtual void constrain_population_sizes() {
-            this->population_sizes_are_constrained_ = true;
-            this->root_->set_all_population_size_parameters();
-        }
-        virtual bool population_sizes_are_constrained() const {
-            return this->population_sizes_are_constrained_;
-        }
         void constrain_state_frequencies() {
             this->state_frequencies_are_constrained_ = true;
             this->freq_1_->set_value(0.5);
@@ -357,6 +406,10 @@ class PopulationTree {
             this->data_.write_summary(out, indent_level);
         }
 
+        void set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior);
+        std::shared_ptr<DirichletDistribution> get_population_size_multiplier_prior() const{
+            return this->population_size_multiplier_prior_;
+        }
 
         // TODO: This PopulationTree hierarchy of classes is messy. The problem
         // is that each derived class has its own subset of methods in addition
@@ -395,93 +448,10 @@ class PopulationTree {
             throw EcoevolityError("draw_from_prior called from PopulationTree");
         }
 
-        virtual void set_population_size_multipliers(const std::vector<double> & multipliers) {
-            throw EcoevolityError("set_population_size_multipliers called from PopulationTree");
-        }
-        virtual void set_population_size_multipliers_from_proportions(const std::vector<double> & proportions) {
-            throw EcoevolityError("set_population_size_multipliers_from_proportions called from PopulationTree");
-        }
-        virtual std::vector<double> get_population_size_multipliers() const {
-            throw EcoevolityError("get_population_size_multipliers called from PopulationTree");
-        }
-        virtual std::vector<double> get_population_size_multipliers_as_proportions() const {
-            throw EcoevolityError("get_population_size_multipliers_as_proportions called from PopulationTree");
-        }
-
-        virtual std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const {
-            throw EcoevolityError("get_population_size_parameter() called from PopulationTree");
-        }
-        virtual double get_root_population_size_multiplier() const {
-            throw EcoevolityError("get_root_population_size_multiplier called from PopulationTree");
-        }
-        virtual double get_child_population_size_multiplier(unsigned int child_index) const {
-            throw EcoevolityError("get_child_population_size_multiplier called from PopulationTree");
-        }
-
-        virtual void store_population_size() {
-            throw EcoevolityError("store_population_size called from PopulationTree");
-        }
-        virtual void store_population_size_multipliers() {
-            throw EcoevolityError("store_population_size_multipliers called from PopulationTree");
-        }
-        virtual void restore_population_size() {
-            throw EcoevolityError("restore_population_size called from PopulationTree");
-        }
-        virtual void restore_population_size_multipliers() {
-            throw EcoevolityError("restore_population_size_multipliers called from PopulationTree");
-        }
-
-        virtual void set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
-            throw EcoevolityError("set_population_size_multiplier_prior called from PopulationTree");
-        }
-        virtual std::shared_ptr<DirichletDistribution> get_population_size_multiplier_prior() const {
-            throw EcoevolityError("get_population_size_multiplier_prior called from PopulationTree");
-        }
-
-        virtual void fix_population_size_multipliers() {
-            throw EcoevolityError("fix_population_size_multipliers called from PopulationTree");
-        }
-        virtual void estimate_population_size_multipliers() {
-            throw EcoevolityError("estimate_population_size_multipliers called from PopulationTree");
-        }
-        virtual bool population_size_multipliers_are_fixed() const {
-            throw EcoevolityError("population_size_multipliers_are_fixed called from PopulationTree");
-        }
-
-        virtual void fix_population_size() {
-            throw EcoevolityError("fix_population_size called from PopulationTree");
-        }
-        virtual void estimate_population_size() {
-            throw EcoevolityError("estimate_population_size called from PopulationTree");
-        }
-        virtual bool population_size_is_fixed() const {
-            throw EcoevolityError("population_size_is_fixed called from PopulationTree");
-        }
-
-        virtual double compute_log_prior_density_of_population_size() const {
-            throw EcoevolityError("compute_log_prior_density_of_population_size called from PopulationTree");
-        }
-        virtual double compute_log_prior_density_of_population_size_multipliers() const {
-            throw EcoevolityError("compute_log_prior_density_of_population_size_multipliers called from PopulationTree");
-        }
 };
 
+
 class DirichletPopulationTree: public PopulationTree {
-    protected:
-        std::shared_ptr<DirichletDistribution> population_size_multiplier_prior_;
-        std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(
-                std::make_shared<GammaDistribution>(1.0, 0.001),
-                0.001);
-        bool population_size_multipliers_are_fixed_ = false;
-
-        // methods
-        void set_population_size_multipliers(
-                std::shared_ptr<PopulationNode> node,
-                const std::vector<double> & multipliers);
-
-        void get_population_size_multipliers(
-                std::shared_ptr<PopulationNode> node,
-                std::vector<double> & multipliers) const;
 
     public:
         DirichletPopulationTree() { }
@@ -502,92 +472,6 @@ class DirichletPopulationTree: public PopulationTree {
             return true;
         }
 
-        double get_node_theta(const PopulationNode& node) const {
-            return (2 * this->get_ploidy() *
-                    this->get_population_size() *
-                    node.get_population_size() *
-                    this->get_mutation_rate());
-        }
-
-        void set_population_size(double size);
-        double get_population_size() const;
-        void scale_population_size(double scale);
-        void set_root_population_size(double size) {
-            throw EcoevolityError("This PopulationTree method should not be called from a DirichletPopulationTree instance");
-        }
-        unsigned int scale_population_sizes(double scale) {
-            throw EcoevolityError("This PopulationTree method should not be called from a DirichletPopulationTree instance");
-        }
-        unsigned int scale_root_population_size(double scale){
-            throw EcoevolityError("This PopulationTree method should not be called from a DirichletPopulationTree instance");
-        }
-
-        void set_population_size_multipliers(const std::vector<double> & multipliers);
-        void set_population_size_multipliers_from_proportions(const std::vector<double> & proportions);
-        std::vector<double> get_population_size_multipliers() const;
-        std::vector<double> get_population_size_multipliers_as_proportions() const;
-
-        std::shared_ptr<PositiveRealParameter> get_population_size_parameter() const;
-        std::shared_ptr<PositiveRealParameter> get_root_population_size_parameter() const {
-            throw EcoevolityError("This PopulationTree method should not be called from a DirichletPopulationTree instance");
-        }
-
-        double get_root_population_size_multiplier() const;
-        double get_root_population_size() const;
-
-        void store_all_population_sizes();
-        void store_population_size();
-        void store_population_size_multipliers();
-        void restore_all_population_sizes();
-        void restore_population_size();
-        void restore_population_size_multipliers();
-
-        void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
-        std::shared_ptr<ContinuousProbabilityDistribution> get_population_size_prior() const {
-            return this->population_size_->prior;
-        }
-
-        void set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior);
-        std::shared_ptr<DirichletDistribution> get_population_size_multiplier_prior() const{
-            return this->population_size_multiplier_prior_;
-        }
-
-        void fix_population_size_multipliers() {
-            this->population_size_multipliers_are_fixed_ = true;
-            this->root_->fix_all_population_sizes();
-        }
-        void estimate_population_size_multipliers() {
-            this->population_size_multipliers_are_fixed_ = false;
-            this->root_->estimate_all_population_sizes();
-        }
-        bool population_size_multipliers_are_fixed() const {
-            return this->root_->all_population_sizes_are_fixed();
-        }
-
-        void fix_population_size() {
-            this->population_size_->fix();
-            this->make_dirty();
-        }
-        void estimate_population_size() {
-            this->population_size_->estimate();
-        }
-        bool population_size_is_fixed() const {
-            return this->population_size_->is_fixed();
-        }
-
-        void fix_population_sizes() {
-            this->fix_population_size();
-            this->fix_population_size_multipliers();
-        }
-        void estimate_population_sizes() {
-            this->estimate_population_size();
-            this->estimate_population_size_multipliers();
-        }
-        bool population_sizes_are_fixed() const{
-            return ((this->population_size_is_fixed()) &&
-                    (this->population_size_multipliers_are_fixed()));
-        }
-
         void constrain_population_sizes() {
             throw EcoevolityError("This method is not supported; multipliers should be set and fixed");
         }
@@ -596,9 +480,8 @@ class DirichletPopulationTree: public PopulationTree {
         }
 
         double compute_log_prior_density_of_population_sizes() const;
-        double compute_log_prior_density_of_population_size() const;
-        double compute_log_prior_density_of_population_size_multipliers() const;
 };
+
 
 class ComparisonPopulationTree: public PopulationTree {
 
@@ -664,7 +547,7 @@ class ComparisonPopulationTree: public PopulationTree {
 
 };
 
-class ComparisonDirichletPopulationTree: public DirichletPopulationTree {
+class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
 
     public:
         ComparisonDirichletPopulationTree() { }
@@ -699,19 +582,18 @@ class ComparisonDirichletPopulationTree: public DirichletPopulationTree {
                 double ploidy = 2.0
                 );
 
-        double get_child_population_size_multiplier(unsigned int child_index) const;
-        double get_child_population_size(unsigned int child_index) const;
-
-        void store_all_heights() {
-            this->store_root_height();
+        bool using_population_size_multipliers() const {
+            return true;
         }
-        void restore_all_heights() {
-            this->restore_root_height();
-        }
-        void store_parameters();
-        void restore_parameters();
 
-        double compute_log_prior_density();
+        void constrain_population_sizes() {
+            throw EcoevolityError("This method is not supported; multipliers should be set and fixed");
+        }
+        bool population_sizes_are_constrained() const {
+            throw EcoevolityError("This method is not supported; check if multipliers are fixed");
+        }
+
+        double compute_log_prior_density_of_population_sizes() const;
 
         void write_state_log_header(std::ostream& out,
                 bool include_event_index,

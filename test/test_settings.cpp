@@ -885,7 +885,7 @@ TEST_CASE("Testing config setting constructor", "[ComparisonSettings]") {
 
         t.set_root_height(0.01);
         t.estimate_population_sizes();
-        t.set_population_size(2.0 / (10.0 * 4.0));
+        t.set_all_population_sizes(2.0 / (10.0 * 4.0));
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
         REQUIRE(t.get_degree_of_root() == 2);
@@ -991,7 +991,7 @@ TEST_CASE("Testing config setting constructor", "[ComparisonSettings]") {
         REQUIRE(t.get_mutation_rate_prior()->to_string() == "uniform(0.9, 1.1)");
 
         t.set_root_height(0.01);
-        t.set_population_size(2.0 / (10.0 * 4.0));
+        t.set_all_population_sizes(2.0 / (10.0 * 4.0));
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-31.77866581319647));
         REQUIRE(t.get_degree_of_root() == 2);
@@ -1073,13 +1073,12 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
         REQUIRE(t.get_freq_1() == Approx(0.4166666666666667));
         REQUIRE(t.get_freq_0() == Approx(1.0 - 0.4166666666666667));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == false);
-        REQUIRE(t.get_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_root_population_size() != t.get_child_population_size(0));
         REQUIRE(t.get_root_population_size() != t.get_child_population_size(1));
         REQUIRE(t.get_child_population_size(0) != t.get_child_population_size(1));
         REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
         REQUIRE(t.state_frequencies_are_fixed() == false);
-        REQUIRE(t.population_size_is_fixed() == false);
+        REQUIRE(t.mean_population_size_is_fixed() == false);
         REQUIRE(t.population_size_multipliers_are_fixed() == false);
         REQUIRE(t.mutation_rate_is_fixed() == true);
 
@@ -1163,13 +1162,12 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
         REQUIRE(t.get_freq_1() == Approx(0.4166666666666667));
         REQUIRE(t.get_freq_0() == Approx(1.0 - 0.4166666666666667));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == false);
-        REQUIRE(t.get_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_root_population_size() == t.get_child_population_size(0));
         REQUIRE(t.get_root_population_size() == t.get_child_population_size(1));
         REQUIRE(t.get_child_population_size(0) == t.get_child_population_size(1));
         REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
         REQUIRE(t.state_frequencies_are_fixed() == false);
-        REQUIRE(t.population_size_is_fixed() == false);
+        REQUIRE(t.mean_population_size_is_fixed() == false);
         REQUIRE(t.population_size_multipliers_are_fixed() == true);
         REQUIRE(t.mutation_rate_is_fixed() == true);
 
@@ -1568,13 +1566,12 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
         REQUIRE(t.get_freq_1() == Approx(0.4166666666666667));
         REQUIRE(t.get_freq_0() == Approx(1.0 - 0.4166666666666667));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == false);
-        REQUIRE(t.get_population_size_parameter()->is_fixed() == false);
         REQUIRE(t.get_root_population_size() == t.get_child_population_size(0));
         REQUIRE(t.get_root_population_size() == t.get_child_population_size(1));
         REQUIRE(t.get_child_population_size(0) == t.get_child_population_size(1));
         REQUIRE(t.get_mutation_rate_parameter()->is_fixed() == true);
         REQUIRE(t.state_frequencies_are_fixed() == false);
-        REQUIRE(t.population_size_is_fixed() == false);
+        REQUIRE(t.mean_population_size_is_fixed() == false);
         REQUIRE(t.population_size_multipliers_are_fixed() == false);
         REQUIRE(t.mutation_rate_is_fixed() == true);
 
@@ -1662,8 +1659,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
         REQUIRE(t.get_freq_1() == Approx(0.5));
         REQUIRE(t.get_freq_0() == Approx(0.5));
         REQUIRE(t.get_freq_1_parameter()->is_fixed() == true);
-        REQUIRE(t.get_population_size_parameter()->is_fixed() == false);
-        REQUIRE(t.population_size_is_fixed() == false);
+        REQUIRE(t.mean_population_size_is_fixed() == false);
         REQUIRE(t.population_size_multipliers_are_fixed() == false);
         REQUIRE(t.get_root_population_size() != t.get_child_population_size(0));
         REQUIRE(t.get_root_population_size() != t.get_child_population_size(1));

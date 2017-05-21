@@ -359,13 +359,13 @@ void PopulationTree::set_root_population_size(double size) {
     }
     this->root_->set_population_size(size);
 }
-void PopulationTree::set_population_size(double size) {
+void PopulationTree::set_all_population_sizes(double size) {
     if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->set_all_population_sizes(size);
 }
-unsigned int PopulationTree::scale_population_sizes(double scale) {
+unsigned int PopulationTree::scale_all_population_sizes(double scale) {
     if (this->population_sizes_are_fixed()) {
         return 0;
     }
@@ -386,6 +386,103 @@ double PopulationTree::get_root_population_size() const {
 std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_population_size_parameter() const {
     return this->root_->get_population_size_parameter();
 }
+
+void PopulationTree::set_population_sizes(
+        std::shared_ptr<PopulationNode> node,
+        const std::vector<double> & sizes) {
+    node->set_population_size(sizes.at(node->get_population_index()));
+    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
+        this->set_population_sizes(node->get_child(i), sizes);
+    }
+}
+
+void PopulationTree::get_population_sizes(
+        std::shared_ptr<PopulationNode> node,
+        std::vector<double> & sizes) const {
+    sizes.at(node->get_population_index()) = node->get_population_size();
+    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
+        this->get_population_sizes(node->get_child(i), sizes);
+    }
+}
+
+std::vector<double> PopulationTree::get_population_sizes() const {
+    std::vector<double> sizes(this->get_node_count(), 0.0);
+    this->get_population_sizes(this->root_, sizes);
+    return sizes;
+}
+
+void PopulationTree::set_population_sizes(
+        const std::vector<double> & sizes) {
+    if (this->population_size_multipliers_are_fixed()) {
+        return;
+    }
+    ECOEVOLITY_ASSERT(sizes.size() == this->get_node_count());
+    this->set_population_sizes(this->root_, sizes);
+}
+
+std::vector<double> PopulationTree::get_population_sizes_as_proportions() const {
+    unsigned int num_nodes = this->get_node_count();
+    std::vector<double> sizes(num_nodes, 0.0);
+    this->get_population_sizes(this->root_, sizes);
+    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
+    for (unsigned int i = 0; i < sizes.size(); ++i) {
+        sizes.at(i) /= sum_size;
+    }
+    return sizes;
+}
+
+std::vector<double> PopulationTree::get_population_sizes_as_multipliers() const {
+    unsigned int num_nodes = this->get_node_count();
+    std::vector<double> sizes(num_nodes, 0.0);
+    this->get_population_sizes(this->root_, sizes);
+    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
+    double mean_size = sum_size / (double)num_nodes;
+    for (unsigned int i = 0; i < sizes.size(); ++i) {
+        sizes.at(i) /= mean_size;
+    }
+    return sizes;
+}
+
+void PopulationTree::set_population_sizes_as_proportions(const std::vector<double> & proportions) {
+    if (this->population_size_multipliers_are_fixed()) {
+        return;
+    }
+    unsigned int nnodes = this->get_node_count();
+    ECOEVOLITY_ASSERT(proportions.size() == nnodes);
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(
+            std::accumulate(proportions.begin(), proportions.end(), 0.0),
+            1.0);
+    std::vector<double> sizes(nnodes, 0.0);
+    this->get_population_sizes(this->root_, sizes);
+    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
+    std::vector<double> new_sizes = proportions;
+    for (unsigned int i = 0; i < new_sizes.size(); ++i) {
+        new_sizes.at(i) *= sum_size;
+    }
+    this->set_population_sizes(new_sizes);
+}
+
+double PopulationTree::get_mean_population_size() const {
+    unsigned int num_nodes = this->get_node_count();
+    std::vector<double> sizes(num_nodes, 0.0);
+    this->get_population_sizes(this->root_, sizes);
+    double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
+    return sum_size / (double)num_nodes;
+}
+
+void PopulationTree::set_mean_population_size(double size) {
+    if (this->mean_population_size_is_fixed()) {
+        return;
+    }
+    double scale = size / this->get_mean_population_size();
+    this->scale_all_population_sizes(scale);
+}
+
+void PopulationTree::set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
+    this->population_size_multiplier_prior_ = prior;
+    this->make_dirty();
+}
+
 
 void PopulationTree::store_state() {
     this->store_likelihood();
@@ -798,7 +895,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
     PositiveRealParameter p = PositiveRealParameter(
             settings.get_population_size_settings(),
             rng);
-    this->set_population_size(p.get_value());
+    this->set_all_population_sizes(p.get_value());
     if (settings.get_population_size_settings().is_fixed()) {
         this->fix_population_sizes();
     }
@@ -970,8 +1067,7 @@ double PopulationTree::compute_log_likelihood(
             this->constant_sites_removed(),
             all_red_pattern_prob,
             all_green_pattern_prob,
-            nthreads,
-            this->get_population_size());
+            nthreads);
 
     this->all_red_pattern_likelihood_.set_value(all_red_pattern_prob);
     this->all_green_pattern_likelihood_.set_value(all_green_pattern_prob);
@@ -1017,24 +1113,6 @@ double PopulationTree::compute_log_likelihood(
 
 
 
-void DirichletPopulationTree::set_population_size_multipliers(
-        std::shared_ptr<PopulationNode> node,
-        const std::vector<double> & multipliers) {
-    node->set_population_size(multipliers.at(node->get_population_index()));
-    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
-        this->set_population_size_multipliers(node->get_child(i), multipliers);
-    }
-}
-
-void DirichletPopulationTree::get_population_size_multipliers(
-        std::shared_ptr<PopulationNode> node,
-        std::vector<double> & multipliers) const {
-    multipliers.at(node->get_population_index()) = node->get_population_size();
-    for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
-        this->get_population_size_multipliers(node->get_child(i), multipliers);
-    }
-}
-
 DirichletPopulationTree::DirichletPopulationTree(
         std::string path, 
         char population_name_delimiter,
@@ -1058,130 +1136,24 @@ DirichletPopulationTree::DirichletPopulationTree(
                ploidy);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
-    this->set_population_size_multipliers(dirichlet_parameters);
-}
-
-
-void DirichletPopulationTree::set_population_size(double size) {
-    if (this->population_size_is_fixed()) {
-        return;
-    }
-    this->population_size_->set_value(size);
-    this->make_dirty();
-}
-double DirichletPopulationTree::get_population_size() const {
-    return this->population_size_->get_value();
-}
-void DirichletPopulationTree::scale_population_size(double scale) {
-    this->set_population_size(this->get_population_size() * scale);
-}
-
-void DirichletPopulationTree::set_population_size_multipliers(
-        const std::vector<double> & multipliers) {
-    if (this->population_size_multipliers_are_fixed()) {
-        return;
-    }
-    ECOEVOLITY_ASSERT(multipliers.size() == this->get_node_count());
-    ECOEVOLITY_ASSERT_APPROX_EQUAL(
-            std::accumulate(multipliers.begin(), multipliers.end(), 0.0),
-            (double)multipliers.size());
-    this->set_population_size_multipliers(this->root_, multipliers);
-}
-
-void DirichletPopulationTree::set_population_size_multipliers_from_proportions(
-        const std::vector<double> & proportions) {
-    if (this->population_size_multipliers_are_fixed()) {
-        return;
-    }
-    unsigned int nnodes = this->get_node_count();
-    ECOEVOLITY_ASSERT(proportions.size() == nnodes);
-    ECOEVOLITY_ASSERT_APPROX_EQUAL(
-            std::accumulate(proportions.begin(), proportions.end(), 0.0),
-            1.0);
-    std::vector<double> multipliers = proportions;
-    for (unsigned int i = 0; i < multipliers.size(); ++i) {
-        multipliers.at(i) *= nnodes;
-    }
-    this->set_population_size_multipliers(multipliers);
-}
-
-std::vector<double> DirichletPopulationTree::get_population_size_multipliers() const {
-    std::vector<double> multipliers(this->get_node_count(), 0.0);
-    this->get_population_size_multipliers(this->root_, multipliers);
-    return multipliers;
-}
-
-std::vector<double> DirichletPopulationTree::get_population_size_multipliers_as_proportions() const {
-    unsigned int num_nodes = this->get_node_count();
-    std::vector<double> multipliers(num_nodes, 0.0);
-    this->get_population_size_multipliers(this->root_, multipliers);
-    for (unsigned int i = 0; i < multipliers.size(); ++i) {
-        multipliers.at(i) /= num_nodes;
-    }
-    return multipliers;
-}
-
-std::shared_ptr<PositiveRealParameter> DirichletPopulationTree::get_population_size_parameter() const {
-    return this->population_size_;
-}
-
-double DirichletPopulationTree::get_root_population_size_multiplier() const {
-    return this->root_->get_population_size();
-}
-
-double DirichletPopulationTree::get_root_population_size() const {
-    return (this->get_population_size() * this->get_root_population_size_multiplier());
-}
-
-void DirichletPopulationTree::store_all_population_sizes() {
-    this->store_population_size();
-    this->store_population_size_multipliers();
-}
-void DirichletPopulationTree::store_population_size() {
-    this->population_size_->store();
-}
-void DirichletPopulationTree::store_population_size_multipliers() {
-    this->root_->store_all_population_sizes();
-}
-void DirichletPopulationTree::restore_all_population_sizes() {
-    this->restore_population_size();
-    this->restore_population_size_multipliers();
-}
-void DirichletPopulationTree::restore_population_size() {
-    this->population_size_->restore();
-}
-void DirichletPopulationTree::restore_population_size_multipliers() {
-    this->root_->restore_all_population_sizes();
-}
-
-void DirichletPopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->population_size_->set_prior(prior);
-    this->make_dirty();
-}
-
-void DirichletPopulationTree::set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
-    this->population_size_multiplier_prior_ = prior;
-    this->make_dirty();
 }
 
 double DirichletPopulationTree::compute_log_prior_density_of_population_sizes() const {
-    return (this->compute_log_prior_density_of_population_size() +
-            this->compute_log_prior_density_of_population_size_multipliers());
-}
-double DirichletPopulationTree::compute_log_prior_density_of_population_size() const {
-    return this->population_size_->relative_prior_ln_pdf();
-}
-double DirichletPopulationTree::compute_log_prior_density_of_population_size_multipliers() const {
-    if (this->population_size_multipliers_are_fixed()) {
+    if (this->population_sizes_are_fixed()) {
         return 0.0;
     }
-    std::vector<double> multipliers = this->get_population_size_multipliers();
-    double number_of_nodes = (double)this->get_node_count();
-    for (unsigned int i = 0; i < multipliers.size(); ++i) {
-        multipliers.at(i) /= number_of_nodes;
+    double ln_p = 0.0;
+    if (! this->mean_population_size_is_fixed()) {
+        ln_p += this->population_size_prior_->relative_ln_pdf(
+                this->get_mean_population_size());
     }
-    return this->population_size_multiplier_prior_->relative_ln_pdf(multipliers);
+    if (! this->population_size_multipliers_are_fixed()) {
+        ln_p += this->population_size_multiplier_prior_->relative_ln_pdf(
+                this->get_population_sizes_as_proportions());
+    }
+    return ln_p;
 }
+
 
 
 ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
@@ -1207,7 +1179,6 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                ploidy);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
-    this->set_population_size_multipliers(dirichlet_parameters);
 }
 
 void ComparisonDirichletPopulationTree::comparison_init(
@@ -1263,23 +1234,23 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
     PositiveRealParameter p = PositiveRealParameter(
             settings.get_population_size_settings(),
             rng);
-    this->set_population_size(p.get_value());
+    this->set_mean_population_size(p.get_value());
     if (settings.get_population_size_settings().is_fixed()) {
-        this->fix_population_size();
+        this->fix_mean_population_size();
     }
 
     this->set_population_size_multiplier_prior(
             settings.get_population_size_multiplier_settings().get_prior_settings().get_dirichlet_distribution_instance());
     std::vector<double> multiplier_values = settings.get_population_size_multiplier_settings().get_values();
-    // if (settings.constrain_population_sizes()) {
-    //     this->constrain_population_sizes();
-    // }
     if (multiplier_values.size() < 1) {
         multiplier_values = this->population_size_multiplier_prior_->draw(rng);
-        this->set_population_size_multipliers_from_proportions(multiplier_values);
+        this->set_population_sizes_as_proportions(multiplier_values);
     }
     else {
-        this->set_population_size_multipliers(multiplier_values);
+        for (unsigned int i = 0; i < multiplier_values.size(); ++i) {
+            multiplier_values.at(i) /= multiplier_values.size();
+        }
+        this->set_population_sizes_as_proportions(multiplier_values);
         if (settings.get_population_size_multiplier_settings().is_fixed()) {
             this->fix_population_size_multipliers();
         }
@@ -1322,43 +1293,6 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
     }
 }
 
-double ComparisonDirichletPopulationTree::get_child_population_size_multiplier(
-        unsigned int child_index) const {
-    return this->root_->get_child(child_index)->get_population_size();
-}
-
-double ComparisonDirichletPopulationTree::get_child_population_size(
-        unsigned int child_index) const {
-    return (this->get_population_size() *
-            this->get_child_population_size_multiplier(child_index));
-}
-
-// Node height sharing needs to be dealt with in next level up in
-// class hierarchy (ComparisonDirichletPopulationTreeCollection)
-double ComparisonDirichletPopulationTree::compute_log_prior_density() {
-    double d = 0.0;
-    d += this->compute_log_prior_density_of_state_frequencies();
-    d += this->compute_log_prior_density_of_mutation_rate();
-    // d += this->compute_log_prior_density_of_node_heights();
-    d += this->compute_log_prior_density_of_population_sizes();
-    this->log_prior_density_.set_value(d);
-    return d;
-}
-
-// Node height (re)storing is managed by ComparisonDirichletPopulationTree.
-void ComparisonDirichletPopulationTree::store_parameters() {
-    this->store_freq_1();
-    this->store_mutation_rate();
-    this->store_all_population_sizes();
-    // this->store_all_heights();
-}
-void ComparisonDirichletPopulationTree::restore_parameters() {
-    this->restore_freq_1();
-    this->restore_mutation_rate();
-    this->restore_all_population_sizes();
-    // this->restore_all_heights();
-}
-
 void ComparisonDirichletPopulationTree::write_state_log_header(
         std::ostream& out,
         bool include_event_index,
@@ -1383,17 +1317,20 @@ void ComparisonDirichletPopulationTree::write_state_log_header(
 void ComparisonDirichletPopulationTree::log_state(
         std::ostream& out,
         const std::string& delimiter) const {
+    std::vector<double> multipliers = this->get_population_sizes_as_multipliers();
     out << this->log_likelihood_.get_value() << delimiter
         << this->log_prior_density_.get_value() << delimiter
         << this->get_root_height() << delimiter
         << this->get_mutation_rate() << delimiter
         << this->get_freq_1() << delimiter
-        << this->get_population_size() << delimiter
-        << this->get_child_population_size_multiplier(0) << delimiter;
+        << this->get_mean_population_size() << delimiter
+        << multipliers.at(0) << delimiter;
+    unsigned int root_index = 1;
     if (this->root_->get_number_of_children() > 1) {
-        out << this->get_child_population_size_multiplier(1) << delimiter;
+        out << multipliers.at(1) << delimiter;
+        ++root_index;
     }
-    out << this->get_root_population_size_multiplier();
+    out << multipliers.at(root_index);
 }
 
 void ComparisonDirichletPopulationTree::log_state(
@@ -1411,10 +1348,26 @@ void ComparisonDirichletPopulationTree::draw_from_prior(RandomNumberGenerator& r
     if (! this->mutation_rate_is_fixed()) {
         this->mutation_rate_->set_value_from_prior(rng);
     }
-    if (! this->population_size_is_fixed()) {
-        this->population_size_->set_value_from_prior(rng);
+    if (! this->mean_population_size_is_fixed()) {
+        this->set_mean_population_size(this->population_size_prior_->draw(rng));
     }
     if (! this->population_size_multipliers_are_fixed()) {
-        this->set_population_size_multipliers_from_proportions(this->population_size_multiplier_prior_->draw(rng));
+        this->set_population_sizes_as_proportions(this->population_size_multiplier_prior_->draw(rng));
     }
+}
+
+double ComparisonDirichletPopulationTree::compute_log_prior_density_of_population_sizes() const {
+    if (this->population_sizes_are_fixed()) {
+        return 0.0;
+    }
+    double ln_p = 0.0;
+    if (! this->mean_population_size_is_fixed()) {
+        ln_p += this->population_size_prior_->relative_ln_pdf(
+                this->get_mean_population_size());
+    }
+    if (! this->population_size_multipliers_are_fixed()) {
+        ln_p += this->population_size_multiplier_prior_->relative_ln_pdf(
+                this->get_population_sizes_as_proportions());
+    }
+    return ln_p;
 }

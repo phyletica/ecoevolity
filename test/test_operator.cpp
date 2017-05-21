@@ -19423,7 +19423,7 @@ TEST_CASE("Testing ReferencePopulationSizeScaler for dirichlet trees", "[Referen
         for (unsigned int i = 0; i < 1000000; ++i) {
             OperatorInterface& o = os.draw_operator(rng);
             o.perform_collection_move(rng, &comparisons, 1);
-            s = comparisons.get_tree(0)->get_population_size();
+            s = comparisons.get_tree(0)->get_mean_population_size();
             mn = std::min(mn, s);
             mx = std::max(mx, s);
             ++n;
@@ -19504,7 +19504,7 @@ TEST_CASE("Testing ReferencePopulationSizeScaler for dirichlet trees", "[Referen
         for (unsigned int i = 0; i < 1000000; ++i) {
             OperatorInterface& o = os.draw_operator(rng);
             o.perform_collection_move(rng, &comparisons, 1);
-            s = comparisons.get_tree(0)->get_population_size();
+            s = comparisons.get_tree(0)->get_mean_population_size();
             mn = std::min(mn, s);
             mx = std::max(mx, s);
             ++n;
@@ -19600,9 +19600,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(1, 1, 1)", "[Popu
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -19706,9 +19707,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(1, 1, 1)", "[Popu
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -19815,9 +19817,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(3, 3, 3)", "[Popu
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -19921,9 +19924,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(3, 3, 3)", "[Popu
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -20029,9 +20033,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(10, 10, 10)", "[P
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -20135,9 +20140,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(10, 10, 10)", "[P
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -20243,9 +20249,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(15, 5, 20)", "[Po
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -20349,9 +20356,10 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(15, 5, 20)", "[Po
             OperatorInterface& o = os.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                double multiplier_root = comparisons.get_tree(0)->get_root_population_size_multiplier();
-                double multiplier_0 = comparisons.get_tree(0)->get_child_population_size_multiplier(0);
-                double multiplier_1 = comparisons.get_tree(0)->get_child_population_size_multiplier(1);
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
                 multiplier_root_summary.add_sample(multiplier_root);
                 multiplier_0_summary.add_sample(multiplier_0);
                 multiplier_1_summary.add_sample(multiplier_1);
@@ -20458,7 +20466,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler for dirichlet trees",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -20553,7 +20561,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with height only",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -20650,7 +20658,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no size",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -20748,7 +20756,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no rate",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -20850,7 +20858,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler for dirichlet tree
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -20945,7 +20953,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with height only",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -21042,7 +21050,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no size",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -21140,399 +21148,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no rate",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
-                rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
-            }
-        }
-
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
-
-        REQUIRE(height_summary.sample_size() == nsamples);
-        REQUIRE(size_summary.sample_size() == nsamples);
-        REQUIRE(rate_summary.sample_size() == nsamples);
-
-        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
-
-        REQUIRE(size_summary.mean() == Approx(size_shape * size_scale).epsilon(0.005));
-        REQUIRE(size_summary.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.005));
-
-        REQUIRE(rate_summary.mean() == Approx(1.0));
-        REQUIRE(rate_summary.variance() == Approx(0.0));
-    }
-}
-
-
-TEST_CASE("Testing HeightRefSizeRateMixer for dirichlet trees",
-        "[HeightRefSizeRateMixer]") {
-
-    SECTION("Testing with optimizing") {
-        double height_shape = 10.0;
-        double height_scale = 0.1;
-        double size_shape = 5.0;
-        double size_scale = 0.01;
-        double rate_shape = 4.0;
-        double rate_scale = 0.1;
-        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
-        std::ofstream out;
-        out.open(test_path);
-        out << "event_time_prior:\n";
-        out << "    gamma_distribution:\n";
-        out << "        shape: " << height_shape << "\n";
-        out << "        scale: " << height_scale << "\n";
-        out << "global_comparison_settings:\n";
-        out << "    genotypes_are_diploid: true\n";
-        out << "    markers_are_dominant: false\n";
-        out << "    population_name_delimiter: \" \"\n";
-        out << "    population_name_is_prefix: true\n";
-        out << "    constant_sites_removed: true\n";
-        out << "    parameters:\n";
-        out << "        population_size:\n";
-        out << "            estimate: true\n";
-        out << "            prior:\n";
-        out << "                gamma_distribution:\n";
-        out << "                    shape: " << size_shape << "\n";
-        out << "                    scale: " << size_scale << "\n";
-        out << "        population_size_multipliers:\n";
-        out << "            value: [1.0, 1.0, 1.0]\n";
-        out << "            estimate: false\n";
-        out << "        freq_1:\n";
-        out << "            value: 0.5\n";
-        out << "            estimate: false\n";
-        out << "        mutation_rate:\n";
-        out << "            estimate: true\n";
-        out << "            prior:\n";
-        out << "                gamma_distribution:\n";
-        out << "                    shape: " << rate_shape << "\n";
-        out << "                    scale: " << rate_scale << "\n";
-        out << "comparisons:\n";
-        out << "- comparison:\n";
-        out << "    path: hemi129.nex\n";
-        out.close();
-        REQUIRE(path::exists(test_path));
-
-        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-
-        RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
-
-        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
-
-        // Initialize prior probs
-        comparisons.compute_log_likelihood_and_prior(true);
-
-        SampleSummarizer<double> height_summary;
-        SampleSummarizer<double> size_summary;
-        SampleSummarizer<double> rate_summary;
-
-        unsigned int niterations = 400000;
-        unsigned int sample_freq = 4;
-        unsigned int nsamples = niterations / sample_freq;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
-            if ((i + 1) % sample_freq == 0) {
-                height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
-                rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
-            }
-        }
-
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
-
-        REQUIRE(height_summary.sample_size() == nsamples);
-        REQUIRE(size_summary.sample_size() == nsamples);
-        REQUIRE(rate_summary.sample_size() == nsamples);
-
-        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
-
-        REQUIRE(size_summary.mean() == Approx(size_shape * size_scale).epsilon(0.005));
-        REQUIRE(size_summary.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.005));
-
-        REQUIRE(rate_summary.mean() == Approx(rate_shape * rate_scale).epsilon(0.005));
-        REQUIRE(rate_summary.variance() == Approx(rate_shape * rate_scale * rate_scale).epsilon(0.005));
-    }
-}
-
-TEST_CASE("Testing HeightRefSizeRateMixer with height only",
-        "[HeightRefSizeRateMixer]") {
-
-    SECTION("Testing with optimizing") {
-        double height_shape = 10.0;
-        double height_scale = 0.1;
-        double size_shape = 5.0;
-        double size_scale = 0.01;
-        double rate_shape = 4.0;
-        double rate_scale = 0.5;
-        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
-        std::ofstream out;
-        out.open(test_path);
-        out << "event_time_prior:\n";
-        out << "    gamma_distribution:\n";
-        out << "        shape: " << height_shape << "\n";
-        out << "        scale: " << height_scale << "\n";
-        out << "global_comparison_settings:\n";
-        out << "    genotypes_are_diploid: true\n";
-        out << "    markers_are_dominant: false\n";
-        out << "    population_name_delimiter: \" \"\n";
-        out << "    population_name_is_prefix: true\n";
-        out << "    constant_sites_removed: true\n";
-        out << "    parameters:\n";
-        out << "        population_size:\n";
-        out << "            value: 1.0\n";
-        out << "            estimate: false\n";
-        out << "        population_size_multipliers:\n";
-        out << "            value: [1.0, 1.0, 1.0]\n";
-        out << "            estimate: false\n";
-        out << "        freq_1:\n";
-        out << "            value: 0.5\n";
-        out << "            estimate: false\n";
-        out << "        mutation_rate:\n";
-        out << "            value: 1.0\n";
-        out << "            estimate: false\n";
-        out << "comparisons:\n";
-        out << "- comparison:\n";
-        out << "    path: hemi129.nex\n";
-        out.close();
-        REQUIRE(path::exists(test_path));
-
-        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-
-        RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
-
-        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
-
-        // Initialize prior probs
-        comparisons.compute_log_likelihood_and_prior(true);
-
-        SampleSummarizer<double> height_summary;
-        SampleSummarizer<double> size_summary;
-        SampleSummarizer<double> rate_summary;
-
-        unsigned int niterations = 400000;
-        unsigned int sample_freq = 4;
-        unsigned int nsamples = niterations / sample_freq;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
-            if ((i + 1) % sample_freq == 0) {
-                height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
-                rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
-            }
-        }
-
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
-
-        REQUIRE(height_summary.sample_size() == nsamples);
-        REQUIRE(size_summary.sample_size() == nsamples);
-        REQUIRE(rate_summary.sample_size() == nsamples);
-
-        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
-
-        REQUIRE(size_summary.mean() == Approx(1.0));
-        REQUIRE(size_summary.variance() == Approx(0.0));
-        REQUIRE(rate_summary.mean() == Approx(1.0));
-        REQUIRE(rate_summary.variance() == Approx(0.0));
-    }
-}
-
-TEST_CASE("Testing HeightRefSizeRateMixer with no size",
-        "[HeightRefSizeRateMixer]") {
-
-    SECTION("Testing with optimizing") {
-        double height_shape = 10.0;
-        double height_scale = 0.1;
-        double size_shape = 5.0;
-        double size_scale = 0.01;
-        double rate_shape = 4.0;
-        double rate_scale = 0.5;
-        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
-        std::ofstream out;
-        out.open(test_path);
-        out << "event_time_prior:\n";
-        out << "    gamma_distribution:\n";
-        out << "        shape: " << height_shape << "\n";
-        out << "        scale: " << height_scale << "\n";
-        out << "global_comparison_settings:\n";
-        out << "    genotypes_are_diploid: true\n";
-        out << "    markers_are_dominant: false\n";
-        out << "    population_name_delimiter: \" \"\n";
-        out << "    population_name_is_prefix: true\n";
-        out << "    constant_sites_removed: true\n";
-        out << "    parameters:\n";
-        out << "        population_size:\n";
-        out << "            value: 0.5\n";
-        out << "            estimate: false\n";
-        out << "        population_size_multipliers:\n";
-        out << "            value: [1.0, 1.0, 1.0]\n";
-        out << "            estimate: false\n";
-        out << "        freq_1:\n";
-        out << "            value: 0.5\n";
-        out << "            estimate: false\n";
-        out << "        mutation_rate:\n";
-        out << "            estimate: true\n";
-        out << "            prior:\n";
-        out << "                gamma_distribution:\n";
-        out << "                    shape: " << rate_shape << "\n";
-        out << "                    scale: " << rate_scale << "\n";
-        out << "comparisons:\n";
-        out << "- comparison:\n";
-        out << "    path: hemi129.nex\n";
-        out.close();
-        REQUIRE(path::exists(test_path));
-
-        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-
-        RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
-
-        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
-
-        // Initialize prior probs
-        comparisons.compute_log_likelihood_and_prior(true);
-
-        SampleSummarizer<double> height_summary;
-        SampleSummarizer<double> size_summary;
-        SampleSummarizer<double> rate_summary;
-
-        unsigned int niterations = 400000;
-        unsigned int sample_freq = 4;
-        unsigned int nsamples = niterations / sample_freq;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
-            if ((i + 1) % sample_freq == 0) {
-                height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
-                rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
-            }
-        }
-
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
-
-        REQUIRE(height_summary.sample_size() == nsamples);
-        REQUIRE(size_summary.sample_size() == nsamples);
-        REQUIRE(rate_summary.sample_size() == nsamples);
-
-        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
-
-        REQUIRE(size_summary.mean() == Approx(0.5));
-        REQUIRE(size_summary.variance() == Approx(0.0));
-
-        REQUIRE(rate_summary.mean() == Approx(rate_shape * rate_scale).epsilon(0.005));
-        REQUIRE(rate_summary.variance() == Approx(rate_shape * rate_scale * rate_scale).epsilon(0.005));
-    }
-}
-
-TEST_CASE("Testing HeightRefSizeRateMixer with no rate",
-        "[HeightRefSizeRateMixer]") {
-
-    SECTION("Testing with optimizing") {
-        double height_shape = 10.0;
-        double height_scale = 0.1;
-        double size_shape = 5.0;
-        double size_scale = 0.01;
-        double rate_shape = 4.0;
-        double rate_scale = 0.5;
-        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
-        std::ofstream out;
-        out.open(test_path);
-        out << "event_time_prior:\n";
-        out << "    gamma_distribution:\n";
-        out << "        shape: " << height_shape << "\n";
-        out << "        scale: " << height_scale << "\n";
-        out << "global_comparison_settings:\n";
-        out << "    genotypes_are_diploid: true\n";
-        out << "    markers_are_dominant: false\n";
-        out << "    population_name_delimiter: \" \"\n";
-        out << "    population_name_is_prefix: true\n";
-        out << "    constant_sites_removed: true\n";
-        out << "    parameters:\n";
-        out << "        population_size:\n";
-        out << "            estimate: true\n";
-        out << "            prior:\n";
-        out << "                gamma_distribution:\n";
-        out << "                    shape: " << size_shape << "\n";
-        out << "                    scale: " << size_scale << "\n";
-        out << "        population_size_multipliers:\n";
-        out << "            value: [1.0, 1.0, 1.0]\n";
-        out << "            estimate: false\n";
-        out << "        freq_1:\n";
-        out << "            value: 0.5\n";
-        out << "            estimate: false\n";
-        out << "        mutation_rate:\n";
-        out << "            value: 1.0\n";
-        out << "            estimate: false\n";
-        out << "comparisons:\n";
-        out << "- comparison:\n";
-        out << "    path: hemi129.nex\n";
-        out.close();
-        REQUIRE(path::exists(test_path));
-
-        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-
-        RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
-
-        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
-
-        // Initialize prior probs
-        comparisons.compute_log_likelihood_and_prior(true);
-
-        SampleSummarizer<double> height_summary;
-        SampleSummarizer<double> size_summary;
-        SampleSummarizer<double> rate_summary;
-
-        unsigned int niterations = 400000;
-        unsigned int sample_freq = 4;
-        unsigned int nsamples = niterations / sample_freq;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
-            if ((i + 1) % sample_freq == 0) {
-                height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -21566,6 +21182,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
         double size_scale = 0.01;
         double rate_shape = 4.0;
         double rate_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
@@ -21589,8 +21206,14 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
         out << "                    shape: " << size_shape << "\n";
         out << "                    scale: " << size_scale << "\n";
         out << "        population_size_multipliers:\n";
-        out << "            value: [1.0, 1.0, 1.0]\n";
-        out << "            estimate: false\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
         out << "        freq_1:\n";
         out << "            value: 0.5\n";
         out << "            estimate: false\n";
@@ -21622,9 +21245,14 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+        SampleSummarizer<double> multiplier_1_summary;
         SampleSummarizer<double> height_summary;
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
@@ -21634,8 +21262,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                std::vector<double> sizes = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                multiplier_root_summary.add_sample(sizes.at(sizes.size() - 1));
+                multiplier_0_summary.add_sample(sizes.at(0));
+                multiplier_1_summary.add_sample(sizes.at(1));
             }
         }
 
@@ -21654,6 +21286,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
 
         REQUIRE(rate_summary.mean() == Approx(rate_shape * rate_scale).epsilon(0.005));
         REQUIRE(rate_summary.variance() == Approx(rate_shape * rate_scale * rate_scale).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
     }
 }
 
@@ -21729,7 +21368,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with height only",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -21826,7 +21465,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
             }
         }
@@ -21849,6 +21488,127 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
     }
 }
 
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no mean size",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing with optimizing") {
+        double height_shape = 10.0;
+        double height_scale = 0.1;
+        double size_shape = 5.0;
+        double size_scale = 0.01;
+        double rate_shape = 4.0;
+        double rate_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "event_time_prior:\n";
+        out << "    gamma_distribution:\n";
+        out << "        shape: " << height_shape << "\n";
+        out << "        scale: " << height_scale << "\n";
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        population_size_multipliers:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << rate_shape << "\n";
+        out << "                    scale: " << rate_scale << "\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+        SampleSummarizer<double> multiplier_1_summary;
+        SampleSummarizer<double> height_summary;
+        SampleSummarizer<double> size_summary;
+        SampleSummarizer<double> rate_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_height(0));
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+                rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                std::vector<double> sizes = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                multiplier_root_summary.add_sample(sizes.at(sizes.size() - 1));
+                multiplier_0_summary.add_sample(sizes.at(0));
+                multiplier_1_summary.add_sample(sizes.at(1));
+            }
+        }
+
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(size_summary.sample_size() == nsamples);
+        REQUIRE(rate_summary.sample_size() == nsamples);
+
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
+
+        REQUIRE(size_summary.mean() == Approx(0.005));
+        REQUIRE(size_summary.variance() == Approx(0.0));
+
+        REQUIRE(rate_summary.mean() == Approx(rate_shape * rate_scale).epsilon(0.005));
+        REQUIRE(rate_summary.variance() == Approx(rate_shape * rate_scale * rate_scale).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
 TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
         "[CompositeHeightRefSizeRateMixer]") {
 
@@ -21858,7 +21618,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
         double size_shape = 5.0;
         double size_scale = 0.01;
         double rate_shape = 4.0;
-        double rate_scale = 0.5;
+        double rate_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
@@ -21882,14 +21643,24 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
         out << "                    shape: " << size_shape << "\n";
         out << "                    scale: " << size_scale << "\n";
         out << "        population_size_multipliers:\n";
-        out << "            value: [1.0, 1.0, 1.0]\n";
-        out << "            estimate: false\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
         out << "        freq_1:\n";
         out << "            value: 0.5\n";
         out << "            estimate: false\n";
         out << "        mutation_rate:\n";
         out << "            value: 1.0\n";
         out << "            estimate: false\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << rate_shape << "\n";
+        out << "                    scale: " << rate_scale << "\n";
         out << "comparisons:\n";
         out << "- comparison:\n";
         out << "    path: hemi129.nex\n";
@@ -21912,9 +21683,14 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+        SampleSummarizer<double> multiplier_1_summary;
         SampleSummarizer<double> height_summary;
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
@@ -21924,8 +21700,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
-                size_summary.add_sample(comparisons.get_tree(0)->get_population_size());
+                size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
                 rate_summary.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                std::vector<double> sizes = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                multiplier_root_summary.add_sample(sizes.at(sizes.size() - 1));
+                multiplier_0_summary.add_sample(sizes.at(0));
+                multiplier_1_summary.add_sample(sizes.at(1));
             }
         }
 
@@ -21944,11 +21724,19 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
 
         REQUIRE(rate_summary.mean() == Approx(1.0));
         REQUIRE(rate_summary.variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs",
-        "[HeightRefSizeRateMixer]") {
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -21957,6 +21745,328 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs",
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_1_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                    multiplier_1_summary.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_1_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing 4 pairs with fixed sizes and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multipliers",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing 4 pairs with fixed multipliers") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
@@ -22046,7 +22156,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22065,6 +22175,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_1_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -22077,8 +22192,12 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs",
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                    multiplier_1_summary.at(tree_idx).add_sample(sizes.at(1));
                 }
             }
         }
@@ -22103,21 +22222,34 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs",
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
             REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_1_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+            REQUIRE(multiplier_1_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(multiplier_1_summary.at(tree_idx).variance() == Approx(0.0));
         }
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and fixed sizes",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean sizes",
+        "[CompositeHeightRefSizeRateMixer]") {
 
-    SECTION("Testing 4 pairs with fixed sizes and optimizing") {
+    SECTION("Testing 4 pairs with fixed mean sizes") {
         double height_shape = 5.0;
         double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22138,8 +22270,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and fixed sizes",
         os << "            value: 0.005\n";
         os << "            estimate: false\n";
         os << "        population_size_multipliers:\n";
-        os << "            value: [1.0, 1.0, 1.0]\n";
-        os << "            estimate: false\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -22182,8 +22320,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and fixed sizes",
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        RandomNumberGenerator rng = RandomNumberGenerator(334444);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22202,6 +22340,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and fixed sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_1_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -22214,14 +22357,20 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and fixed sizes",
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                    multiplier_1_summary.at(tree_idx).add_sample(sizes.at(1));
                 }
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
         
+        double size_sh;
+        double size_sc;
         double mu_sh;
         double mu_sc;
         for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -22238,13 +22387,23 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and fixed sizes",
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
             REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_1_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
         }
     }
 }
 
 
-TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -22253,6 +22412,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test3-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test3-" + tag + "-state-run-1.log";
@@ -22276,7 +22436,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -22344,7 +22508,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22363,6 +22527,10 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -22375,8 +22543,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -22401,12 +22572,19 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 singletons",
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
             REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
         }
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons") {
         double height_shape = 5.0;
@@ -22415,6 +22593,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
@@ -22448,7 +22628,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
@@ -22465,7 +22649,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22482,7 +22670,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22502,7 +22694,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22522,7 +22718,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22535,7 +22735,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22554,6 +22754,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -22566,8 +22771,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -22593,6 +22801,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
 
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
         tree_idx = 1;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -22610,6 +22826,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
         tree_idx = 2;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -22624,6 +22848,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
 
         tree_idx = 3;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
@@ -22642,6 +22874,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+
         tree_idx = 4;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -22658,12 +22898,20 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons",
         REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
     }
 }
 
 
-TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event optimizing") {
         double height_shape = 5.0;
@@ -22672,6 +22920,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
@@ -22697,7 +22946,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -22765,7 +23018,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22784,6 +23037,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_1_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -22796,8 +23054,12 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                    multiplier_1_summary.at(tree_idx).add_sample(sizes.at(1));
                 }
             }
         }
@@ -22822,12 +23084,22 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs and shared event",
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
             REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_1_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
         }
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and shared event",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing and mix of pair and singletons and shared event") {
         double height_shape = 5.0;
@@ -22836,6 +23108,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
@@ -22871,7 +23145,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
@@ -22888,7 +23166,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22905,7 +23187,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22925,7 +23211,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22945,7 +23235,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -22958,7 +23252,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22977,6 +23271,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -22989,8 +23288,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -23016,6 +23318,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
 
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
         tree_idx = 1;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -23033,6 +23343,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
         tree_idx = 2;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -23047,6 +23365,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
 
         tree_idx = 3;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
@@ -23065,6 +23391,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+
         tree_idx = 4;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -23081,11 +23415,19 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons and s
         REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
         REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs with fixed sizes and shared event",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes shared event optimizing") {
         double height_shape = 5.0;
@@ -23116,10 +23458,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs with fixed sizes and shar
         os << "            value: 0.5\n";
         os << "            estimate: false\n";
         os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -23175,7 +23515,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs with fixed sizes and shar
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23206,7 +23546,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs with fixed sizes and shar
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
                 }
             }
@@ -23234,9 +23574,355 @@ TEST_CASE("Testing HeightRefSizeRateMixer with 4 pairs with fixed sizes and shar
     }
 }
 
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multipliers and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes",
-        "[HeightRefSizeRateMixer]") {
+    SECTION("Testing 4 pairs with shared event and fixed multipliers") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_1_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                    multiplier_1_summary.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_1_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+            REQUIRE(multiplier_1_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(multiplier_1_summary.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean sizes and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing 4 pairs with shared event and fixed mean sizes") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_1_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                    multiplier_1_summary.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+            REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_1_summary.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+            REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+            REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            REQUIRE(multiplier_1_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+        }
+    }
+}
+
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed sizes") {
         double height_shape = 5.0;
@@ -23272,10 +23958,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "    path: hemi129.nex\n";
         os << "    parameters:\n";
         os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23286,10 +23970,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "    path: hemi129-altname1.nex\n";
         os << "    parameters:\n";
         os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23300,10 +23982,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
         os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23314,10 +23994,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "    path: hemi129-altname3-singleton.nex\n";
         os << "    parameters:\n";
         os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23328,10 +24006,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "    path: hemi129-altname4-singleton.nex\n";
         os << "    parameters:\n";
         os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23344,7 +24020,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23375,7 +24051,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
                 }
             }
@@ -23403,19 +24079,1165 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes and shared event",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and fixed multipliers",
+        "[CompositeHeightRefSizeRateMixer]") {
 
-    SECTION("Testing mix of pair and singletons with fixed sizes and shared") {
+    SECTION("Testing mix of pair and singletons with fixed multipliers") {
         double height_shape = 5.0;
         double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        unsigned int tree_idx = 0;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        size_sh = size_shapes.at(tree_idx);
+        size_sc = size_scales.at(tree_idx);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 1;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+    
+        size_sh = size_shapes.at(tree_idx);
+        size_sc = size_scales.at(tree_idx);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 3;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        size_sh = size_shapes.at(tree_idx - 1);
+        size_sc = size_scales.at(tree_idx - 1);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(2.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 4;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        size_sh = size_shapes.at(tree_idx - 1);
+        size_sc = size_scales.at(tree_idx - 1);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(2.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and fixed mean sizes",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing mix of pair and singletons with fixed mean sizes") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double mu_sh;
+        double mu_sc;
+        unsigned int tree_idx = 0;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+    
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 2;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 3;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 4;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing 4 pairs with optimizing and mix of pair and singletons with fixed sizes and shared event") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double mu_sh;
+        double mu_sc;
+        unsigned int tree_idx = 0;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 1;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+    
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 3;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(2.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 4;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(2.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and shared event and fixed multipliers",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing 4 pairs with optimizing and mix of pair and singletons and shared event and fixed multipliers") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 2.0]\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        unsigned int tree_idx = 0;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        size_sh = size_shapes.at(tree_idx);
+        size_sc = size_scales.at(tree_idx);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 1;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+    
+        size_sh = size_shapes.at(tree_idx);
+        size_sc = size_scales.at(tree_idx);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 3;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        size_sh = size_shapes.at(tree_idx - 1);
+        size_sc = size_scales.at(tree_idx - 1);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(2.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 4;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        size_sh = size_shapes.at(tree_idx - 1);
+        size_sc = size_scales.at(tree_idx - 1);
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(2.0/3.0));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(1.0/3.0));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed mean sizes and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
+
+    SECTION("Testing 4 pairs with optimizing and mix of pair and singletons with fixe mean sizes and shared event") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 = {5.0, 10.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23445,13 +25267,14 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(0) << "\n";
-        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname1.nex\n";
         os << "    parameters:\n";
@@ -23459,13 +25282,17 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(1) << "\n";
-        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
@@ -23473,13 +25300,17 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(2) << "\n";
-        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname3-singleton.nex\n";
         os << "    parameters:\n";
@@ -23487,13 +25318,17 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(3) << "\n";
-        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname4-singleton.nex\n";
         os << "    parameters:\n";
@@ -23501,20 +25336,24 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(4) << "\n";
-        os << "                    scale: " << mu_scales.at(4) << "\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23533,6 +25372,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -23545,36 +25389,138 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
         
+        double size_sh;
+        double size_sc;
         double mu_sh;
         double mu_sc;
-        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        unsigned int tree_idx = 0;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
-            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
 
-            mu_sh = mu_shapes.at(tree_idx);
-            mu_sc = mu_scales.at(tree_idx);
-            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
-        }
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+    
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 2;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 3;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+
+        tree_idx = 4;
+        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        mu_sh = mu_shapes.at(tree_idx - 1);
+        mu_sc = mu_scales.at(tree_idx - 1);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with fixed rates",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed rates") {
         double height_shape = 5.0;
@@ -23583,6 +25529,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test10-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test10-" + tag + "-state-run-1.log";
@@ -23613,7 +25561,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23627,7 +25579,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23641,7 +25597,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23655,7 +25615,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23669,7 +25633,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23682,7 +25650,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23701,6 +25669,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -23713,8 +25686,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -23737,12 +25713,28 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            if (tree_idx < 3) {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            }
+            else {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+            }
         }
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and shared event",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed rates and shared event") {
         double height_shape = 5.0;
@@ -23751,6 +25743,8 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test11-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test11-" + tag + "-state-run-1.log";
@@ -23783,7 +25777,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23797,7 +25795,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23811,7 +25813,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23825,7 +25831,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23839,7 +25849,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -23852,7 +25866,7 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23871,6 +25885,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -23883,8 +25902,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -23907,20 +25929,38 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            if (tree_idx < 3) {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            }
+            else {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+            }
         }
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and sizes",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and mean sizes",
+        "[CompositeHeightRefSizeRateMixer]") {
 
-    SECTION("Testing mix of pair and singletons with fixed rates and sizes") {
+    SECTION("Testing mix of pair and singletons with fixed rates and mean sizes") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test12-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test12-" + tag + "-state-run-1.log";
@@ -23954,7 +25994,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname1.nex\n";
         os << "    parameters:\n";
@@ -23962,7 +26006,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
@@ -23970,7 +26018,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname3-singleton.nex\n";
         os << "    parameters:\n";
@@ -23978,7 +26030,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname4-singleton.nex\n";
         os << "    parameters:\n";
@@ -23986,14 +26042,18 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24012,6 +26072,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -24024,8 +26089,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -24044,20 +26112,38 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            if (tree_idx < 3) {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            }
+            else {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+            }
         }
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and sizes and shared event",
-        "[HeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and mean sizes and shared event",
+        "[CompositeHeightRefSizeRateMixer]") {
 
-    SECTION("Testing mix of pair and singletons with fixed rates and sizes and shared event") {
+    SECTION("Testing mix of pair and singletons with fixed rates and mean sizes and shared event") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> alphas {5.0, 10.0, 15.0};
+        std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
         std::string test_path = "data/tmp-config-heightrefsizeratemixer-test13-" + tag + ".cfg";
         std::string log_path = "data/tmp-config-heightrefsizeratemixer-test13-" + tag + "-state-run-1.log";
@@ -24093,7 +26179,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname1.nex\n";
         os << "    parameters:\n";
@@ -24101,7 +26191,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
@@ -24109,7 +26203,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname3-singleton.nex\n";
         os << "    parameters:\n";
@@ -24117,7 +26215,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname4-singleton.nex\n";
         os << "    parameters:\n";
@@ -24125,14 +26227,18 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                    alpha: [" << alphas2.at(0);
+        for (unsigned int i = 1; i < alphas2.size(); ++i) {
+            os << ", " << alphas2.at(i);
+        }
+        os << "]\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24151,6 +26257,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_root_summary(ntrees);
+        std::vector< SampleSummarizer<double> > multiplier_0_summary(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+        DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
@@ -24163,8 +26274,11 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
                     mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    multiplier_root_summary.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    multiplier_0_summary.at(tree_idx).add_sample(sizes.at(0));
                 }
             }
         }
@@ -24183,12 +26297,28 @@ TEST_CASE("Testing HeightRefSizeRateMixer with mix of pairs and singletons with 
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            if (tree_idx < 3) {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+            }
+            else {
+                REQUIRE(multiplier_root_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_root_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(1)).epsilon(0.005));
+                REQUIRE(multiplier_root_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(1)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).sample_size() == nsamples);
+                REQUIRE(multiplier_0_summary.at(tree_idx).mean() == Approx(dir_prior2.get_mean(0)).epsilon(0.005));
+                REQUIRE(multiplier_0_summary.at(tree_idx).variance() == Approx(dir_prior2.get_variance(0)).epsilon(0.005));
+            }
         }
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs",
+        "[HeightRefSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -24198,8 +26328,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24215,9 +26345,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
-        os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
-        os << "            value: [1.0, 1.0, 1.0]\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
@@ -24286,7 +26413,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24303,11 +26430,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         REQUIRE(ntrees == 4);
         REQUIRE(comparisons.get_number_of_events() == ntrees);
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size_root;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
@@ -24317,8 +26446,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size_root = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
@@ -24335,9 +26466,9 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
             REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
             size_sh = size_shapes.at(tree_idx);
             size_sc = size_scales.at(tree_idx);
-            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
             mu_sh = mu_shapes.at(tree_idx);
             mu_sc = mu_scales.at(tree_idx);
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
@@ -24347,17 +26478,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
+        "[HeightRefSizeRateScaler]") {
 
-    SECTION("Testing 4 pairs with fixed sizes and optimizing") {
+    SECTION("Testing 4 pairs with fixed mean sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24376,9 +26507,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
         os << "            estimate: false\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
-        os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
-        os << "            value: [1.0, 1.0, 1.0]\n";
         os << "            estimate: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
@@ -24422,8 +26550,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24443,8 +26571,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
@@ -24454,8 +26584,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
@@ -24468,11 +26600,9 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
             REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
             REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
-
             mu_sh = mu_shapes.at(tree_idx);
             mu_sc = mu_scales.at(tree_idx);
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
@@ -24483,8 +26613,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons",
+        "[HeightRefSizeRateScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -24494,8 +26624,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24512,11 +26642,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
         os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -24584,7 +26709,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24604,8 +26729,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
@@ -24615,8 +26742,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
@@ -24645,10 +26774,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons",
+        "[HeightRefSizeRateScaler]") {
 
-    SECTION("Testing mix of pair and singletons") {
+    SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
@@ -24656,8 +26785,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24684,11 +26813,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(0) << "\n";
         os << "                    scale: " << size_scales.at(0) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
@@ -24701,11 +26825,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(1) << "\n";
         os << "                    scale: " << size_scales.at(1) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -24716,13 +26835,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
-        os << "            value: 0.005\n";
+        os << "            value: 0.01\n";
         os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -24738,11 +26852,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(2) << "\n";
         os << "                    scale: " << size_scales.at(2) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -24758,11 +26867,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(3) << "\n";
         os << "                    scale: " << size_scales.at(3) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -24775,7 +26879,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24791,121 +26895,130 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
         REQUIRE(comparisons.get_number_of_events() == ntrees);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        SampleSummarizer<double> height_summary_pair1;
+        SampleSummarizer<double> height_summary_pair2;
+        SampleSummarizer<double> height_summary_pair3;
+        SampleSummarizer<double> height_summary_single1;
+        SampleSummarizer<double> height_summary_single2;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
 
-        unsigned int niterations = 1000000;
+        unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == ntrees);
-                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
-                }
+                REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+                height_summary_pair1.add_sample(comparisons.get_tree(0)->get_root_height());
+                height_summary_pair2.add_sample(comparisons.get_tree(1)->get_root_height());
+                height_summary_pair3.add_sample(comparisons.get_tree(2)->get_root_height());
+                height_summary_single1.add_sample(comparisons.get_tree(3)->get_root_height());
+                height_summary_single2.add_sample(comparisons.get_tree(4)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
         
-        double size_sh;
-        double size_sc;
-        double mu_sh;
-        double mu_sc;
-        unsigned int tree_idx = 0;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        size_sh = size_shapes.at(tree_idx);
-        size_sc = size_scales.at(tree_idx);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        REQUIRE(height_summary_pair2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(height_summary_pair3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        tree_idx = 1;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-    
-        size_sh = size_shapes.at(tree_idx);
-        size_sc = size_scales.at(tree_idx);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        REQUIRE(height_summary_single1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        REQUIRE(height_summary_single2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        tree_idx = 2;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
 
-        tree_idx = 3;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        size_sh = size_shapes.at(tree_idx - 1);
-        size_sc = size_scales.at(tree_idx - 1);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
 
-        tree_idx = 4;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        double mu_sh = mu_shapes.at(0);
+        double mu_sc = mu_scales.at(0);
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
-        size_sh = size_shapes.at(tree_idx - 1);
-        size_sc = size_scales.at(tree_idx - 1);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        mu_sh = mu_shapes.at(1);
+        mu_sc = mu_scales.at(1);
+        REQUIRE(mutation_rate_summary_pair3.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        mu_sh = mu_shapes.at(2);
+        mu_sc = mu_scales.at(2);
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(3);
+        mu_sc = mu_scales.at(3);
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
     }
 }
 
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event",
+        "[HeightRefSizeRateScaler]") {
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
-
-    SECTION("Testing 4 pairs with shared event optimizing") {
+    SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
@@ -24913,8 +27026,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -24933,11 +27046,1538 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
         os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(33333);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and shared event",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.01\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
+
+        unsigned int niterations = 800000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                REQUIRE(comparisons.get_number_of_events() == 1);
+
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
+
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
+
+        double mu_sh = mu_shapes.at(0);
+        double mu_sc = mu_scales.at(0);
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(1);
+        mu_sc = mu_scales.at(1);
+        REQUIRE(mutation_rate_summary_pair3.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(2);
+        mu_sc = mu_scales.at(2);
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(3);
+        mu_sc = mu_scales.at(3);
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed mean sizes and shared event and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 500000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed mean sizes and fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 500000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 singletons and fixed rates with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(2222);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.01\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> height_summary_pair1;
+        SampleSummarizer<double> height_summary_pair2;
+        SampleSummarizer<double> height_summary_pair3;
+        SampleSummarizer<double> height_summary_single1;
+        SampleSummarizer<double> height_summary_single2;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+                height_summary_pair1.add_sample(comparisons.get_tree(0)->get_root_height());
+                height_summary_pair2.add_sample(comparisons.get_tree(1)->get_root_height());
+                height_summary_pair3.add_sample(comparisons.get_tree(2)->get_root_height());
+                height_summary_single1.add_sample(comparisons.get_tree(3)->get_root_height());
+                height_summary_single2.add_sample(comparisons.get_tree(4)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_pair2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_pair3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_single1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_single2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
+
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(9999);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.01\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                REQUIRE(comparisons.get_number_of_events() == 1);
+
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
+
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair2.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair3.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event and fixed rates",
+        "[HeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed mean sizes and shared event and fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
@@ -25005,7 +28645,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25020,24 +28660,324 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
-        REQUIRE(comparisons.get_number_of_events() == 1);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size_root;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size_root = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed mean sizes and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 singletons with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
@@ -25066,10 +29006,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons",
+        "[CompositeHeightRefSizeRateScaler]") {
 
-    SECTION("Testing 4 pairs with optimizing and mix of pair and singletons and shared event") {
+    SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
@@ -25077,12 +29017,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
-        os << "event_model_prior:\n";
-        os << "    fixed: [0, 0, 0, 0, 0]\n";
         os << "event_time_prior:\n";
         os << "    gamma_distribution:\n";
         os << "        shape: " << height_shape << "\n";
@@ -25107,11 +29045,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(0) << "\n";
         os << "                    scale: " << size_scales.at(0) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
@@ -25124,11 +29057,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(1) << "\n";
         os << "                    scale: " << size_scales.at(1) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25139,13 +29067,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
-        os << "            value: 0.005\n";
+        os << "            value: 0.01\n";
         os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25161,11 +29084,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(2) << "\n";
         os << "                    scale: " << size_scales.at(2) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25181,11 +29099,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(3) << "\n";
         os << "                    scale: " << size_scales.at(3) << "\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25198,7 +29111,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25213,121 +29126,131 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
-        REQUIRE(comparisons.get_number_of_events() == 1);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> height_summary_pair1;
+        SampleSummarizer<double> height_summary_pair2;
+        SampleSummarizer<double> height_summary_pair3;
+        SampleSummarizer<double> height_summary_single1;
+        SampleSummarizer<double> height_summary_single2;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
 
-        unsigned int niterations = 1000000;
+        unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == 1);
-                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
-                }
+                REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+                height_summary_pair1.add_sample(comparisons.get_tree(0)->get_root_height());
+                height_summary_pair2.add_sample(comparisons.get_tree(1)->get_root_height());
+                height_summary_pair3.add_sample(comparisons.get_tree(2)->get_root_height());
+                height_summary_single1.add_sample(comparisons.get_tree(3)->get_root_height());
+                height_summary_single2.add_sample(comparisons.get_tree(4)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
         
-        double size_sh;
-        double size_sc;
-        double mu_sh;
-        double mu_sc;
-        unsigned int tree_idx = 0;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        size_sh = size_shapes.at(tree_idx);
-        size_sc = size_scales.at(tree_idx);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        REQUIRE(height_summary_pair2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(height_summary_pair3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        tree_idx = 1;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-    
-        size_sh = size_shapes.at(tree_idx);
-        size_sc = size_scales.at(tree_idx);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        REQUIRE(height_summary_single1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        REQUIRE(height_summary_single2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
-        tree_idx = 2;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
 
-        tree_idx = 3;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        size_sh = size_shapes.at(tree_idx - 1);
-        size_sc = size_scales.at(tree_idx - 1);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
 
-        tree_idx = 4;
-        REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-        REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        double mu_sh = mu_shapes.at(0);
+        double mu_sc = mu_scales.at(0);
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
-        size_sh = size_shapes.at(tree_idx - 1);
-        size_sc = size_scales.at(tree_idx - 1);
-        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        mu_sh = mu_shapes.at(1);
+        mu_sc = mu_scales.at(1);
+        REQUIRE(mutation_rate_summary_pair3.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
 
-        mu_sh = mu_shapes.at(tree_idx - 1);
-        mu_sc = mu_scales.at(tree_idx - 1);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-        REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-        REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        mu_sh = mu_shapes.at(2);
+        mu_sc = mu_scales.at(2);
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(3);
+        mu_sc = mu_scales.at(3);
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared event",
+        "[CompositeHeightRefSizeRateScaler]") {
 
-    SECTION("Testing 4 pairs with fixed sizes shared event optimizing") {
+    SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
@@ -25335,8 +29258,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25355,18 +29278,16 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
         os << "            estimate: false\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25377,8 +29298,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         os << "    path: hemi129-altname1.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25389,8 +29313,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25401,8 +29328,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         os << "    path: hemi129-altname3.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25414,8 +29344,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        RandomNumberGenerator rng = RandomNumberGenerator(33333);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25431,40 +29361,47 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
         REQUIRE(comparisons.get_number_of_events() == 1);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> height_summary;
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
         
+        double size_sh;
+        double size_sc;
         double mu_sh;
         double mu_sc;
         for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
-            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
-
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
             mu_sh = mu_shapes.at(tree_idx);
             mu_sc = mu_scales.at(tree_idx);
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
@@ -25474,188 +29411,19 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
     }
 }
 
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons and shared event",
+        "[CompositeHeightRefSizeRateScaler]") {
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
-
-    SECTION("Testing mix of pair and singletons with fixed sizes") {
+    SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test8-" + tag + "-state-run-1.log";
-        std::ofstream os;
-        os.open(test_path);
-        os << "event_time_prior:\n";
-        os << "    gamma_distribution:\n";
-        os << "        shape: " << height_shape << "\n";
-        os << "        scale: " << height_scale << "\n";
-        os << "global_comparison_settings:\n";
-        os << "    genotypes_are_diploid: true\n";
-        os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \" \"\n";
-        os << "    population_name_is_prefix: true\n";
-        os << "    constant_sites_removed: true\n";
-        os << "    parameters:\n";
-        os << "        freq_1:\n";
-        os << "            value: 0.5\n";
-        os << "            estimate: false\n";
-        os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
-        os << "comparisons:\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(0) << "\n";
-        os << "                    scale: " << mu_scales.at(0) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname1.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(1) << "\n";
-        os << "                    scale: " << mu_scales.at(1) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname2.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(2) << "\n";
-        os << "                    scale: " << mu_scales.at(2) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname3-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(3) << "\n";
-        os << "                    scale: " << mu_scales.at(3) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname4-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(4) << "\n";
-        os << "                    scale: " << mu_scales.at(4) << "\n";
-        os.close();
-        REQUIRE(path::exists(test_path));
-
-        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule op_schedule = OperatorSchedule();
-        op_schedule.turn_on_auto_optimize();
-        op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
-
-        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
-
-        // Initialize prior probs
-        comparisons.compute_log_likelihood_and_prior(true);
-
-        unsigned int ntrees = comparisons.get_number_of_trees();
-        REQUIRE(ntrees == 5);
-        REQUIRE(comparisons.get_number_of_events() == ntrees);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
-
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
-        unsigned int nsamples = niterations / sample_freq;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
-            if ((i + 1) % sample_freq == 0) {
-                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == ntrees);
-                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
-                }
-            }
-        }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
-        
-        double mu_sh;
-        double mu_sc;
-        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
-            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
-            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
-
-            mu_sh = mu_shapes.at(tree_idx);
-            mu_sc = mu_scales.at(tree_idx);
-            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
-            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
-        }
-    }
-}
-
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
-
-    SECTION("Testing mix of pair and singletons with fixed sizes and shared") {
-        double height_shape = 5.0;
-        double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
-        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25674,18 +29442,28 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
         os << "            estimate: false\n";
-        os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25693,13 +29471,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                    shape: " << mu_shapes.at(0) << "\n";
         os << "                    scale: " << mu_scales.at(0) << "\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-altname1.nex\n";
+        os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "        population_size:\n";
+        os << "            value: 0.01\n";
+        os << "            estimate: false\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25707,13 +29483,14 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                    shape: " << mu_shapes.at(1) << "\n";
         os << "                    scale: " << mu_scales.at(1) << "\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-altname2.nex\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25721,40 +29498,27 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                    shape: " << mu_shapes.at(2) << "\n";
         os << "                    scale: " << mu_scales.at(2) << "\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
         os << "        mutation_rate:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
         os << "                    shape: " << mu_shapes.at(3) << "\n";
         os << "                    scale: " << mu_scales.at(3) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname4-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mu_shapes.at(4) << "\n";
-        os << "                    scale: " << mu_scales.at(4) << "\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25770,40 +29534,236 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
         REQUIRE(comparisons.get_number_of_events() == 1);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        SampleSummarizer<double> height_summary;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
 
-        unsigned int niterations = 1000000;
+        unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == 1);
-                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
-                }
+                REQUIRE(comparisons.get_number_of_events() == 1);
+
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
         
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
+
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
+
+        double mu_sh = mu_shapes.at(0);
+        double mu_sc = mu_scales.at(0);
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(1);
+        mu_sc = mu_scales.at(1);
+        REQUIRE(mutation_rate_summary_pair3.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(2);
+        mu_sc = mu_scales.at(2);
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+
+        mu_sh = mu_shapes.at(3);
+        mu_sc = mu_scales.at(3);
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(mu_sh * mu_sc).epsilon(0.01));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed mean sizes and shared event and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 500000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
         double mu_sh;
         double mu_sc;
         for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
-
             mu_sh = mu_shapes.at(tree_idx);
             mu_sc = mu_scales.at(tree_idx);
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
@@ -25813,19 +29773,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
 
-    SECTION("Testing mix of pair and singletons with fixed rates") {
+    SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -25849,11 +29807,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25863,11 +29816,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "- comparison:\n";
         os << "    path: hemi129-altname1.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25877,11 +29825,6 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "- comparison:\n";
         os << "    path: hemi129-altname2.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
@@ -25889,40 +29832,21 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "                    shape: " << size_shapes.at(2) << "\n";
         os << "                    scale: " << size_scales.at(2) << "\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    path: hemi129-altname3.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
         os << "                gamma_distribution:\n";
         os << "                    shape: " << size_shapes.at(3) << "\n";
         os << "                    scale: " << size_scales.at(3) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname4-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size_shapes.at(4) << "\n";
-        os << "                    scale: " << size_scales.at(4) << "\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25936,14 +29860,16 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         comparisons.compute_log_likelihood_and_prior(true);
 
         unsigned int ntrees = comparisons.get_number_of_trees();
-        REQUIRE(ntrees == 5);
+        REQUIRE(ntrees == 4);
         REQUIRE(comparisons.get_number_of_events() == ntrees);
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
@@ -25953,8 +29879,10 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
                     height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
@@ -25967,203 +29895,27 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
             REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
             REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
-            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
-            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
-
             size_sh = size_shapes.at(tree_idx);
             size_sc = size_scales.at(tree_idx);
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
-        }
-    }
-}
-
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
-
-    SECTION("Testing mix of pair and singletons with fixed rates and shared event") {
-        double height_shape = 5.0;
-        double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
-        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test11-" + tag + "-state-run-1.log";
-        std::ofstream os;
-        os.open(test_path);
-        os << "event_model_prior:\n";
-        os << "    fixed: [0, 0, 0, 0, 0]\n";
-        os << "event_time_prior:\n";
-        os << "    gamma_distribution:\n";
-        os << "        shape: " << height_shape << "\n";
-        os << "        scale: " << height_scale << "\n";
-        os << "global_comparison_settings:\n";
-        os << "    genotypes_are_diploid: true\n";
-        os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \" \"\n";
-        os << "    population_name_is_prefix: true\n";
-        os << "    constant_sites_removed: true\n";
-        os << "    parameters:\n";
-        os << "        freq_1:\n";
-        os << "            value: 0.5\n";
-        os << "            estimate: false\n";
-        os << "        mutation_rate:\n";
-        os << "            value: 1.0\n";
-        os << "            estimate: false\n";
-        os << "comparisons:\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size_shapes.at(0) << "\n";
-        os << "                    scale: " << size_scales.at(0) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname1.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size_shapes.at(1) << "\n";
-        os << "                    scale: " << size_scales.at(1) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname2.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size_shapes.at(2) << "\n";
-        os << "                    scale: " << size_scales.at(2) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname3-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size_shapes.at(3) << "\n";
-        os << "                    scale: " << size_scales.at(3) << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname4-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size_shapes.at(4) << "\n";
-        os << "                    scale: " << size_scales.at(4) << "\n";
-        os.close();
-        REQUIRE(path::exists(test_path));
-
-        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule op_schedule = OperatorSchedule();
-        op_schedule.turn_on_auto_optimize();
-        op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
-
-        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
-
-        // Initialize prior probs
-        comparisons.compute_log_likelihood_and_prior(true);
-
-        unsigned int ntrees = comparisons.get_number_of_trees();
-        REQUIRE(ntrees == 5);
-        REQUIRE(comparisons.get_number_of_events() == 1);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
-
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
-        unsigned int nsamples = niterations / sample_freq;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
-            if ((i + 1) % sample_freq == 0) {
-                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == 1);
-                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
-                }
-            }
-        }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
-        
-        double size_sh;
-        double size_sc;
-        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
             REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
-
-            size_sh = size_shapes.at(tree_idx);
-            size_sc = size_scales.at(tree_idx);
-            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
-            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
         }
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
 
-    SECTION("Testing mix of pair and singletons with fixed rates and sizes") {
+    SECTION("Testing 4 pairs with fixed mean sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -26189,51 +29941,292 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname1.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 500000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 singletons and fixed rates with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname3-singleton.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(2222);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.01\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname4-singleton.nex\n";
         os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
+        os << "        population_size:\n";
         os << "            estimate: true\n";
         os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26249,62 +30242,449 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
         REQUIRE(comparisons.get_number_of_events() == ntrees);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
-        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+        SampleSummarizer<double> height_summary_pair1;
+        SampleSummarizer<double> height_summary_pair2;
+        SampleSummarizer<double> height_summary_pair3;
+        SampleSummarizer<double> height_summary_single1;
+        SampleSummarizer<double> height_summary_single2;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
-                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-                    REQUIRE(comparisons.get_number_of_events() == ntrees);
-                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
-                }
+                REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+                height_summary_pair1.add_sample(comparisons.get_tree(0)->get_root_height());
+                height_summary_pair2.add_sample(comparisons.get_tree(1)->get_root_height());
+                height_summary_pair3.add_sample(comparisons.get_tree(2)->get_root_height());
+                height_summary_single1.add_sample(comparisons.get_tree(3)->get_root_height());
+                height_summary_single2.add_sample(comparisons.get_tree(4)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
         
-        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
 
+        REQUIRE(height_summary_pair2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_pair3.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_pair3.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_single1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        REQUIRE(height_summary_single2.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary_single2.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
+
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared event and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(9999);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
             REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
             REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
-
-            REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
-            REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
         }
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
 
-    SECTION("Testing mix of pair and singletons with fixed rates and sizes and shared event") {
+    SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
-        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0, 7.0};
-        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5, 0.15};
-        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
-        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
         os << "    fixed: [0, 0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.01\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 5);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        SampleSummarizer<double> size_summary_pair1;
+        SampleSummarizer<double> size_summary_pair2;
+        SampleSummarizer<double> size_summary_pair3;
+        SampleSummarizer<double> size_summary_single1;
+        SampleSummarizer<double> size_summary_single2;
+        SampleSummarizer<double> mutation_rate_summary_pair1;
+        SampleSummarizer<double> mutation_rate_summary_pair2;
+        SampleSummarizer<double> mutation_rate_summary_pair3;
+        SampleSummarizer<double> mutation_rate_summary_single1;
+        SampleSummarizer<double> mutation_rate_summary_single2;
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                REQUIRE(comparisons.get_number_of_events() == 1);
+
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+
+                mutation_rate_summary_pair1.add_sample(comparisons.get_tree(0)->get_mutation_rate());
+                mutation_rate_summary_pair2.add_sample(comparisons.get_tree(1)->get_mutation_rate());
+                mutation_rate_summary_pair3.add_sample(comparisons.get_tree(2)->get_mutation_rate());
+                mutation_rate_summary_single1.add_sample(comparisons.get_tree(3)->get_mutation_rate());
+                mutation_rate_summary_single2.add_sample(comparisons.get_tree(4)->get_mutation_rate());
+
+                double  size_pair1 = comparisons.get_tree(0)->get_mean_population_size();
+
+                double  size_pair2 = comparisons.get_tree(1)->get_mean_population_size();
+
+                double  size_pair3 = comparisons.get_tree(2)->get_mean_population_size();
+
+                double size_single1 = comparisons.get_tree(3)->get_mean_population_size();
+
+                double size_single2 = comparisons.get_tree(4)->get_mean_population_size();
+
+                size_summary_pair1.add_sample(size_pair1);
+                size_summary_pair2.add_sample(size_pair2);
+                size_summary_pair3.add_sample(size_pair3);
+                size_summary_single1.add_sample(size_single1);
+                size_summary_single2.add_sample(size_single2);
+            }
+        }
+        std::cout << op->header_string();
+        std::cout << op->to_string(op_schedule);
+        
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh = size_shapes.at(0);
+        double size_sc = size_scales.at(0);
+        REQUIRE(size_summary_pair1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(1);
+        size_sc = size_scales.at(1);
+        REQUIRE(size_summary_pair2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_pair2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(size_summary_pair3.mean() == Approx(0.01));
+        REQUIRE(size_summary_pair3.variance() == Approx(0.0));
+
+        size_sh = size_shapes.at(2);
+        size_sc = size_scales.at(2);
+        REQUIRE(size_summary_single1.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single1.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        size_sh = size_shapes.at(3);
+        size_sc = size_scales.at(3);
+        REQUIRE(size_summary_single2.mean() == Approx(size_sh * size_sc).epsilon(0.01));
+        REQUIRE(size_summary_single2.variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+
+        REQUIRE(mutation_rate_summary_pair1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair2.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_pair3.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_pair3.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single1.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single1.variance() == Approx(0.0));
+        REQUIRE(mutation_rate_summary_single2.mean() == Approx(1.0));
+        REQUIRE(mutation_rate_summary_single2.variance() == Approx(0.0));
+    }
+}
+
+TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event and fixed rates",
+        "[CompositeHeightRefSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with fixed mean sizes and shared event and fixed rates and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
         os << "event_time_prior:\n";
         os << "    gamma_distribution:\n";
         os << "        shape: " << height_shape << "\n";
@@ -26328,51 +30708,19 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname1.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "- comparison:\n";
         os << "    path: hemi129-altname2.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0, 1.0]\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-altname3-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname4-singleton.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size_multipliers:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                dirichlet_distribution:\n";
-        os << "                    alpha: [1.0, 1.0]\n";
+        os << "    path: hemi129-altname3.nex\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26386,43 +30734,178 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         comparisons.compute_log_likelihood_and_prior(true);
 
         unsigned int ntrees = comparisons.get_number_of_trees();
-        REQUIRE(ntrees == 5);
+        REQUIRE(ntrees == 4);
         REQUIRE(comparisons.get_number_of_events() == 1);
-        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        SampleSummarizer<double> height_summary;
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        double size;
+        double mutation_rate;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             OperatorInterface& o = op_schedule.draw_operator(rng);
             o.operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
                     std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
-                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
-                    size_summaries.at(tree_idx).add_sample(tree->get_population_size());
-                    mutation_rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                    size = tree->get_mean_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    size_summaries.at(tree_idx).add_sample(size);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
                 }
             }
         }
         std::cout << op->header_string();
         std::cout << op->to_string(op_schedule);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
         
+        double size_sh;
+        double size_sc;
         for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
-            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
-            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
-
-            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
-            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
-            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
-
             REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
             REQUIRE(size_summaries.at(tree_idx).mean() == Approx(0.005));
             REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
         }
     }
 }
+
+
+// TEST_CASE("Testing population size scalers on Dirichlet tree", "[PopulationSizeScalers]") {
+// 
+//     SECTION("Testing dir(1, 1, 1) prior and gamma(10, 0.1) with optimizing") {
+//         double shape = 10.0;
+//         double scale = 0.1;
+//         std::vector<double> alphas = {1.0, 1.0, 1.0};
+//         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+//         std::string test_path = "data/tmp-config-" + tag + ".cfg";
+//         std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+//         std::ofstream out;
+//         out.open(test_path);
+//         out << "global_comparison_settings:\n";
+//         out << "    genotypes_are_diploid: true\n";
+//         out << "    markers_are_dominant: false\n";
+//         out << "    population_name_delimiter: \" \"\n";
+//         out << "    population_name_is_prefix: true\n";
+//         out << "    constant_sites_removed: true\n";
+//         out << "    parameters:\n";
+//         out << "        population_size:\n";
+//         out << "            estimate: true\n";
+//         out << "            prior:\n";
+//         out << "                gamma_distribution:\n";
+//         out << "                    shape: " << shape << "\n";;
+//         out << "                    scale: " << scale << "\n";;
+//         out << "        population_size_multipliers:\n";
+//         out << "            estimate: true\n";
+//         out << "            prior:\n";
+//         out << "                dirichlet_distribution:\n";
+//         out << "                    alpha: [" << alphas.at(0);
+//         for (unsigned int i = 1; i < alphas.size(); ++i) {
+//             out << ", " << alphas.at(i);
+//         }
+//         out << "]\n";
+//         out << "        freq_1:\n";
+//         out << "            value: 0.5\n";
+//         out << "            estimate: false\n";
+//         out << "        mutation_rate:\n";
+//         out << "            value: 1.0\n";
+//         out << "            estimate: false\n";
+//         out << "comparisons:\n";
+//         out << "- comparison:\n";
+//         out << "    path: hemi129.nex\n";
+//         out.close();
+//         REQUIRE(path::exists(test_path));
+// 
+//         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+// 
+//         RandomNumberGenerator rng = RandomNumberGenerator(12345);
+// 
+//         OperatorSchedule os = OperatorSchedule();
+//         os.turn_on_auto_optimize();
+//         os.set_auto_optimize_delay(1000);
+// 
+//         std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootPopulationSizeScaler>(1.0, 0.5);
+//         std::shared_ptr<OperatorInterface> op2 = std::make_shared<ChildPopulationSizeScaler>(1.0, 0.5);
+//         std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+//         os.add_operator(op1);
+//         os.add_operator(op2);
+//         os.add_operator(op3);
+// 
+//         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+//         comparisons.ignore_data();
+//         comparisons.set_operator_schedule(os);
+// 
+//         // Initialize prior probs
+//         comparisons.compute_log_likelihood_and_prior(true);
+// 
+//         unsigned int nnodes = 3;
+//         SampleSummarizer<double> size_summary;
+//         SampleSummarizer<double> multiplier_root_summary;
+//         SampleSummarizer<double> multiplier_0_summary;
+//         SampleSummarizer<double> multiplier_1_summary;
+// 
+//         DirichletDistribution dir_prior = DirichletDistribution(alphas);
+//         std::vector<double> expected_means = dir_prior.get_mean();
+//         for (unsigned int i = 0; i < expected_means.size(); ++i) {
+//             expected_means.at(i) *= (double)nnodes;
+//         }
+//         std::vector<double> expected_variances = dir_prior.get_variance();
+//         for (unsigned int i = 0; i < expected_variances.size(); ++i) {
+//             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
+//         }
+// 
+//         unsigned int niterations = 5000000;
+//         unsigned int sample_freq = 5;
+//         unsigned int nsamples = niterations / sample_freq;
+//         for (unsigned int i = 0; i < niterations; ++i) {
+//             OperatorInterface& o = os.draw_operator(rng);
+//             o.operate(rng, &comparisons, 1);
+//             if ((i + 1) % sample_freq == 0) {
+//                 std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
+//                 double multiplier_root = multipliers.at(2);
+//                 double multiplier_0 = multipliers.at(0);
+//                 double multiplier_1 = multipliers.at(1);
+//                 multiplier_root_summary.add_sample(multiplier_root);
+//                 multiplier_0_summary.add_sample(multiplier_0);
+//                 multiplier_1_summary.add_sample(multiplier_1);
+//                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+//                 if (i > (niterations - (sample_freq * 10))) {
+//                     REQUIRE(multiplier_root != multiplier_0);
+//                     REQUIRE(multiplier_root != multiplier_1);
+//                     REQUIRE(multiplier_0 != multiplier_1);
+//                 }
+//             }
+//         }
+// 
+//         std::cout << op1->header_string();
+//         std::cout << op1->to_string(os);
+//         std::cout << op2->to_string(os);
+//         std::cout << op3->to_string(os);
+// 
+//         REQUIRE(size_summary.sample_size() == nsamples);
+//         REQUIRE(multiplier_root_summary.sample_size() == nsamples);
+//         REQUIRE(multiplier_0_summary.sample_size() == nsamples);
+//         REQUIRE(multiplier_1_summary.sample_size() == nsamples);
+// 
+//         REQUIRE(multiplier_root_summary.mean() == Approx(expected_means.at(2)).epsilon(0.001));
+//         REQUIRE(multiplier_0_summary.mean() == Approx(expected_means.at(0)).epsilon(0.001));
+//         REQUIRE(multiplier_1_summary.mean() == Approx(expected_means.at(1)).epsilon(0.001));
+// 
+//         REQUIRE(multiplier_root_summary.variance() == Approx(expected_variances.at(2)).epsilon(0.005));
+//         REQUIRE(multiplier_0_summary.variance() == Approx(expected_variances.at(0)).epsilon(0.005));
+//         REQUIRE(multiplier_1_summary.variance() == Approx(expected_variances.at(1)).epsilon(0.005));
+// 
+//         REQUIRE(size_summary.mean() == Approx(shape * scale).epsilon(0.005));
+//         REQUIRE(size_summary.variance() == Approx(shape * scale * scale).epsilon(0.005));
+//     }
+// }

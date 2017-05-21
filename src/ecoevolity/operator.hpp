@@ -700,6 +700,7 @@ class UnivariateCompositeHeightRefSizeRateScaler : public CollectionOperatorInte
     protected:
         ComparisonHeightScaler height_scaler_ = ComparisonHeightScaler(0.0, 0.5);
         ReferencePopulationSizeScaler size_scaler_ = ReferencePopulationSizeScaler(0.0, 0.5);
+        PopulationSizeMultiplierMixer size_multiplier_mixer_ = PopulationSizeMultiplierMixer(0.0, 0.05);
         ComparisonMutationRateScaler mutation_rate_scaler_ = ComparisonMutationRateScaler(0.0, 0.5);
 
     public:
@@ -724,6 +725,9 @@ class UnivariateCompositeHeightRefSizeRateScaler : public CollectionOperatorInte
         void scale_population_sizes(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
+        void mix_population_size_multipliers(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
         void scale_mutation_rates(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
@@ -740,7 +744,6 @@ class UnivariateCompositeHeightRefSizeRateScaler : public CollectionOperatorInte
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const { };
-
 };
 
 
@@ -897,17 +900,18 @@ class CompositeHeightSizeRateMixer : public HeightSizeRateMixer {
 };
 
 
-class HeightRefSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
+class CompositeHeightRefSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
 
     protected:
-        UnivariateHeightRefSizeRateScaler uni_collection_scaler_ = UnivariateHeightRefSizeRateScaler(0.0, 0.5);
+        UnivariateCompositeHeightRefSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeHeightRefSizeRateScaler(0.0);
         bool updated_sizes_ = false;
+        bool updated_size_multipliers_ = false;
         bool updated_mutation_rates_ = false;
 
     public:
-        HeightRefSizeRateMixer();
-        HeightRefSizeRateMixer(double weight);
-        HeightRefSizeRateMixer(double weight, double scale);
+        CompositeHeightRefSizeRateMixer();
+        CompositeHeightRefSizeRateMixer(double weight);
+        CompositeHeightRefSizeRateMixer(double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -920,28 +924,6 @@ class HeightRefSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
         std::string get_name() const;
 
         std::string target_parameter() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
-};
-
-class CompositeHeightRefSizeRateMixer : public HeightRefSizeRateMixer {
-
-    using HeightRefSizeRateMixer::propose;
-
-    protected:
-        UnivariateCompositeHeightRefSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeHeightRefSizeRateScaler(0.0);
-
-    public:
-        CompositeHeightRefSizeRateMixer() : HeightRefSizeRateMixer() { }
-        CompositeHeightRefSizeRateMixer(double weight) : HeightRefSizeRateMixer(weight) { }
-        CompositeHeightRefSizeRateMixer(double weight, double scale) : HeightRefSizeRateMixer(weight, scale) { }
-        // virtual ~CompositeHeightRefSizeRateMixer() { }
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
 };
@@ -988,6 +970,56 @@ class CompositeHeightSizeRateScaler : public HeightSizeRateScaler {
         CompositeHeightSizeRateScaler(double weight) : HeightSizeRateScaler(weight) { }
         CompositeHeightSizeRateScaler(double weight, double scale) : HeightSizeRateScaler(weight, scale) { }
         // virtual ~CompositeHeightSizeRateScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+class HeightRefSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
+
+    protected:
+        UnivariateHeightRefSizeRateScaler uni_collection_scaler_ = UnivariateHeightRefSizeRateScaler(0.0, 0.5);
+        bool updated_sizes_ = false;
+        bool updated_mutation_rates_ = false;
+
+    public:
+        HeightRefSizeRateScaler();
+        HeightRefSizeRateScaler(double weight);
+        HeightRefSizeRateScaler(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
+
+        std::string get_name() const;
+
+        std::string target_parameter() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+class CompositeHeightRefSizeRateScaler : public HeightRefSizeRateScaler {
+
+    using HeightRefSizeRateScaler::propose;
+
+    protected:
+        UnivariateCompositeHeightRefSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeHeightRefSizeRateScaler(0.0);
+
+    public:
+        CompositeHeightRefSizeRateScaler() : HeightRefSizeRateScaler() { }
+        CompositeHeightRefSizeRateScaler(double weight) : HeightRefSizeRateScaler(weight) { }
+        CompositeHeightRefSizeRateScaler(double weight, double scale) : HeightRefSizeRateScaler(weight, scale) { }
+        // virtual ~CompositeHeightRefSizeRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
