@@ -20,6 +20,6 @@
 #include "simcoevolity.hpp"
 
 int main(int argc, char *argv[]) {
-    simcoevolity_main(argc, argv);
+    simcoevolity_main(argc, argv, true);
     return 0;
 }

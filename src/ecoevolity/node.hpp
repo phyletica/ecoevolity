@@ -275,6 +275,13 @@ class PopulationNode: public BaseNode<PopulationNode>{
         }
         PopulationNode(
                 unsigned int population_index,
+                double height) :
+            BaseClass(height)
+        {
+            this->population_index_ = population_index;
+        }
+        PopulationNode(
+                unsigned int population_index,
                 std::string label,
                 double height,
                 unsigned int allele_count) :
@@ -511,15 +518,18 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         void fix_population_size() {
             this->population_size_->fix();
+            this->make_dirty();
         }
         void fix_all_population_sizes() {
             this->population_size_->fix();
+            this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->fix_all_population_sizes();
             }
         }
         void estimate_population_size() {
             this->population_size_->estimate();
+            this->make_dirty();
         }
         void estimate_all_population_sizes() {
             this->population_size_->estimate();

@@ -54,16 +54,16 @@ class OperatorInterface {
         void set_weight(double weight);
 
         virtual void call_store_methods(
-                ComparisonPopulationTreeCollection& comparisons) const;
+                BaseComparisonPopulationTreeCollection * comparisons) const;
         virtual void call_restore_methods(
-                ComparisonPopulationTreeCollection& comparisons) const;
+                BaseComparisonPopulationTreeCollection * comparisons) const;
 
         virtual std::string get_name() const = 0;
 
         virtual std::string target_parameter() const = 0;
 
         virtual void perform_collection_move(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads) = 0;
 
         /**
@@ -72,15 +72,11 @@ class OperatorInterface {
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const = 0;
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads) = 0;
 
         virtual void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1) = 0;
 
         virtual void optimize(OperatorSchedule& os, double log_alpha) = 0;
@@ -159,7 +155,7 @@ class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
         TimeOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
 
         virtual void perform_collection_move(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
         /**
@@ -168,22 +164,13 @@ class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index) = 0;
-
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         virtual OperatorInterface::OperatorTypeEnum get_type() const;
 
         virtual void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1) = 0;
 };
 
@@ -195,7 +182,7 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
         TreeOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
 
         virtual void perform_collection_move(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
         /**
@@ -204,22 +191,13 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const = 0;
-
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index) = 0;
 
         virtual OperatorInterface::OperatorTypeEnum get_type() const;
 
         virtual void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1) = 0;
 };
 
@@ -231,7 +209,7 @@ class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperator
         CollectionOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
 
         virtual void perform_collection_move(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
         /**
@@ -240,22 +218,13 @@ class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperator
          * @return  Log of Hastings Ratio.
          */
         virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads) = 0;
-
-        virtual double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        virtual double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         virtual OperatorInterface::OperatorTypeEnum get_type() const;
 
         virtual void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1) = 0;
 };
 
@@ -280,6 +249,8 @@ class Operator {
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const { }
+
+        virtual double get_move_amount(RandomNumberGenerator& rng) const { return 0.0; }
 
         double calc_delta(OperatorSchedule& os, double log_alpha) const;
 
@@ -321,6 +292,8 @@ class ScaleOperator : public Operator {
                 double& parameter_value,
                 double& hastings_ratio) const;
 
+        double get_move_amount(RandomNumberGenerator& rng) const;
+
         void optimize(OperatorSchedule& os, double log_alpha);
 
         double get_coercable_parameter_value() const;
@@ -347,6 +320,8 @@ class WindowOperator : public Operator {
                 double& parameter_value,
                 double& hastings_ratio) const;
 
+        double get_move_amount(RandomNumberGenerator& rng) const;
+
         void optimize(OperatorSchedule& os, double log_alpha);
 
         double get_coercable_parameter_value() const;
@@ -368,20 +343,12 @@ class ConcentrationScaler : public CollectionOperatorInterface<ScaleOperator> {
         // virtual ~ConcentrationScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
 
         std::string target_parameter() const;
 
@@ -395,24 +362,15 @@ class FreqMover : public TreeOperatorInterface<WindowOperator> {
         FreqMover();
         FreqMover(double weight);
         FreqMover(double weight, double window_size);
-        // virtual ~FreqMover() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
@@ -425,30 +383,73 @@ class ComparisonMutationRateScaler : public TreeOperatorInterface<ScaleOperator>
         ComparisonMutationRateScaler();
         ComparisonMutationRateScaler(double weight);
         ComparisonMutationRateScaler(double weight, double scale);
-        // virtual ~ComparisonMutationRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
         std::string get_name() const;
 };
 
+/**
+ * Propose new population size multipliers by sampling from a Dirichlet target
+ * distribution.
+ *
+ * @note    This move is adapted from the 'DirichletMove' class in:
+ *              Phycas
+ *              <http://www.phycas.org/>
+ *              <https://github.com/plewis/phycas>
+ *              License:    Gnu GPL Version 2
+ *              Authors:    Paul Lewis, Mark Holder, and David Swofford
+ */
+class PopulationSizeMultiplierMixer : public TreeOperatorInterface<ScaleOperator> {
+
+    public:
+        PopulationSizeMultiplierMixer();
+        PopulationSizeMultiplierMixer(double weight);
+        PopulationSizeMultiplierMixer(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class ReferencePopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
+
+    public:
+        ReferencePopulationSizeScaler();
+        ReferencePopulationSizeScaler(double weight);
+        ReferencePopulationSizeScaler(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
 
 class ChildPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
 
@@ -456,24 +457,15 @@ class ChildPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
         ChildPopulationSizeScaler();
         ChildPopulationSizeScaler(double weight);
         ChildPopulationSizeScaler(double weight, double scale);
-        // virtual ~ChildPopulationSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
@@ -490,26 +482,62 @@ class RootPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
         // virtual ~RootPopulationSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
+
         double propose(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const;
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads) {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string target_parameter() const;
 
         std::string get_name() const;
 };
+
+
+class RootRelativePopulationSizeMover : public TreeOperatorInterface<WindowOperator> {
+
+    public:
+        RootRelativePopulationSizeMover();
+        RootRelativePopulationSizeMover(double weight);
+        RootRelativePopulationSizeMover(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class RelativePopulationSizeMover : public TreeOperatorInterface<WindowOperator> {
+
+    public:
+        RelativePopulationSizeMover();
+        RelativePopulationSizeMover(double weight);
+        RelativePopulationSizeMover(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 
 class ComparisonHeightScaler : public TimeOperatorInterface<ScaleOperator> {
 
@@ -520,20 +548,12 @@ class ComparisonHeightScaler : public TimeOperatorInterface<ScaleOperator> {
         // virtual ~ComparisonHeightScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int height_index);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
 
         std::string get_name() const;
         std::string target_parameter() const;
@@ -548,20 +568,12 @@ class ComparisonHeightMover : public TimeOperatorInterface<WindowOperator> {
         // virtual ~ComparisonHeightMover() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int height_index);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
 
         std::string get_name() const;
         std::string target_parameter() const;
@@ -577,20 +589,12 @@ class UnivariateHeightSizeScaler : public CollectionOperatorInterface<ScaleOpera
         // virtual ~UnivariateHeightSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
 
         std::string target_parameter() const;
 
@@ -606,20 +610,35 @@ class UnivariateHeightSizeRateScaler : public CollectionOperatorInterface<ScaleO
         // virtual ~UnivariateHeightSizeRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class UnivariateHeightRefSizeRateScaler : public CollectionOperatorInterface<ScaleOperator> {
+
+    public:
+        UnivariateHeightRefSizeRateScaler();
+        UnivariateHeightRefSizeRateScaler(double weight);
+        UnivariateHeightRefSizeRateScaler(double weight, double scale);
+        // virtual ~UnivariateHeightSizeRateScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
 
         std::string target_parameter() const;
 
@@ -640,33 +659,24 @@ class UnivariateCompositeHeightSizeScaler : public CollectionOperatorInterface<O
         virtual ~UnivariateCompositeHeightSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void perform_collection_move(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
         void scale_heights(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void scale_root_population_sizes(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void scale_child_population_sizes(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -698,36 +708,27 @@ class UnivariateCompositeHeightSizeRateScaler : public CollectionOperatorInterfa
         virtual ~UnivariateCompositeHeightSizeRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void perform_collection_move(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
         void scale_heights(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void scale_root_population_sizes(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void scale_child_population_sizes(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         void scale_mutation_rates(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string target_parameter() const;
 
@@ -742,6 +743,57 @@ class UnivariateCompositeHeightSizeRateScaler : public CollectionOperatorInterfa
                 double& parameter_value,
                 double& hastings_ratio) const { };
 
+};
+
+class UnivariateCompositeHeightRefSizeRateScaler : public CollectionOperatorInterface<Operator> {
+
+    protected:
+        ComparisonHeightScaler height_scaler_ = ComparisonHeightScaler(0.0, 0.5);
+        ReferencePopulationSizeScaler size_scaler_ = ReferencePopulationSizeScaler(0.0, 0.5);
+        PopulationSizeMultiplierMixer size_multiplier_mixer_ = PopulationSizeMultiplierMixer(0.0, 0.05);
+        ComparisonMutationRateScaler mutation_rate_scaler_ = ComparisonMutationRateScaler(0.0, 0.5);
+
+    public:
+        UnivariateCompositeHeightRefSizeRateScaler() : CollectionOperatorInterface<Operator>() { }
+        UnivariateCompositeHeightRefSizeRateScaler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        UnivariateCompositeHeightRefSizeRateScaler(double weight, double scale);
+        virtual ~UnivariateCompositeHeightRefSizeRateScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+        void perform_collection_move(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        void scale_heights(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+        void scale_population_sizes(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+        void mix_population_size_multipliers(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+        void scale_mutation_rates(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { };
 };
 
 
@@ -759,20 +811,11 @@ class HeightSizeMixer : public TimeOperatorInterface<ScaleOperator> {
         // virtual ~HeightSizeMixer() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
 
         std::string get_name() const;
 
@@ -795,7 +838,7 @@ class CompositeHeightSizeMixer : public HeightSizeMixer {
         // virtual ~CompositeHeightSizeMixer() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
 
         std::string get_name() const;
@@ -818,20 +861,12 @@ class HeightSizeScaler : public TimeOperatorInterface<ScaleOperator> {
         // virtual ~HeightSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int height_index);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
 
         std::string get_name() const;
 
@@ -854,7 +889,7 @@ class CompositeHeightSizeScaler : public HeightSizeScaler {
         // virtual ~CompositeHeightSizeScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
 
         std::string get_name() const;
@@ -878,20 +913,12 @@ class HeightSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
         // virtual ~HeightSizeRateMixer() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int height_index);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
 
         std::string get_name() const;
 
@@ -914,10 +941,39 @@ class CompositeHeightSizeRateMixer : public HeightSizeRateMixer {
         // virtual ~CompositeHeightSizeRateMixer() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
 
         std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+class CompositeHeightRefSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
+
+    protected:
+        UnivariateCompositeHeightRefSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeHeightRefSizeRateScaler(0.0);
+        bool updated_sizes_ = false;
+        bool updated_size_multipliers_ = false;
+        bool updated_mutation_rates_ = false;
+
+    public:
+        CompositeHeightRefSizeRateMixer();
+        CompositeHeightRefSizeRateMixer(double weight);
+        CompositeHeightRefSizeRateMixer(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
+
+        std::string get_name() const;
+
+        std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
 };
@@ -938,20 +994,12 @@ class HeightSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
         // virtual ~HeightSizeRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int height_index);
 
         double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
 
         std::string get_name() const;
 
@@ -974,7 +1022,57 @@ class CompositeHeightSizeRateScaler : public HeightSizeRateScaler {
         // virtual ~CompositeHeightSizeRateScaler() { }
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+
+class HeightRefSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
+
+    protected:
+        UnivariateHeightRefSizeRateScaler uni_collection_scaler_ = UnivariateHeightRefSizeRateScaler(0.0, 0.5);
+        bool updated_sizes_ = false;
+        bool updated_mutation_rates_ = false;
+
+    public:
+        HeightRefSizeRateScaler();
+        HeightRefSizeRateScaler(double weight);
+        HeightRefSizeRateScaler(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
+
+        std::string get_name() const;
+
+        std::string target_parameter() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+};
+
+class CompositeHeightRefSizeRateScaler : public HeightRefSizeRateScaler {
+
+    using HeightRefSizeRateScaler::propose;
+
+    protected:
+        UnivariateCompositeHeightRefSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeHeightRefSizeRateScaler(0.0);
+
+    public:
+        CompositeHeightRefSizeRateScaler() : HeightRefSizeRateScaler() { }
+        CompositeHeightRefSizeRateScaler(double weight) : HeightRefSizeRateScaler(weight) { }
+        CompositeHeightRefSizeRateScaler(double weight, double scale) : HeightRefSizeRateScaler(weight, scale) { }
+        // virtual ~CompositeHeightRefSizeRateScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
 
         std::string get_name() const;
@@ -1006,11 +1104,11 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 
         void perform_collection_move(
                 RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
 
         /**
@@ -1019,20 +1117,12 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
-                unsigned int nthreads);
-        double propose_gibbs(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+        double propose_gibbs(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
 
         std::string target_parameter() const;
 
@@ -1047,7 +1137,7 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
-        HeightSizeRateMixer collection_scaler_ = HeightSizeRateMixer(0.0, 0.5);
+        // HeightSizeRateMixer collection_scaler_ = HeightSizeRateMixer(0.0, 0.5);
         ComparisonHeightScaler collection_height_scaler_ = ComparisonHeightScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
@@ -1064,12 +1154,12 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
         std::string to_string(const OperatorSchedule& os) const;
 
         virtual void call_store_methods(
-                ComparisonPopulationTreeCollection& comparisons) const;
+                BaseComparisonPopulationTreeCollection * comparisons) const;
         virtual void call_restore_methods(
-                ComparisonPopulationTreeCollection& comparisons) const;
+                BaseComparisonPopulationTreeCollection * comparisons) const;
 
         void operate(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
 
         OperatorInterface::OperatorTypeEnum get_type() const;
@@ -1080,21 +1170,12 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
          * @return  Log of Hastings Ratio.
          */
         double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
         virtual double propose_jump_to_prior(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
+                BaseComparisonPopulationTreeCollection * comparisons);
         virtual double propose_jump_to_gap(RandomNumberGenerator& rng,
-                ComparisonPopulationTreeCollection& comparisons);
-
-        double propose(RandomNumberGenerator& rng,
-                PositiveRealParameter& parameter) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
-        double propose(RandomNumberGenerator& rng,
-                ComparisonPopulationTree& tree) const {
-            throw EcoevolityError("calling wrong propose signature");
-        }
+                BaseComparisonPopulationTreeCollection * comparisons);
 
         const std::vector<double>& get_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
@@ -1128,7 +1209,7 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 //         virtual ~ReversibleJumpWindowOperator() { }
 // 
 //         void operate(RandomNumberGenerator& rng,
-//                 ComparisonPopulationTreeCollection& comparisons,
+//                 BaseComparisonPopulationTreeCollection * comparisons,
 //                 unsigned int nthreads = 1);
 // 
 //         /**
@@ -1137,17 +1218,8 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 //          * @return  Log of Hastings Ratio.
 //          */
 //         double propose(RandomNumberGenerator& rng,
-//                 ComparisonPopulationTreeCollection& comparisons,
+//                 BaseComparisonPopulationTreeCollection * comparisons,
 //                 unsigned int nthreads);
-// 
-//         double propose(RandomNumberGenerator& rng,
-//                 PositiveRealParameter& parameter) const {
-//             throw EcoevolityError("calling wrong propose signature");
-//         }
-//         double propose(RandomNumberGenerator& rng,
-//                 ComparisonPopulationTree& tree) const {
-//             throw EcoevolityError("calling wrong propose signature");
-//         }
 // 
 //         void update_height(RandomNumberGenerator& rng,
 //                 double& height,
@@ -1155,7 +1227,7 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 //                 double window_size) const;
 // 
 //         void propose_height_moves(RandomNumberGenerator& rng,
-//                 ComparisonPopulationTreeCollection& comparisons,
+//                 BaseComparisonPopulationTreeCollection * comparisons,
 //                 unsigned int nthreads);
 // 
 //         OperatorInterface::OperatorTypeEnum get_type() const;

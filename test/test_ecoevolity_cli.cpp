@@ -83,9 +83,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-constant.nex\n";
@@ -250,9 +248,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-constant.nex\n";
@@ -420,9 +416,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-missing.nex\n";
@@ -587,9 +581,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-with-missing.nex\n";
@@ -758,9 +750,7 @@ TEST_CASE("Testing constrained singleton error",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    equal_population_sizes: true\n";
@@ -926,9 +916,7 @@ TEST_CASE("Testing fixed singleton error",
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129-singleton.nex\n";
@@ -1093,9 +1081,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "    population_name_delimiter: \" \"\n";
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
-        os << "    use_empirical_starting_value_for_freq_1: false\n";
         os << "    equal_population_sizes: false\n";
-        os << "    equal_state_frequencies: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
         os << "    path: hemi129.nex\n";

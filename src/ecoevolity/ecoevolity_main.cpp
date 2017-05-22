@@ -20,6 +20,6 @@
 #include "ecoevolity.hpp"
 
 int main(int argc, char *argv[]) {
-    ecoevolity_main(argc, argv);
+    ecoevolity_main(argc, argv, true);
     return 0;
 }

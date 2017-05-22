@@ -50,17 +50,33 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_composite_height_size_rate_mixer_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeHeightSizeRateMixer>(
-                settings.get_composite_height_size_rate_mixer_settings().get_weight(),
-                settings.get_composite_height_size_rate_mixer_settings().get_scale()
-                ));
+        if (settings.using_population_size_multipliers()) {
+            this->add_operator(std::make_shared<CompositeHeightRefSizeRateMixer>(
+                    settings.get_composite_height_size_rate_mixer_settings().get_weight(),
+                    settings.get_composite_height_size_rate_mixer_settings().get_scale()
+                    ));
+        }
+        else {
+            this->add_operator(std::make_shared<CompositeHeightSizeRateMixer>(
+                    settings.get_composite_height_size_rate_mixer_settings().get_weight(),
+                    settings.get_composite_height_size_rate_mixer_settings().get_scale()
+                    ));
+        }
     }
 
     if (settings.get_composite_height_size_rate_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeHeightSizeRateScaler>(
-                settings.get_composite_height_size_rate_scaler_settings().get_weight(),
-                settings.get_composite_height_size_rate_scaler_settings().get_scale()
-                ));
+        if (settings.using_population_size_multipliers()) {
+            this->add_operator(std::make_shared<CompositeHeightRefSizeRateScaler>(
+                    settings.get_composite_height_size_rate_scaler_settings().get_weight(),
+                    settings.get_composite_height_size_rate_scaler_settings().get_scale()
+                    ));
+        }
+        else {
+            this->add_operator(std::make_shared<CompositeHeightSizeRateScaler>(
+                    settings.get_composite_height_size_rate_scaler_settings().get_weight(),
+                    settings.get_composite_height_size_rate_scaler_settings().get_scale()
+                    ));
+        }
     }
 
     if (settings.get_comparison_height_scaler_settings().get_weight() > 0.0) {
@@ -77,7 +93,24 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
+    if (settings.get_population_size_scaler_settings().get_weight() > 0.0) {
+        ECOEVOLITY_ASSERT(settings.using_population_size_multipliers());
+        this->add_operator(std::make_shared<ReferencePopulationSizeScaler>(
+                settings.get_population_size_scaler_settings().get_weight(),
+                settings.get_population_size_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_population_size_multiplier_mixer_settings().get_weight() > 0.0) {
+        ECOEVOLITY_ASSERT(settings.using_population_size_multipliers());
+        this->add_operator(std::make_shared<PopulationSizeMultiplierMixer>(
+                settings.get_population_size_multiplier_mixer_settings().get_weight(),
+                settings.get_population_size_multiplier_mixer_settings().get_scale()
+                ));
+    }
+
     if (settings.get_root_population_size_scaler_settings().get_weight() > 0.0) {
+        ECOEVOLITY_ASSERT(! settings.using_population_size_multipliers());
         this->add_operator(std::make_shared<RootPopulationSizeScaler>(
                 settings.get_root_population_size_scaler_settings().get_weight(),
                 settings.get_root_population_size_scaler_settings().get_scale()
@@ -85,6 +118,7 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_child_population_size_scaler_settings().get_weight() > 0.0) {
+        ECOEVOLITY_ASSERT(! settings.using_population_size_multipliers());
         this->add_operator(std::make_shared<ChildPopulationSizeScaler>(
                 settings.get_child_population_size_scaler_settings().get_weight(),
                 settings.get_child_population_size_scaler_settings().get_scale()

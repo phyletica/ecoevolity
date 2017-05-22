@@ -36,6 +36,6 @@ void write_sim_splash(std::ostream& out);
 
 void check_output_path(const std::string& path);
 
-int simcoevolity_main(int argc, char * argv[]);
+int simcoevolity_main(int argc, char * argv[], bool using_population_size_multipliers = false);
 
 #endif

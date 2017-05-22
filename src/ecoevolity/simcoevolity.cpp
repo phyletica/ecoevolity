@@ -43,7 +43,7 @@ void check_output_path(const std::string& path) {
     }
 }
 
-int simcoevolity_main(int argc, char * argv[]) {
+int simcoevolity_main(int argc, char * argv[], bool using_population_size_multipliers) {
 
     write_sim_splash(std::cout);
     std::cout << "\n";
@@ -195,103 +195,204 @@ int simcoevolity_main(int argc, char * argv[]) {
 
     std::cout << "Prior config path: " << prior_config_path << std::endl;
 
-    std::cout << "Parsing config file..." << std::endl;
-    CollectionSettings settings = CollectionSettings(config_path);
+    if (using_population_size_multipliers) {
+        std::cout << "Parsing config file..." << std::endl;
+        DirichletCollectionSettings settings = DirichletCollectionSettings(config_path);
 
-    CollectionSettings prior_settings = CollectionSettings(prior_config_path);
+        DirichletCollectionSettings prior_settings = DirichletCollectionSettings(prior_config_path);
 
-    if (using_prior_config) {
-        if (! settings.same_comparison_paths(prior_settings)) {
-            throw EcoevolityError(
-                    "The comparison files specified in \'" + config_path +
-                    "\' and \'" + prior_config_path +
-                    "\' do not match");
+        if (using_prior_config) {
+            if (! settings.same_comparison_paths(prior_settings)) {
+                throw EcoevolityError(
+                        "The comparison files specified in \'" + config_path +
+                        "\' and \'" + prior_config_path +
+                        "\' do not match");
+            }
         }
-    }
 
-    std::string sim_settings_path = path::join(
-            output_dir,
-            output_prefix + "model-used-for-sims.yml");
-    check_output_path(sim_settings_path);
-    std::ofstream sim_settings_stream;
-    sim_settings_stream.open(sim_settings_path);
-    settings.write_settings(sim_settings_stream);
-    sim_settings_stream.close();
+        std::string sim_settings_path = path::join(
+                output_dir,
+                output_prefix + "model-used-for-sims.yml");
+        check_output_path(sim_settings_path);
+        std::ofstream sim_settings_stream;
+        sim_settings_stream.open(sim_settings_path);
+        settings.write_settings(sim_settings_stream);
+        sim_settings_stream.close();
 
-    std::cout << "Configuring model for simulations..." << std::endl;
-    ComparisonPopulationTreeCollection comparisons =
-            ComparisonPopulationTreeCollection(
-                    settings,
-                    rng,
-                    strict_on_constant_sites,
-                    strict_on_missing_sites);
-
-    if (using_prior_config) {
-        // Not used but creating instance to vet settings
-        std::cout << "Vetting model for analyses of simulated data sets..." << std::endl;
-        ComparisonPopulationTreeCollection prior_comparisons =
-                ComparisonPopulationTreeCollection(
-                        prior_settings,
+        std::cout << "Configuring model for simulations..." << std::endl;
+        ComparisonDirichletPopulationTreeCollection comparisons =
+                ComparisonDirichletPopulationTreeCollection(
+                        settings,
                         rng,
                         strict_on_constant_sites,
                         strict_on_missing_sites);
-    }
 
-    std::cout << "\n" << string_util::banner('-') << "\n";
-    comparisons.write_summary(std::cout);
-    std::cout << string_util::banner('-') << "\n\n";
-
-    time_t start;
-    time_t finish;
-    time(&start);
-
-    unsigned int pad_width = std::to_string(nreps).size();
-    std::string sim_prefix = path::join(output_dir,
-            output_prefix + "sim-");
-    std::map<std::string, BiallelicData> sim_alignments;
-    for (unsigned int i = 0; i < nreps; ++i) {
-        std::string rep_str = string_util::pad_int(i, pad_width);
-        std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
-        check_output_path(analysis_config_path);
-        std::string true_state_path = sim_prefix + rep_str + "-true-values.txt";
-        check_output_path(true_state_path);
-
-        comparisons.draw_from_prior(rng);
-        sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
-
-        std::ofstream true_state_stream;
-        true_state_stream.open(true_state_path);
-        true_state_stream.precision(comparisons.get_logging_precision());
-        comparisons.write_state_log_header(true_state_stream);
-        comparisons.log_state(true_state_stream, 0);
-        true_state_stream.close();
-
-        std::ofstream sim_alignment_stream;
-        for (auto const & k_v: sim_alignments) {
-            std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
-            check_output_path(sim_alignment_path);
-
-            char delim = prior_settings.get_population_name_delimiter(k_v.first);
-            prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
-
-            sim_alignment_stream.open(sim_alignment_path);
-            k_v.second.write_nexus(sim_alignment_stream, delim);
-            sim_alignment_stream.close();
+        if (using_prior_config) {
+            // Not used but creating instance to vet settings
+            std::cout << "Vetting model for analyses of simulated data sets..." << std::endl;
+            ComparisonDirichletPopulationTreeCollection prior_comparisons =
+                    ComparisonDirichletPopulationTreeCollection(
+                            prior_settings,
+                            rng,
+                            strict_on_constant_sites,
+                            strict_on_missing_sites);
         }
-        prior_settings.blanket_set_population_name_is_prefix(true);
-        std::ofstream analysis_settings_stream;
-        analysis_settings_stream.open(analysis_config_path);
-        prior_settings.write_settings(analysis_settings_stream);
-        analysis_settings_stream.close();
-        for (auto const & k_v: sim_alignments) {
-            std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
-            prior_settings.replace_comparison_path(path::basename(sim_alignment_path), k_v.first);
-        }
-    }
 
-    time(&finish);
-    double duration = difftime(finish, start);
-    std::cout << "Runtime: " << duration << " seconds." << std::endl;
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        comparisons.write_summary(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
+
+        time_t start;
+        time_t finish;
+        time(&start);
+
+        unsigned int pad_width = std::to_string(nreps).size();
+        std::string sim_prefix = path::join(output_dir,
+                output_prefix + "sim-");
+        std::map<std::string, BiallelicData> sim_alignments;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            std::string rep_str = string_util::pad_int(i, pad_width);
+            std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
+            check_output_path(analysis_config_path);
+            std::string true_state_path = sim_prefix + rep_str + "-true-values.txt";
+            check_output_path(true_state_path);
+
+            comparisons.draw_from_prior(rng);
+            sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
+
+            std::ofstream true_state_stream;
+            true_state_stream.open(true_state_path);
+            true_state_stream.precision(comparisons.get_logging_precision());
+            comparisons.write_state_log_header(true_state_stream);
+            comparisons.log_state(true_state_stream, 0);
+            true_state_stream.close();
+
+            std::ofstream sim_alignment_stream;
+            for (auto const & k_v: sim_alignments) {
+                std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+                check_output_path(sim_alignment_path);
+
+                char delim = prior_settings.get_population_name_delimiter(k_v.first);
+                prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
+
+                sim_alignment_stream.open(sim_alignment_path);
+                k_v.second.write_nexus(sim_alignment_stream, delim);
+                sim_alignment_stream.close();
+            }
+            prior_settings.blanket_set_population_name_is_prefix(true);
+            std::ofstream analysis_settings_stream;
+            analysis_settings_stream.open(analysis_config_path);
+            prior_settings.write_settings(analysis_settings_stream);
+            analysis_settings_stream.close();
+            for (auto const & k_v: sim_alignments) {
+                std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+                prior_settings.replace_comparison_path(path::basename(sim_alignment_path), k_v.first);
+            }
+        }
+
+        time(&finish);
+        double duration = difftime(finish, start);
+        std::cout << "Runtime: " << duration << " seconds." << std::endl;
+    }
+    else {
+        std::cout << "Parsing config file..." << std::endl;
+        CollectionSettings settings = CollectionSettings(config_path);
+
+        CollectionSettings prior_settings = CollectionSettings(prior_config_path);
+
+        if (using_prior_config) {
+            if (! settings.same_comparison_paths(prior_settings)) {
+                throw EcoevolityError(
+                        "The comparison files specified in \'" + config_path +
+                        "\' and \'" + prior_config_path +
+                        "\' do not match");
+            }
+        }
+
+        std::string sim_settings_path = path::join(
+                output_dir,
+                output_prefix + "model-used-for-sims.yml");
+        check_output_path(sim_settings_path);
+        std::ofstream sim_settings_stream;
+        sim_settings_stream.open(sim_settings_path);
+        settings.write_settings(sim_settings_stream);
+        sim_settings_stream.close();
+
+        std::cout << "Configuring model for simulations..." << std::endl;
+        ComparisonPopulationTreeCollection comparisons =
+                ComparisonPopulationTreeCollection(
+                        settings,
+                        rng,
+                        strict_on_constant_sites,
+                        strict_on_missing_sites);
+
+        if (using_prior_config) {
+            // Not used but creating instance to vet settings
+            std::cout << "Vetting model for analyses of simulated data sets..." << std::endl;
+            ComparisonPopulationTreeCollection prior_comparisons =
+                    ComparisonPopulationTreeCollection(
+                            prior_settings,
+                            rng,
+                            strict_on_constant_sites,
+                            strict_on_missing_sites);
+        }
+
+        std::cout << "\n" << string_util::banner('-') << "\n";
+        comparisons.write_summary(std::cout);
+        std::cout << string_util::banner('-') << "\n\n";
+
+        time_t start;
+        time_t finish;
+        time(&start);
+
+        unsigned int pad_width = std::to_string(nreps).size();
+        std::string sim_prefix = path::join(output_dir,
+                output_prefix + "sim-");
+        std::map<std::string, BiallelicData> sim_alignments;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            std::string rep_str = string_util::pad_int(i, pad_width);
+            std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
+            check_output_path(analysis_config_path);
+            std::string true_state_path = sim_prefix + rep_str + "-true-values.txt";
+            check_output_path(true_state_path);
+
+            comparisons.draw_from_prior(rng);
+            sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
+
+            std::ofstream true_state_stream;
+            true_state_stream.open(true_state_path);
+            true_state_stream.precision(comparisons.get_logging_precision());
+            comparisons.write_state_log_header(true_state_stream);
+            comparisons.log_state(true_state_stream, 0);
+            true_state_stream.close();
+
+            std::ofstream sim_alignment_stream;
+            for (auto const & k_v: sim_alignments) {
+                std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+                check_output_path(sim_alignment_path);
+
+                char delim = prior_settings.get_population_name_delimiter(k_v.first);
+                prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
+
+                sim_alignment_stream.open(sim_alignment_path);
+                k_v.second.write_nexus(sim_alignment_stream, delim);
+                sim_alignment_stream.close();
+            }
+            prior_settings.blanket_set_population_name_is_prefix(true);
+            std::ofstream analysis_settings_stream;
+            analysis_settings_stream.open(analysis_config_path);
+            prior_settings.write_settings(analysis_settings_stream);
+            analysis_settings_stream.close();
+            for (auto const & k_v: sim_alignments) {
+                std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+                prior_settings.replace_comparison_path(path::basename(sim_alignment_path), k_v.first);
+            }
+        }
+
+        time(&finish);
+        double duration = difftime(finish, start);
+        std::cout << "Runtime: " << duration << " seconds." << std::endl;
+    }
 
     return 0;
 }

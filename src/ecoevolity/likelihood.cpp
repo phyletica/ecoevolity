@@ -69,7 +69,7 @@ void compute_top_of_branch_partials(
     }
 
     double theta = 2 * ploidy * node.get_population_size() * mutation_rate;
-    double length = node.get_length() * mutation_rate;;
+    double length = node.get_length() * mutation_rate;
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
             node.get_allele_count(),
             u,

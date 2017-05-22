@@ -1028,3 +1028,55 @@ TEST_CASE("Testing DirichletDistribution(0.5, 3, 1, 5)",
         }
     }
 }
+
+TEST_CASE("Testing relative_ln_pdf of DirichletDistribution(1, 1, 1)",
+        "[DirichletDistribution]") {
+
+    SECTION("Testing relative_ln_pdf") {
+        std::vector<double> alphas {1.0, 1.0, 1.0};
+        DirichletDistribution f = DirichletDistribution(alphas);
+
+        std::vector<double> v1 = {1.0/3.0, 1.0/3.0, 1.0/3.0};
+        std::vector<double> v2 = {0.1, 0.2, 0.7};
+        std::vector<double> v3 = {0.9, 0.05, 0.05};
+        std::vector<double> v4 = {0.2, 0.6, 0.2};
+
+        REQUIRE(f.ln_pdf(v1) != -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(v2) != -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(v3) != -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(v4) != -std::numeric_limits<double>::infinity());
+
+        REQUIRE((f.ln_pdf(v1) - f.ln_pdf(v2)) == Approx(f.relative_ln_pdf(v1) - f.relative_ln_pdf(v2)));
+        REQUIRE((f.ln_pdf(v1) - f.ln_pdf(v3)) == Approx(f.relative_ln_pdf(v1) - f.relative_ln_pdf(v3)));
+        REQUIRE((f.ln_pdf(v1) - f.ln_pdf(v4)) == Approx(f.relative_ln_pdf(v1) - f.relative_ln_pdf(v4)));
+        REQUIRE((f.ln_pdf(v2) - f.ln_pdf(v3)) == Approx(f.relative_ln_pdf(v2) - f.relative_ln_pdf(v3)));
+        REQUIRE((f.ln_pdf(v2) - f.ln_pdf(v4)) == Approx(f.relative_ln_pdf(v2) - f.relative_ln_pdf(v4)));
+        REQUIRE((f.ln_pdf(v3) - f.ln_pdf(v4)) == Approx(f.relative_ln_pdf(v3) - f.relative_ln_pdf(v4)));
+    }
+}
+
+TEST_CASE("Testing relative_ln_pdf of DirichletDistribution(3, 1, 2)",
+        "[DirichletDistribution]") {
+
+    SECTION("Testing relative_ln_pdf") {
+        std::vector<double> alphas {3.0, 1.0, 2.0};
+        DirichletDistribution f = DirichletDistribution(alphas);
+
+        std::vector<double> v1 = {1.0/3.0, 1.0/3.0, 1.0/3.0};
+        std::vector<double> v2 = {0.1, 0.2, 0.7};
+        std::vector<double> v3 = {0.9, 0.05, 0.05};
+        std::vector<double> v4 = {0.2, 0.6, 0.2};
+
+        REQUIRE(f.ln_pdf(v1) != -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(v2) != -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(v3) != -std::numeric_limits<double>::infinity());
+        REQUIRE(f.ln_pdf(v4) != -std::numeric_limits<double>::infinity());
+
+        REQUIRE((f.ln_pdf(v1) - f.ln_pdf(v2)) == Approx(f.relative_ln_pdf(v1) - f.relative_ln_pdf(v2)));
+        REQUIRE((f.ln_pdf(v1) - f.ln_pdf(v3)) == Approx(f.relative_ln_pdf(v1) - f.relative_ln_pdf(v3)));
+        REQUIRE((f.ln_pdf(v1) - f.ln_pdf(v4)) == Approx(f.relative_ln_pdf(v1) - f.relative_ln_pdf(v4)));
+        REQUIRE((f.ln_pdf(v2) - f.ln_pdf(v3)) == Approx(f.relative_ln_pdf(v2) - f.relative_ln_pdf(v3)));
+        REQUIRE((f.ln_pdf(v2) - f.ln_pdf(v4)) == Approx(f.relative_ln_pdf(v2) - f.relative_ln_pdf(v4)));
+        REQUIRE((f.ln_pdf(v3) - f.ln_pdf(v4)) == Approx(f.relative_ln_pdf(v3) - f.relative_ln_pdf(v4)));
+    }
+}
