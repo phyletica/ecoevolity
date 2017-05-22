@@ -1667,9 +1667,6 @@ class OperatorScheduleSettings {
                     }
                 }
                 else if (op->first.as<std::string>() == "CompositeHeightSizeRateScaler") {
-                    if (this->using_population_size_multipliers()) {
-                        throw EcoevolityYamlConfigError("Unsupported operator: CompositeHeightSizeRateScaler");
-                    }
                     try {
                         this->composite_height_size_rate_scaler_settings_.update_from_config(op->second);
                     }
@@ -1785,10 +1782,8 @@ class OperatorScheduleSettings {
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "CompositeHeightSizeRateMixer:\n";
             ss << this->composite_height_size_rate_mixer_settings_.to_string(indent_level + 3);
-            if (! this->using_population_size_multipliers()) {
-                ss << margin << indent << indent << "CompositeHeightSizeRateScaler:\n";
-                ss << this->composite_height_size_rate_scaler_settings_.to_string(indent_level + 3);
-            }
+            ss << margin << indent << indent << "CompositeHeightSizeRateScaler:\n";
+            ss << this->composite_height_size_rate_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonHeightScaler:\n";
             ss << this->comparison_height_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ComparisonMutationRateScaler:\n";
@@ -2292,10 +2287,23 @@ class BaseCollectionSettings {
             if (this->get_number_of_comparisons_with_free_state_frequencies() < 1) {
                 this->operator_schedule_settings_.freq_mover_settings_.set_weight(0.0);
             }
-            if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
-                (this->get_number_of_comparisons_with_free_population_size() < 1)) {
-                this->operator_schedule_settings_.composite_height_size_rate_mixer_settings_.set_weight(0.0);
-                this->operator_schedule_settings_.composite_height_size_rate_scaler_settings_.set_weight(0.0);
+            if (this->operator_schedule_settings_.using_population_size_multipliers()) {
+                if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
+                    (this->get_number_of_comparisons_with_free_population_size() < 1)) {
+                    this->operator_schedule_settings_.composite_height_size_rate_scaler_settings_.set_weight(0.0);
+                }
+                if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
+                    (this->get_number_of_comparisons_with_free_population_size() < 1) &&
+                    (this->get_number_of_comparisons_with_free_population_size_multipliers() < 1)) {
+                    this->operator_schedule_settings_.composite_height_size_rate_mixer_settings_.set_weight(0.0);
+                }
+            }
+            else {
+                if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
+                    (this->get_number_of_comparisons_with_free_population_size() < 1)) {
+                    this->operator_schedule_settings_.composite_height_size_rate_mixer_settings_.set_weight(0.0);
+                    this->operator_schedule_settings_.composite_height_size_rate_scaler_settings_.set_weight(0.0);
+                }
             }
             if (this->get_number_of_comparisons_with_free_population_size() < 1) {
                 this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
@@ -2308,7 +2316,6 @@ class BaseCollectionSettings {
             if (this->operator_schedule_settings_.using_population_size_multipliers()) {
                 this->operator_schedule_settings_.root_population_size_scaler_settings_.set_weight(0.0);
                 this->operator_schedule_settings_.child_population_size_scaler_settings_.set_weight(0.0);
-                this->operator_schedule_settings_.composite_height_size_rate_scaler_settings_.set_weight(0.0);
             }
             else {
                 this->operator_schedule_settings_.population_size_scaler_settings_.set_weight(0.0);

@@ -34,6 +34,9 @@ operator_settings:
         CompositeHeightSizeRateMixer:
             scale: 0.4
             weight: 2.0
+        CompositeHeightSizeRateScaler:
+            scale: 0.1
+            weight: 1.0
         ComparisonHeightScaler:
             scale: 0.3
             weight: 3.0

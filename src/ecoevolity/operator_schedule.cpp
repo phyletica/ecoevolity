@@ -65,11 +65,18 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_composite_height_size_rate_scaler_settings().get_weight() > 0.0) {
-        ECOEVOLITY_ASSERT(! settings.using_population_size_multipliers());
-        this->add_operator(std::make_shared<CompositeHeightSizeRateScaler>(
-                settings.get_composite_height_size_rate_scaler_settings().get_weight(),
-                settings.get_composite_height_size_rate_scaler_settings().get_scale()
-                ));
+        if (settings.using_population_size_multipliers()) {
+            this->add_operator(std::make_shared<CompositeHeightRefSizeRateScaler>(
+                    settings.get_composite_height_size_rate_scaler_settings().get_weight(),
+                    settings.get_composite_height_size_rate_scaler_settings().get_scale()
+                    ));
+        }
+        else {
+            this->add_operator(std::make_shared<CompositeHeightSizeRateScaler>(
+                    settings.get_composite_height_size_rate_scaler_settings().get_weight(),
+                    settings.get_composite_height_size_rate_scaler_settings().get_scale()
+                    ));
+        }
     }
 
     if (settings.get_comparison_height_scaler_settings().get_weight() > 0.0) {

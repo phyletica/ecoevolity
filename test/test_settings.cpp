@@ -3374,6 +3374,9 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config", "[Dirichlet
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -3574,6 +3577,9 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config with two comp
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -3697,6 +3703,9 @@ TEST_CASE("Testing DirichletCollectionSettings override model prior", "[Dirichle
         e += "            scale: 0.5\n";
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
@@ -3833,6 +3842,9 @@ TEST_CASE("Testing DirichletCollectionSettings override model prior with DPP", "
         e += "            scale: 0.5\n";
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
@@ -4085,6 +4097,9 @@ TEST_CASE("Testing DirichletCollectionSettings override with global settings", "
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -4284,6 +4299,9 @@ TEST_CASE("Testing DirichletCollectionSettings global settings with parameters",
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -4444,6 +4462,9 @@ TEST_CASE("Testing DirichletCollectionSettings from full config", "[DirichletCol
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 2\n";
         e += "            scale: 0.4\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 1\n";
+        e += "            scale: 0.1\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 3\n";
         e += "            scale: 0.3\n";
@@ -4628,6 +4649,9 @@ TEST_CASE("Testing DirichletCollectionSettings fixed model prior", "[DirichletCo
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -4757,6 +4781,9 @@ TEST_CASE("Testing DirichletCollectionSettings uniform model with split_weight i
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.5\n";
@@ -4885,6 +4912,9 @@ TEST_CASE("Testing DirichletCollectionSettings uniform model with split_weight e
         e += "            scale: 0.5\n";
         e += "        CompositeHeightSizeRateMixer:\n";
         e += "            weight: 1\n";
+        e += "            scale: 0.5\n";
+        e += "        CompositeHeightSizeRateScaler:\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.5\n";
         e += "        ComparisonHeightScaler:\n";
         e += "            weight: 1\n";
