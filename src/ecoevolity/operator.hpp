@@ -250,6 +250,8 @@ class Operator {
                 double& parameter_value,
                 double& hastings_ratio) const { }
 
+        virtual double get_move_amount(RandomNumberGenerator& rng) const { return 0.0; }
+
         double calc_delta(OperatorSchedule& os, double log_alpha) const;
 
         void accept(const OperatorSchedule& os);
@@ -290,6 +292,8 @@ class ScaleOperator : public Operator {
                 double& parameter_value,
                 double& hastings_ratio) const;
 
+        double get_move_amount(RandomNumberGenerator& rng) const;
+
         void optimize(OperatorSchedule& os, double log_alpha);
 
         double get_coercable_parameter_value() const;
@@ -315,6 +319,8 @@ class WindowOperator : public Operator {
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const;
+
+        double get_move_amount(RandomNumberGenerator& rng) const;
 
         void optimize(OperatorSchedule& os, double log_alpha);
 
@@ -488,6 +494,50 @@ class RootPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
 
         std::string get_name() const;
 };
+
+
+class RootRelativePopulationSizeMover : public TreeOperatorInterface<WindowOperator> {
+
+    public:
+        RootRelativePopulationSizeMover();
+        RootRelativePopulationSizeMover(double weight);
+        RootRelativePopulationSizeMover(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+class RelativePopulationSizeMover : public TreeOperatorInterface<WindowOperator> {
+
+    public:
+        RelativePopulationSizeMover();
+        RelativePopulationSizeMover(double weight);
+        RelativePopulationSizeMover(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 
 class ComparisonHeightScaler : public TimeOperatorInterface<ScaleOperator> {
 

@@ -221,11 +221,15 @@ double ScaleOperator::get_scale() const {
     return this->scale_;
 }
 
+double ScaleOperator::get_move_amount(RandomNumberGenerator& rng) const {
+    return std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+}
+
 void ScaleOperator::update(
         RandomNumberGenerator& rng,
         double& parameter_value,
         double& hastings_ratio) const {
-    double multiplier = std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->get_move_amount(rng);
     parameter_value *= multiplier;
     hastings_ratio = std::log(multiplier);
 }
@@ -260,11 +264,15 @@ double WindowOperator::get_window_size() const {
     return this->window_size_;
 }
 
+double WindowOperator::get_move_amount(RandomNumberGenerator& rng) const {
+    return (rng.uniform_real() * 2 * this->window_size_) - this->window_size_;
+}
+
 void WindowOperator::update(
         RandomNumberGenerator& rng,
         double& parameter_value,
         double& hastings_ratio) const {
-    double addend = (rng.uniform_real() * 2 * this->window_size_) - this->window_size_;
+    double addend = this->get_move_amount(rng);
     parameter_value += addend;
     hastings_ratio = 0.0;
 }
@@ -1157,6 +1165,7 @@ double PopulationSizeMultiplierMixer::propose(
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
     std::vector<double> old_pop_proportions = comparisons->get_tree(tree_index)->get_population_sizes_as_proportions();
+    ECOEVOLITY_ASSERT(old_pop_proportions.size() > 1);
     std::vector<double> forward_dir_parameters = old_pop_proportions;
     for (unsigned int i = 0; i < forward_dir_parameters.size(); ++i) {
         forward_dir_parameters.at(i) = 1.0 + (forward_dir_parameters.at(i) * (1.0 / this->op_.get_scale()));
@@ -1349,6 +1358,135 @@ std::string RootPopulationSizeScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// RootRelativePopulationSizeMover methods
+//////////////////////////////////////////////////////////////////////////////
+
+RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
+        ) : TreeOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+}
+
+RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
+        double weight) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
+        double weight,
+        double scale) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(scale);
+}
+
+void RootRelativePopulationSizeMover::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double RootRelativePopulationSizeMover::propose(
+        RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int tree_index) {
+
+    std::vector<double> sizes = comparisons->get_tree(tree_index)->get_population_sizes();
+    ECOEVOLITY_ASSERT(sizes.size() > 1);
+
+    double addend = this->op_.get_move_amount(rng);
+
+    unsigned int num_nonroot_branches = sizes.size() - 1;
+    sizes.at(num_nonroot_branches) += addend;
+    if (sizes.at(num_nonroot_branches) <= 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    for (unsigned int i = 0; i < num_nonroot_branches; ++i) {
+        sizes.at(i) -= (addend / (double)num_nonroot_branches);
+        if (sizes.at(i) <= 0.0) {
+            return -std::numeric_limits<double>::infinity();
+        }
+    }
+
+    comparisons->get_tree(tree_index)->set_population_sizes(sizes);
+
+    return 0.0;
+}
+
+std::string RootRelativePopulationSizeMover::target_parameter() const {
+    return "population size multipliers";
+}
+
+std::string RootRelativePopulationSizeMover::get_name() const {
+    return "RootRelativePopulationSizeMover";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// RelativePopulationSizeMover methods
+//////////////////////////////////////////////////////////////////////////////
+
+RelativePopulationSizeMover::RelativePopulationSizeMover(
+        ) : TreeOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+}
+
+RelativePopulationSizeMover::RelativePopulationSizeMover(
+        double weight) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+RelativePopulationSizeMover::RelativePopulationSizeMover(
+        double weight,
+        double scale) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(scale);
+}
+
+void RelativePopulationSizeMover::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double RelativePopulationSizeMover::propose(
+        RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int tree_index) {
+
+    std::vector<double> sizes = comparisons->get_tree(tree_index)->get_population_sizes();
+    ECOEVOLITY_ASSERT(sizes.size() > 1);
+
+    double addend = this->op_.get_move_amount(rng);
+
+    unsigned int num_nonroot_branches = sizes.size() - 1;
+    unsigned int pop_idx = rng.uniform_int(0, num_nonroot_branches - 1);
+    for (unsigned int i = 0; i < sizes.size(); ++i) {
+        if (i == pop_idx) {
+            sizes.at(i) += addend;
+            if (sizes.at(i) <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+        }
+        else {
+            sizes.at(i) -= (addend / (double)num_nonroot_branches);
+            if (sizes.at(i) <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+        }
+    }
+
+    comparisons->get_tree(tree_index)->set_population_sizes(sizes);
+
+    return 0.0;
+}
+
+std::string RelativePopulationSizeMover::target_parameter() const {
+    return "population size multipliers";
+}
+
+std::string RelativePopulationSizeMover::get_name() const {
+    return "RelativePopulationSizeMover";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // ComparisonHeightScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1476,7 +1614,7 @@ void HeightSizeMixer::operate(RandomNumberGenerator& rng,
 double HeightSizeMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->op_.get_move_amount(rng);
 
     double new_height = comparisons->get_height(height_index) * multiplier;
     comparisons->set_height(height_index, new_height);
@@ -1640,7 +1778,7 @@ void HeightSizeScaler::operate(RandomNumberGenerator& rng,
 double HeightSizeScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->op_.get_move_amount(rng);
     unsigned int number_of_free_parameters_scaled = 0;
 
     double new_height = comparisons->get_height(height_index) * multiplier;
@@ -1786,7 +1924,7 @@ void HeightSizeRateMixer::operate(RandomNumberGenerator& rng,
 double HeightSizeRateMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->op_.get_move_amount(rng);
 
     double new_height = comparisons->get_height(height_index) * multiplier;
     comparisons->set_height(height_index, new_height);
@@ -1968,7 +2106,7 @@ void CompositeHeightRefSizeRateMixer::operate(RandomNumberGenerator& rng,
 double CompositeHeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->op_.get_move_amount(rng);
 
     double new_height = comparisons->get_height(height_index) * multiplier;
     comparisons->set_height(height_index, new_height);
@@ -2001,9 +2139,10 @@ double CompositeHeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
                     delta *= -1.0;
                 }
                 std::vector<double> sizes = tree->get_population_sizes();
+                ECOEVOLITY_ASSERT(sizes.size() > 1);
                 unsigned int num_nonroot_branches = sizes.size() - 1;
                 sizes.at(num_nonroot_branches) += delta;
-                if (sizes.at(num_nonroot_branches) < 0.0) {
+                if (sizes.at(num_nonroot_branches) <= 0.0) {
                     return -std::numeric_limits<double>::infinity();
                 }
                 /* int leaf_idx = rng.uniform_int(0, tree->get_leaf_node_count() - 1); */
@@ -2013,7 +2152,7 @@ double CompositeHeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
                 /* } */
                 for (unsigned int i = 0; i < num_nonroot_branches; ++i) {
                     sizes.at(i) -= (delta/num_nonroot_branches);
-                    if (sizes.at(i) < 0.0) {
+                    if (sizes.at(i) <= 0.0) {
                         return -std::numeric_limits<double>::infinity();
                     }
                 }
@@ -2121,7 +2260,7 @@ void HeightSizeRateScaler::operate(RandomNumberGenerator& rng,
 double HeightSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->op_.get_move_amount(rng);
 
     double new_height = comparisons->get_height(height_index) * multiplier;
     comparisons->set_height(height_index, new_height);
@@ -2275,7 +2414,7 @@ void HeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
 double HeightRefSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double multiplier = std::exp(this->op_.get_scale() * ((2.0 * rng.uniform_real()) - 1.0));
+    double multiplier = this->op_.get_move_amount(rng);
 
     double new_height = comparisons->get_height(height_index) * multiplier;
     comparisons->set_height(height_index, new_height);

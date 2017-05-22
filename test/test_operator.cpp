@@ -31294,132 +31294,354 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
     }
 }
 
+TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1)", "[RelativePopulationSizeMovers]") {
 
-// TEST_CASE("Testing population size scalers on Dirichlet tree", "[PopulationSizeScalers]") {
-// 
-//     SECTION("Testing dir(1, 1, 1) prior and gamma(10, 0.1) with optimizing") {
-//         double shape = 10.0;
-//         double scale = 0.1;
-//         std::vector<double> alphas = {1.0, 1.0, 1.0};
-//         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-//         std::string test_path = "data/tmp-config-" + tag + ".cfg";
-//         std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
-//         std::ofstream out;
-//         out.open(test_path);
-//         out << "global_comparison_settings:\n";
-//         out << "    genotypes_are_diploid: true\n";
-//         out << "    markers_are_dominant: false\n";
-//         out << "    population_name_delimiter: \" \"\n";
-//         out << "    population_name_is_prefix: true\n";
-//         out << "    constant_sites_removed: true\n";
-//         out << "    parameters:\n";
-//         out << "        population_size:\n";
-//         out << "            estimate: true\n";
-//         out << "            prior:\n";
-//         out << "                gamma_distribution:\n";
-//         out << "                    shape: " << shape << "\n";;
-//         out << "                    scale: " << scale << "\n";;
-//         out << "        population_size_multipliers:\n";
-//         out << "            estimate: true\n";
-//         out << "            prior:\n";
-//         out << "                dirichlet_distribution:\n";
-//         out << "                    alpha: [" << alphas.at(0);
-//         for (unsigned int i = 1; i < alphas.size(); ++i) {
-//             out << ", " << alphas.at(i);
-//         }
-//         out << "]\n";
-//         out << "        freq_1:\n";
-//         out << "            value: 0.5\n";
-//         out << "            estimate: false\n";
-//         out << "        mutation_rate:\n";
-//         out << "            value: 1.0\n";
-//         out << "            estimate: false\n";
-//         out << "comparisons:\n";
-//         out << "- comparison:\n";
-//         out << "    path: hemi129.nex\n";
-//         out.close();
-//         REQUIRE(path::exists(test_path));
-// 
-//         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
-// 
-//         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-// 
-//         OperatorSchedule os = OperatorSchedule();
-//         os.turn_on_auto_optimize();
-//         os.set_auto_optimize_delay(1000);
-// 
-//         std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootPopulationSizeScaler>(1.0, 0.5);
-//         std::shared_ptr<OperatorInterface> op2 = std::make_shared<ChildPopulationSizeScaler>(1.0, 0.5);
-//         std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
-//         os.add_operator(op1);
-//         os.add_operator(op2);
-//         os.add_operator(op3);
-// 
-//         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
-//         comparisons.ignore_data();
-//         comparisons.set_operator_schedule(os);
-// 
-//         // Initialize prior probs
-//         comparisons.compute_log_likelihood_and_prior(true);
-// 
-//         unsigned int nnodes = 3;
-//         SampleSummarizer<double> size_summary;
-//         SampleSummarizer<double> multiplier_root_summary;
-//         SampleSummarizer<double> multiplier_0_summary;
-//         SampleSummarizer<double> multiplier_1_summary;
-// 
-//         DirichletDistribution dir_prior = DirichletDistribution(alphas);
-//         std::vector<double> expected_means = dir_prior.get_mean();
-//         for (unsigned int i = 0; i < expected_means.size(); ++i) {
-//             expected_means.at(i) *= (double)nnodes;
-//         }
-//         std::vector<double> expected_variances = dir_prior.get_variance();
-//         for (unsigned int i = 0; i < expected_variances.size(); ++i) {
-//             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
-//         }
-// 
-//         unsigned int niterations = 5000000;
-//         unsigned int sample_freq = 5;
-//         unsigned int nsamples = niterations / sample_freq;
-//         for (unsigned int i = 0; i < niterations; ++i) {
-//             OperatorInterface& o = os.draw_operator(rng);
-//             o.operate(rng, &comparisons, 1);
-//             if ((i + 1) % sample_freq == 0) {
-//                 std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_multipliers();
-//                 double multiplier_root = multipliers.at(2);
-//                 double multiplier_0 = multipliers.at(0);
-//                 double multiplier_1 = multipliers.at(1);
-//                 multiplier_root_summary.add_sample(multiplier_root);
-//                 multiplier_0_summary.add_sample(multiplier_0);
-//                 multiplier_1_summary.add_sample(multiplier_1);
-//                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
-//                 if (i > (niterations - (sample_freq * 10))) {
-//                     REQUIRE(multiplier_root != multiplier_0);
-//                     REQUIRE(multiplier_root != multiplier_1);
-//                     REQUIRE(multiplier_0 != multiplier_1);
-//                 }
-//             }
-//         }
-// 
-//         std::cout << op1->header_string();
-//         std::cout << op1->to_string(os);
-//         std::cout << op2->to_string(os);
-//         std::cout << op3->to_string(os);
-// 
-//         REQUIRE(size_summary.sample_size() == nsamples);
-//         REQUIRE(multiplier_root_summary.sample_size() == nsamples);
-//         REQUIRE(multiplier_0_summary.sample_size() == nsamples);
-//         REQUIRE(multiplier_1_summary.sample_size() == nsamples);
-// 
-//         REQUIRE(multiplier_root_summary.mean() == Approx(expected_means.at(2)).epsilon(0.001));
-//         REQUIRE(multiplier_0_summary.mean() == Approx(expected_means.at(0)).epsilon(0.001));
-//         REQUIRE(multiplier_1_summary.mean() == Approx(expected_means.at(1)).epsilon(0.001));
-// 
-//         REQUIRE(multiplier_root_summary.variance() == Approx(expected_variances.at(2)).epsilon(0.005));
-//         REQUIRE(multiplier_0_summary.variance() == Approx(expected_variances.at(0)).epsilon(0.005));
-//         REQUIRE(multiplier_1_summary.variance() == Approx(expected_variances.at(1)).epsilon(0.005));
-// 
-//         REQUIRE(size_summary.mean() == Approx(shape * scale).epsilon(0.005));
-//         REQUIRE(size_summary.variance() == Approx(shape * scale * scale).epsilon(0.005));
-//     }
-// }
+    SECTION("Testing dir(1, 1, 1) prior with optimizing") {
+        std::vector<double> alphas = {1.0, 1.0, 1.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        population_size_multipliers:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.01);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.01);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op1);
+        os.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int nnodes = 3;
+        SampleSummarizer<double> mean_size_summary;
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+        SampleSummarizer<double> multiplier_1_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
+                multiplier_root_summary.add_sample(multiplier_root);
+                multiplier_0_summary.add_sample(multiplier_0);
+                multiplier_1_summary.add_sample(multiplier_1);
+                mean_size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+                if (i > (niterations - (sample_freq * 10))) {
+                    REQUIRE(multiplier_root != multiplier_0);
+                    REQUIRE(multiplier_root != multiplier_1);
+                    REQUIRE(multiplier_0 != multiplier_1);
+                }
+            }
+        }
+
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(os);
+        std::cout << op2->to_string(os);
+
+        REQUIRE(mean_size_summary.sample_size() == nsamples);
+        REQUIRE(mean_size_summary.mean() == Approx(0.005));
+        REQUIRE(mean_size_summary.variance() == Approx(0.0));
+
+        REQUIRE(multiplier_root_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_1_summary.sample_size() == nsamples);
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1) and gamma(10, 0.1)",
+        "[RelativePopulationSizeMovers]") {
+
+    SECTION("Testing dir(1, 1, 1) and gamma(10, 0.1) prior with optimizing") {
+        double shape = 10.0;
+        double scale = 0.1;
+        std::vector<double> alphas = {1.0, 1.0, 1.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << shape << "\n";
+        out << "                    scale: " << scale << "\n";
+        out << "        population_size_multipliers:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op1);
+        os.add_operator(op2);
+        os.add_operator(op3);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int nnodes = 3;
+        SampleSummarizer<double> mean_size_summary;
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+        SampleSummarizer<double> multiplier_1_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
+                multiplier_root_summary.add_sample(multiplier_root);
+                multiplier_0_summary.add_sample(multiplier_0);
+                multiplier_1_summary.add_sample(multiplier_1);
+                mean_size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+                if (i > (niterations - (sample_freq * 10))) {
+                    REQUIRE(multiplier_root != multiplier_0);
+                    REQUIRE(multiplier_root != multiplier_1);
+                    REQUIRE(multiplier_0 != multiplier_1);
+                }
+            }
+        }
+
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(os);
+        std::cout << op2->to_string(os);
+        std::cout << op3->to_string(os);
+
+        REQUIRE(mean_size_summary.sample_size() == nsamples);
+        REQUIRE(mean_size_summary.mean() == Approx(shape * scale).epsilon(0.005));
+        REQUIRE(mean_size_summary.variance() == Approx(shape * scale * scale).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_1_summary.sample_size() == nsamples);
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+
+TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gamma(10, 0.1)",
+        "[RelativePopulationSizeMovers]") {
+
+    SECTION("Testing dir(10, 15, 5) and gamma(10, 0.1) prior with optimizing") {
+        double shape = 10.0;
+        double scale = 0.1;
+        std::vector<double> alphas = {10.0, 15.0, 5.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << shape << "\n";
+        out << "                    scale: " << scale << "\n";
+        out << "        population_size_multipliers:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op1);
+        os.add_operator(op2);
+        os.add_operator(op3);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int nnodes = 3;
+        SampleSummarizer<double> mean_size_summary;
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+        SampleSummarizer<double> multiplier_1_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                double multiplier_root = multipliers.at(2);
+                double multiplier_0 = multipliers.at(0);
+                double multiplier_1 = multipliers.at(1);
+                multiplier_root_summary.add_sample(multiplier_root);
+                multiplier_0_summary.add_sample(multiplier_0);
+                multiplier_1_summary.add_sample(multiplier_1);
+                mean_size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+                if (i > (niterations - (sample_freq * 10))) {
+                    REQUIRE(multiplier_root != multiplier_0);
+                    REQUIRE(multiplier_root != multiplier_1);
+                    REQUIRE(multiplier_0 != multiplier_1);
+                }
+            }
+        }
+
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(os);
+        std::cout << op2->to_string(os);
+        std::cout << op3->to_string(os);
+
+        REQUIRE(mean_size_summary.sample_size() == nsamples);
+        REQUIRE(mean_size_summary.mean() == Approx(shape * scale).epsilon(0.005));
+        REQUIRE(mean_size_summary.variance() == Approx(shape * scale * scale).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_1_summary.sample_size() == nsamples);
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+        REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
