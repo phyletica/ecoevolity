@@ -2389,6 +2389,9 @@ double CompositeHeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
                 this->updated_size_multipliers_ = true;
             }
             else {
+                tree->scale_all_population_sizes(1.0/multiplier);
+                ++number_of_free_parameters_inverse_scaled;
+
                 tree->scale_root_population_size(1.0/multiplier);
                 ++number_of_free_parameters_inverse_scaled;
                 unsigned int nleaves = tree->get_leaf_node_count();
