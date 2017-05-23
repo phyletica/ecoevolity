@@ -177,11 +177,35 @@ class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
 template<class DerivedOperatorType>
 class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
 
+    protected:
+        int tree_index_ = -1;
+
     public:
         TreeOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
+        TreeOperatorInterface(unsigned int tree_index) :
+            BaseOperatorInterface<DerivedOperatorType>(),
+            tree_index_(tree_index)
+        { }
         TreeOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
+        TreeOperatorInterface(
+                unsigned int tree_index,
+                double weight) :
+            BaseOperatorInterface<DerivedOperatorType>(weight),
+            tree_index_(tree_index)
+        { }
 
-        virtual void perform_collection_move(RandomNumberGenerator& rng,
+        virtual void perform_collection_move(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+        
+        void perform_global_collection_move(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        void perform_tree_specific_collection_move(
+                RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
@@ -199,7 +223,10 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
         virtual void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1) = 0;
+
+        virtual int get_tree_index() const;
 };
+
 
 template<class DerivedOperatorType>
 class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
@@ -360,8 +387,11 @@ class FreqMover : public TreeOperatorInterface<WindowOperator> {
 
     public:
         FreqMover();
+        FreqMover(unsigned int tree_index);
         FreqMover(double weight);
+        FreqMover(unsigned int tree_index, double weight);
         FreqMover(double weight, double window_size);
+        FreqMover(unsigned int tree_index, double weight, double window_size);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -381,8 +411,11 @@ class ComparisonMutationRateScaler : public TreeOperatorInterface<ScaleOperator>
 
     public:
         ComparisonMutationRateScaler();
+        ComparisonMutationRateScaler(unsigned int tree_index);
         ComparisonMutationRateScaler(double weight);
+        ComparisonMutationRateScaler(unsigned int tree_index, double weight);
         ComparisonMutationRateScaler(double weight, double scale);
+        ComparisonMutationRateScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -413,8 +446,11 @@ class PopulationSizeMultiplierMixer : public TreeOperatorInterface<ScaleOperator
 
     public:
         PopulationSizeMultiplierMixer();
+        PopulationSizeMultiplierMixer(unsigned int tree_index);
         PopulationSizeMultiplierMixer(double weight);
+        PopulationSizeMultiplierMixer(unsigned int tree_index, double weight);
         PopulationSizeMultiplierMixer(double weight, double scale);
+        PopulationSizeMultiplierMixer(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -434,8 +470,11 @@ class ReferencePopulationSizeScaler : public TreeOperatorInterface<ScaleOperator
 
     public:
         ReferencePopulationSizeScaler();
+        ReferencePopulationSizeScaler(unsigned int tree_index);
         ReferencePopulationSizeScaler(double weight);
+        ReferencePopulationSizeScaler(unsigned int tree_index, double weight);
         ReferencePopulationSizeScaler(double weight, double scale);
+        ReferencePopulationSizeScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -455,8 +494,11 @@ class ChildPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
 
     public:
         ChildPopulationSizeScaler();
+        ChildPopulationSizeScaler(unsigned int tree_index);
         ChildPopulationSizeScaler(double weight);
+        ChildPopulationSizeScaler(unsigned int tree_index, double weight);
         ChildPopulationSizeScaler(double weight, double scale);
+        ChildPopulationSizeScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -477,9 +519,11 @@ class RootPopulationSizeScaler : public TreeOperatorInterface<ScaleOperator> {
 
     public:
         RootPopulationSizeScaler();
+        RootPopulationSizeScaler(unsigned int tree_index);
         RootPopulationSizeScaler(double weight);
+        RootPopulationSizeScaler(unsigned int tree_index, double weight);
         RootPopulationSizeScaler(double weight, double scale);
-        // virtual ~RootPopulationSizeScaler() { }
+        RootPopulationSizeScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -500,8 +544,11 @@ class RootRelativePopulationSizeMover : public TreeOperatorInterface<WindowOpera
 
     public:
         RootRelativePopulationSizeMover();
+        RootRelativePopulationSizeMover(unsigned int tree_index);
         RootRelativePopulationSizeMover(double weight);
+        RootRelativePopulationSizeMover(unsigned int tree_index, double weight);
         RootRelativePopulationSizeMover(double weight, double scale);
+        RootRelativePopulationSizeMover(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -521,8 +568,11 @@ class RelativePopulationSizeMover : public TreeOperatorInterface<WindowOperator>
 
     public:
         RelativePopulationSizeMover();
+        RelativePopulationSizeMover(unsigned int tree_index);
         RelativePopulationSizeMover(double weight);
+        RelativePopulationSizeMover(unsigned int tree_index, double weight);
         RelativePopulationSizeMover(double weight, double scale);
+        RelativePopulationSizeMover(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,

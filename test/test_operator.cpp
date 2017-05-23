@@ -31645,3 +31645,985 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gam
         REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
     }
 }
+
+TEST_CASE("Testing RelativePopulationSizeMovers for singleton with dirichlet(10, 15, 5) and gamma(10, 0.1)",
+        "[RelativePopulationSizeMovers]") {
+
+    SECTION("Testing dir(10, 15, 5) and gamma(10, 0.1) prior with singleton and optimizing") {
+        double shape = 10.0;
+        double scale = 0.1;
+        std::vector<double> alphas = {10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << shape << "\n";
+        out << "                    scale: " << scale << "\n";
+        out << "        population_size_multipliers:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129-singleton.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op1);
+        os.add_operator(op2);
+        os.add_operator(op3);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int nnodes = 3;
+        SampleSummarizer<double> mean_size_summary;
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                double multiplier_root = multipliers.at(1);
+                double multiplier_0 = multipliers.at(0);
+                multiplier_root_summary.add_sample(multiplier_root);
+                multiplier_0_summary.add_sample(multiplier_0);
+                mean_size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+                if (i > (niterations - (sample_freq * 10))) {
+                    REQUIRE(multiplier_root != multiplier_0);
+                }
+            }
+        }
+
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(os);
+        std::cout << op2->to_string(os);
+        std::cout << op3->to_string(os);
+
+        REQUIRE(mean_size_summary.sample_size() == nsamples);
+        REQUIRE(mean_size_summary.mean() == Approx(shape * scale).epsilon(0.005));
+        REQUIRE(mean_size_summary.variance() == Approx(shape * scale * scale).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.sample_size() == nsamples);
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific FreqMover with 3 pairs",
+        "[FreqMover]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> freq_alphas {1.0, 1.0, 3.0};
+        std::vector<double> freq_betas  {1.0, 3.0, 1.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(0) << "\n";
+        os << "                    beta: " << freq_betas.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(1) << "\n";
+        os << "                    beta: " << freq_betas.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(2) << "\n";
+        os << "                    beta: " << freq_betas.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<FreqMover>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<FreqMover>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > freq_summaries(ntrees);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior0 = std::make_shared<BetaDistribution>(freq_alphas.at(0), freq_betas.at(0));
+        std::shared_ptr<ContinuousProbabilityDistribution> prior2 = std::make_shared<BetaDistribution>(freq_alphas.at(2), freq_betas.at(2));
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    freq_summaries.at(tree_idx).add_sample(tree->get_freq_1());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior0->get_mean()).epsilon(0.005));
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior0->get_variance()).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior2->get_mean()).epsilon(0.005));
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior2->get_variance()).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific PopulationSizeMultiplierMixer with 3 pairs",
+        "[PopulationSizeMultiplierMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<PopulationSizeMultiplierMixer>(0, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<PopulationSizeMultiplierMixer>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    root_summaries.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    leaf0_summaries.at(tree_idx).add_sample(sizes.at(0));
+                    leaf1_summaries.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific ReferencePopulationSizeScaler with 3 pairs",
+        "[ReferencePopulationSizeScaler]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 5.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.1, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<ReferencePopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<ReferencePopulationSizeScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        double sh = size_shapes.at(tree_idx);
+        double sc = size_scales.at(tree_idx);
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        tree_idx = 1;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific RelativePopulationSizeMovers with 3 pairs",
+        "[RelativePopulationSizeMovers]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(0, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(0, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<RootRelativePopulationSizeMover>(2, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op4 = std::make_shared<RelativePopulationSizeMover>(2, 1.0, 0.1);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+        op_schedule.add_operator(op3);
+        op_schedule.add_operator(op4);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    root_summaries.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    leaf0_summaries.at(tree_idx).add_sample(sizes.at(0));
+                    leaf1_summaries.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        std::cout << op3->to_string(op_schedule);
+        std::cout << op4->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific PopulationSizeScalers with 3 pairs",
+        "[PopulationSizeScalers]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 5.0, 8.0};
+        std::vector<double> size_scales {0.1, 0.1, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<ChildPopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<RootPopulationSizeScaler>(2, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op4 = std::make_shared<ChildPopulationSizeScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+        op_schedule.add_operator(op3);
+        op_schedule.add_operator(op4);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    root_summaries.at(tree_idx).add_sample(tree->get_root_population_size());
+                    leaf0_summaries.at(tree_idx).add_sample(tree->get_child_population_size(0));
+                    leaf1_summaries.at(tree_idx).add_sample(tree->get_child_population_size(1));
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        std::cout << op3->to_string(op_schedule);
+        std::cout << op4->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        double sh = size_shapes.at(tree_idx);
+        double sc = size_scales.at(tree_idx);
+
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        tree_idx = 1;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific ComparisonMutationRateScaler with 3 pairs",
+        "[ComparisonMutationRateScaler]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rate_shapes {10.0, 5.0, 5.0};
+        std::vector<double> rate_scales {0.1, 0.1, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rate_shapes.at(0) << "\n";
+        os << "                    scale: " << rate_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rate_shapes.at(1) << "\n";
+        os << "                    scale: " << rate_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rate_shapes.at(2) << "\n";
+        os << "                    scale: " << rate_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<ComparisonMutationRateScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<ComparisonMutationRateScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > rate_summaries(ntrees);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        double sh = rate_shapes.at(tree_idx);
+        double sc = rate_scales.at(tree_idx);
+
+        REQUIRE(rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(rate_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        tree_idx = 1;
+        sh = rate_shapes.at(tree_idx);
+        sc = rate_scales.at(tree_idx);
+
+        REQUIRE(rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        sh = rate_shapes.at(tree_idx);
+        sc = rate_scales.at(tree_idx);
+
+        REQUIRE(rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(rate_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+    }
+}

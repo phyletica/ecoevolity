@@ -373,6 +373,18 @@ void TreeOperatorInterface<DerivedOperatorType>::perform_collection_move(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
+    if (this->tree_index_ < 0) {
+        this->perform_global_collection_move(rng, comparisons, nthreads);
+        return;
+    }
+    this->perform_tree_specific_collection_move(rng, comparisons, nthreads);
+}
+
+template<class DerivedOperatorType>
+void TreeOperatorInterface<DerivedOperatorType>::perform_global_collection_move(
+        RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
     this->call_store_methods(comparisons);
 
     std::vector<double> hastings_ratios;
@@ -437,6 +449,45 @@ void TreeOperatorInterface<DerivedOperatorType>::perform_collection_move(
         this->optimize(comparisons->get_operator_schedule(), acceptance_probability);
     }
     comparisons->compute_log_likelihood_and_prior(false);
+}
+
+template<class DerivedOperatorType>
+void TreeOperatorInterface<DerivedOperatorType>::perform_tree_specific_collection_move(
+        RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    std::shared_ptr<PopulationTree> tree = comparisons->get_tree(this->tree_index_);
+    tree->store_state();
+
+    double hastings_ratio = this->propose(rng, comparisons, this->tree_index_);
+
+    tree->compute_log_likelihood_and_prior(nthreads);
+
+    double likelihood_ratio =
+            tree->get_log_likelihood_value() -
+            tree->get_stored_log_likelihood_value();
+    double prior_ratio =
+            tree->get_log_prior_density_value() -
+            tree->get_stored_log_prior_density_value();
+    double acceptance_probability =
+            likelihood_ratio + 
+            prior_ratio +
+            hastings_ratio;
+    double u = rng.uniform_real();
+    if (u < std::exp(acceptance_probability)) {
+        this->accept(comparisons->get_operator_schedule());
+    }
+    else {
+        this->reject(comparisons->get_operator_schedule());
+        tree->restore_state();
+    }
+    tree->make_clean();
+    this->optimize(comparisons->get_operator_schedule(), acceptance_probability);
+}
+
+template<class DerivedOperatorType>
+int TreeOperatorInterface<DerivedOperatorType>::get_tree_index() const {
+    return this->tree_index_;
 }
 
 
@@ -1050,12 +1101,31 @@ FreqMover::FreqMover() : TreeOperatorInterface<WindowOperator>() {
 }
 
 FreqMover::FreqMover(
+        unsigned int tree_index) : TreeOperatorInterface<WindowOperator>(tree_index) {
+    this->op_ = WindowOperator();
+}
+
+FreqMover::FreqMover(
         double weight) : TreeOperatorInterface<WindowOperator>(weight) {
     this->op_ = WindowOperator();
 }
+
+FreqMover::FreqMover(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
+    this->op_ = WindowOperator();
+}
+
 FreqMover::FreqMover(
         double weight,
         double window_size) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(window_size);
+}
+
+FreqMover::FreqMover(
+        unsigned int tree_index,
+        double weight,
+        double window_size) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator(window_size);
 }
 
@@ -1084,7 +1154,11 @@ std::string FreqMover::target_parameter() const {
 }
 
 std::string FreqMover::get_name() const {
-    return "FreqMover";
+    std::string name = "FreqMover";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1098,13 +1172,31 @@ ComparisonMutationRateScaler::ComparisonMutationRateScaler(
 }
 
 ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+ComparisonMutationRateScaler::ComparisonMutationRateScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
 ComparisonMutationRateScaler::ComparisonMutationRateScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
@@ -1130,7 +1222,11 @@ std::string ComparisonMutationRateScaler::target_parameter() const {
 }
 
 std::string ComparisonMutationRateScaler::get_name() const {
-    return "ComparisonMutationRateScaler";
+    std::string name = "ComparisonMutationRateScaler";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1144,13 +1240,31 @@ PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
 }
 
 PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
 PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
@@ -1192,7 +1306,11 @@ std::string PopulationSizeMultiplierMixer::target_parameter() const {
 }
 
 std::string PopulationSizeMultiplierMixer::get_name() const {
-    return "PopulationSizeMultiplierMixer";
+    std::string name = "PopulationSizeMultiplierMixer";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1206,13 +1324,31 @@ ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
 }
 
 ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
 ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
@@ -1245,7 +1381,11 @@ std::string ReferencePopulationSizeScaler::target_parameter() const {
 }
 
 std::string ReferencePopulationSizeScaler::get_name() const {
-    return "ReferencePopulationSizeScaler";
+    std::string name = "ReferencePopulationSizeScaler";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1259,13 +1399,31 @@ ChildPopulationSizeScaler::ChildPopulationSizeScaler(
 }
 
 ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+ChildPopulationSizeScaler::ChildPopulationSizeScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
 ChildPopulationSizeScaler::ChildPopulationSizeScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
@@ -1299,7 +1457,11 @@ std::string ChildPopulationSizeScaler::target_parameter() const {
 }
 
 std::string ChildPopulationSizeScaler::get_name() const {
-    return "ChildPopulationSizeScaler";
+    std::string name = "ChildPopulationSizeScaler";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1313,13 +1475,31 @@ RootPopulationSizeScaler::RootPopulationSizeScaler(
 }
 
 RootPopulationSizeScaler::RootPopulationSizeScaler(
+        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+RootPopulationSizeScaler::RootPopulationSizeScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+RootPopulationSizeScaler::RootPopulationSizeScaler(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
 RootPopulationSizeScaler::RootPopulationSizeScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+RootPopulationSizeScaler::RootPopulationSizeScaler(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
@@ -1353,7 +1533,11 @@ std::string RootPopulationSizeScaler::target_parameter() const {
 }
 
 std::string RootPopulationSizeScaler::get_name() const {
-    return "RootPopulationSizeScaler";
+    std::string name = "RootPopulationSizeScaler";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1367,13 +1551,31 @@ RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
 }
 
 RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
+        unsigned int tree_index) : TreeOperatorInterface<WindowOperator>(tree_index) {
+    this->op_ = WindowOperator();
+}
+
+RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
         double weight) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator();
 }
 
 RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
         double weight,
         double scale) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(scale);
+}
+
+RootRelativePopulationSizeMover::RootRelativePopulationSizeMover(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator(scale);
 }
 
@@ -1415,7 +1617,11 @@ std::string RootRelativePopulationSizeMover::target_parameter() const {
 }
 
 std::string RootRelativePopulationSizeMover::get_name() const {
-    return "RootRelativePopulationSizeMover";
+    std::string name = "RootRelativePopulationSizeMover";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
@@ -1429,13 +1635,31 @@ RelativePopulationSizeMover::RelativePopulationSizeMover(
 }
 
 RelativePopulationSizeMover::RelativePopulationSizeMover(
+        unsigned int tree_index) : TreeOperatorInterface<WindowOperator>(tree_index) {
+    this->op_ = WindowOperator();
+}
+
+RelativePopulationSizeMover::RelativePopulationSizeMover(
         double weight) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+RelativePopulationSizeMover::RelativePopulationSizeMover(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator();
 }
 
 RelativePopulationSizeMover::RelativePopulationSizeMover(
         double weight,
         double scale) : TreeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(scale);
+}
+
+RelativePopulationSizeMover::RelativePopulationSizeMover(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator(scale);
 }
 
@@ -1482,7 +1706,11 @@ std::string RelativePopulationSizeMover::target_parameter() const {
 }
 
 std::string RelativePopulationSizeMover::get_name() const {
-    return "RelativePopulationSizeMover";
+    std::string name = "RelativePopulationSizeMover";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
 }
 
 
