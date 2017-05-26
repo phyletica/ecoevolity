@@ -903,6 +903,9 @@ class CompositeTimeSizeMixer : public TimeSizeMixer {
         bool requires_call_to_tree_operators() const {
             return true;
         }
+        bool requires_call_to_time_operators() const {
+            return true;
+        }
 };
 
 
@@ -955,6 +958,9 @@ class CompositeTimeSizeScaler : public TimeSizeScaler {
         std::string to_string(const OperatorSchedule& os) const;
 
         bool requires_call_to_tree_operators() const {
+            return true;
+        }
+        bool requires_call_to_time_operators() const {
             return true;
         }
 };
@@ -1011,6 +1017,9 @@ class CompositeTimeSizeRateMixer : public TimeSizeRateMixer {
         bool requires_call_to_tree_operators() const {
             return true;
         }
+        bool requires_call_to_time_operators() const {
+            return true;
+        }
 };
 
 
@@ -1040,6 +1049,9 @@ class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperato
         }
 
         bool requires_call_to_tree_operators() const {
+            return true;
+        }
+        bool requires_call_to_time_operators() const {
             return true;
         }
 };
@@ -1096,6 +1108,9 @@ class CompositeTimeSizeRateScaler : public TimeSizeRateScaler {
         bool requires_call_to_tree_operators() const {
             return true;
         }
+        bool requires_call_to_time_operators() const {
+            return true;
+        }
 };
 
 
@@ -1147,6 +1162,9 @@ class CompositeTimeMeanSizeRateScaler : public TimeMeanSizeRateScaler {
         std::string to_string(const OperatorSchedule& os) const;
 
         bool requires_call_to_tree_operators() const {
+            return true;
+        }
+        bool requires_call_to_time_operators() const {
             return true;
         }
 };
