@@ -249,14 +249,24 @@ OperatorInterface& OperatorSchedule::get_reversible_jump_operator() const {
     return *this->operators_.at(0);
 }
 
-OperatorInterface& OperatorSchedule::get_time_operator() const {
-    for (auto & op: this->operators_) {
+std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_time_operators() const {
+    std::vector< std::shared_ptr<OperatorInterface> > ops;
+    for (std::shared_ptr<OperatorInterface> op: this->operators_) {
         if (op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator) {
-            return *op;
+            ops.push_back(op);
         }
     }
-    ECOEVOLITY_ASSERT(true == false);
-    return *this->operators_.at(0);
+    return ops;
+}
+
+std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_tree_operators() const {
+    std::vector< std::shared_ptr<OperatorInterface> > ops;
+    for (std::shared_ptr<OperatorInterface> op: this->operators_) {
+        if (op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator) {
+            ops.push_back(op);
+        }
+    }
+    return ops;
 }
 
 double OperatorSchedule::calc_delta(const Operator& op, double log_alpha) {

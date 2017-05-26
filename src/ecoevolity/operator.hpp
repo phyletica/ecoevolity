@@ -45,6 +45,7 @@ class OperatorInterface {
             time_operator = 2,
             collection_operator = 3,
             rj_operator = 4,
+            multivariate_time_operator = 5,
         };
 
         virtual OperatorInterface::OperatorTypeEnum get_type() const = 0;
@@ -106,6 +107,13 @@ class OperatorInterface {
         virtual std::string header_string() const = 0;
 
         virtual std::string to_string(const OperatorSchedule& os) const = 0;
+
+        virtual bool requires_call_to_time_operators() const {
+            return false;
+        }
+        virtual bool requires_call_to_tree_operators() const {
+            return false;
+        }
 };
 
 template<class DerivedOperatorType>
@@ -851,14 +859,11 @@ class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 
     protected:
         UnivariateTimeSizeScaler uni_collection_scaler_ = UnivariateTimeSizeScaler(0.0, 0.5);
-        bool updated_root_sizes_ = false;
-        bool updated_child_sizes_ = false;
 
     public:
         TimeSizeMixer();
         TimeSizeMixer(double weight);
         TimeSizeMixer(double weight, double scale);
-        // virtual ~TimeSizeMixer() { }
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -872,20 +877,20 @@ class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
         std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
 };
 
 class CompositeTimeSizeMixer : public TimeSizeMixer {
 
     using TimeSizeMixer::propose;
 
-    protected:
-        UnivariateCompositeTimeSizeScaler uni_composite_collection_scaler_ = UnivariateCompositeTimeSizeScaler(0.0);
-
     public:
         CompositeTimeSizeMixer() : TimeSizeMixer() { }
         CompositeTimeSizeMixer(double weight) : TimeSizeMixer(weight) { }
         CompositeTimeSizeMixer(double weight, double scale) : TimeSizeMixer(weight, scale) { }
-        // virtual ~CompositeTimeSizeMixer() { }
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -894,6 +899,10 @@ class CompositeTimeSizeMixer : public TimeSizeMixer {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        bool requires_call_to_tree_operators() const {
+            return true;
+        }
 };
 
 
@@ -901,8 +910,6 @@ class TimeSizeScaler : public TimeOperatorInterface<ScaleOperator> {
 
     protected:
         UnivariateTimeSizeScaler uni_collection_scaler_ = UnivariateTimeSizeScaler(0.0, 0.5);
-        bool updated_root_sizes_ = false;
-        bool updated_child_sizes_ = false;
 
     public:
         TimeSizeScaler();
@@ -923,14 +930,15 @@ class TimeSizeScaler : public TimeOperatorInterface<ScaleOperator> {
         std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
 };
 
 class CompositeTimeSizeScaler : public TimeSizeScaler {
 
     using TimeSizeScaler::propose;
-
-    protected:
-        UnivariateCompositeTimeSizeScaler uni_composite_collection_scaler_ = UnivariateCompositeTimeSizeScaler(0.0);
 
     public:
         CompositeTimeSizeScaler() : TimeSizeScaler() { }
@@ -945,6 +953,10 @@ class CompositeTimeSizeScaler : public TimeSizeScaler {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        bool requires_call_to_tree_operators() const {
+            return true;
+        }
 };
 
 
@@ -952,9 +964,6 @@ class TimeSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
 
     protected:
         UnivariateTimeSizeRateScaler uni_collection_scaler_ = UnivariateTimeSizeRateScaler(0.0, 0.5);
-        bool updated_root_sizes_ = false;
-        bool updated_child_sizes_ = false;
-        bool updated_mutation_rates_ = false;
 
     public:
         TimeSizeRateMixer();
@@ -975,14 +984,15 @@ class TimeSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
         std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
 };
 
 class CompositeTimeSizeRateMixer : public TimeSizeRateMixer {
 
     using TimeSizeRateMixer::propose;
-
-    protected:
-        UnivariateCompositeTimeSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeTimeSizeRateScaler(0.0);
 
     public:
         CompositeTimeSizeRateMixer() : TimeSizeRateMixer() { }
@@ -997,16 +1007,14 @@ class CompositeTimeSizeRateMixer : public TimeSizeRateMixer {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        bool requires_call_to_tree_operators() const {
+            return true;
+        }
 };
 
 
 class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
-
-    protected:
-        UnivariateCompositeTimeMeanSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeTimeMeanSizeRateScaler(0.0);
-        bool updated_sizes_ = false;
-        bool updated_size_multipliers_ = false;
-        bool updated_mutation_rates_ = false;
 
     public:
         CompositeTimeMeanSizeRateMixer();
@@ -1026,6 +1034,14 @@ class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperato
         std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
+
+        bool requires_call_to_tree_operators() const {
+            return true;
+        }
 };
 
 
@@ -1033,9 +1049,6 @@ class TimeSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
     protected:
         UnivariateTimeSizeRateScaler uni_collection_scaler_ = UnivariateTimeSizeRateScaler(0.0, 0.5);
-        bool updated_root_sizes_ = false;
-        bool updated_child_sizes_ = false;
-        bool updated_mutation_rates_ = false;
 
     public:
         TimeSizeRateScaler();
@@ -1056,14 +1069,15 @@ class TimeSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
         std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
 };
 
 class CompositeTimeSizeRateScaler : public TimeSizeRateScaler {
 
     using TimeSizeRateScaler::propose;
-
-    protected:
-        UnivariateCompositeTimeSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeTimeSizeRateScaler(0.0);
 
     public:
         CompositeTimeSizeRateScaler() : TimeSizeRateScaler() { }
@@ -1078,6 +1092,10 @@ class CompositeTimeSizeRateScaler : public TimeSizeRateScaler {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        bool requires_call_to_tree_operators() const {
+            return true;
+        }
 };
 
 
@@ -1085,8 +1103,6 @@ class TimeMeanSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
     protected:
         UnivariateTimeMeanSizeRateScaler uni_collection_scaler_ = UnivariateTimeMeanSizeRateScaler(0.0, 0.5);
-        bool updated_sizes_ = false;
-        bool updated_mutation_rates_ = false;
 
     public:
         TimeMeanSizeRateScaler();
@@ -1106,14 +1122,15 @@ class TimeMeanSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
         std::string target_parameter() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
 };
 
 class CompositeTimeMeanSizeRateScaler : public TimeMeanSizeRateScaler {
 
     using TimeMeanSizeRateScaler::propose;
-
-    protected:
-        UnivariateCompositeTimeMeanSizeRateScaler uni_composite_collection_scaler_ = UnivariateCompositeTimeMeanSizeRateScaler(0.0);
 
     public:
         CompositeTimeMeanSizeRateScaler() : TimeMeanSizeRateScaler() { }
@@ -1128,6 +1145,10 @@ class CompositeTimeMeanSizeRateScaler : public TimeMeanSizeRateScaler {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
+
+        bool requires_call_to_tree_operators() const {
+            return true;
+        }
 };
 
 
@@ -1135,8 +1156,6 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 
     protected:
         unsigned int number_of_auxiliary_categories_ = 4;
-        //CompositeTimeSizeRateMixer collection_scaler_ = CompositeTimeSizeRateMixer(0.0, 0.5);
-        EventTimeScaler height_scaler_ = EventTimeScaler(0.0, 0.5);
 
     public:
         DirichletProcessGibbsSampler() : CollectionOperatorInterface<Operator>() { }
@@ -1182,12 +1201,15 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const { };
+
+        bool requires_call_to_time_operators() const {
+            return true;
+        }
 };
 
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
-        // TimeSizeRateMixer collection_scaler_ = TimeSizeRateMixer(0.0, 0.5);
         EventTimeScaler collection_height_scaler_ = EventTimeScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;

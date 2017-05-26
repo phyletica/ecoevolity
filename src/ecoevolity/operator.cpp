@@ -448,6 +448,7 @@ void TreeOperatorInterface<DerivedOperatorType>::perform_global_collection_move(
         tree->make_clean();
         this->optimize(comparisons->get_operator_schedule(), acceptance_probability);
     }
+    // Make sure the likelihood and prior of comparisons is up to date
     comparisons->compute_log_likelihood_and_prior(false);
 }
 
@@ -483,6 +484,8 @@ void TreeOperatorInterface<DerivedOperatorType>::perform_tree_specific_collectio
     }
     tree->make_clean();
     this->optimize(comparisons->get_operator_schedule(), acceptance_probability);
+    // Make sure the likelihood and prior of comparisons is up to date
+    comparisons->compute_log_likelihood_and_prior(false);
 }
 
 template<class DerivedOperatorType>
@@ -1830,8 +1833,6 @@ TimeSizeMixer::TimeSizeMixer(
 void TimeSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Do sweep of univariate proposals across all the node height and pop size
@@ -1857,7 +1858,6 @@ double TimeSizeMixer::propose(RandomNumberGenerator& rng,
         if (! tree->population_sizes_are_fixed()) {
             if (tree->population_sizes_are_constrained()) {
                 number_of_free_parameters_scaled += tree->scale_root_population_size(multiplier);
-                this->updated_root_sizes_ = true;
             }
             else {
                 number_of_free_parameters_inverse_scaled += tree->scale_root_population_size(1.0/multiplier);
@@ -1867,8 +1867,6 @@ double TimeSizeMixer::propose(RandomNumberGenerator& rng,
                             tree->get_child_population_size(i) * multiplier);
                     number_of_free_parameters_scaled += nleaves;
                 }
-                this->updated_root_sizes_ = true;
-                this->updated_child_sizes_ = true;
             }
         }
         if ((number_of_free_parameters_inverse_scaled < 1) ||
@@ -1925,19 +1923,7 @@ std::string TimeSizeMixer::to_string(const OperatorSchedule& os) const {
 void CompositeTimeSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
-
-    // Do sweep of univariate proposals across all the node height and pop size
-    // parameters
-    this->uni_composite_collection_scaler_.scale_heights(rng, comparisons, nthreads);
-    if (this->updated_root_sizes_) {
-        this->uni_composite_collection_scaler_.scale_root_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_child_sizes_) {
-        this->uni_composite_collection_scaler_.scale_child_population_sizes(rng, comparisons, nthreads);
-    }
 }
 
 std::string CompositeTimeSizeMixer::get_name() const {
@@ -1966,7 +1952,6 @@ std::string CompositeTimeSizeMixer::to_string(const OperatorSchedule& os) const 
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -1994,8 +1979,6 @@ TimeSizeScaler::TimeSizeScaler(
 void TimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Do sweep of univariate proposals across all the node height and pop size
@@ -2018,9 +2001,7 @@ double TimeSizeScaler::propose(RandomNumberGenerator& rng,
         unsigned int nparameters_scaled = comparisons->get_tree(tree_idx)->scale_all_population_sizes(multiplier);
         number_of_free_parameters_scaled += nparameters_scaled;
         if (nparameters_scaled > 0) {
-            this->updated_root_sizes_ = true;
             if (nparameters_scaled > 1) {
-                this->updated_child_sizes_ = true;
             }
         }
     }
@@ -2070,19 +2051,7 @@ std::string TimeSizeScaler::to_string(const OperatorSchedule& os) const {
 void CompositeTimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
-
-    // Do sweep of univariate proposals across all the node height and pop size
-    // parameters
-    this->uni_composite_collection_scaler_.scale_heights(rng, comparisons, nthreads);
-    if (this->updated_root_sizes_) {
-        this->uni_composite_collection_scaler_.scale_root_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_child_sizes_) {
-        this->uni_composite_collection_scaler_.scale_child_population_sizes(rng, comparisons, nthreads);
-    }
 }
 
 std::string CompositeTimeSizeScaler::get_name() const {
@@ -2111,7 +2080,6 @@ std::string CompositeTimeSizeScaler::to_string(const OperatorSchedule& os) const
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -2139,9 +2107,6 @@ TimeSizeRateMixer::TimeSizeRateMixer(
 void TimeSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Do sweep of univariate proposals across all the node height and pop size
@@ -2166,7 +2131,6 @@ double TimeSizeRateMixer::propose(RandomNumberGenerator& rng,
         if (! tree->population_sizes_are_fixed()) {
             if (tree->population_sizes_are_constrained()) {
                 number_of_free_parameters_scaled += tree->scale_root_population_size(multiplier);
-                this->updated_root_sizes_ = true;
             }
             else {
                 number_of_free_parameters_inverse_scaled += tree->scale_root_population_size(1.0/multiplier);
@@ -2177,14 +2141,11 @@ double TimeSizeRateMixer::propose(RandomNumberGenerator& rng,
                     // number_of_free_parameters_scaled += nleaves;
                     ++number_of_free_parameters_scaled;
                 }
-                this->updated_root_sizes_ = true;
-                this->updated_child_sizes_ = true;
             }
         }
         if (! tree->mutation_rate_is_fixed()) {
             tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
             ++number_of_free_parameters_inverse_scaled;
-            this->updated_mutation_rates_ = true;
         }
         if ((number_of_free_parameters_inverse_scaled < 1) ||
                 ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
@@ -2239,23 +2200,7 @@ std::string TimeSizeRateMixer::to_string(const OperatorSchedule& os) const {
 void CompositeTimeSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
-
-    // Do sweep of univariate proposals across all the node height and pop size
-    // parameters
-    this->uni_composite_collection_scaler_.scale_heights(rng, comparisons, nthreads);
-    if (this->updated_root_sizes_) {
-        this->uni_composite_collection_scaler_.scale_root_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_child_sizes_) {
-        this->uni_composite_collection_scaler_.scale_child_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_mutation_rates_) {
-        this->uni_composite_collection_scaler_.scale_mutation_rates(rng, comparisons, nthreads);
-    }
 }
 
 std::string CompositeTimeSizeRateMixer::get_name() const {
@@ -2284,7 +2229,6 @@ std::string CompositeTimeSizeRateMixer::to_string(const OperatorSchedule& os) co
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -2312,23 +2256,7 @@ CompositeTimeMeanSizeRateMixer::CompositeTimeMeanSizeRateMixer(
 void CompositeTimeMeanSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_sizes_ = false;
-    this->updated_size_multipliers_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
-
-    // Do sweep of univariate proposals across all the node height and pop size
-    // parameters
-    this->uni_composite_collection_scaler_.scale_heights(rng, comparisons, nthreads);
-    if (this->updated_sizes_) {
-        this->uni_composite_collection_scaler_.scale_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_size_multipliers_) {
-        this->uni_composite_collection_scaler_.mix_population_size_multipliers(rng, comparisons, nthreads);
-    }
-    if (this->updated_mutation_rates_) {
-        this->uni_composite_collection_scaler_.scale_mutation_rates(rng, comparisons, nthreads);
-    }
 }
 
 double CompositeTimeMeanSizeRateMixer::propose(RandomNumberGenerator& rng,
@@ -2349,7 +2277,6 @@ double CompositeTimeMeanSizeRateMixer::propose(RandomNumberGenerator& rng,
             if (tree->population_size_multipliers_are_fixed()) {
                 tree->scale_all_population_sizes(multiplier);
                 ++number_of_free_parameters_scaled;
-                this->updated_sizes_ = true;
             }
             else if (tree->mean_population_size_is_fixed()) {
                 double mean_size = tree->get_mean_population_size();
@@ -2386,7 +2313,6 @@ double CompositeTimeMeanSizeRateMixer::propose(RandomNumberGenerator& rng,
                 }
                 // ECOEVOLITY_ASSERT_APPROX_EQUAL(tree->get_mean_population_size(), mean_size);
                 tree->set_population_sizes(sizes);
-                this->updated_size_multipliers_ = true;
             }
             else {
                 tree->scale_all_population_sizes(1.0/multiplier);
@@ -2400,14 +2326,11 @@ double CompositeTimeMeanSizeRateMixer::propose(RandomNumberGenerator& rng,
                             tree->get_child_population_size(i) * multiplier);
                     ++number_of_free_parameters_scaled;
                 }
-                this->updated_sizes_ = true;
-                this->updated_size_multipliers_ = true;
             }
         }
         if (! tree->mutation_rate_is_fixed()) {
             tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
             ++number_of_free_parameters_inverse_scaled;
-            this->updated_mutation_rates_ = true;
         }
         if ((number_of_free_parameters_inverse_scaled < 1) ||
                 ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
@@ -2450,7 +2373,6 @@ std::string CompositeTimeMeanSizeRateMixer::to_string(const OperatorSchedule& os
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -2478,9 +2400,6 @@ TimeSizeRateScaler::TimeSizeRateScaler(
 void TimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Do sweep of univariate proposals across all the node height and pop size
@@ -2502,16 +2421,9 @@ double TimeSizeRateScaler::propose(RandomNumberGenerator& rng,
         std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
         unsigned int nparameters_scaled = tree->scale_all_population_sizes(multiplier);
         ndimensions += nparameters_scaled;
-        if (nparameters_scaled > 0) {
-            this->updated_root_sizes_ = true;
-            if (nparameters_scaled > 1) {
-                this->updated_child_sizes_ = true;
-            }
-        }
         if (! tree->mutation_rate_is_fixed()) {
             tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
             --ndimensions;
-            this->updated_mutation_rates_ = true;
         }
     }
 
@@ -2560,23 +2472,7 @@ std::string TimeSizeRateScaler::to_string(const OperatorSchedule& os) const {
 void CompositeTimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_root_sizes_ = false;
-    this->updated_child_sizes_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
-
-    // Do sweep of univariate proposals across all the node height and pop size
-    // parameters
-    this->uni_composite_collection_scaler_.scale_heights(rng, comparisons, nthreads);
-    if (this->updated_root_sizes_) {
-        this->uni_composite_collection_scaler_.scale_root_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_child_sizes_) {
-        this->uni_composite_collection_scaler_.scale_child_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_mutation_rates_) {
-        this->uni_composite_collection_scaler_.scale_mutation_rates(rng, comparisons, nthreads);
-    }
 }
 
 std::string CompositeTimeSizeRateScaler::get_name() const {
@@ -2605,7 +2501,6 @@ std::string CompositeTimeSizeRateScaler::to_string(const OperatorSchedule& os) c
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -2633,8 +2528,6 @@ TimeMeanSizeRateScaler::TimeMeanSizeRateScaler(
 void TimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_sizes_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Do sweep of univariate proposals across all the node height and pop size
@@ -2657,12 +2550,10 @@ double TimeMeanSizeRateScaler::propose(RandomNumberGenerator& rng,
         if (! tree->mean_population_size_is_fixed()) {
             tree->set_mean_population_size(tree->get_mean_population_size() * multiplier);
             ++ndimensions;
-            this->updated_sizes_ = true;
         }
         if (! tree->mutation_rate_is_fixed()) {
             tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
             --ndimensions;
-            this->updated_mutation_rates_ = true;
         }
     }
 
@@ -2711,19 +2602,7 @@ std::string TimeMeanSizeRateScaler::to_string(const OperatorSchedule& os) const 
 void CompositeTimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    this->updated_sizes_ = false;
-    this->updated_mutation_rates_ = false;
     this->perform_collection_move(rng, comparisons, nthreads);
-
-    // Do sweep of univariate proposals across all the node height and pop size
-    // parameters
-    this->uni_composite_collection_scaler_.scale_heights(rng, comparisons, nthreads);
-    if (this->updated_sizes_) {
-        this->uni_composite_collection_scaler_.scale_population_sizes(rng, comparisons, nthreads);
-    }
-    if (this->updated_mutation_rates_) {
-        this->uni_composite_collection_scaler_.scale_mutation_rates(rng, comparisons, nthreads);
-    }
 }
 
 std::string CompositeTimeMeanSizeRateScaler::get_name() const {
@@ -2752,7 +2631,6 @@ std::string CompositeTimeMeanSizeRateScaler::to_string(const OperatorSchedule& o
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->uni_composite_collection_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -2805,17 +2683,13 @@ std::string DirichletProcessGibbsSampler::to_string(const OperatorSchedule& os) 
         ss << tuning << "\t";
     }
     ss << "\n";
-    // ss << this->collection_scaler_.to_string(os);
-    ss << this->height_scaler_.to_string(os);
     return ss.str();
 }
 
 void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    // this->collection_scaler_.operate(rng, comparisons, nthreads);
     this->perform_collection_move(rng, comparisons, nthreads);
-    this->height_scaler_.operate(rng, comparisons, nthreads);
 }
 
 void DirichletProcessGibbsSampler::perform_collection_move(
@@ -2992,7 +2866,6 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
         ss << tuning << "\t";
     }
     ss << "\n";
-    // ss << this->collection_scaler_.to_string(os);
     ss << this->collection_height_scaler_.to_string(os);
     return ss.str();
 }
@@ -3000,7 +2873,6 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
 void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    // this->collection_scaler_.operate(rng, comparisons, nthreads);
     for (unsigned int i = 0; i < comparisons->get_number_of_trees(); ++i) {
         this->perform_collection_move(rng, comparisons, nthreads);
         this->collection_height_scaler_.operate(rng, comparisons, nthreads);

@@ -1467,7 +1467,6 @@ class BaseComparisonSettings {
         }
 
         virtual void parse_parameter_settings(const YAML::Node& node) {
-            std::cout << "WRONG parsing parameters\n";
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison parameters node should be a map, but found: " +
@@ -1505,7 +1504,6 @@ class BaseComparisonSettings {
                 const YAML::Node& comparison_node,
                 const std::string& config_path,
                 bool global_defaults = false) {
-            std::cout << "WRONG updating config\n";
             if (! comparison_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison node should be a map, but found: " +
@@ -1802,7 +1800,6 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 const YAML::Node& comparison_node,
                 const std::string& config_path,
                 bool global_defaults = false) {
-            std::cout << "updating config\n";
             if (! comparison_node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison node should be a map, but found: " +
@@ -1861,7 +1858,6 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
         }
 
         void parse_parameter_settings(const YAML::Node& node) {
-            std::cout << "parsing parameters\n";
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "comparison parameters node should be a map, but found: " +
