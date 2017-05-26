@@ -45,7 +45,10 @@ class OperatorSchedule {
     public:
         OperatorSchedule() { }
         OperatorSchedule(
-                const OperatorScheduleSettings& settings,
+                const CollectionSettings& settings,
+                bool use_dpp = true);
+        OperatorSchedule(
+                const DirichletCollectionSettings& settings,
                 bool use_dpp = true);
         virtual ~OperatorSchedule() { }
 

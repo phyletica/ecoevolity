@@ -31,24 +31,15 @@ operator_settings:
         ConcentrationScaler:
             scale: 0.2
             weight: 3.0
-        CompositeHeightSizeRateMixer:
+        CompositeTimeSizeRateMixer:
             scale: 0.4
             weight: 2.0
-        CompositeHeightSizeRateScaler:
+        CompositeTimeSizeRateScaler:
             scale: 0.1
             weight: 1.0
-        ComparisonHeightScaler:
+        EventTimeScaler:
             scale: 0.3
             weight: 3.0
-        PopulationSizeScaler:
-            scale: 0.2
-            weight: 2.0
-        PopulationSizeMultiplierMixer:
-            scale: 0.7
-            weight: 3.0
-        FreqMover:
-            window: 0.2
-            weight: 0.5
 
 global_comparison_settings:
     ploidy: 2
@@ -83,7 +74,25 @@ global_comparison_settings:
         mutation_rate:
             value: 1.0
             estimate: false
-
+    operators:
+        MutationRateScaler:
+            weight: 2.0
+            scale: 0.6
+        MeanPopulationSizeScaler:
+            scale: 0.2
+            weight: 2.0
+        RelativePopulationSizeMixer:
+            scale: 0.7
+            weight: 3.0
+        RootRelativePopulationSizeMover:
+            window: 0.2
+            weight: 2.0
+        LeafRelativePopulationSizeMover:
+            window: 0.2
+            weight: 2.0
+        FreqMover:
+            window: 0.2
+            weight: 0.5
 
 comparisons:
 - comparison:
@@ -112,3 +121,7 @@ comparisons:
         freq_1:
             value: 0.5
             estimate: false
+    operators:
+        MutationRateScaler:
+            weight: 3.0
+            scale: 0.4

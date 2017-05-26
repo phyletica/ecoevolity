@@ -857,7 +857,7 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
             settings.get_concentration_settings(),
             rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings.get_operator_schedule_settings(),
+            settings,
             settings.using_dpp());
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
@@ -935,7 +935,7 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
             settings.get_concentration_settings(),
             rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings.get_operator_schedule_settings(),
+            settings,
             settings.using_dpp());
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");

@@ -7,7 +7,7 @@
 
 RandomNumberGenerator _PRIOR_SAMPLING_RNG = RandomNumberGenerator();
 
-TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer with 6 pairs", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer with 6 pairs", "[SamplingPrior]") {
 
     SECTION("Testing 6 pairs with optimizing") {
         double height_shape = 5.0;
@@ -47,23 +47,11 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer with 6 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
-        os << "        RootPopulationSizeScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        FreqMover:\n";
-        os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -72,6 +60,19 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer with 6 
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        LeafPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 0.0\n";
         os << "    parameters:\n";
         os << "        freq_1:\n";
         os << "            value: 0.5\n";
@@ -272,7 +273,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer with 6 
     }
 }
 
-TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior and no optimizing") {
         double time_shape = 10.0;
@@ -302,23 +303,11 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
-        os << "        RootPopulationSizeScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        FreqMover:\n";
-        os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -327,6 +316,19 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        LeafPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 0.0\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -457,23 +459,11 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
-        os << "        RootPopulationSizeScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        FreqMover:\n";
-        os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
@@ -482,6 +472,19 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "    population_name_is_prefix: true\n";
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 0.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        LeafPopulationSizeScaler:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 0.0\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            value: 0.005\n";
@@ -612,25 +615,26 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -763,25 +767,26 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -927,25 +932,26 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1021,25 +1027,26 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1225,25 +1232,26 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1353,7 +1361,7 @@ TEST_CASE("Testing sampling from prior with CompositeHeightSizeRateMixer", "[Sam
     }
 }
 
-TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -1381,25 +1389,26 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1487,7 +1496,7 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler", "[SamplingP
     }
 }
 
-TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizing",
+TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
@@ -1516,25 +1525,26 @@ TEST_CASE("Testing sampling from prior with ComparisonHeightScaler with optimizi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1649,25 +1659,26 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1784,25 +1795,26 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1884,7 +1896,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
     }
 }
 
-TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -1912,25 +1924,26 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2027,7 +2040,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler", "[Sampli
 }
 
 
-TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optimizing", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimizing", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
         double shape = 10.0;
@@ -2055,25 +2068,26 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2169,7 +2183,7 @@ TEST_CASE("Testing sampling from prior with ChildPopulationSizeScaler with optim
     }
 }
 
-TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPopulationSizeScaler on constrained sizes",
+TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPopulationSizeScaler on constrained sizes",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
@@ -2198,25 +2212,26 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2305,7 +2320,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
     }
 }
 
-TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPopulationSizeScaler on constrained sizes with optimizing",
+TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPopulationSizeScaler on constrained sizes with optimizing",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
@@ -2334,25 +2349,26 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and ChildPo
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2473,25 +2489,26 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2607,25 +2624,26 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2741,25 +2759,26 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2843,7 +2862,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
     }
 }
 
-TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
+TEST_CASE("Testing sampling from prior with MutationRateScaler",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
@@ -2872,25 +2891,26 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2973,7 +2993,7 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler",
     }
 }
 
-TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler with optimizing",
+TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
@@ -3002,25 +3022,26 @@ TEST_CASE("Testing sampling from prior with ComparisonMutationRateScaler with op
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -3140,25 +3161,26 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -3298,25 +3320,26 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -3419,7 +3442,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
     }
 }
 
-TEST_CASE("Testing fully parameterized model for one pair with optimization and CompositeHeightSizeRateMixer",
+TEST_CASE("Testing fully parameterized model for one pair with optimization and CompositeTimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing with optimizing") {
@@ -3456,25 +3479,26 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -3611,25 +3635,26 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -3781,25 +3806,26 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -3951,25 +3977,26 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -4122,25 +4149,26 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -4340,25 +4368,26 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -4558,25 +4587,26 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -4831,25 +4861,26 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -5102,7 +5133,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
     }
 }
 
-TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeHeightSizeRateMixer",
+TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeTimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
@@ -5164,25 +5195,26 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeHeightS
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -5474,25 +5506,26 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -5702,25 +5735,26 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -5930,25 +5964,26 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -6184,25 +6219,26 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -6521,25 +6557,26 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -6825,25 +6862,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -6993,25 +7031,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -7213,25 +7252,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -7466,25 +7506,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -7741,25 +7782,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -8023,7 +8065,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CompositeHeightSizeRateMixer",
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CompositeTimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
@@ -8075,25 +8117,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -8409,25 +8452,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -8757,25 +8801,26 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -9022,7 +9067,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
     }
 }
 
-TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and CompositeHeightSizeRateMixer",
+TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and CompositeTimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
@@ -9084,25 +9129,26 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -9401,25 +9447,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -9677,7 +9724,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeHeightSizeRateMixer, and fully parameterized",
+TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeTimeSizeRateMixer, and fully parameterized",
         "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
@@ -9729,25 +9776,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeHei
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -10056,25 +10104,26 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -10324,7 +10373,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing fixed 012 and fully parameterized and CompositeHeightSizeRateMixer",
+TEST_CASE("Testing fixed 012 and fully parameterized and CompositeTimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing fixed 012 pairs") {
@@ -10376,25 +10425,26 @@ TEST_CASE("Testing fixed 012 and fully parameterized and CompositeHeightSizeRate
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -10695,25 +10745,26 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -10963,7 +11014,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing fixed 000 and fully parameterized and CompositeHeightSizeRateMixer",
+TEST_CASE("Testing fixed 000 and fully parameterized and CompositeTimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing fixed 000 pairs") {
@@ -11015,25 +11066,26 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CompositeHeightSizeRate
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -11347,25 +11399,26 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -11707,10 +11760,10 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
     }
 }
 
-TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without CompositeHeightRefSizeRateMixer",
+TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without CompositeTimeMeanSizeRateMixer",
         "[SamplingPrior]") {
 
-    SECTION("Testing DPP with 3 dirichlet pairs without CompositeHeightRefSizeRateMixer") {
+    SECTION("Testing DPP with 3 dirichlet pairs without CompositeTimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -11772,25 +11825,26 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -12132,10 +12186,10 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
     }
 }
 
-TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only CompositeHeightRefSizeRateMixer",
+TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only CompositeTimeMeanSizeRateMixer",
         "[SamplingPrior]") {
 
-    SECTION("Testing DPP with 3 dirichlet pairs with only CompositeHeightRefSizeRateMixer") {
+    SECTION("Testing DPP with 3 dirichlet pairs with only CompositeTimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -12197,25 +12251,26 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -12609,25 +12664,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "    operators:\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -12964,10 +13020,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with no CompositeHeightRefSizeRateMixer",
+TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with no CompositeTimeMeanSizeRateMixer",
         "[SamplingPrior]") {
 
-    SECTION("Testing rjMCMC with 2 singletons and a pair and no CompositeHeightRefSizeRateMixer") {
+    SECTION("Testing rjMCMC with 2 singletons and a pair and no CompositeTimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -13016,25 +13072,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "    operators:\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -13371,10 +13428,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with only CompositeHeightRefSizeRateMixer",
+TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with only CompositeTimeMeanSizeRateMixer",
         "[SamplingPrior]") {
 
-    SECTION("Testing rjMCMC with 2 singletons and a pair and only CompositeHeightRefSizeRateMixer") {
+    SECTION("Testing rjMCMC with 2 singletons and a pair and only CompositeTimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -13423,25 +13480,26 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "    operators:\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeHeightSizeRateMixer:\n";
+        os << "        CompositeTimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";

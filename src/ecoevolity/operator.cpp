@@ -534,32 +534,32 @@ void CollectionOperatorInterface<DerivedOperatorType>::perform_collection_move(
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UnivariateHeightSizeScaler methods
+// UnivariateTimeSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-UnivariateHeightSizeScaler::UnivariateHeightSizeScaler(
+UnivariateTimeSizeScaler::UnivariateTimeSizeScaler(
         ) : CollectionOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-UnivariateHeightSizeScaler::UnivariateHeightSizeScaler(
+UnivariateTimeSizeScaler::UnivariateTimeSizeScaler(
         double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-UnivariateHeightSizeScaler::UnivariateHeightSizeScaler(
+UnivariateTimeSizeScaler::UnivariateTimeSizeScaler(
         double weight,
         double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void UnivariateHeightSizeScaler::operate(RandomNumberGenerator& rng,
+void UnivariateTimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double UnivariateHeightSizeScaler::propose(RandomNumberGenerator& rng,
+double UnivariateTimeSizeScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     double hastings_ratio = 0.0;
@@ -597,42 +597,42 @@ double UnivariateHeightSizeScaler::propose(RandomNumberGenerator& rng,
     return hastings_ratio;
 }
 
-std::string UnivariateHeightSizeScaler::target_parameter() const {
+std::string UnivariateTimeSizeScaler::target_parameter() const {
     return "node heights and population sizes";
 }
 
-std::string UnivariateHeightSizeScaler::get_name() const {
-    return "UnivariateHeightSizeScaler";
+std::string UnivariateTimeSizeScaler::get_name() const {
+    return "UnivariateTimeSizeScaler";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UnivariateHeightSizeRateScaler methods
+// UnivariateTimeSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-UnivariateHeightSizeRateScaler::UnivariateHeightSizeRateScaler(
+UnivariateTimeSizeRateScaler::UnivariateTimeSizeRateScaler(
         ) : CollectionOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-UnivariateHeightSizeRateScaler::UnivariateHeightSizeRateScaler(
+UnivariateTimeSizeRateScaler::UnivariateTimeSizeRateScaler(
         double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-UnivariateHeightSizeRateScaler::UnivariateHeightSizeRateScaler(
+UnivariateTimeSizeRateScaler::UnivariateTimeSizeRateScaler(
         double weight,
         double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void UnivariateHeightSizeRateScaler::operate(RandomNumberGenerator& rng,
+void UnivariateTimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double UnivariateHeightSizeRateScaler::propose(RandomNumberGenerator& rng,
+double UnivariateTimeSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     double hastings_ratio = 0.0;
@@ -677,42 +677,42 @@ double UnivariateHeightSizeRateScaler::propose(RandomNumberGenerator& rng,
     return hastings_ratio;
 }
 
-std::string UnivariateHeightSizeRateScaler::target_parameter() const {
+std::string UnivariateTimeSizeRateScaler::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string UnivariateHeightSizeRateScaler::get_name() const {
-    return "UnivariateHeightSizeRateScaler";
+std::string UnivariateTimeSizeRateScaler::get_name() const {
+    return "UnivariateTimeSizeRateScaler";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UnivariateHeightRefSizeRateScaler methods
+// UnivariateTimeMeanSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-UnivariateHeightRefSizeRateScaler::UnivariateHeightRefSizeRateScaler(
+UnivariateTimeMeanSizeRateScaler::UnivariateTimeMeanSizeRateScaler(
         ) : CollectionOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-UnivariateHeightRefSizeRateScaler::UnivariateHeightRefSizeRateScaler(
+UnivariateTimeMeanSizeRateScaler::UnivariateTimeMeanSizeRateScaler(
         double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-UnivariateHeightRefSizeRateScaler::UnivariateHeightRefSizeRateScaler(
+UnivariateTimeMeanSizeRateScaler::UnivariateTimeMeanSizeRateScaler(
         double weight,
         double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void UnivariateHeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
+void UnivariateTimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double UnivariateHeightRefSizeRateScaler::propose(RandomNumberGenerator& rng,
+double UnivariateTimeMeanSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     double hastings_ratio = 0.0;
@@ -749,20 +749,20 @@ double UnivariateHeightRefSizeRateScaler::propose(RandomNumberGenerator& rng,
     return hastings_ratio;
 }
 
-std::string UnivariateHeightRefSizeRateScaler::target_parameter() const {
+std::string UnivariateTimeMeanSizeRateScaler::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string UnivariateHeightRefSizeRateScaler::get_name() const {
-    return "UnivariateHeightRefSizeRateScaler";
+std::string UnivariateTimeMeanSizeRateScaler::get_name() const {
+    return "UnivariateTimeMeanSizeRateScaler";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UnivariateCompositeHeightSizeScaler methods
+// UnivariateCompositeTimeSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-UnivariateCompositeHeightSizeScaler::UnivariateCompositeHeightSizeScaler(
+UnivariateCompositeTimeSizeScaler::UnivariateCompositeTimeSizeScaler(
         double weight,
         double scale) : CollectionOperatorInterface<Operator>(weight) {
     this->height_scaler_.op_.set_scale(scale);
@@ -770,13 +770,13 @@ UnivariateCompositeHeightSizeScaler::UnivariateCompositeHeightSizeScaler(
     this->child_size_scaler_.op_.set_scale(scale);
 }
 
-void UnivariateCompositeHeightSizeScaler::operate(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeScaler::perform_collection_move(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeScaler::perform_collection_move(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
@@ -784,7 +784,7 @@ void UnivariateCompositeHeightSizeScaler::perform_collection_move(RandomNumberGe
     this->child_size_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double UnivariateCompositeHeightSizeScaler::propose(RandomNumberGenerator& rng,
+double UnivariateCompositeTimeSizeScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
@@ -793,33 +793,33 @@ double UnivariateCompositeHeightSizeScaler::propose(RandomNumberGenerator& rng,
     return std::numeric_limits<double>::infinity();
 }
 
-void UnivariateCompositeHeightSizeScaler::scale_heights(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeScaler::scale_heights(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeScaler::scale_root_population_sizes(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeScaler::scale_root_population_sizes(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->root_size_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeScaler::scale_child_population_sizes(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeScaler::scale_child_population_sizes(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->child_size_scaler_.operate(rng, comparisons, nthreads);
 }
 
-std::string UnivariateCompositeHeightSizeScaler::target_parameter() const {
+std::string UnivariateCompositeTimeSizeScaler::target_parameter() const {
     return "node heights and population sizes";
 }
 
-std::string UnivariateCompositeHeightSizeScaler::get_name() const {
-    return "UnivariateCompositeHeightSizeScaler";
+std::string UnivariateCompositeTimeSizeScaler::get_name() const {
+    return "UnivariateCompositeTimeSizeScaler";
 }
 
-std::string UnivariateCompositeHeightSizeScaler::to_string(const OperatorSchedule& os) const {
+std::string UnivariateCompositeTimeSizeScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -849,10 +849,10 @@ std::string UnivariateCompositeHeightSizeScaler::to_string(const OperatorSchedul
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UnivariateCompositeHeightSizeRateScaler methods
+// UnivariateCompositeTimeSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-UnivariateCompositeHeightSizeRateScaler::UnivariateCompositeHeightSizeRateScaler(
+UnivariateCompositeTimeSizeRateScaler::UnivariateCompositeTimeSizeRateScaler(
         double weight,
         double scale) : CollectionOperatorInterface<Operator>(weight) {
     this->height_scaler_.op_.set_scale(scale);
@@ -861,13 +861,13 @@ UnivariateCompositeHeightSizeRateScaler::UnivariateCompositeHeightSizeRateScaler
     this->mutation_rate_scaler_.op_.set_scale(scale);
 }
 
-void UnivariateCompositeHeightSizeRateScaler::operate(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeRateScaler::perform_collection_move(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeRateScaler::perform_collection_move(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
@@ -876,7 +876,7 @@ void UnivariateCompositeHeightSizeRateScaler::perform_collection_move(RandomNumb
     this->mutation_rate_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double UnivariateCompositeHeightSizeRateScaler::propose(RandomNumberGenerator& rng,
+double UnivariateCompositeTimeSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
@@ -886,39 +886,39 @@ double UnivariateCompositeHeightSizeRateScaler::propose(RandomNumberGenerator& r
     return std::numeric_limits<double>::infinity();
 }
 
-void UnivariateCompositeHeightSizeRateScaler::scale_heights(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeRateScaler::scale_heights(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeRateScaler::scale_root_population_sizes(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeRateScaler::scale_root_population_sizes(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->root_size_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeRateScaler::scale_child_population_sizes(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeRateScaler::scale_child_population_sizes(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->child_size_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightSizeRateScaler::scale_mutation_rates(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeSizeRateScaler::scale_mutation_rates(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->mutation_rate_scaler_.operate(rng, comparisons, nthreads);
 }
 
-std::string UnivariateCompositeHeightSizeRateScaler::target_parameter() const {
+std::string UnivariateCompositeTimeSizeRateScaler::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string UnivariateCompositeHeightSizeRateScaler::get_name() const {
-    return "UnivariateCompositeHeightSizeRateScaler";
+std::string UnivariateCompositeTimeSizeRateScaler::get_name() const {
+    return "UnivariateCompositeTimeSizeRateScaler";
 }
 
-std::string UnivariateCompositeHeightSizeRateScaler::to_string(const OperatorSchedule& os) const {
+std::string UnivariateCompositeTimeSizeRateScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -949,10 +949,10 @@ std::string UnivariateCompositeHeightSizeRateScaler::to_string(const OperatorSch
 
 
 //////////////////////////////////////////////////////////////////////////////
-// UnivariateCompositeHeightRefSizeRateScaler methods
+// UnivariateCompositeTimeMeanSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-UnivariateCompositeHeightRefSizeRateScaler::UnivariateCompositeHeightRefSizeRateScaler(
+UnivariateCompositeTimeMeanSizeRateScaler::UnivariateCompositeTimeMeanSizeRateScaler(
         double weight,
         double scale) : CollectionOperatorInterface<Operator>(weight) {
     this->height_scaler_.op_.set_scale(scale);
@@ -961,13 +961,13 @@ UnivariateCompositeHeightRefSizeRateScaler::UnivariateCompositeHeightRefSizeRate
     this->mutation_rate_scaler_.op_.set_scale(scale);
 }
 
-void UnivariateCompositeHeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightRefSizeRateScaler::perform_collection_move(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeMeanSizeRateScaler::perform_collection_move(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
@@ -976,7 +976,7 @@ void UnivariateCompositeHeightRefSizeRateScaler::perform_collection_move(RandomN
     this->mutation_rate_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double UnivariateCompositeHeightRefSizeRateScaler::propose(RandomNumberGenerator& rng,
+double UnivariateCompositeTimeMeanSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
@@ -986,39 +986,39 @@ double UnivariateCompositeHeightRefSizeRateScaler::propose(RandomNumberGenerator
     return std::numeric_limits<double>::infinity();
 }
 
-void UnivariateCompositeHeightRefSizeRateScaler::scale_heights(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeMeanSizeRateScaler::scale_heights(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->height_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightRefSizeRateScaler::scale_population_sizes(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeMeanSizeRateScaler::scale_population_sizes(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->size_scaler_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightRefSizeRateScaler::mix_population_size_multipliers(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeMeanSizeRateScaler::mix_population_size_multipliers(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->size_multiplier_mixer_.operate(rng, comparisons, nthreads);
 }
 
-void UnivariateCompositeHeightRefSizeRateScaler::scale_mutation_rates(RandomNumberGenerator& rng,
+void UnivariateCompositeTimeMeanSizeRateScaler::scale_mutation_rates(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->mutation_rate_scaler_.operate(rng, comparisons, nthreads);
 }
 
-std::string UnivariateCompositeHeightRefSizeRateScaler::target_parameter() const {
+std::string UnivariateCompositeTimeMeanSizeRateScaler::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string UnivariateCompositeHeightRefSizeRateScaler::get_name() const {
-    return "UnivariateCompositeHeightRefSizeRateScaler";
+std::string UnivariateCompositeTimeMeanSizeRateScaler::get_name() const {
+    return "UnivariateCompositeTimeMeanSizeRateScaler";
 }
 
-std::string UnivariateCompositeHeightRefSizeRateScaler::to_string(const OperatorSchedule& os) const {
+std::string UnivariateCompositeTimeMeanSizeRateScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -1163,50 +1163,50 @@ std::string FreqMover::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ComparisonMutationRateScaler methods
+// MutationRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+MutationRateScaler::MutationRateScaler(
         ) : TreeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+MutationRateScaler::MutationRateScaler(
         unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
     this->op_ = ScaleOperator();
 }
 
-ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+MutationRateScaler::MutationRateScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+MutationRateScaler::MutationRateScaler(
         unsigned int tree_index,
         double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
-ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+MutationRateScaler::MutationRateScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-ComparisonMutationRateScaler::ComparisonMutationRateScaler(
+MutationRateScaler::MutationRateScaler(
         unsigned int tree_index,
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void ComparisonMutationRateScaler::operate(RandomNumberGenerator& rng,
+void MutationRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double ComparisonMutationRateScaler::propose(
+double MutationRateScaler::propose(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
@@ -1217,12 +1217,12 @@ double ComparisonMutationRateScaler::propose(
     return hastings;
 }
 
-std::string ComparisonMutationRateScaler::target_parameter() const {
+std::string MutationRateScaler::target_parameter() const {
     return "mutation rate";
 }
 
-std::string ComparisonMutationRateScaler::get_name() const {
-    std::string name = "ComparisonMutationRateScaler";
+std::string MutationRateScaler::get_name() const {
+    std::string name = "MutationRateScaler";
     if (this->tree_index_ > -1) {
         name += std::to_string(this->tree_index_);
     }
@@ -1231,50 +1231,50 @@ std::string ComparisonMutationRateScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// PopulationSizeMultiplierMixer methods
+// RelativePopulationSizeMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         ) : TreeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
     this->op_ = ScaleOperator();
 }
 
-PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         unsigned int tree_index,
         double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
-PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-PopulationSizeMultiplierMixer::PopulationSizeMultiplierMixer(
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         unsigned int tree_index,
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void PopulationSizeMultiplierMixer::operate(RandomNumberGenerator& rng,
+void RelativePopulationSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double PopulationSizeMultiplierMixer::propose(
+double RelativePopulationSizeMixer::propose(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
@@ -1301,12 +1301,12 @@ double PopulationSizeMultiplierMixer::propose(
     return hastings;
 }
 
-std::string PopulationSizeMultiplierMixer::target_parameter() const {
+std::string RelativePopulationSizeMixer::target_parameter() const {
     return "population size multipliers";
 }
 
-std::string PopulationSizeMultiplierMixer::get_name() const {
-    std::string name = "PopulationSizeMultiplierMixer";
+std::string RelativePopulationSizeMixer::get_name() const {
+    std::string name = "RelativePopulationSizeMixer";
     if (this->tree_index_ > -1) {
         name += std::to_string(this->tree_index_);
     }
@@ -1315,50 +1315,50 @@ std::string PopulationSizeMultiplierMixer::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ReferencePopulationSizeScaler methods
+// MeanPopulationSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+MeanPopulationSizeScaler::MeanPopulationSizeScaler(
         ) : TreeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+MeanPopulationSizeScaler::MeanPopulationSizeScaler(
         unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
     this->op_ = ScaleOperator();
 }
 
-ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+MeanPopulationSizeScaler::MeanPopulationSizeScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+MeanPopulationSizeScaler::MeanPopulationSizeScaler(
         unsigned int tree_index,
         double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
-ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+MeanPopulationSizeScaler::MeanPopulationSizeScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-ReferencePopulationSizeScaler::ReferencePopulationSizeScaler(
+MeanPopulationSizeScaler::MeanPopulationSizeScaler(
         unsigned int tree_index,
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void ReferencePopulationSizeScaler::operate(RandomNumberGenerator& rng,
+void MeanPopulationSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double ReferencePopulationSizeScaler::propose(
+double MeanPopulationSizeScaler::propose(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
@@ -1376,12 +1376,12 @@ double ReferencePopulationSizeScaler::propose(
     return hastings;
 }
 
-std::string ReferencePopulationSizeScaler::target_parameter() const {
+std::string MeanPopulationSizeScaler::target_parameter() const {
     return "population size";
 }
 
-std::string ReferencePopulationSizeScaler::get_name() const {
-    std::string name = "ReferencePopulationSizeScaler";
+std::string MeanPopulationSizeScaler::get_name() const {
+    std::string name = "MeanPopulationSizeScaler";
     if (this->tree_index_ > -1) {
         name += std::to_string(this->tree_index_);
     }
@@ -1390,50 +1390,50 @@ std::string ReferencePopulationSizeScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ChildPopulationSizeScaler methods
+// LeafPopulationSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+LeafPopulationSizeScaler::LeafPopulationSizeScaler(
         ) : TreeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+LeafPopulationSizeScaler::LeafPopulationSizeScaler(
         unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
     this->op_ = ScaleOperator();
 }
 
-ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+LeafPopulationSizeScaler::LeafPopulationSizeScaler(
         double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+LeafPopulationSizeScaler::LeafPopulationSizeScaler(
         unsigned int tree_index,
         double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
 }
 
-ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+LeafPopulationSizeScaler::LeafPopulationSizeScaler(
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-ChildPopulationSizeScaler::ChildPopulationSizeScaler(
+LeafPopulationSizeScaler::LeafPopulationSizeScaler(
         unsigned int tree_index,
         double weight,
         double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void ChildPopulationSizeScaler::operate(RandomNumberGenerator& rng,
+void LeafPopulationSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double ChildPopulationSizeScaler::propose(
+double LeafPopulationSizeScaler::propose(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
@@ -1452,12 +1452,12 @@ double ChildPopulationSizeScaler::propose(
     return hastings;
 }
 
-std::string ChildPopulationSizeScaler::target_parameter() const {
+std::string LeafPopulationSizeScaler::target_parameter() const {
     return "population size";
 }
 
-std::string ChildPopulationSizeScaler::get_name() const {
-    std::string name = "ChildPopulationSizeScaler";
+std::string LeafPopulationSizeScaler::get_name() const {
+    std::string name = "LeafPopulationSizeScaler";
     if (this->tree_index_ > -1) {
         name += std::to_string(this->tree_index_);
     }
@@ -1626,50 +1626,50 @@ std::string RootRelativePopulationSizeMover::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// RelativePopulationSizeMover methods
+// LeafRelativePopulationSizeMover methods
 //////////////////////////////////////////////////////////////////////////////
 
-RelativePopulationSizeMover::RelativePopulationSizeMover(
+LeafRelativePopulationSizeMover::LeafRelativePopulationSizeMover(
         ) : TreeOperatorInterface<WindowOperator>() {
     this->op_ = WindowOperator();
 }
 
-RelativePopulationSizeMover::RelativePopulationSizeMover(
+LeafRelativePopulationSizeMover::LeafRelativePopulationSizeMover(
         unsigned int tree_index) : TreeOperatorInterface<WindowOperator>(tree_index) {
     this->op_ = WindowOperator();
 }
 
-RelativePopulationSizeMover::RelativePopulationSizeMover(
+LeafRelativePopulationSizeMover::LeafRelativePopulationSizeMover(
         double weight) : TreeOperatorInterface<WindowOperator>(weight) {
     this->op_ = WindowOperator();
 }
 
-RelativePopulationSizeMover::RelativePopulationSizeMover(
+LeafRelativePopulationSizeMover::LeafRelativePopulationSizeMover(
         unsigned int tree_index,
         double weight) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator();
 }
 
-RelativePopulationSizeMover::RelativePopulationSizeMover(
+LeafRelativePopulationSizeMover::LeafRelativePopulationSizeMover(
         double weight,
         double scale) : TreeOperatorInterface<WindowOperator>(weight) {
     this->op_ = WindowOperator(scale);
 }
 
-RelativePopulationSizeMover::RelativePopulationSizeMover(
+LeafRelativePopulationSizeMover::LeafRelativePopulationSizeMover(
         unsigned int tree_index,
         double weight,
         double scale) : TreeOperatorInterface<WindowOperator>(tree_index, weight) {
     this->op_ = WindowOperator(scale);
 }
 
-void RelativePopulationSizeMover::operate(RandomNumberGenerator& rng,
+void LeafRelativePopulationSizeMover::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double RelativePopulationSizeMover::propose(
+double LeafRelativePopulationSizeMover::propose(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
@@ -1701,12 +1701,12 @@ double RelativePopulationSizeMover::propose(
     return 0.0;
 }
 
-std::string RelativePopulationSizeMover::target_parameter() const {
+std::string LeafRelativePopulationSizeMover::target_parameter() const {
     return "population size multipliers";
 }
 
-std::string RelativePopulationSizeMover::get_name() const {
-    std::string name = "RelativePopulationSizeMover";
+std::string LeafRelativePopulationSizeMover::get_name() const {
+    std::string name = "LeafRelativePopulationSizeMover";
     if (this->tree_index_ > -1) {
         name += std::to_string(this->tree_index_);
     }
@@ -1715,32 +1715,32 @@ std::string RelativePopulationSizeMover::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ComparisonHeightScaler methods
+// EventTimeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-ComparisonHeightScaler::ComparisonHeightScaler(
+EventTimeScaler::EventTimeScaler(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-ComparisonHeightScaler::ComparisonHeightScaler(
+EventTimeScaler::EventTimeScaler(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-ComparisonHeightScaler::ComparisonHeightScaler(
+EventTimeScaler::EventTimeScaler(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void ComparisonHeightScaler::operate(RandomNumberGenerator& rng,
+void EventTimeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double ComparisonHeightScaler::propose(RandomNumberGenerator& rng,
+double EventTimeScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double h = comparisons->get_height(height_index);
@@ -1750,42 +1750,42 @@ double ComparisonHeightScaler::propose(RandomNumberGenerator& rng,
     return hastings;
 }
 
-std::string ComparisonHeightScaler::get_name() const {
-    return "ComparisonHeightScaler";
+std::string EventTimeScaler::get_name() const {
+    return "EventTimeScaler";
 }
 
-std::string ComparisonHeightScaler::target_parameter() const {
+std::string EventTimeScaler::target_parameter() const {
     return "node height";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// ComparisonHeightMover methods
+// EventTimeMover methods
 //////////////////////////////////////////////////////////////////////////////
 
-ComparisonHeightMover::ComparisonHeightMover(
+EventTimeMover::EventTimeMover(
         ) : TimeOperatorInterface<WindowOperator>() {
     this->op_ = WindowOperator();
 }
 
-ComparisonHeightMover::ComparisonHeightMover(
+EventTimeMover::EventTimeMover(
         double weight) : TimeOperatorInterface<WindowOperator>(weight) {
     this->op_ = WindowOperator();
 }
 
-ComparisonHeightMover::ComparisonHeightMover(
+EventTimeMover::EventTimeMover(
         double weight,
         double window_size) : TimeOperatorInterface<WindowOperator>(weight) {
     this->op_ = WindowOperator(window_size);
 }
 
-void ComparisonHeightMover::operate(RandomNumberGenerator& rng,
+void EventTimeMover::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
 }
 
-double ComparisonHeightMover::propose(RandomNumberGenerator& rng,
+double EventTimeMover::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double h = comparisons->get_height(height_index);
@@ -1798,36 +1798,36 @@ double ComparisonHeightMover::propose(RandomNumberGenerator& rng,
     return hastings;
 }
 
-std::string ComparisonHeightMover::get_name() const {
-    return "ComparisonHeightMover";
+std::string EventTimeMover::get_name() const {
+    return "EventTimeMover";
 }
 
-std::string ComparisonHeightMover::target_parameter() const {
+std::string EventTimeMover::target_parameter() const {
     return "node height";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
-// HeightSizeMixer methods
+// TimeSizeMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-HeightSizeMixer::HeightSizeMixer(
+TimeSizeMixer::TimeSizeMixer(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeMixer::HeightSizeMixer(
+TimeSizeMixer::TimeSizeMixer(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeMixer::HeightSizeMixer(
+TimeSizeMixer::TimeSizeMixer(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void HeightSizeMixer::operate(RandomNumberGenerator& rng,
+void TimeSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -1839,7 +1839,7 @@ void HeightSizeMixer::operate(RandomNumberGenerator& rng,
     this->uni_collection_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double HeightSizeMixer::propose(RandomNumberGenerator& rng,
+double TimeSizeMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double multiplier = this->op_.get_move_amount(rng);
@@ -1883,15 +1883,15 @@ double HeightSizeMixer::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * ndimensions;
 }
 
-std::string HeightSizeMixer::get_name() const {
-    return "HeightSizeMixer";
+std::string TimeSizeMixer::get_name() const {
+    return "TimeSizeMixer";
 }
 
-std::string HeightSizeMixer::target_parameter() const {
+std::string TimeSizeMixer::target_parameter() const {
     return "node heights and population sizes";
 }
 
-std::string HeightSizeMixer::to_string(const OperatorSchedule& os) const {
+std::string TimeSizeMixer::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -1919,10 +1919,10 @@ std::string HeightSizeMixer::to_string(const OperatorSchedule& os) const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CompositeHeightSizeMixer methods
+// CompositeTimeSizeMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-void CompositeHeightSizeMixer::operate(RandomNumberGenerator& rng,
+void CompositeTimeSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -1940,11 +1940,11 @@ void CompositeHeightSizeMixer::operate(RandomNumberGenerator& rng,
     }
 }
 
-std::string CompositeHeightSizeMixer::get_name() const {
-    return "CompositeHeightSizeMixer";
+std::string CompositeTimeSizeMixer::get_name() const {
+    return "CompositeTimeSizeMixer";
 }
 
-std::string CompositeHeightSizeMixer::to_string(const OperatorSchedule& os) const {
+std::string CompositeTimeSizeMixer::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -1972,26 +1972,26 @@ std::string CompositeHeightSizeMixer::to_string(const OperatorSchedule& os) cons
 
 
 //////////////////////////////////////////////////////////////////////////////
-// HeightSizeScaler methods
+// TimeSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-HeightSizeScaler::HeightSizeScaler(
+TimeSizeScaler::TimeSizeScaler(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeScaler::HeightSizeScaler(
+TimeSizeScaler::TimeSizeScaler(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeScaler::HeightSizeScaler(
+TimeSizeScaler::TimeSizeScaler(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void HeightSizeScaler::operate(RandomNumberGenerator& rng,
+void TimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -2003,7 +2003,7 @@ void HeightSizeScaler::operate(RandomNumberGenerator& rng,
     this->uni_collection_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double HeightSizeScaler::propose(RandomNumberGenerator& rng,
+double TimeSizeScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double multiplier = this->op_.get_move_amount(rng);
@@ -2028,15 +2028,15 @@ double HeightSizeScaler::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * number_of_free_parameters_scaled;
 }
 
-std::string HeightSizeScaler::get_name() const {
-    return "HeightSizeScaler";
+std::string TimeSizeScaler::get_name() const {
+    return "TimeSizeScaler";
 }
 
-std::string HeightSizeScaler::target_parameter() const {
+std::string TimeSizeScaler::target_parameter() const {
     return "node heights and population sizes";
 }
 
-std::string HeightSizeScaler::to_string(const OperatorSchedule& os) const {
+std::string TimeSizeScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2064,10 +2064,10 @@ std::string HeightSizeScaler::to_string(const OperatorSchedule& os) const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CompositeHeightSizeScaler methods
+// CompositeTimeSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-void CompositeHeightSizeScaler::operate(RandomNumberGenerator& rng,
+void CompositeTimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -2085,11 +2085,11 @@ void CompositeHeightSizeScaler::operate(RandomNumberGenerator& rng,
     }
 }
 
-std::string CompositeHeightSizeScaler::get_name() const {
-    return "CompositeHeightSizeScaler";
+std::string CompositeTimeSizeScaler::get_name() const {
+    return "CompositeTimeSizeScaler";
 }
 
-std::string CompositeHeightSizeScaler::to_string(const OperatorSchedule& os) const {
+std::string CompositeTimeSizeScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2117,26 +2117,26 @@ std::string CompositeHeightSizeScaler::to_string(const OperatorSchedule& os) con
 
 
 //////////////////////////////////////////////////////////////////////////////
-// HeightSizeRateMixer methods
+// TimeSizeRateMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-HeightSizeRateMixer::HeightSizeRateMixer(
+TimeSizeRateMixer::TimeSizeRateMixer(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeRateMixer::HeightSizeRateMixer(
+TimeSizeRateMixer::TimeSizeRateMixer(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeRateMixer::HeightSizeRateMixer(
+TimeSizeRateMixer::TimeSizeRateMixer(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void HeightSizeRateMixer::operate(RandomNumberGenerator& rng,
+void TimeSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -2149,7 +2149,7 @@ void HeightSizeRateMixer::operate(RandomNumberGenerator& rng,
     this->uni_collection_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double HeightSizeRateMixer::propose(RandomNumberGenerator& rng,
+double TimeSizeRateMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double multiplier = this->op_.get_move_amount(rng);
@@ -2197,15 +2197,15 @@ double HeightSizeRateMixer::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * ndimensions;
 }
 
-std::string HeightSizeRateMixer::get_name() const {
-    return "HeightSizeRateMixer";
+std::string TimeSizeRateMixer::get_name() const {
+    return "TimeSizeRateMixer";
 }
 
-std::string HeightSizeRateMixer::target_parameter() const {
+std::string TimeSizeRateMixer::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string HeightSizeRateMixer::to_string(const OperatorSchedule& os) const {
+std::string TimeSizeRateMixer::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2233,10 +2233,10 @@ std::string HeightSizeRateMixer::to_string(const OperatorSchedule& os) const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CompositeHeightSizeRateMixer methods
+// CompositeTimeSizeRateMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-void CompositeHeightSizeRateMixer::operate(RandomNumberGenerator& rng,
+void CompositeTimeSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -2258,11 +2258,11 @@ void CompositeHeightSizeRateMixer::operate(RandomNumberGenerator& rng,
     }
 }
 
-std::string CompositeHeightSizeRateMixer::get_name() const {
-    return "CompositeHeightSizeRateMixer";
+std::string CompositeTimeSizeRateMixer::get_name() const {
+    return "CompositeTimeSizeRateMixer";
 }
 
-std::string CompositeHeightSizeRateMixer::to_string(const OperatorSchedule& os) const {
+std::string CompositeTimeSizeRateMixer::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2290,26 +2290,26 @@ std::string CompositeHeightSizeRateMixer::to_string(const OperatorSchedule& os) 
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CompositeHeightRefSizeRateMixer methods
+// CompositeTimeMeanSizeRateMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-CompositeHeightRefSizeRateMixer::CompositeHeightRefSizeRateMixer(
+CompositeTimeMeanSizeRateMixer::CompositeTimeMeanSizeRateMixer(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-CompositeHeightRefSizeRateMixer::CompositeHeightRefSizeRateMixer(
+CompositeTimeMeanSizeRateMixer::CompositeTimeMeanSizeRateMixer(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-CompositeHeightRefSizeRateMixer::CompositeHeightRefSizeRateMixer(
+CompositeTimeMeanSizeRateMixer::CompositeTimeMeanSizeRateMixer(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void CompositeHeightRefSizeRateMixer::operate(RandomNumberGenerator& rng,
+void CompositeTimeMeanSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_sizes_ = false;
@@ -2331,7 +2331,7 @@ void CompositeHeightRefSizeRateMixer::operate(RandomNumberGenerator& rng,
     }
 }
 
-double CompositeHeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
+double CompositeTimeMeanSizeRateMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double multiplier = this->op_.get_move_amount(rng);
@@ -2420,15 +2420,15 @@ double CompositeHeightRefSizeRateMixer::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * ndimensions;
 }
 
-std::string CompositeHeightRefSizeRateMixer::get_name() const {
-    return "CompositeHeightRefSizeRateMixer";
+std::string CompositeTimeMeanSizeRateMixer::get_name() const {
+    return "CompositeTimeMeanSizeRateMixer";
 }
 
-std::string CompositeHeightRefSizeRateMixer::target_parameter() const {
+std::string CompositeTimeMeanSizeRateMixer::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string CompositeHeightRefSizeRateMixer::to_string(const OperatorSchedule& os) const {
+std::string CompositeTimeMeanSizeRateMixer::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2456,26 +2456,26 @@ std::string CompositeHeightRefSizeRateMixer::to_string(const OperatorSchedule& o
 
 
 //////////////////////////////////////////////////////////////////////////////
-// HeightSizeRateScaler methods
+// TimeSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-HeightSizeRateScaler::HeightSizeRateScaler(
+TimeSizeRateScaler::TimeSizeRateScaler(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeRateScaler::HeightSizeRateScaler(
+TimeSizeRateScaler::TimeSizeRateScaler(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-HeightSizeRateScaler::HeightSizeRateScaler(
+TimeSizeRateScaler::TimeSizeRateScaler(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void HeightSizeRateScaler::operate(RandomNumberGenerator& rng,
+void TimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -2488,7 +2488,7 @@ void HeightSizeRateScaler::operate(RandomNumberGenerator& rng,
     this->uni_collection_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double HeightSizeRateScaler::propose(RandomNumberGenerator& rng,
+double TimeSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double multiplier = this->op_.get_move_amount(rng);
@@ -2518,15 +2518,15 @@ double HeightSizeRateScaler::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * ndimensions;
 }
 
-std::string HeightSizeRateScaler::get_name() const {
-    return "HeightSizeRateScaler";
+std::string TimeSizeRateScaler::get_name() const {
+    return "TimeSizeRateScaler";
 }
 
-std::string HeightSizeRateScaler::target_parameter() const {
+std::string TimeSizeRateScaler::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string HeightSizeRateScaler::to_string(const OperatorSchedule& os) const {
+std::string TimeSizeRateScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2554,10 +2554,10 @@ std::string HeightSizeRateScaler::to_string(const OperatorSchedule& os) const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CompositeHeightSizeRateScaler methods
+// CompositeTimeSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-void CompositeHeightSizeRateScaler::operate(RandomNumberGenerator& rng,
+void CompositeTimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_root_sizes_ = false;
@@ -2579,11 +2579,11 @@ void CompositeHeightSizeRateScaler::operate(RandomNumberGenerator& rng,
     }
 }
 
-std::string CompositeHeightSizeRateScaler::get_name() const {
-    return "CompositeHeightSizeRateScaler";
+std::string CompositeTimeSizeRateScaler::get_name() const {
+    return "CompositeTimeSizeRateScaler";
 }
 
-std::string CompositeHeightSizeRateScaler::to_string(const OperatorSchedule& os) const {
+std::string CompositeTimeSizeRateScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2611,26 +2611,26 @@ std::string CompositeHeightSizeRateScaler::to_string(const OperatorSchedule& os)
 
 
 //////////////////////////////////////////////////////////////////////////////
-// HeightRefSizeRateScaler methods
+// TimeMeanSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-HeightRefSizeRateScaler::HeightRefSizeRateScaler(
+TimeMeanSizeRateScaler::TimeMeanSizeRateScaler(
         ) : TimeOperatorInterface<ScaleOperator>() {
     this->op_ = ScaleOperator();
 }
 
-HeightRefSizeRateScaler::HeightRefSizeRateScaler(
+TimeMeanSizeRateScaler::TimeMeanSizeRateScaler(
         double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
-HeightRefSizeRateScaler::HeightRefSizeRateScaler(
+TimeMeanSizeRateScaler::TimeMeanSizeRateScaler(
         double weight,
         double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator(scale);
 }
 
-void HeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
+void TimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_sizes_ = false;
@@ -2642,7 +2642,7 @@ void HeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
     this->uni_collection_scaler_.operate(rng, comparisons, nthreads);
 }
 
-double HeightRefSizeRateScaler::propose(RandomNumberGenerator& rng,
+double TimeMeanSizeRateScaler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
     double multiplier = this->op_.get_move_amount(rng);
@@ -2669,15 +2669,15 @@ double HeightRefSizeRateScaler::propose(RandomNumberGenerator& rng,
     return std::log(multiplier) * ndimensions;
 }
 
-std::string HeightRefSizeRateScaler::get_name() const {
-    return "HeightRefSizeRateScaler";
+std::string TimeMeanSizeRateScaler::get_name() const {
+    return "TimeMeanSizeRateScaler";
 }
 
-std::string HeightRefSizeRateScaler::target_parameter() const {
+std::string TimeMeanSizeRateScaler::target_parameter() const {
     return "node heights, population sizes, and mutation rates";
 }
 
-std::string HeightRefSizeRateScaler::to_string(const OperatorSchedule& os) const {
+std::string TimeMeanSizeRateScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
@@ -2705,10 +2705,10 @@ std::string HeightRefSizeRateScaler::to_string(const OperatorSchedule& os) const
 
 
 //////////////////////////////////////////////////////////////////////////////
-// CompositeHeightRefSizeRateScaler methods
+// CompositeTimeMeanSizeRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
-void CompositeHeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
+void CompositeTimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->updated_sizes_ = false;
@@ -2726,11 +2726,11 @@ void CompositeHeightRefSizeRateScaler::operate(RandomNumberGenerator& rng,
     }
 }
 
-std::string CompositeHeightRefSizeRateScaler::get_name() const {
-    return "CompositeHeightRefSizeRateScaler";
+std::string CompositeTimeMeanSizeRateScaler::get_name() const {
+    return "CompositeTimeMeanSizeRateScaler";
 }
 
-std::string CompositeHeightRefSizeRateScaler::to_string(const OperatorSchedule& os) const {
+std::string CompositeTimeMeanSizeRateScaler::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
