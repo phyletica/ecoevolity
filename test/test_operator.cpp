@@ -11,8 +11,8 @@
 
 RandomNumberGenerator _TEST_OPERATOR_RNG = RandomNumberGenerator();
 
-TEST_CASE("Testing HeightSizeScaler with 4 pairs",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with 4 pairs",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -20,8 +20,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -85,7 +85,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -158,8 +158,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs",
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -167,8 +167,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -232,7 +232,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -294,15 +294,15 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with 4 pairs with fixed sizes",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with 4 pairs with fixed sizes",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test3" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test3" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -354,7 +354,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -413,8 +413,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with 4 singletons",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with 4 singletons",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -422,8 +422,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test14" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test14" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -487,7 +487,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345678);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -552,8 +552,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -561,8 +561,8 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -633,7 +633,7 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -777,8 +777,8 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with 4 pairs and shared event",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with 4 pairs and shared event",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -786,8 +786,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -853,7 +853,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345678);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -927,8 +927,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons and shared event",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons and shared event",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -936,8 +936,8 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons and shared 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -1010,7 +1010,7 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons and shared 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -1134,8 +1134,8 @@ TEST_CASE("Testing HeightSizeScaler with mix of pairs and singletons and shared 
     }
 }
 
-TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes and shared event",
-        "[HeightSizeScaler]") {
+TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes and shared event",
+        "[TimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -1143,8 +1143,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes and shar
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizescaler-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -1210,7 +1210,7 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes and shar
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -1273,8 +1273,8 @@ TEST_CASE("Testing HeightSizeScaler with 4 pairs with constrained sizes and shar
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -1282,8 +1282,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1347,14 +1347,21 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
-        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
-        comparisons.ignore_data();
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
         comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
@@ -1375,8 +1382,18 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            //OperatorInterface& o = op_schedule.draw_operator(rng);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_time_operators()) {
+                for (std::shared_ptr<OperatorInterface> time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_tree_operators()) {
+                for (std::shared_ptr<OperatorInterface> tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -1396,8 +1413,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -1420,8 +1436,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -1429,8 +1445,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1493,16 +1509,21 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
 
         CollectionSettings settings = CollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
         comparisons.set_operator_schedule(op_schedule);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -1520,8 +1541,17 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_time_operators()) {
+                for (std::shared_ptr<OperatorInterface> time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_tree_operators()) {
+                for (std::shared_ptr<OperatorInterface> tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -1538,8 +1568,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -1556,15 +1585,15 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with fixed sizes",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with fixed sizes",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1616,7 +1645,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -1675,8 +1704,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with 4 singletons",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -1684,8 +1713,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1749,11 +1778,9 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -1761,6 +1788,14 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -1775,8 +1810,17 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -1793,8 +1837,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -1814,8 +1857,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -1823,8 +1866,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1895,11 +1938,9 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -1907,6 +1948,14 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -1929,8 +1978,17 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -1990,8 +2048,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -2039,8 +2096,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs and shared event",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -2048,8 +2105,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -2115,11 +2172,9 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -2127,6 +2182,14 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -2143,8 +2206,17 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -2164,8 +2236,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -2189,8 +2260,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons and shared event",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons and shared event",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -2198,8 +2269,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -2272,11 +2343,9 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -2284,6 +2353,14 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -2302,8 +2379,17 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -2359,8 +2445,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -2396,8 +2481,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with mix of pairs and singletons an
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes and shared event",
-        "[CompositeHeightSizeScaler]") {
+TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes and shared event",
+        "[CompositeTimeSizeScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -2405,8 +2490,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -2472,11 +2557,9 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -2484,6 +2567,14 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -2498,8 +2589,17 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -2516,8 +2616,7 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -2535,8 +2634,8 @@ TEST_CASE("Testing CompositeHeightSizeScaler with 4 pairs with constrained sizes
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with 4 pairs",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with 4 pairs",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -2544,8 +2643,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2609,7 +2708,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(2222);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -2682,8 +2781,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -2691,8 +2790,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2756,7 +2855,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -2818,15 +2917,15 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with 4 pairs with fixed sizes",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with 4 pairs with fixed sizes",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2878,7 +2977,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -2937,8 +3036,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with 4 singletons",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with 4 singletons",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -2946,8 +3045,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3011,7 +3110,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456789);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3076,8 +3175,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -3085,8 +3184,8 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3157,7 +3256,7 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3301,8 +3400,8 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with 4 pairs and shared event",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with 4 pairs and shared event",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -3310,8 +3409,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3377,7 +3476,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(111111);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3451,8 +3550,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons and shared event",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons and shared event",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -3460,8 +3559,8 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons and shared e
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3534,7 +3633,7 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons and shared e
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3658,8 +3757,8 @@ TEST_CASE("Testing HeightSizeMixer with mix of pairs and singletons and shared e
     }
 }
 
-TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes and shared event",
-        "[HeightSizeMixer]") {
+TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes and shared event",
+        "[TimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -3667,8 +3766,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes and share
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3734,7 +3833,7 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes and share
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -3797,8 +3896,8 @@ TEST_CASE("Testing HeightSizeMixer with 4 pairs with constrained sizes and share
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -3806,8 +3905,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3871,11 +3970,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -3883,6 +3980,14 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -3899,8 +4004,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -3920,8 +4034,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -3944,8 +4057,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -3953,8 +4066,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4018,11 +4131,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -4030,6 +4141,13 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -4044,8 +4162,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -4062,8 +4189,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -4080,15 +4206,15 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes"
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with fixed sizes",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with fixed sizes",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4140,7 +4266,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -4199,8 +4325,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with 4 singletons",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -4208,8 +4334,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4273,11 +4399,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -4285,6 +4409,14 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -4299,8 +4431,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -4317,8 +4458,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -4338,8 +4478,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -4347,8 +4487,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4419,11 +4559,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -4431,6 +4569,14 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -4453,8 +4599,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -4514,8 +4669,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -4563,8 +4717,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs and shared event",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -4572,8 +4726,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4639,11 +4793,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -4651,6 +4803,14 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -4667,8 +4827,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -4688,8 +4857,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -4713,8 +4881,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and shared event",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons and shared event",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -4722,8 +4890,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4796,11 +4964,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -4808,6 +4974,14 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -4826,8 +5000,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -4883,8 +5066,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -4920,8 +5102,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with mix of pairs and singletons and
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes and shared event",
-        "[CompositeHeightSizeMixer]") {
+TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes and shared event",
+        "[CompositeTimeSizeMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -4929,8 +5111,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4996,11 +5178,9 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -5008,6 +5188,14 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -5022,8 +5210,17 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -5040,8 +5237,7 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -5059,8 +5255,8 @@ TEST_CASE("Testing CompositeHeightSizeMixer with 4 pairs with constrained sizes 
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -5070,8 +5266,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5156,7 +5352,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -5240,8 +5436,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -5251,8 +5447,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5337,7 +5533,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -5410,8 +5606,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -5419,8 +5615,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5493,7 +5689,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -5563,8 +5759,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 singletons",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 singletons",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -5574,8 +5770,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5660,7 +5856,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -5736,8 +5932,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -5747,8 +5943,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5843,7 +6039,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -6021,8 +6217,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -6032,8 +6228,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -6120,7 +6316,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(33333);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -6205,8 +6401,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and shared event",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and shared event",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -6216,8 +6412,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -6314,7 +6510,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -6472,8 +6668,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and shared event",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and shared event",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -6483,8 +6679,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -6571,7 +6767,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -6645,8 +6841,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -6654,8 +6850,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6719,7 +6915,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -6799,8 +6995,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and fixed rates",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -6808,8 +7004,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6873,7 +7069,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -6942,8 +7138,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes and rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes and rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed sizes and rates and optimizing") {
         double height_shape = 5.0;
@@ -6951,8 +7147,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes and rates"
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7004,7 +7200,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes and rates"
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -7071,8 +7267,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with fixed sizes and rates"
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 singletons and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 singletons and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -7080,8 +7276,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7145,7 +7341,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(2222);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -7217,8 +7413,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 singletons and fixed rates",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -7226,8 +7422,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and fix
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7298,7 +7494,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and fix
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -7464,8 +7660,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and fix
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -7473,8 +7669,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event and fixed 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -7540,7 +7736,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event and fixed 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(9999);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -7621,8 +7817,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs and shared event and fixed 
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -7630,8 +7826,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -7704,7 +7900,7 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -7850,8 +8046,8 @@ TEST_CASE("Testing HeightSizeRateScaler with mix of pairs and singletons and sha
     }
 }
 
-TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and shared event and fixed rates",
-        "[HeightSizeRateScaler]") {
+TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and shared event and fixed rates",
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -7859,8 +8055,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratescaler-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratescaler-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -7926,7 +8122,7 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -7996,8 +8192,8 @@ TEST_CASE("Testing HeightSizeRateScaler with 4 pairs with constrained sizes and 
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -8007,8 +8203,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8093,11 +8289,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -8105,6 +8299,15 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -8123,8 +8326,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8146,8 +8358,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -8177,8 +8388,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained sizes",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained sizes",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -8188,8 +8399,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8274,11 +8485,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -8286,6 +8495,14 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -8302,8 +8519,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8322,8 +8548,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -8347,8 +8572,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -8356,8 +8581,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8430,11 +8655,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -8442,6 +8665,13 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -8458,8 +8688,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8479,8 +8718,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -8500,8 +8738,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -8511,8 +8749,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8597,11 +8835,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -8609,6 +8845,15 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -8625,8 +8870,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8645,8 +8899,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -8673,8 +8926,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singletons",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -8684,8 +8937,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8780,11 +9033,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -8792,6 +9043,15 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -8819,8 +9079,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -8886,8 +9155,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -8958,8 +9226,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -8969,8 +9237,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -9057,11 +9325,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -9069,6 +9335,15 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -9087,8 +9362,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -9110,8 +9394,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -9142,8 +9425,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singletons and shared event",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons and shared event",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -9153,8 +9436,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -9251,11 +9534,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -9263,6 +9544,15 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -9286,8 +9576,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -9349,8 +9648,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -9409,8 +9707,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained sizes and shared event",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained sizes and shared event",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -9420,8 +9718,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -9508,11 +9806,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -9520,6 +9816,14 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -9536,8 +9840,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -9556,8 +9869,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -9582,8 +9894,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -9591,8 +9903,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9656,11 +9968,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -9668,6 +9978,14 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -9686,8 +10004,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -9709,8 +10036,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -9736,8 +10062,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and fixed rates",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained sizes and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained sizes and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -9745,8 +10071,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9810,7 +10136,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -9822,6 +10148,10 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -9838,8 +10168,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -9858,8 +10197,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -9879,8 +10217,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes and rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes and rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed sizes and rates and optimizing") {
         double height_shape = 5.0;
@@ -9888,8 +10226,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes a
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9941,7 +10279,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes a
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -10008,8 +10346,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with fixed sizes a
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -10017,8 +10355,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10082,11 +10420,9 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
-        op_schedule.add_operator(op);
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -10094,6 +10430,14 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -10110,8 +10454,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -10130,8 +10483,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -10154,8 +10506,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 singletons and fixed rat
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singletons and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -10163,8 +10515,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10235,7 +10587,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -10247,6 +10599,12 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -10274,8 +10632,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -10341,8 +10708,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -10401,8 +10767,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -10410,8 +10776,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -10477,7 +10843,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -10489,6 +10855,12 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -10507,8 +10879,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -10530,8 +10911,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -10558,8 +10938,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs and shared event a
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -10567,8 +10947,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -10641,7 +11021,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -10653,6 +11033,12 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -10676,8 +11062,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -10739,8 +11134,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -10787,8 +11181,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with mix of pairs and singleton
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained sizes and shared event and fixed rates",
-        "[CompositeHeightSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained sizes and shared event and fixed rates",
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -10796,8 +11190,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -10863,7 +11257,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -10875,6 +11269,11 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -10891,8 +11290,17 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -10911,8 +11319,7 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -10934,8 +11341,8 @@ TEST_CASE("Testing CompositeHeightSizeRateScaler with 4 pairs with constrained s
 }
 
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -10945,8 +11352,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11031,7 +11438,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11115,8 +11522,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -11126,8 +11533,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11212,7 +11619,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11285,8 +11692,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -11294,8 +11701,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11368,7 +11775,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11438,8 +11845,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 singletons",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 singletons",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -11449,8 +11856,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11535,7 +11942,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11611,8 +12018,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -11622,8 +12029,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11718,7 +12125,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -11896,8 +12303,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -11907,8 +12314,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -11995,7 +12402,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(3333);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12080,8 +12487,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shared event",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared event",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -12091,8 +12498,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12189,7 +12596,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12347,8 +12754,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and shared event",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and shared event",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -12358,8 +12765,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12446,7 +12853,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12520,8 +12927,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -12529,8 +12936,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12594,7 +13001,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(1234);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12674,8 +13081,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and fixed rates",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -12683,8 +13090,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and f
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12748,7 +13155,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and f
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12817,8 +13224,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and f
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes and rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes and rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and rates and optimizing") {
         double height_shape = 5.0;
@@ -12826,8 +13233,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes and rates",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12879,7 +13286,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes and rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -12946,8 +13353,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with fixed sizes and rates",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 singletons and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 singletons and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -12955,8 +13362,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13020,7 +13427,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13092,8 +13499,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 singletons and fixed rates",
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13101,8 +13508,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and fixe
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13173,7 +13580,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and fixe
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13339,8 +13746,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and fixe
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13348,8 +13755,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event and fixed r
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13415,7 +13822,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event and fixed r
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13496,8 +13903,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs and shared event and fixed r
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13505,8 +13912,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13579,7 +13986,7 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13725,8 +14132,8 @@ TEST_CASE("Testing HeightSizeRateMixer with mix of pairs and singletons and shar
     }
 }
 
-TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
-        "[HeightSizeRateMixer]") {
+TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
+        "[TimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -13734,8 +14141,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightsizeratemixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightsizeratemixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timesizeratemixer-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timesizeratemixer-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13801,7 +14208,7 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13871,8 +14278,8 @@ TEST_CASE("Testing HeightSizeRateMixer with 4 pairs with constrained sizes and s
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -13882,8 +14289,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13968,7 +14375,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -13980,6 +14387,13 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -13998,8 +14412,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14021,8 +14444,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -14052,8 +14474,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained sizes",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and optimizing") {
         double height_shape = 5.0;
@@ -14063,8 +14485,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14149,7 +14571,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14161,6 +14583,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -14177,8 +14605,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14197,8 +14634,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -14222,8 +14658,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -14231,8 +14667,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14305,7 +14741,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14317,6 +14753,11 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -14333,8 +14774,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14354,8 +14804,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -14375,8 +14824,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -14386,8 +14835,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14472,7 +14921,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14484,6 +14933,13 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -14500,8 +14956,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14520,8 +14985,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -14548,8 +15012,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -14559,8 +15023,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14655,7 +15119,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14667,6 +15131,13 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -14694,8 +15165,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -14761,8 +15241,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -14833,8 +15312,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -14844,8 +15323,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -14932,7 +15411,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -14944,6 +15423,13 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -14962,8 +15448,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -14985,8 +15480,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -15017,8 +15511,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons and shared event",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons and shared event",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -15028,8 +15522,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15126,7 +15620,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15138,6 +15632,13 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -15161,8 +15662,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -15224,8 +15734,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -15284,8 +15793,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes and shared event",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained sizes and shared event",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -15295,8 +15804,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15383,7 +15892,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15395,6 +15904,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -15411,8 +15926,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -15431,8 +15955,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -15457,8 +15980,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -15466,8 +15989,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15531,7 +16054,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15543,6 +16066,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -15561,8 +16090,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -15584,8 +16122,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -15611,8 +16148,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and fixed rates",
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained sizes and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -15620,8 +16157,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15685,7 +16222,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15697,6 +16234,11 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -15713,8 +16255,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -15733,8 +16284,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -15754,8 +16304,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes and rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes and rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and rates and optimizing") {
         double height_shape = 5.0;
@@ -15763,8 +16313,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes an
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15816,7 +16366,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes an
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15883,8 +16433,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with fixed sizes an
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -15892,8 +16442,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15957,7 +16507,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -15969,6 +16519,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -15985,8 +16541,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -16005,8 +16570,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -16029,8 +16593,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 singletons and fixed rate
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16038,8 +16602,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16110,7 +16674,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16122,6 +16686,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -16149,8 +16719,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -16216,8 +16795,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -16276,8 +16854,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16285,8 +16863,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16352,7 +16930,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16364,6 +16942,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -16382,8 +16966,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -16405,8 +16998,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -16433,8 +17025,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs and shared event an
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons and shared event and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16442,8 +17034,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16516,7 +17108,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16528,6 +17120,12 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -16551,8 +17149,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -16614,8 +17221,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
                 size_root_summary_single2.add_sample(size_root_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -16662,8 +17268,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with mix of pairs and singletons
     }
 }
 
-TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
-        "[CompositeHeightSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained sizes and shared event and fixed rates",
+        "[CompositeTimeSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with constrained sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -16671,8 +17277,8 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compheightsizeratemixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compheightsizeratemixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16738,7 +17344,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -16750,6 +17356,11 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -16766,8 +17377,17 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -16786,8 +17406,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -16808,7 +17427,7 @@ TEST_CASE("Testing CompositeHeightSizeRateMixer with 4 pairs with constrained si
     }
 }
 
-TEST_CASE("Testing ComparisonHeightScaler", "[ComparisonHeightScaler]") {
+TEST_CASE("Testing EventTimeScaler", "[EventTimeScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -16848,7 +17467,7 @@ TEST_CASE("Testing ComparisonHeightScaler", "[ComparisonHeightScaler]") {
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonHeightScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -16927,7 +17546,7 @@ TEST_CASE("Testing ComparisonHeightScaler", "[ComparisonHeightScaler]") {
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonHeightScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -16970,7 +17589,7 @@ TEST_CASE("Testing ComparisonHeightScaler", "[ComparisonHeightScaler]") {
     }
 }
 
-TEST_CASE("Testing ComparisonHeightMover", "[ComparisonHeightMover]") {
+TEST_CASE("Testing EventTimeMover", "[EventTimeMover]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -17010,7 +17629,7 @@ TEST_CASE("Testing ComparisonHeightMover", "[ComparisonHeightMover]") {
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonHeightMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeMover>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -17089,7 +17708,7 @@ TEST_CASE("Testing ComparisonHeightMover", "[ComparisonHeightMover]") {
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonHeightMover>(1.0, 0.2);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeMover>(1.0, 0.2);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -17315,7 +17934,7 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
     }
 }
 
-TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
+TEST_CASE("Testing LeafPopulationSizeScaler", "[LeafPopulationSizeScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -17354,7 +17973,7 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12933);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ChildPopulationSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<LeafPopulationSizeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
@@ -17442,7 +18061,7 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12933);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ChildPopulationSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<LeafPopulationSizeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         // os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
@@ -17494,7 +18113,7 @@ TEST_CASE("Testing ChildPopulationSizeScaler", "[ChildPopulationSizeScaler]") {
     }
 }
 
-TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler]") {
+TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -17534,7 +18153,7 @@ TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonMutationRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MutationRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         // os.turn_on_auto_optimize();
@@ -17624,7 +18243,7 @@ TEST_CASE("Testing ComparisonMutationRateScaler", "[ComparisonMutationRateScaler
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(928374);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonMutationRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MutationRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         // os.turn_off_auto_optimize();
         os.turn_on_auto_optimize();
@@ -19193,7 +19812,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
     }
 }
 
-TEST_CASE("Testing ComparisonHeightScaler for dirichlet trees", "[ComparisonHeightScaler]") {
+TEST_CASE("Testing EventTimeScaler for dirichlet trees", "[EventTimeScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -19235,7 +19854,7 @@ TEST_CASE("Testing ComparisonHeightScaler for dirichlet trees", "[ComparisonHeig
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonHeightScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -19316,7 +19935,7 @@ TEST_CASE("Testing ComparisonHeightScaler for dirichlet trees", "[ComparisonHeig
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ComparisonHeightScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -19359,7 +19978,7 @@ TEST_CASE("Testing ComparisonHeightScaler for dirichlet trees", "[ComparisonHeig
     }
 }
 
-TEST_CASE("Testing ReferencePopulationSizeScaler for dirichlet trees", "[ReferencePopulationSizeScaler]") {
+TEST_CASE("Testing MeanPopulationSizeScaler for dirichlet trees", "[MeanPopulationSizeScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and no optimizing") {
         double shape = 10.0;
@@ -19400,7 +20019,7 @@ TEST_CASE("Testing ReferencePopulationSizeScaler for dirichlet trees", "[Referen
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MeanPopulationSizeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -19480,7 +20099,7 @@ TEST_CASE("Testing ReferencePopulationSizeScaler for dirichlet trees", "[Referen
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MeanPopulationSizeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(10000);
@@ -19523,7 +20142,7 @@ TEST_CASE("Testing ReferencePopulationSizeScaler for dirichlet trees", "[Referen
     }
 }
 
-TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(1, 1, 1)", "[PopulationSizeMultiplierMixer]") {
+TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[RelativePopulationSizeMixer]") {
 
     SECTION("Testing dir(1, 1, 1) prior and no optimizing") {
         std::vector<double> alphas = {1.0, 1.0, 1.0};
@@ -19566,7 +20185,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(1, 1, 1)", "[Popu
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 10.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 10.0);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -19672,7 +20291,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(1, 1, 1)", "[Popu
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 1.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 1.0);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -19740,7 +20359,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(1, 1, 1)", "[Popu
 }
 
 
-TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(3, 3, 3)", "[PopulationSizeMultiplierMixer]") {
+TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[RelativePopulationSizeMixer]") {
 
     SECTION("Testing dir(3, 3, 3) prior and no optimizing") {
         std::vector<double> alphas = {3.0, 3.0, 3.0};
@@ -19783,7 +20402,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(3, 3, 3)", "[Popu
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 1.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 1.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -19889,7 +20508,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(3, 3, 3)", "[Popu
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -19956,7 +20575,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(3, 3, 3)", "[Popu
     }
 }
 
-TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(10, 10, 10)", "[PopulationSizeMultiplierMixer]") {
+TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[RelativePopulationSizeMixer]") {
 
     SECTION("Testing dir(10, 10, 10) prior and no optimizing") {
         std::vector<double> alphas = {10.0, 10.0, 10.0};
@@ -19999,7 +20618,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(10, 10, 10)", "[P
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -20105,7 +20724,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(10, 10, 10)", "[P
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20172,7 +20791,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(10, 10, 10)", "[P
     }
 }
 
-TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(15, 5, 20)", "[PopulationSizeMultiplierMixer]") {
+TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[RelativePopulationSizeMixer]") {
 
     SECTION("Testing dir(15, 5, 20) prior and no optimizing") {
         std::vector<double> alphas = {15.0, 5.0, 20.0};
@@ -20215,7 +20834,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(15, 5, 20)", "[Po
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_off_auto_optimize();
         os.add_operator(op);
@@ -20321,7 +20940,7 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(15, 5, 20)", "[Po
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<PopulationSizeMultiplierMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20388,8 +21007,8 @@ TEST_CASE("Testing PopulationSizeMultiplierMixer for dirichlet(15, 5, 20)", "[Po
     }
 }
 
-TEST_CASE("Testing UnivariateHeightRefSizeRateScaler for dirichlet trees",
-        "[UnivariateHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler for dirichlet trees",
+        "[UnivariateTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -20441,7 +21060,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler for dirichlet trees",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20489,8 +21108,8 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler for dirichlet trees",
     }
 }
 
-TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with height only",
-        "[UnivariateHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with height only",
+        "[UnivariateTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -20536,7 +21155,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with height only",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20583,8 +21202,8 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with height only",
     }
 }
 
-TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no size",
-        "[UnivariateHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no size",
+        "[UnivariateTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -20633,7 +21252,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no size",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20681,8 +21300,8 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no size",
     }
 }
 
-TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no rate",
-        "[UnivariateHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no rate",
+        "[UnivariateTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -20731,7 +21350,7 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no rate",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20780,8 +21399,8 @@ TEST_CASE("Testing UnivariateHeightRefSizeRateScaler with no rate",
 }
 
 
-TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler for dirichlet trees",
-        "[UnivariateCompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler for dirichlet trees",
+        "[UnivariateCompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -20833,7 +21452,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler for dirichlet tree
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20881,8 +21500,8 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler for dirichlet tree
     }
 }
 
-TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with height only",
-        "[UnivariateCompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with height only",
+        "[UnivariateCompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -20928,7 +21547,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with height only",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -20975,8 +21594,8 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with height only",
     }
 }
 
-TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no size",
-        "[UnivariateCompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no size",
+        "[UnivariateCompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21025,7 +21644,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no size",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -21073,8 +21692,8 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no size",
     }
 }
 
-TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no rate",
-        "[UnivariateCompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no rate",
+        "[UnivariateCompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21123,7 +21742,7 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no rate",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<UnivariateCompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -21172,8 +21791,8 @@ TEST_CASE("Testing UnivariateCompositeHeightRefSizeRateScaler with no rate",
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer for dirichlet trees",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21232,18 +21851,25 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(1000);
+        op_schedule.add_operator(op);
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
+        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         SampleSummarizer<double> multiplier_root_summary;
         SampleSummarizer<double> multiplier_0_summary;
@@ -21258,8 +21884,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -21271,8 +21906,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
             }
         }
 
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(size_summary.sample_size() == nsamples);
@@ -21296,8 +21930,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer for dirichlet trees",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with height only",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with height only",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21343,7 +21977,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with height only",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -21390,8 +22024,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with height only",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no size",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21440,18 +22074,23 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(1000);
+        op_schedule.add_operator(op);
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
+        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         SampleSummarizer<double> height_summary;
         SampleSummarizer<double> size_summary;
@@ -21461,8 +22100,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -21470,8 +22118,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
             }
         }
 
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(size_summary.sample_size() == nsamples);
@@ -21488,8 +22135,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no size",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no mean size",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no mean size",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21545,18 +22192,24 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no mean size",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(1000);
+        op_schedule.add_operator(op);
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
+        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         SampleSummarizer<double> multiplier_root_summary;
         SampleSummarizer<double> multiplier_0_summary;
@@ -21571,8 +22224,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no mean size",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -21584,8 +22246,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no mean size",
             }
         }
 
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(size_summary.sample_size() == nsamples);
@@ -21609,8 +22270,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no mean size",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no rate",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing with optimizing") {
         double height_shape = 10.0;
@@ -21670,18 +22331,24 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
-        OperatorSchedule os = OperatorSchedule();
-        os.turn_on_auto_optimize();
-        os.set_auto_optimize_delay(1000);
-        os.add_operator(op);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(1000);
+        op_schedule.add_operator(op);
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
+        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         SampleSummarizer<double> multiplier_root_summary;
         SampleSummarizer<double> multiplier_0_summary;
@@ -21696,8 +22363,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = os.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -21709,8 +22385,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
             }
         }
 
-        std::cout << op->header_string();
-        std::cout << op->to_string(os);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(size_summary.sample_size() == nsamples);
@@ -21735,8 +22410,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with no rate",
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -21747,8 +22422,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -21841,7 +22516,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -21853,6 +22528,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -21870,8 +22552,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -21886,8 +22577,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -21921,8 +22611,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed sizes",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes and optimizing") {
         double height_shape = 5.0;
@@ -21930,8 +22620,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -21997,7 +22687,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22010,6 +22700,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
         REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22021,8 +22716,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22033,8 +22737,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -22056,8 +22759,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed sizes"
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multipliers",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipliers",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed multipliers") {
         double height_shape = 5.0;
@@ -22068,8 +22771,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22156,7 +22859,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22168,6 +22871,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -22185,8 +22894,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22201,8 +22919,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -22236,8 +22953,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean sizes",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes") {
         double height_shape = 5.0;
@@ -22248,8 +22965,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22321,7 +23038,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(334444);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22333,6 +23050,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -22350,8 +23073,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22366,8 +23098,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -22402,8 +23133,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -22414,8 +23145,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22507,8 +23238,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        RandomNumberGenerator rng = RandomNumberGenerator(1234);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22520,6 +23251,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -22536,8 +23274,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22551,8 +23298,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -22583,8 +23329,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons") {
         double height_shape = 5.0;
@@ -22596,8 +23342,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22735,7 +23481,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -22747,6 +23493,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -22764,8 +23517,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22779,8 +23541,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -22910,8 +23671,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event optimizing") {
         double height_shape = 5.0;
@@ -22922,8 +23683,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23018,7 +23779,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23030,6 +23791,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -23047,8 +23815,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -23063,8 +23840,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -23098,8 +23874,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and shared event
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing and mix of pair and singletons and shared event") {
         double height_shape = 5.0;
@@ -23111,8 +23887,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23252,7 +24028,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23264,6 +24040,13 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -23281,8 +24064,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -23296,8 +24088,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -23426,8 +24217,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs with fixed sizes and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with fixed sizes shared event optimizing") {
         double height_shape = 5.0;
@@ -23437,8 +24228,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23515,7 +24306,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23528,6 +24319,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
         REQUIRE(comparisons.get_number_of_events() == 1);
@@ -23539,8 +24335,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -23551,8 +24356,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -23574,8 +24378,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs with fixed sizes
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multipliers and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipliers and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and fixed multipliers") {
         double height_shape = 5.0;
@@ -23586,8 +24390,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23676,7 +24480,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23688,6 +24492,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -23705,8 +24515,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -23721,8 +24540,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -23756,8 +24574,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed multip
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean sizes and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with shared event and fixed mean sizes") {
         double height_shape = 5.0;
@@ -23768,8 +24586,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23843,7 +24661,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -23855,6 +24673,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -23872,8 +24696,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -23888,8 +24721,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -23921,8 +24753,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with 4 pairs and fixed mean s
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed sizes",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed sizes") {
         double height_shape = 5.0;
@@ -23932,8 +24764,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24020,7 +24852,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24033,6 +24865,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
         REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -24044,8 +24881,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -24056,8 +24902,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -24079,8 +24924,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and fixed multipliers",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons and fixed multipliers",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed multipliers") {
         double height_shape = 5.0;
@@ -24092,8 +24937,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24201,7 +25046,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24213,6 +25058,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -24230,8 +25081,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -24245,8 +25105,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -24375,8 +25234,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and fixed mean sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons and fixed mean sizes",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed mean sizes") {
         double height_shape = 5.0;
@@ -24388,8 +25247,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24503,7 +25362,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24515,6 +25374,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -24532,8 +25397,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -24547,8 +25421,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -24667,8 +25540,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and fixed mean sizes and rates",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons and fixed mean sizes and rates",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed mean sizes and rates") {
         double height_shape = 5.0;
@@ -24676,8 +25549,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24767,7 +25640,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -24779,6 +25652,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -24796,8 +25674,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -24811,8 +25698,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         unsigned int tree_idx = 0;
         REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
@@ -24921,8 +25807,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed sizes and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing and mix of pair and singletons with fixed sizes and shared event") {
         double height_shape = 5.0;
@@ -24934,8 +25820,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25015,7 +25901,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25027,6 +25913,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -25044,8 +25935,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -25059,8 +25959,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -25179,8 +26078,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons and shared event and fixed multipliers",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons and shared event and fixed multipliers",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing and mix of pair and singletons and shared event and fixed multipliers") {
         double height_shape = 5.0;
@@ -25192,8 +26091,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25303,7 +26202,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25315,6 +26214,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -25332,8 +26237,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -25347,8 +26261,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -25477,8 +26390,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed mean sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed mean sizes and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 pairs with optimizing and mix of pair and singletons with fixe mean sizes and shared event") {
         double height_shape = 5.0;
@@ -25490,8 +26403,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25607,7 +26520,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25619,6 +26532,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -25636,8 +26555,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -25651,8 +26579,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -25773,8 +26700,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed mean sizes and rates and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed mean sizes and rates and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed mean sizes and rates and shared event") {
         double height_shape = 5.0;
@@ -25782,8 +26709,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25875,7 +26802,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -25887,6 +26814,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -25904,8 +26836,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -25919,8 +26860,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -26033,8 +26973,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed rates",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed rates") {
         double height_shape = 5.0;
@@ -26046,8 +26986,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -26163,8 +27103,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26176,6 +27116,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -26189,12 +27135,21 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 1200000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -26208,8 +27163,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -26247,8 +27201,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed rates and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed rates and shared event") {
         double height_shape = 5.0;
@@ -26260,8 +27214,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -26380,7 +27334,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26392,6 +27346,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -26409,8 +27369,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -26424,8 +27393,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -26463,8 +27431,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and mean sizes",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed rates and mean sizes",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed rates and mean sizes") {
         double height_shape = 5.0;
@@ -26476,8 +27444,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -26567,7 +27535,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26579,6 +27547,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -26596,8 +27569,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -26611,8 +27593,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
             REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
@@ -26646,8 +27627,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singletons with fixed rates and mean sizes and shared event",
-        "[CompositeHeightRefSizeRateMixer]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singletons with fixed rates and mean sizes and shared event",
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing mix of pair and singletons with fixed rates and mean sizes and shared event") {
         double height_shape = 5.0;
@@ -26659,8 +27640,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -26752,7 +27733,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateMixer>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26764,6 +27745,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -26781,8 +27767,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -26796,8 +27791,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
             REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
@@ -26831,8 +27825,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateMixer with mix of pairs and singlet
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -26842,8 +27836,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -26927,7 +27921,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -26992,8 +27986,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs",
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and optimizing") {
         double height_shape = 5.0;
@@ -27001,8 +27995,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -27065,7 +28059,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -27127,8 +28121,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
 }
 
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -27138,8 +28132,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -27223,7 +28217,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -27288,8 +28282,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons",
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -27299,8 +28293,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -27393,7 +28387,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -27529,8 +28523,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons",
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -27540,8 +28534,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -27627,7 +28621,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(33333);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -27693,8 +28687,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event",
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and shared event",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and shared event",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -27704,8 +28698,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -27800,7 +28794,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -27916,8 +28910,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and shared event",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -27925,8 +28919,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -27991,7 +28985,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28055,8 +29049,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -28064,8 +29058,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28128,7 +29122,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and fixed rates",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28189,15 +29183,15 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and fixed rates",
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28235,7 +29229,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28295,8 +29289,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
 }
 
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -28304,8 +29298,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28368,7 +29362,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons and fixed rates",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(2222);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28429,8 +29423,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 singletons and fixed rates",
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -28438,8 +29432,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28508,7 +29502,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28632,8 +29626,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -28641,8 +29635,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event and fix
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -28707,7 +29701,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event and fix
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(9999);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28769,8 +29763,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs and shared event and fix
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -28778,8 +29772,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -28850,7 +29844,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -28954,15 +29948,15 @@ TEST_CASE("Testing HeightRefSizeRateScaler with mix of pairs and singletons and 
     }
 }
 
-TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event and fixed rates",
-        "[HeightRefSizeRateScaler]") {
+TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and shared event and fixed rates",
+        "[TimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-heightrefsizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-heightrefsizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratescaler-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratescaler-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -29002,7 +29996,7 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<HeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -29063,8 +30057,8 @@ TEST_CASE("Testing HeightRefSizeRateScaler with 4 pairs with fixed mean sizes an
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -29074,8 +30068,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -29159,7 +30153,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -29171,6 +30165,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -29185,8 +30185,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -29199,8 +30208,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -29224,8 +30232,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean sizes",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and optimizing") {
         double height_shape = 5.0;
@@ -29233,8 +30241,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -29297,7 +30305,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -29309,6 +30317,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -29323,8 +30336,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -29337,8 +30359,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double mu_sh;
         double mu_sc;
@@ -29359,8 +30380,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -29370,8 +30391,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -29455,7 +30476,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -29467,6 +30488,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -29481,8 +30508,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -29495,8 +30531,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -29520,8 +30555,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons",
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singletons",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with optimizing") {
         double height_shape = 5.0;
@@ -29531,8 +30566,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -29625,7 +30660,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -29637,6 +30672,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -29661,8 +30702,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -29695,8 +30745,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
                 size_summary_single2.add_sample(size_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -29761,8 +30810,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared event",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -29772,8 +30821,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -29859,7 +30908,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(33333);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -29871,6 +30920,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -29885,8 +30940,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -29899,8 +30963,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -29925,8 +30988,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons and shared event",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singletons and shared event",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and optimizing") {
         double height_shape = 5.0;
@@ -29936,8 +30999,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -30032,7 +31095,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30044,6 +31107,12 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -30064,8 +31133,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -30094,8 +31172,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
                 size_summary_single2.add_sample(size_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -30148,8 +31225,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and shared event",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and shared event and optimizing") {
         double height_shape = 5.0;
@@ -30157,8 +31234,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -30223,7 +31300,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30235,6 +31312,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -30249,8 +31331,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -30263,8 +31354,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -30287,8 +31377,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -30296,8 +31386,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -30360,7 +31450,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30372,6 +31462,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -30386,8 +31481,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -30400,8 +31504,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -30421,15 +31524,15 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and fixed rates
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -30467,7 +31570,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30527,8 +31630,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
 }
 
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 singletons and fixed rates with optimizing") {
         double height_shape = 5.0;
@@ -30536,8 +31639,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -30600,7 +31703,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(2222);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30612,6 +31715,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed 
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -30626,8 +31734,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed 
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -30640,8 +31757,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed 
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -30661,8 +31777,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 singletons and fixed 
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singletons and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -30670,8 +31786,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -30740,7 +31856,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30752,6 +31868,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -30776,8 +31897,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -30810,8 +31940,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
                 size_summary_single2.add_sample(size_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary_pair1.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary_pair1.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -30864,8 +31993,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared event and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -30873,8 +32002,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -30939,7 +32068,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(9999);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -30951,6 +32080,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 4);
@@ -30965,8 +32099,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -30979,8 +32122,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(height_summary.sample_size() == nsamples);
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
@@ -31001,8 +32143,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs and shared even
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singletons and shared event and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing mix of pairs and singletons with shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
@@ -31010,8 +32152,8 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -31082,7 +32224,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -31094,6 +32236,11 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
+        }
 
         unsigned int ntrees = comparisons.get_number_of_trees();
         REQUIRE(ntrees == 5);
@@ -31114,8 +32261,17 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -31144,8 +32300,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
                 size_summary_single2.add_sample(size_single2);
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.01));
         REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
@@ -31186,15 +32341,15 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with mix of pairs and single
     }
 }
 
-TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean sizes and shared event and fixed rates",
-        "[CompositeHeightRefSizeRateScaler]") {
+TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and shared event and fixed rates",
+        "[CompositeTimeMeanSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with fixed mean sizes and shared event and fixed rates and optimizing") {
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositeheightrefsizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositeheightrefsizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -31234,7 +32389,7 @@ TEST_CASE("Testing CompositeHeightRefSizeRateScaler with 4 pairs with fixed mean
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeHeightRefSizeRateScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
@@ -31338,7 +32493,7 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1)", "[Relat
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
         std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.01);
-        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.01);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafRelativePopulationSizeMover>(1.0, 0.01);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -31455,8 +32610,8 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1) and gamma
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
         std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.5);
-        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.5);
-        std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<MeanPopulationSizeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -31576,8 +32731,8 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gam
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
         std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.5);
-        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMover>(1.0, 0.5);
-        std::shared_ptr<OperatorInterface> op3 = std::make_shared<ReferencePopulationSizeScaler>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<MeanPopulationSizeScaler>(1.0, 0.5);
         OperatorSchedule os = OperatorSchedule();
         os.turn_on_auto_optimize();
         os.set_auto_optimize_delay(1000);
@@ -31643,5 +32798,1154 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gam
         REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
         REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
         REQUIRE(multiplier_1_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing RelativePopulationSizeMovers for singleton with dirichlet(10, 15, 5) and gamma(10, 0.1)",
+        "[RelativePopulationSizeMovers]") {
+
+    SECTION("Testing dir(10, 15, 5) and gamma(10, 0.1) prior with singleton and optimizing") {
+        double shape = 10.0;
+        double scale = 0.1;
+        std::vector<double> alphas = {10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << shape << "\n";
+        out << "                    scale: " << scale << "\n";
+        out << "        population_size_multipliers:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                dirichlet_distribution:\n";
+        out << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            out << ", " << alphas.at(i);
+        }
+        out << "]\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129-singleton.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafRelativePopulationSizeMover>(1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<MeanPopulationSizeScaler>(1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op1);
+        os.add_operator(op2);
+        os.add_operator(op3);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int nnodes = 3;
+        SampleSummarizer<double> mean_size_summary;
+        SampleSummarizer<double> multiplier_root_summary;
+        SampleSummarizer<double> multiplier_0_summary;
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::vector<double> multipliers = comparisons.get_tree(0)->get_population_sizes_as_proportions();
+                double multiplier_root = multipliers.at(1);
+                double multiplier_0 = multipliers.at(0);
+                multiplier_root_summary.add_sample(multiplier_root);
+                multiplier_0_summary.add_sample(multiplier_0);
+                mean_size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
+                if (i > (niterations - (sample_freq * 10))) {
+                    REQUIRE(multiplier_root != multiplier_0);
+                }
+            }
+        }
+
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(os);
+        std::cout << op2->to_string(os);
+        std::cout << op3->to_string(os);
+
+        REQUIRE(mean_size_summary.sample_size() == nsamples);
+        REQUIRE(mean_size_summary.mean() == Approx(shape * scale).epsilon(0.005));
+        REQUIRE(mean_size_summary.variance() == Approx(shape * scale * scale).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.sample_size() == nsamples);
+        REQUIRE(multiplier_0_summary.sample_size() == nsamples);
+
+        REQUIRE(multiplier_root_summary.mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+
+        REQUIRE(multiplier_root_summary.variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+        REQUIRE(multiplier_0_summary.variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific FreqMover with 3 pairs",
+        "[FreqMover]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> freq_alphas {1.0, 1.0, 3.0};
+        std::vector<double> freq_betas  {1.0, 3.0, 1.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(0) << "\n";
+        os << "                    beta: " << freq_betas.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(1) << "\n";
+        os << "                    beta: " << freq_betas.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(2) << "\n";
+        os << "                    beta: " << freq_betas.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<FreqMover>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<FreqMover>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > freq_summaries(ntrees);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior0 = std::make_shared<BetaDistribution>(freq_alphas.at(0), freq_betas.at(0));
+        std::shared_ptr<ContinuousProbabilityDistribution> prior2 = std::make_shared<BetaDistribution>(freq_alphas.at(2), freq_betas.at(2));
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    freq_summaries.at(tree_idx).add_sample(tree->get_freq_1());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior0->get_mean()).epsilon(0.005));
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior0->get_variance()).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior2->get_mean()).epsilon(0.005));
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior2->get_variance()).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific RelativePopulationSizeMixer with 3 pairs",
+        "[RelativePopulationSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RelativePopulationSizeMixer>(0, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<RelativePopulationSizeMixer>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    root_summaries.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    leaf0_summaries.at(tree_idx).add_sample(sizes.at(0));
+                    leaf1_summaries.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific MeanPopulationSizeScaler with 3 pairs",
+        "[MeanPopulationSizeScaler]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 5.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.1, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<MeanPopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<MeanPopulationSizeScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > size_summaries(ntrees);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size_summaries.at(tree_idx).add_sample(tree->get_mean_population_size());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        double sh = size_shapes.at(tree_idx);
+        double sc = size_scales.at(tree_idx);
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        tree_idx = 1;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(size_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(size_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(size_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific RelativePopulationSizeMovers with 3 pairs",
+        "[RelativePopulationSizeMovers]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> alphas = {5.0, 10.0, 15.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size_multipliers:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                dirichlet_distribution:\n";
+        os << "                    alpha: [" << alphas.at(0);
+        for (unsigned int i = 1; i < alphas.size(); ++i) {
+            os << ", " << alphas.at(i);
+        }
+        os << "]\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootRelativePopulationSizeMover>(0, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafRelativePopulationSizeMover>(0, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<RootRelativePopulationSizeMover>(2, 1.0, 0.1);
+        std::shared_ptr<OperatorInterface> op4 = std::make_shared<LeafRelativePopulationSizeMover>(2, 1.0, 0.1);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+        op_schedule.add_operator(op3);
+        op_schedule.add_operator(op4);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
+
+        DirichletDistribution dir_prior = DirichletDistribution(alphas);
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    std::vector<double> sizes = tree->get_population_sizes_as_proportions();
+                    root_summaries.at(tree_idx).add_sample(sizes.at(sizes.size() - 1));
+                    leaf0_summaries.at(tree_idx).add_sample(sizes.at(0));
+                    leaf1_summaries.at(tree_idx).add_sample(sizes.at(1));
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        std::cout << op3->to_string(op_schedule);
+        std::cout << op4->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(2)).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(2)).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(0)).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(0)).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(dir_prior.get_mean(1)).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(dir_prior.get_variance(1)).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific PopulationSizeScalers with 3 pairs",
+        "[PopulationSizeScalers]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 5.0, 8.0};
+        std::vector<double> size_scales {0.1, 0.1, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafPopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op3 = std::make_shared<RootPopulationSizeScaler>(2, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op4 = std::make_shared<LeafPopulationSizeScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+        op_schedule.add_operator(op3);
+        op_schedule.add_operator(op4);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
+
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    root_summaries.at(tree_idx).add_sample(tree->get_root_population_size());
+                    leaf0_summaries.at(tree_idx).add_sample(tree->get_child_population_size(0));
+                    leaf1_summaries.at(tree_idx).add_sample(tree->get_child_population_size(1));
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        std::cout << op3->to_string(op_schedule);
+        std::cout << op4->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        double sh = size_shapes.at(tree_idx);
+        double sc = size_scales.at(tree_idx);
+
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        tree_idx = 1;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(0.0));
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        sh = size_shapes.at(tree_idx);
+        sc = size_scales.at(tree_idx);
+
+        REQUIRE(root_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(root_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(root_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf0_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf0_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf0_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        REQUIRE(leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(leaf1_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(leaf1_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing tree-specific MutationRateScaler with 3 pairs",
+        "[MutationRateScaler]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rate_shapes {10.0, 5.0, 5.0};
+        std::vector<double> rate_scales {0.1, 0.1, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size_multipliers:\n";
+        os << "            value: [1.0, 1.0, 1.0]\n";
+        os << "            estimate: false\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rate_shapes.at(0) << "\n";
+        os << "                    scale: " << rate_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rate_shapes.at(1) << "\n";
+        os << "                    scale: " << rate_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rate_shapes.at(2) << "\n";
+        os << "                    scale: " << rate_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<MutationRateScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<MutationRateScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > rate_summaries(ntrees);
+
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    rate_summaries.at(tree_idx).add_sample(tree->get_mutation_rate());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        double sh = rate_shapes.at(tree_idx);
+        double sc = rate_scales.at(tree_idx);
+
+        REQUIRE(rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(rate_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+
+        tree_idx = 1;
+        sh = rate_shapes.at(tree_idx);
+        sc = rate_scales.at(tree_idx);
+
+        REQUIRE(rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        sh = rate_shapes.at(tree_idx);
+        sc = rate_scales.at(tree_idx);
+
+        REQUIRE(rate_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(rate_summaries.at(tree_idx).mean() == Approx(sh * sc).epsilon(0.005));
+        REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing derived operator interface metadata",
+        "[OperatorInterfaceMetadata]") {
+
+    SECTION("FreqMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqMover>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "FreqMover0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("MutationRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MutationRateScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "MutationRateScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("RootPopulationSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "RootPopulationSizeScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("LeafPopulationSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<LeafPopulationSizeScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "LeafPopulationSizeScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("RootRelativePopulationSizeMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RootRelativePopulationSizeMover>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "RootRelativePopulationSizeMover0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("LeafRelativePopulationSizeMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<LeafRelativePopulationSizeMover>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "LeafRelativePopulationSizeMover0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("MeanPopulationSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MeanPopulationSizeScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "MeanPopulationSizeScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("RelativePopulationSizeMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "RelativePopulationSizeMixer0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("EventTimeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator);
+        REQUIRE(op->get_name() == "EventTimeScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("EventTimeMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeMover>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator);
+        REQUIRE(op->get_name() == "EventTimeMover");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("DirichletProcessGibbsSampler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<DirichletProcessGibbsSampler>(1.0);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::collection_operator);
+        REQUIRE(op->get_name() == "DirichletProcessGibbsSampler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("ReversibleJumpSampler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator);
+        REQUIRE(op->get_name() == "ReversibleJumpSampler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeMixer");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeRateMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeRateMixer");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeRateScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeMeanSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeMeanSizeRateScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+
+    SECTION("CompositeTimeSizeMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeMixer");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeScaler");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeSizeRateMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeRateMixer");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeRateScaler");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeMeanSizeRateMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeMeanSizeRateMixer");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeMeanSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeMeanSizeRateScaler");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
     }
 }

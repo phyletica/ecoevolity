@@ -61,22 +61,23 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -177,7 +178,7 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
     }
 }
 
-TEST_CASE("Testing simcoevolity constant sites error for dirichlet trees", "[xSimcoevolityCLI]") {
+TEST_CASE("Testing simcoevolity constant sites error for dirichlet trees", "[SimcoevolityCLI]") {
 
     SECTION("Testing constant sites error for dirichlet trees") {
         double height_shape = 10.0;
@@ -232,22 +233,23 @@ TEST_CASE("Testing simcoevolity constant sites error for dirichlet trees", "[xSi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -408,22 +410,23 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -545,7 +548,7 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
 }
 
 TEST_CASE("Testing simcoevolity relaxed constant sites setting for dirichlet trees",
-        "[xSimcoevolityCLI]") {
+        "[SimcoevolityCLI]") {
 
     SECTION("Testing constant sites relaxed for dirichlet trees") {
         double height_shape = 10.0;
@@ -600,22 +603,23 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting for dirichlet tre
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -796,22 +800,23 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -912,7 +917,7 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
     }
 }
 
-TEST_CASE("Testing simcoevolity missing sites error for dirichlet trees", "[xSimcoevolityCLI]") {
+TEST_CASE("Testing simcoevolity missing sites error for dirichlet trees", "[SimcoevolityCLI]") {
 
     SECTION("Testing missing sites error for dirichlet trees") {
         double height_shape = 10.0;
@@ -967,22 +972,23 @@ TEST_CASE("Testing simcoevolity missing sites error for dirichlet trees", "[xSim
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1143,22 +1149,23 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1280,7 +1287,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
 }
 
 TEST_CASE("Testing simcoevolity relaxed missing sites setting for dirichlet trees",
-        "[xSimcoevolityCLI]") {
+        "[SimcoevolityCLI]") {
 
     SECTION("Testing missing sites relaxed for dirichlet trees") {
         double height_shape = 10.0;
@@ -1335,22 +1342,23 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting for dirichlet tree
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1532,22 +1540,23 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1704,22 +1713,23 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1821,7 +1831,7 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
 }
 
 TEST_CASE("Testing simcoevolity fixed singleton error for dirichlet tree",
-        "[xSimcoevolityCLI]") {
+        "[SimcoevolityCLI]") {
 
     SECTION("Testing error for dirichlet singleton with fixed pop size") {
         double height_shape = 10.0;
@@ -1876,22 +1886,23 @@ TEST_CASE("Testing simcoevolity fixed singleton error for dirichlet tree",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeScaler:\n";
+        os << "        MeanPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        PopulationSizeMultiplierMixer:\n";
+        os << "        RelativePopulationSizeMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -2058,22 +2069,23 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonHeightScaler:\n";
+        os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ComparisonMutationRateScaler:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        RootPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        ChildPopulationSizeScaler:\n";
+        os << "        LeafPopulationSizeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        FreqMover:\n";
         os << "            window: 0.1\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";

@@ -1548,7 +1548,7 @@ TEST_CASE("Testing random_set_partition (6, 1.0)",
     }
 }
 
-TEST_CASE("Testing dirichlet(1, 1)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(1, 1)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({1, 1})") {
         std::vector<double> parameters {1.0, 1.0};
@@ -1591,7 +1591,7 @@ TEST_CASE("Testing dirichlet(1, 1)", "[xRandomNumberGenerator]") {
     }
 }
 
-TEST_CASE("Testing dirichlet(3, 3)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(3, 3)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({3, 3})") {
         std::vector<double> parameters {3.0, 3.0};
@@ -1634,7 +1634,7 @@ TEST_CASE("Testing dirichlet(3, 3)", "[xRandomNumberGenerator]") {
     }
 }
 
-TEST_CASE("Testing dirichlet(0.3, 0.3)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(0.3, 0.3)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({0.3, 0.3})") {
         std::vector<double> parameters {0.3, 0.3};
@@ -1677,7 +1677,7 @@ TEST_CASE("Testing dirichlet(0.3, 0.3)", "[xRandomNumberGenerator]") {
     }
 }
 
-TEST_CASE("Testing dirichlet(6, 1)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(6, 1)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({6, 1})") {
         std::vector<double> parameters {6.0, 1.0};
@@ -1720,7 +1720,7 @@ TEST_CASE("Testing dirichlet(6, 1)", "[xRandomNumberGenerator]") {
     }
 }
 
-TEST_CASE("Testing dirichlet(1, 4)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(1, 4)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({1, 4})") {
         std::vector<double> parameters {1.0, 4.0};
@@ -1763,7 +1763,7 @@ TEST_CASE("Testing dirichlet(1, 4)", "[xRandomNumberGenerator]") {
     }
 }
 
-TEST_CASE("Testing dirichlet(1, 1, 1, 1, 1)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(1, 1, 1, 1, 1)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({1, 1, 1, 1, 1})") {
         std::vector<double> parameters {1.0, 1.0, 1.0, 1.0, 1.0};
@@ -1806,7 +1806,7 @@ TEST_CASE("Testing dirichlet(1, 1, 1, 1, 1)", "[xRandomNumberGenerator]") {
     }
 }
 
-TEST_CASE("Testing dirichlet(1, 0.5, 1, 10, 5)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing dirichlet(1, 0.5, 1, 10, 5)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet({1, 0.5, 1, 10, 5})") {
         std::vector<double> parameters {1.0, 0.5, 1.0, 10.0, 5.0};

@@ -31,24 +31,12 @@ operator_settings:
         ConcentrationScaler:
             scale: 0.2
             weight: 3.0
-        CompositeHeightSizeRateMixer:
+        CompositeTimeSizeRateMixer:
             scale: 0.4
             weight: 2.0
-        ComparisonHeightScaler:
+        EventTimeScaler:
             scale: 0.3
             weight: 3.0
-        ComparisonMutationRateScaler:
-            scale: 0.5
-            weight: 2.0
-        RootPopulationSizeScaler:
-            scale: 0.2
-            weight: 2.0
-        ChildPopulationSizeScaler:
-            scale: 0.2
-            weight: 2.0
-        FreqMover:
-            window: 0.2
-            weight: 0.5
 
 global_comparison_settings:
     ploidy: 2
@@ -78,6 +66,19 @@ global_comparison_settings:
         mutation_rate:
             value: 1.0
             estimate: false
+    operators:
+        MutationRateScaler:
+            scale: 0.5
+            weight: 2.0
+        RootPopulationSizeScaler:
+            scale: 0.2
+            weight: 2.0
+        LeafPopulationSizeScaler:
+            scale: 0.2
+            weight: 2.0
+        FreqMover:
+            window: 0.2
+            weight: 0.5
 
 
 comparisons:
@@ -94,6 +95,7 @@ comparisons:
         
 - comparison:
     path: "data2.nex"
+    equal_population_sizes: true
     constant_sites_removed: false
     population_name_delimiter: "-"
     population_name_is_prefix: false
@@ -107,3 +109,7 @@ comparisons:
         freq_1:
             value: 0.5
             estimate: false
+    operators:
+        MutationRateScaler:
+            scale: 0.2
+            weight: 3.0
