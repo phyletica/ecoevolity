@@ -1356,6 +1356,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -1519,6 +1520,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -1789,6 +1791,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 singletons",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -1814,7 +1817,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -1948,6 +1951,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -1981,7 +1985,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -2181,6 +2185,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs and shared event",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -2208,7 +2213,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs and shared event",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -2351,6 +2356,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons and 
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -2380,7 +2386,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons and 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -2564,6 +2570,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes a
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -2589,7 +2596,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes a
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -3976,6 +3983,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -4003,7 +4011,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -4136,6 +4144,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -4160,7 +4169,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -4403,6 +4412,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 singletons",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -4428,7 +4438,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -4562,6 +4572,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -4595,7 +4606,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -4795,6 +4806,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs and shared event",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -4822,7 +4834,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs and shared event",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -4965,6 +4977,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons and s
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -4994,7 +5007,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons and s
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -5178,6 +5191,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes an
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -5203,7 +5217,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes an
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -8288,6 +8302,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -8318,7 +8333,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -8483,6 +8498,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -8510,7 +8526,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -8652,6 +8668,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -8678,7 +8695,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -8831,6 +8848,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -8859,7 +8877,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -9028,6 +9046,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons"
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -9067,7 +9086,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons"
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -9319,6 +9338,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -9349,7 +9369,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -9527,6 +9547,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -9562,7 +9583,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -9798,6 +9819,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -9825,7 +9847,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -9959,6 +9981,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and fixed rates",
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -9988,7 +10011,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and fixed rates",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -10125,6 +10148,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -10151,7 +10175,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -10409,6 +10433,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons and fixed rates
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -10436,7 +10461,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons and fixed rates
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -10575,6 +10600,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -10613,7 +10639,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -10830,6 +10856,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event and
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -10859,7 +10886,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event and
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -11007,6 +11034,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -11041,7 +11069,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -11242,6 +11270,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -11268,7 +11297,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -14359,6 +14388,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -14389,7 +14419,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -14554,6 +14584,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -14581,7 +14612,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -14723,6 +14754,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -14749,7 +14781,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -14902,6 +14934,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -14930,7 +14963,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -15099,6 +15132,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -15138,7 +15172,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -15390,6 +15424,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -15420,7 +15455,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -15598,6 +15633,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -15633,7 +15669,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -15869,6 +15905,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -15896,7 +15933,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -16030,6 +16067,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and fixed rates",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -16059,7 +16097,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and fixed rates",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -16197,6 +16235,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -16223,7 +16262,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -16481,6 +16520,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons and fixed rates"
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -16508,7 +16548,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons and fixed rates"
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -16647,6 +16687,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -16685,7 +16726,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -16902,6 +16943,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event and 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -16931,7 +16973,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event and 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -17079,6 +17121,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
@@ -17113,7 +17156,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -17314,6 +17357,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -17340,7 +17384,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -21820,6 +21864,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer for dirichlet trees",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -21846,7 +21891,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer for dirichlet trees",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -22042,6 +22087,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no size",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -22061,7 +22107,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no size",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -22159,6 +22205,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no mean size",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -22184,7 +22231,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no mean size",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -22297,6 +22344,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no rate",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -22322,7 +22370,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no rate",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -22481,6 +22529,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -22510,7 +22559,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -22651,6 +22700,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed sizes",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -22673,7 +22723,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed sizes",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -22822,6 +22872,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -22850,7 +22901,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -23000,6 +23051,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -23028,7 +23080,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -23082,7 +23134,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
 
 
 TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
-        "[CompositeTimeMeanSizeRateMixer]") {
+        "[xCompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -23186,7 +23238,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        RandomNumberGenerator rng = RandomNumberGenerator(1234);
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
@@ -23200,6 +23252,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -23228,7 +23281,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -23441,6 +23494,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -23470,7 +23524,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -23738,6 +23792,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and shared event"
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -23767,7 +23822,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and shared event"
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -23986,6 +24041,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -24015,7 +24071,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -24263,6 +24319,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs with fixed sizes 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -24285,7 +24342,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs with fixed sizes 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -24436,6 +24493,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -24464,7 +24522,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -24616,6 +24674,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -24644,7 +24703,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -24806,6 +24865,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -24828,7 +24888,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -24999,6 +25059,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -25027,7 +25088,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -25314,6 +25375,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -25342,7 +25404,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -25591,6 +25653,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
         }
@@ -25618,7 +25681,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -25851,6 +25914,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -25878,7 +25942,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -26151,6 +26215,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -26179,7 +26244,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -26468,6 +26533,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -26496,7 +26562,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -26749,6 +26815,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
         }
@@ -26776,7 +26843,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -27050,6 +27117,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -27078,7 +27146,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -27279,6 +27347,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
@@ -27307,7 +27376,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -27479,6 +27548,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
         }
@@ -27506,7 +27576,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -27676,6 +27746,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<RelativePopulationSizeMixer>(i, 1.0, 0.01));
         }
@@ -27703,7 +27774,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -30095,6 +30166,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -30120,7 +30192,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -30246,6 +30318,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -30270,7 +30343,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -30416,6 +30489,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons",
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -30441,7 +30515,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons",
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -30599,6 +30673,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -30634,7 +30709,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -30846,6 +30921,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -30871,7 +30947,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -31032,6 +31108,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
@@ -31063,7 +31140,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -31236,6 +31313,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
@@ -31260,7 +31338,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -31385,6 +31463,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and fixed rates"
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -31409,7 +31488,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and fixed rates"
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -31637,6 +31716,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons and fixed r
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -31661,7 +31741,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons and fixed r
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -31789,6 +31869,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -31823,7 +31904,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -32000,6 +32081,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -32024,7 +32106,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
@@ -32155,6 +32237,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MeanPopulationSizeScaler>(i, 1.0, 0.5));
         }
@@ -32185,7 +32268,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
                 }
             }
             if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_tree_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
                     time_op->operate(rng, &comparisons, 1);
                 }
             }
