@@ -23134,7 +23134,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
 
 
 TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
-        "[xCompositeTimeMeanSizeRateMixer]") {
+        "[CompositeTimeMeanSizeRateMixer]") {
 
     SECTION("Testing 4 singletons with optimizing") {
         double height_shape = 5.0;
@@ -27103,7 +27103,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
 
-        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        RandomNumberGenerator rng = RandomNumberGenerator(12345);
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.5);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
@@ -27135,8 +27135,8 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 1200000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
