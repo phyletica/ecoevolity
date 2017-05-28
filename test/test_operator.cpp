@@ -33699,3 +33699,170 @@ TEST_CASE("Testing tree-specific MutationRateScaler with 3 pairs",
         REQUIRE(rate_summaries.at(tree_idx).variance() == Approx(sh * sc * sc).epsilon(0.005));
     }
 }
+
+TEST_CASE("Testing derived operator interface metadata",
+        "[OperatorInterfaceMetadata]") {
+
+    SECTION("FreqMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqMover>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "FreqMover0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("MutationRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MutationRateScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "MutationRateScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("RootPopulationSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "RootPopulationSizeScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("LeafPopulationSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<LeafPopulationSizeScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "LeafPopulationSizeScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("RootRelativePopulationSizeMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RootRelativePopulationSizeMover>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "RootRelativePopulationSizeMover0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("LeafRelativePopulationSizeMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<LeafRelativePopulationSizeMover>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "LeafRelativePopulationSizeMover0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("MeanPopulationSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<MeanPopulationSizeScaler>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "MeanPopulationSizeScaler0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("RelativePopulationSizeMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(0, 1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
+        REQUIRE(op->get_name() == "RelativePopulationSizeMixer0");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("EventTimeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator);
+        REQUIRE(op->get_name() == "EventTimeScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("EventTimeMover") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeMover>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator);
+        REQUIRE(op->get_name() == "EventTimeMover");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("DirichletProcessGibbsSampler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<DirichletProcessGibbsSampler>(1.0);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::collection_operator);
+        REQUIRE(op->get_name() == "DirichletProcessGibbsSampler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("ReversibleJumpSampler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator);
+        REQUIRE(op->get_name() == "ReversibleJumpSampler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeMixer");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeRateMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeRateMixer");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeSizeRateScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+    SECTION("TimeMeanSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "TimeMeanSizeRateScaler");
+        REQUIRE(! op->requires_call_to_tree_operators());
+        REQUIRE(! op->requires_call_to_time_operators());
+    }
+
+    SECTION("CompositeTimeSizeMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeMixer");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeSizeScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeScaler");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeSizeRateMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeRateMixer");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeSizeRateScaler");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeMeanSizeRateMixer") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeMeanSizeRateMixer");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+    SECTION("CompositeTimeMeanSizeRateScaler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.1);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
+        REQUIRE(op->get_name() == "CompositeTimeMeanSizeRateScaler");
+        REQUIRE(op->requires_call_to_tree_operators());
+        REQUIRE(op->requires_call_to_time_operators());
+    }
+}
