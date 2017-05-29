@@ -78,6 +78,8 @@ class PopulationTree {
                 std::shared_ptr<PopulationNode> node,
                 std::vector<double> & sizes) const;
 
+        void update_root_population_size() { return; }
+
     public:
         PopulationTree() { }
         PopulationTree(
@@ -110,6 +112,15 @@ class PopulationTree {
             return false;
         }
 
+        virtual bool using_relative_root_population_size() const {
+            return false;
+        }
+
+        // These are overloaded by RelativeRootPopulationTree
+        bool relative_root_population_size_is_fixed() const { return false; }
+        void fix_relative_root_population_size() { return; }
+        void estimate_relative_root_population_size() { return; }
+
         void fold_patterns();
 
         bool constant_sites_removed() const {
@@ -127,7 +138,6 @@ class PopulationTree {
         const PopulationNode& get_root() const {return *this->root_;}
         PopulationNode& get_mutable_root() const {return *this->root_;}
         void set_root_height(double height);
-        void update_root_height(double height);
         double get_root_height() const;
         void store_root_height();
         void restore_root_height();
@@ -167,7 +177,6 @@ class PopulationTree {
         }
 
         void set_freq_1(double p);
-        void update_freq_1(double p);
         double get_freq_1() const;
         double get_freq_0() const;
         void store_freq_1();
@@ -176,7 +185,6 @@ class PopulationTree {
         double get_v() const;
 
         void set_mutation_rate(double m);
-        void update_mutation_rate(double m);
         double get_mutation_rate() const;
         void store_mutation_rate();
         void restore_mutation_rate();
@@ -215,6 +223,8 @@ class PopulationTree {
 
         double get_mean_population_size() const;
         void set_mean_population_size(double size);
+
+        double get_leaf_mean_population_size() const;
 
         std::vector<double> get_population_sizes_as_proportions() const;
         std::vector<double> get_population_sizes_as_multipliers() const;
@@ -271,6 +281,7 @@ class PopulationTree {
         virtual std::shared_ptr<ContinuousProbabilityDistribution> get_population_size_prior() const {
             return this->population_size_prior_;
         }
+        virtual void set_relative_root_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) { return; }
 
         void set_freq_1_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         std::shared_ptr<ContinuousProbabilityDistribution> get_freq_1_prior() const {
@@ -448,6 +459,85 @@ class PopulationTree {
             throw EcoevolityError("draw_from_prior called from PopulationTree");
         }
 
+};
+
+class RelativeRootPopulationTree: public PopulationTree {
+
+    protected:
+        std::shared_ptr<PositiveRealParameter> relative_root_population_size_ = std::make_shared<PositiveRealParameter>(
+                std::make_shared<GammaDistribution>(10.0, 0.1),
+                1.0);
+
+        void update_root_population_size();
+
+    public:
+        RelativeRootPopulationTree() { }
+        RelativeRootPopulationTree(
+                std::string path, 
+                char population_name_delimiter = ' ',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
+                ) : PopulationTree(
+                    path,
+                    population_name_delimiter,
+                    population_name_is_prefix,
+                    genotypes_are_diploid,
+                    markers_are_dominant,
+                    constant_sites_removed,
+                    validate,
+                    strict_on_constant_sites,
+                    strict_on_missing_sites,
+                    ploidy) { }
+
+        bool using_relative_root_population_size() const {
+            return true;
+        }
+
+        bool relative_root_population_size_is_fixed() const {
+            return this->relative_root_population_size_->is_fixed();
+        }
+        void fix_relative_root_population_size() {
+            this->relative_root_population_size_->fix();
+        }
+        void estimate_relative_root_population_size() {
+            this->relative_root_population_size_->estimate();
+        }
+
+        void set_root_population_size(double size);
+        double get_root_population_size() const;
+        void set_all_population_sizes(double size);
+        unsigned int scale_all_population_sizes(double scale);
+        unsigned int scale_root_population_size(double scale);
+        void set_mean_population_size(double size);
+
+        void set_population_sizes_as_proportions(
+                const std::vector<double> & proportions);
+        void set_population_sizes(const std::vector<double> & sizes);
+
+        void set_relative_root_population_size_prior(
+                std::shared_ptr<ContinuousProbabilityDistribution> prior);
+
+        void fix_population_sizes() {
+            PopulationTree::fix_population_sizes();
+            this->fix_relative_root_population_size();
+        }
+        void estimate_population_sizes() {
+            PopulationTree::estimate_population_sizes();
+            this->estimate_relative_root_population_size();
+        }
+        virtual void constrain_population_sizes() {
+            PopulationTree::constrain_population_sizes();
+            this->relative_root_population_size_->set_value(1.0);
+            this->relative_root_population_size_->fix();
+        }
+
+        double compute_log_prior_density_of_population_sizes() const;
 };
 
 
