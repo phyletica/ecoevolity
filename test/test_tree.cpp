@@ -6651,7 +6651,6 @@ TEST_CASE("Testing simple prior of RelativeRootPopulationTree", "[RelativeRootPo
         REQUIRE(tree.get_degree_of_root() == 2);
 
         tree.set_root_height(0.1);
-        tree.set_root_population_size(1.0);
         tree.set_all_population_sizes(2.0/100.0);
         tree.set_freq_1(0.95);
 
@@ -6756,7 +6755,7 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         tree.make_clean();
         REQUIRE(! tree.is_dirty());
 
-        tree.set_root_population_size(1.0);
+        tree.set_root_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
         tree.make_clean();
         REQUIRE(! tree.is_dirty());

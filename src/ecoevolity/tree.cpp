@@ -1380,17 +1380,22 @@ void RelativeRootPopulationTree::update_root_population_size() {
     this->make_dirty();
 }
 
+void RelativeRootPopulationTree::update_relative_root_population_size() {
+    this->relative_root_population_size_->set_value(
+            this->root_->get_population_size() /
+            this->get_leaf_mean_population_size());
+    this->make_dirty();
+}
+
 void RelativeRootPopulationTree::set_root_population_size(double size) {
-    if ((this->population_sizes_are_fixed()) ||
-            (this->relative_root_population_size_is_fixed())) {
+    if (this->relative_root_population_size_is_fixed()) {
         return;
     }
-    if (this->population_sizes_are_constrained()) {
-        PopulationTree::set_root_population_size(size);
+    PopulationTree::set_root_population_size(size);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
         return;
     }
-    this->relative_root_population_size_->set_value(size);
-    this->update_root_population_size();
+    this->update_relative_root_population_size();
 }
 
 double RelativeRootPopulationTree::get_root_population_size() const {
@@ -1406,33 +1411,42 @@ double RelativeRootPopulationTree::get_root_population_size() const {
 
 void RelativeRootPopulationTree::set_all_population_sizes(
         double size) {
+    PopulationTree::set_all_population_sizes(size);
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
-        PopulationTree::set_all_population_sizes(size);
         return;
     }
-    this->root_->set_all_population_sizes(size);
-    this->update_root_population_size();
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
 }
 
 unsigned int RelativeRootPopulationTree::scale_all_population_sizes(
         double scale) {
+    unsigned int ret = PopulationTree::scale_all_population_sizes(scale);
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
-        return PopulationTree::scale_all_population_sizes(scale);
+        return ret;
     }
-    unsigned int number_of_free_parameters_scaled = this->root_->scale_all_population_sizes(scale);
-    this->update_root_population_size();
-    return number_of_free_parameters_scaled;
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return ret;
+    }
+    this->update_relative_root_population_size();
+    return ret;
 }
 
 unsigned int RelativeRootPopulationTree::scale_root_population_size(
         double scale) {
-    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
-        return PopulationTree::scale_root_population_size(scale);
+    if (this->relative_root_population_size_is_fixed()) {
+        return 0;
     }
-    this->relative_root_population_size_->set_value(
-            this->relative_root_population_size_->get_value() * scale);
-    this->update_root_population_size();
-    return 1;
+    unsigned int ret = PopulationTree::scale_root_population_size(scale);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return ret;
+    }
+    this->update_relative_root_population_size();
+    return ret;
 }
 
 void RelativeRootPopulationTree::set_mean_population_size(double size) {
@@ -1440,7 +1454,11 @@ void RelativeRootPopulationTree::set_mean_population_size(double size) {
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
         return;
     }
-    this->update_root_population_size();
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
 }
 
 void RelativeRootPopulationTree::set_population_sizes_as_proportions(
@@ -1449,14 +1467,22 @@ void RelativeRootPopulationTree::set_population_sizes_as_proportions(
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
         return;
     }
-    this->update_root_population_size();
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
 }
 void RelativeRootPopulationTree::set_population_sizes(const std::vector<double> & sizes) {
     PopulationTree::set_population_sizes(sizes);
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
         return;
     }
-    this->update_root_population_size();
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
 }
 
 void RelativeRootPopulationTree::set_relative_root_population_size_prior(

@@ -79,6 +79,7 @@ class PopulationTree {
                 std::vector<double> & sizes) const;
 
         void update_root_population_size() { return; }
+        void update_relative_root_population_size() { return; }
 
     public:
         PopulationTree() { }
@@ -469,6 +470,7 @@ class RelativeRootPopulationTree: public PopulationTree {
                 1.0);
 
         void update_root_population_size();
+        void update_relative_root_population_size();
 
     public:
         RelativeRootPopulationTree() { }
