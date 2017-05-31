@@ -1924,6 +1924,14 @@ void CompositeTimeSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 std::string CompositeTimeSizeMixer::get_name() const {
@@ -2052,6 +2060,14 @@ void CompositeTimeSizeScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 std::string CompositeTimeSizeScaler::get_name() const {
@@ -2201,6 +2217,14 @@ void CompositeTimeSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 std::string CompositeTimeSizeRateMixer::get_name() const {
@@ -2257,6 +2281,14 @@ void CompositeTimeMeanSizeRateMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 double CompositeTimeMeanSizeRateMixer::propose(RandomNumberGenerator& rng,
@@ -2473,6 +2505,14 @@ void CompositeTimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 std::string CompositeTimeSizeRateScaler::get_name() const {
@@ -2603,6 +2643,14 @@ void CompositeTimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 std::string CompositeTimeMeanSizeRateScaler::get_name() const {
@@ -2690,6 +2738,11 @@ void DirichletProcessGibbsSampler::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate time moves
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
 }
 
 void DirichletProcessGibbsSampler::perform_collection_move(
@@ -2866,7 +2919,6 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
         ss << tuning << "\t";
     }
     ss << "\n";
-    ss << this->collection_height_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -2875,7 +2927,11 @@ void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
         unsigned int nthreads) {
     for (unsigned int i = 0; i < comparisons->get_number_of_trees(); ++i) {
         this->perform_collection_move(rng, comparisons, nthreads);
-        this->collection_height_scaler_.operate(rng, comparisons, nthreads);
+
+        // Perform sweep of univariate time moves
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
     }
 }
 

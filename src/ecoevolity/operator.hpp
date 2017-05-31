@@ -107,13 +107,6 @@ class OperatorInterface {
         virtual std::string header_string() const = 0;
 
         virtual std::string to_string(const OperatorSchedule& os) const = 0;
-
-        virtual bool requires_call_to_time_operators() const {
-            return false;
-        }
-        virtual bool requires_call_to_tree_operators() const {
-            return false;
-        }
 };
 
 template<class DerivedOperatorType>
@@ -899,13 +892,6 @@ class CompositeTimeSizeMixer : public TimeSizeMixer {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
-
-        bool requires_call_to_tree_operators() const {
-            return true;
-        }
-        bool requires_call_to_time_operators() const {
-            return true;
-        }
 };
 
 
@@ -956,13 +942,6 @@ class CompositeTimeSizeScaler : public TimeSizeScaler {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
-
-        bool requires_call_to_tree_operators() const {
-            return true;
-        }
-        bool requires_call_to_time_operators() const {
-            return true;
-        }
 };
 
 
@@ -1013,13 +992,6 @@ class CompositeTimeSizeRateMixer : public TimeSizeRateMixer {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
-
-        bool requires_call_to_tree_operators() const {
-            return true;
-        }
-        bool requires_call_to_time_operators() const {
-            return true;
-        }
 };
 
 
@@ -1046,13 +1018,6 @@ class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperato
 
         OperatorInterface::OperatorTypeEnum get_type() const {
             return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
-        }
-
-        bool requires_call_to_tree_operators() const {
-            return true;
-        }
-        bool requires_call_to_time_operators() const {
-            return true;
         }
 };
 
@@ -1104,13 +1069,6 @@ class CompositeTimeSizeRateScaler : public TimeSizeRateScaler {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
-
-        bool requires_call_to_tree_operators() const {
-            return true;
-        }
-        bool requires_call_to_time_operators() const {
-            return true;
-        }
 };
 
 
@@ -1160,13 +1118,6 @@ class CompositeTimeMeanSizeRateScaler : public TimeMeanSizeRateScaler {
         std::string get_name() const;
 
         std::string to_string(const OperatorSchedule& os) const;
-
-        bool requires_call_to_tree_operators() const {
-            return true;
-        }
-        bool requires_call_to_time_operators() const {
-            return true;
-        }
 };
 
 
@@ -1219,16 +1170,11 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
                 RandomNumberGenerator& rng,
                 double& parameter_value,
                 double& hastings_ratio) const { };
-
-        bool requires_call_to_time_operators() const {
-            return true;
-        }
 };
 
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
-        EventTimeScaler collection_height_scaler_ = EventTimeScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
         void populate_split_subset_size_probabilities(

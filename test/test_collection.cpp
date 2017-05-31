@@ -4092,3 +4092,89 @@ TEST_CASE("Testing draw_from_prior logging for dirichlet collectin and DPP with 
         REQUIRE(lnl_summary.variance() == 0.0);
     }
 }
+
+TEST_CASE("Testing tree dirtiness",
+        "[ComparisonPopulationTreeCollection]") {
+
+    SECTION("Testing tree dirtiness") {
+        std::string cfg_path = "data/dummy.yml";
+
+        std::stringstream cfg;
+        cfg << "event_time_prior:\n";
+        cfg << "    gamma_distribution:\n";
+        cfg << "        shape: 10.0\n";
+        cfg << "        scale: 0.01\n";
+        cfg << "event_model_prior:\n";
+        cfg << "    fixed: [0, 0, 0, 1]\n";
+        cfg << "mcmc_settings:\n";
+        cfg << "    chain_length: 100000\n";
+        cfg << "    sample_frequency: 10\n";
+        cfg << "operator_settings:\n";
+        cfg << "    auto_optimize: true\n";
+        cfg << "    auto_optimize_delay: 10000\n";
+        cfg << "    operators:\n";
+        cfg << "        ModelOperator:\n";
+        cfg << "            weight: 1.0\n";
+        cfg << "        EventTimeScaler:\n";
+        cfg << "            scale: 0.3\n";
+        cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    genotypes_are_diploid: true\n";
+        cfg << "    markers_are_dominant: false\n";
+        cfg << "    population_name_delimiter: \" \"\n";
+        cfg << "    population_name_is_prefix: true\n";
+        cfg << "    constant_sites_removed: true\n";
+        cfg << "    equal_population_sizes: false\n";
+        cfg << "comparisons:\n";
+        cfg << "- comparison:\n";
+        cfg << "    path: hemi129.nex\n";
+        cfg << "- comparison:\n";
+        cfg << "    path: hemi129-altname1.nex\n";
+        cfg << "- comparison:\n";
+        cfg << "    path: hemi129-altname2.nex\n";
+        cfg << "- comparison:\n";
+        cfg << "    path: hemi129-altname3.nex\n";
+
+        CollectionSettings settings = CollectionSettings(cfg, cfg_path);
+        RandomNumberGenerator rng = RandomNumberGenerator(98714654);
+        ComparisonPopulationTreeCollection collection = ComparisonPopulationTreeCollection(
+                settings,
+                rng);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(collection.get_tree(i)->is_dirty());
+        }
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+
+        collection.set_height(0, 0.02);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
+            REQUIRE(collection.get_tree(i)->is_dirty());
+        }
+        REQUIRE(! collection.get_tree(3)->is_dirty());
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+
+        collection.set_height(1, 0.01);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+        REQUIRE(collection.get_tree(3)->is_dirty());
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+    }
+}

@@ -183,6 +183,9 @@ class BaseComparisonPopulationTreeCollection {
         }
         void set_height(unsigned int height_index, double height) const {
             this->node_heights_.at(height_index)->set_value(height);
+            for (unsigned int i : this->get_indices_of_mapped_trees(height_index)) {
+                this->trees_.at(i)->make_dirty();
+            }
         }
         double get_height_of_tree(unsigned int tree_index) const {
             return this->get_height(this->get_height_index(tree_index));
@@ -235,6 +238,14 @@ class BaseComparisonPopulationTreeCollection {
         void log_state(std::ostream& out,
                 unsigned int generation_index,
                 bool short_summary = false) const;
+
+        
+        std::vector< std::shared_ptr<OperatorInterface> > get_time_operators() const {
+            return this->operator_schedule_.get_time_operators();
+        }
+        std::vector< std::shared_ptr<OperatorInterface> > get_tree_operators() const {
+            return this->operator_schedule_.get_tree_operators();
+        }
 
         void mcmc(RandomNumberGenerator& rng,
                 unsigned int chain_length,
