@@ -33949,3 +33949,443 @@ TEST_CASE("Testing derived operator interface metadata",
         REQUIRE(op->requires_call_to_time_operators());
     }
 }
+
+
+TEST_CASE("Testing RootPopulationSizeScaler for relative root size", "[xRootPopulationSizeScaler]") {
+
+    SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
+
+        double shape = 10.0;
+        double scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: false\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: 10.0\n";
+        out << "                    scale: 0.002\n";
+        out << "        root_relative_population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << shape << "\n";
+        out << "                    scale: " << scale << "\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12933);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_off_auto_optimize();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(shape, scale);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 1000000; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.perform_collection_move(rng, &comparisons, 1);
+            double x = comparisons.get_tree(0)->get_relative_root_population_size();
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+        std::cout << "prior mean: " << mean << "\n";
+        std::cout << "prior variance: " << variance << "\n";
+        std::cout << "expected prior mean: " << prior->get_mean() << "\n";
+        std::cout << "expected prior variance: " << prior->get_variance() << "\n";
+        
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.001));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+    }
+}
+
+TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTreeCollection",
+        "[xPopulationSizeScalers]") {
+
+    SECTION("Testing gamma(10.0, 0.01) and gamma(20.0, 0.1) priors and optimizing") {
+
+        double shape = 10.0;
+        double scale = 0.01;
+        double rel_shape = 20.0;
+        double rel_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: false\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << shape << "\n";
+        out << "                    scale: " << scale << "\n";
+        out << "        root_relative_population_size:\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                gamma_distribution:\n";
+        out << "                    shape: " << rel_shape << "\n";
+        out << "                    scale: " << rel_scale << "\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: false\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12933);
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<LeafPopulationSizeScaler>(0, 1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_off_auto_optimize();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op1);
+        os.add_operator(op2);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<GammaDistribution>(shape, scale);
+        std::shared_ptr<ContinuousProbabilityDistribution> rel_prior = std::make_shared<GammaDistribution>(rel_shape, rel_scale);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(os);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> size_root_summary;
+        SampleSummarizer<double> size_leaf1_summary;
+        SampleSummarizer<double> size_leaf2_summary;
+
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double size_rel_root;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::shared_ptr<PopulationTree> tree = comparisons.get_tree(0);
+                size_leaf1 = tree->get_child_population_size(0);
+                size_leaf2 = tree->get_child_population_size(1);
+                size_root = tree->get_root_population_size();
+                size_rel_root = tree->get_relative_root_population_size();
+                if (i > (niterations - (sample_freq * 5))) {
+                    REQUIRE(size_leaf1 != size_leaf2);
+                    REQUIRE(size_leaf1 != size_root);
+                    REQUIRE(size_leaf2 != size_root);
+                }
+                size_leaf1_summary.add_sample(size_leaf1);
+                size_leaf2_summary.add_sample(size_leaf2);
+                size_root_summary.add_sample(size_rel_root);
+            }
+        }
+
+        os.write_operator_rates(std::cout);
+
+        REQUIRE(size_root_summary.sample_size() == nsamples);
+        REQUIRE(size_leaf1_summary.sample_size() == nsamples);
+        REQUIRE(size_leaf2_summary.sample_size() == nsamples);
+
+        REQUIRE(size_root_summary.mean() == Approx(rel_prior->get_mean()).epsilon(0.001));
+        REQUIRE(size_root_summary.variance() == Approx(rel_prior->get_variance()).epsilon(0.001));
+
+        REQUIRE(size_leaf1_summary.mean() == Approx(prior->get_mean()).epsilon(0.001));
+        REQUIRE(size_leaf1_summary.variance() == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(size_leaf2_summary.mean() == Approx(prior->get_mean()).epsilon(0.001));
+        REQUIRE(size_leaf2_summary.variance() == Approx(prior->get_variance()).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 ComparisonRelativeRootPopulationTree pairs",
+        "[xCompositeTimeSizeRateScaler]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0, 100.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05, 0.01};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + ".cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(3) << "\n";
+        os << "                    scale: " << rel_size_scales.at(3) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(3) << "\n";
+        os << "                    scale: " << mu_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+        comparisons.set_operator_schedule(op_schedule);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op->operate(rng, &comparisons, 1);
+            if (op->requires_call_to_tree_operators()) {
+                for (auto tree_op : op_schedule.get_tree_operators()) {
+                    tree_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if (op->requires_call_to_time_operators()) {
+                for (auto time_op : op_schedule.get_time_operators()) {
+                    time_op->operate(rng, &comparisons, 1);
+                }
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == ntrees);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}

@@ -937,6 +937,84 @@ void ComparisonPopulationTreeCollection::init_trees(
 
 
 
+ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulationTreeCollection(
+        const RelativeRootCollectionSettings & settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) : BaseComparisonPopulationTreeCollection() {
+    this->state_log_path_ = settings.get_state_log_path();
+    this->operator_log_path_ = settings.get_operator_log_path();
+    this->node_height_prior_ = settings.get_time_prior_settings().get_instance();
+    this->concentration_ = std::make_shared<PositiveRealParameter>(
+            settings.get_concentration_settings(),
+            rng);
+    this->operator_schedule_ = OperatorSchedule(
+            settings,
+            settings.using_dpp());
+    if (this->operator_schedule_.get_total_weight() <= 0.0) {
+        throw EcoevolityError("No operators have weight");
+    }
+    this->init_trees(settings.get_comparison_settings(),
+            rng,
+            strict_on_constant_sites,
+            strict_on_missing_sites);
+    this->stored_node_heights_.reserve(this->trees_.size());
+    this->stored_node_height_indices_.reserve(this->trees_.size());
+    if (settings.event_model_is_fixed()) {
+        this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
+    }
+}
+
+void ComparisonRelativeRootPopulationTreeCollection::init_trees(
+        const std::vector<RelativeRootComparisonSettings> & comparison_settings,
+        RandomNumberGenerator & rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites
+        ) {
+    std::unordered_set<std::string> population_labels;
+    double fresh_height;
+    for (unsigned int tree_idx = 0;
+            tree_idx < comparison_settings.size();
+            ++tree_idx) {
+        fresh_height = this->node_height_prior_->draw(rng);
+        std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(this->node_height_prior_, fresh_height);
+        std::shared_ptr<PopulationTree> new_tree = std::make_shared<ComparisonRelativeRootPopulationTree>(
+                comparison_settings.at(tree_idx),
+                rng,
+                strict_on_constant_sites,
+                strict_on_missing_sites
+                );
+        for (auto const& pop_label: new_tree->get_population_labels()) {
+            auto p = population_labels.insert(pop_label);
+            if (! p.second) {
+                std::ostringstream message;
+                message << "\n#######################################################################\n"
+                        <<   "###############################  ERROR  ###############################\n"
+                        << "Population label conflict. The population label:\n"
+                        << "\'" << pop_label << "\'\n"
+                        << "is used in multiple alignments.\n"
+                        << "#######################################################################\n";
+                throw EcoevolityCollectionSettingError(message.str());
+            }
+        }
+        new_tree->set_node_height_prior(this->node_height_prior_);
+        new_tree->set_root_height_parameter(new_height_parameter);
+        this->node_heights_.push_back(new_height_parameter);
+        this->trees_.push_back(new_tree);
+        this->node_height_indices_.push_back(tree_idx);
+        ECOEVOLITY_ASSERT(
+                this->trees_.at(tree_idx)->get_root_height_parameter() ==
+                this->node_heights_.at(this->node_height_indices_.at(tree_idx))
+                );
+    }
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_heights_.size());
+    ECOEVOLITY_ASSERT(this->trees_.size() == this->node_height_indices_.size());
+}
+
+
+
+
 ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCollection(
         const DirichletCollectionSettings & settings,
         RandomNumberGenerator & rng,

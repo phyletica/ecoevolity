@@ -227,6 +227,10 @@ class PopulationTree {
 
         double get_leaf_mean_population_size() const;
 
+        virtual double get_relative_root_population_size() const {
+            return this->get_root_population_size() / this->get_leaf_mean_population_size();
+        }
+
         std::vector<double> get_population_sizes_as_proportions() const;
         std::vector<double> get_population_sizes_as_multipliers() const;
         void set_population_sizes_as_proportions(const std::vector<double> & proportions);
@@ -509,6 +513,7 @@ class RelativeRootPopulationTree: public PopulationTree {
         }
         void estimate_relative_root_population_size() {
             this->relative_root_population_size_->estimate();
+            this->root_->estimate_population_size();
         }
 
         void set_root_population_size(double size);
@@ -517,6 +522,10 @@ class RelativeRootPopulationTree: public PopulationTree {
         unsigned int scale_all_population_sizes(double scale);
         unsigned int scale_root_population_size(double scale);
         void set_mean_population_size(double size);
+
+        double get_relative_root_population_size() const {
+            return this->relative_root_population_size_->get_value();
+        }
 
         void set_population_sizes_as_proportions(
                 const std::vector<double> & proportions);
@@ -527,17 +536,21 @@ class RelativeRootPopulationTree: public PopulationTree {
 
         void fix_population_sizes() {
             PopulationTree::fix_population_sizes();
-            this->fix_relative_root_population_size();
+            if (! this->relative_root_population_size_is_fixed()) {
+                this->root_->estimate_population_size();
+            }
         }
         void estimate_population_sizes() {
             PopulationTree::estimate_population_sizes();
-            this->estimate_relative_root_population_size();
         }
         virtual void constrain_population_sizes() {
             PopulationTree::constrain_population_sizes();
             this->relative_root_population_size_->set_value(1.0);
             this->relative_root_population_size_->fix();
         }
+
+        void store_all_population_sizes();
+        void restore_all_population_sizes();
 
         double compute_log_prior_density_of_population_sizes() const;
 };
@@ -593,6 +606,70 @@ class ComparisonPopulationTree: public PopulationTree {
                 );
         ComparisonPopulationTree(
                 const ComparisonSettings& settings,
+                RandomNumberGenerator& rng,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false
+                );
+        void comparison_init(
+                std::string path, 
+                char population_name_delimiter = ' ',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
+                );
+
+        void set_child_population_size(unsigned int child_index, double size);
+        double get_child_population_size(unsigned int child_index) const;
+        std::shared_ptr<PositiveRealParameter> get_child_population_size_parameter(
+                unsigned int child_index) const;
+
+        void store_all_heights() {
+            this->store_root_height();
+        }
+        void restore_all_heights() {
+            this->restore_root_height();
+        }
+        void store_parameters();
+        void restore_parameters();
+
+        double compute_log_prior_density();
+
+        void write_state_log_header(std::ostream& out,
+                bool include_event_index,
+                const std::string& delimiter = "\t") const;
+        void log_state(std::ostream& out,
+                unsigned int event_index,
+                const std::string& delimiter = "\t") const;
+        void log_state(std::ostream& out,
+                const std::string& delimiter = "\t") const;
+
+        void draw_from_prior(RandomNumberGenerator& rng);
+
+};
+
+class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
+
+    public:
+        ComparisonRelativeRootPopulationTree() { }
+        ComparisonRelativeRootPopulationTree(
+                std::string path, 
+                char population_name_delimiter = ' ',
+                bool population_name_is_prefix = true,
+                bool genotypes_are_diploid = true,
+                bool markers_are_dominant = false,
+                bool constant_sites_removed = true,
+                bool validate = true,
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                double ploidy = 2.0
+                );
+        ComparisonRelativeRootPopulationTree(
+                const RelativeRootComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false
