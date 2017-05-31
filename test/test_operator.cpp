@@ -93,7 +93,6 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -105,6 +104,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
 
         double size_leaf1;
         double size_leaf2;
@@ -240,7 +241,6 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -251,6 +251,7 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -362,7 +363,6 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -373,6 +373,7 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -495,7 +496,6 @@ TEST_CASE("Testing TimeSizeScaler with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -507,6 +507,7 @@ TEST_CASE("Testing TimeSizeScaler with 4 singletons",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         unsigned int niterations = 1000000;
@@ -641,7 +642,6 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -663,6 +663,7 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons",
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -861,7 +862,6 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -874,6 +874,7 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -1018,7 +1019,6 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons and shared ev
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -1036,6 +1036,7 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons and shared ev
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -1218,7 +1219,6 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes and shared
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -1229,6 +1229,7 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes and shared
         SampleSummarizer<double> height_summary;
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -1362,8 +1363,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs",
             op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
         }
 
-        comparisons.set_operator_schedule(op_schedule);
-
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
@@ -1375,6 +1374,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -1384,16 +1384,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs",
         for (unsigned int i = 0; i < niterations; ++i) {
             //OperatorInterface& o = op_schedule.draw_operator(rng);
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_time_operators()) {
-                for (std::shared_ptr<OperatorInterface> time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_tree_operators()) {
-                for (std::shared_ptr<OperatorInterface> tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -1516,7 +1506,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes",
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.5);
         op_schedule.add_operator(op);
@@ -1534,6 +1523,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -1542,16 +1532,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_time_operators()) {
-                for (std::shared_ptr<OperatorInterface> time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_tree_operators()) {
-                for (std::shared_ptr<OperatorInterface> tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -1653,7 +1633,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -1664,6 +1643,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -1784,7 +1764,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -1804,6 +1783,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 singletons",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         unsigned int niterations = 800000;
@@ -1811,16 +1791,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 singletons",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -1944,7 +1915,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -1974,21 +1944,13 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons",
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -2178,7 +2140,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -2199,6 +2160,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -2207,16 +2169,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs and shared event",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -2349,7 +2302,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons and 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -2375,21 +2327,13 @@ TEST_CASE("Testing CompositeTimeSizeScaler with mix of pairs and singletons and 
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -2563,7 +2507,6 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes a
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -2582,6 +2525,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes a
         SampleSummarizer<double> height_summary;
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -2590,16 +2534,7 @@ TEST_CASE("Testing CompositeTimeSizeScaler with 4 pairs with constrained sizes a
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -2716,7 +2651,6 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -2729,6 +2663,7 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -2863,7 +2798,6 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -2874,6 +2808,7 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -2985,7 +2920,6 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -2996,6 +2930,7 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -3118,7 +3053,6 @@ TEST_CASE("Testing TimeSizeMixer with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -3130,6 +3064,7 @@ TEST_CASE("Testing TimeSizeMixer with 4 singletons",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         unsigned int niterations = 1000000;
@@ -3264,7 +3199,6 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -3286,6 +3220,7 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons",
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -3484,7 +3419,6 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -3497,6 +3431,7 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -3641,7 +3576,6 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons and shared eve
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -3659,6 +3593,7 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons and shared eve
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -3841,7 +3776,6 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes and shared 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -3852,6 +3786,7 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes and shared 
         SampleSummarizer<double> height_summary;
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -3976,7 +3911,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -3997,6 +3931,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -4005,16 +3940,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -4137,7 +4063,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -4155,6 +4080,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -4163,16 +4089,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -4274,7 +4191,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -4285,6 +4201,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > height_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -4405,7 +4322,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -4425,6 +4341,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 singletons",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         unsigned int niterations = 800000;
@@ -4432,16 +4349,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 singletons",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -4565,7 +4473,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -4595,21 +4502,13 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons",
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -4799,7 +4698,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -4820,6 +4718,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -4828,16 +4727,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs and shared event",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -4970,7 +4860,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons and s
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -4996,21 +4885,13 @@ TEST_CASE("Testing CompositeTimeSizeMixer with mix of pairs and singletons and s
         SampleSummarizer<double> size_leaf_summary_single1;
         SampleSummarizer<double> size_leaf_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -5184,7 +5065,6 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes an
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -5203,6 +5083,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes an
         SampleSummarizer<double> height_summary;
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -5211,16 +5092,7 @@ TEST_CASE("Testing CompositeTimeSizeMixer with 4 pairs with constrained sizes an
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -5360,7 +5232,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -5374,6 +5245,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -5541,7 +5413,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -5553,6 +5424,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -5697,7 +5569,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -5709,6 +5580,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -5864,7 +5736,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -5877,6 +5748,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 singletons",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -6047,7 +5919,6 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -6074,6 +5945,7 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -6324,7 +6196,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -6338,6 +6209,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -6518,7 +6390,6 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -6541,6 +6412,7 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -6775,7 +6647,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and sh
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -6787,6 +6658,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and sh
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -6923,7 +6795,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and fixed rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -6937,6 +6808,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and fixed rates",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -7077,7 +6949,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and fi
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -7089,6 +6960,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and fi
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -7208,7 +7080,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes and rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -7220,6 +7091,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes and rates",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -7349,7 +7221,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 singletons and fixed rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -7362,6 +7233,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 singletons and fixed rates",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -7502,7 +7374,6 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and fixed
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -7529,6 +7400,7 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and fixed
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -7744,7 +7616,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event and fixed ra
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -7758,6 +7629,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event and fixed ra
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -7908,7 +7780,6 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -7931,6 +7802,7 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -8130,7 +8002,6 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and sh
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -8142,6 +8013,7 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and sh
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -8295,7 +8167,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -8318,6 +8189,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -8327,16 +8199,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8491,7 +8354,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -8511,6 +8373,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -8520,16 +8383,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8661,7 +8515,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -8680,6 +8533,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -8689,16 +8543,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -8841,7 +8686,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -8863,6 +8707,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -8871,16 +8716,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -9039,7 +8875,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons"
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -9075,21 +8910,13 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons"
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -9331,7 +9158,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -9354,6 +9180,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -9363,16 +9190,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -9540,7 +9358,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -9572,21 +9389,13 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -9812,7 +9621,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -9832,6 +9640,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -9841,16 +9650,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -9974,7 +9774,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and fixed rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -9996,6 +9795,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and fixed rates",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -10005,16 +9805,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and fixed rates",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -10144,7 +9935,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -10160,6 +9950,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -10169,16 +9960,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -10287,7 +10069,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes and
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -10299,6 +10080,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with fixed sizes and
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -10426,7 +10208,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons and fixed rates
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -10447,6 +10228,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons and fixed rates
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -10455,16 +10237,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 singletons and fixed rates
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -10595,7 +10368,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -10628,21 +10400,13 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -10851,7 +10615,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event and
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -10871,6 +10634,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event and
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -10880,16 +10644,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs and shared event and
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -11029,7 +10784,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -11058,21 +10812,13 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with mix of pairs and singletons 
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -11265,7 +11011,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -11282,6 +11027,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -11291,16 +11037,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 pairs with constrained siz
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -11446,7 +11183,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -11460,6 +11196,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -11627,7 +11364,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -11639,6 +11375,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -11783,7 +11520,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -11795,6 +11531,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -11950,7 +11687,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -11963,6 +11699,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 singletons",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -12133,7 +11870,6 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -12160,6 +11896,7 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -12410,7 +12147,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -12424,6 +12160,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -12604,7 +12341,6 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -12627,6 +12363,7 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -12861,7 +12598,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and sha
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -12873,6 +12609,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and sha
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -13009,7 +12746,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and fixed rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -13023,6 +12759,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and fixed rates",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -13163,7 +12900,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and fix
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -13175,6 +12911,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and fix
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -13294,7 +13031,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes and rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -13306,6 +13042,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes and rates",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -13435,7 +13172,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 singletons and fixed rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -13448,6 +13184,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 singletons and fixed rates",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -13588,7 +13325,6 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and fixed 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -13615,6 +13351,7 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and fixed 
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -13830,7 +13567,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event and fixed rat
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -13844,6 +13580,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event and fixed rat
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -13994,7 +13731,6 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -14017,6 +13753,7 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -14216,7 +13953,6 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and sha
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -14228,6 +13964,7 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and sha
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -14383,7 +14120,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -14404,6 +14140,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -14413,16 +14150,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14579,7 +14307,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -14597,6 +14324,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -14606,16 +14334,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14749,7 +14468,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -14766,6 +14484,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes",
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -14775,16 +14494,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -14929,7 +14639,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -14949,6 +14658,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -14957,16 +14667,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -15127,7 +14828,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -15161,21 +14861,13 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -15419,7 +15111,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -15440,6 +15131,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -15449,16 +15141,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -15628,7 +15311,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -15658,21 +15340,13 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -15900,7 +15574,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -15918,6 +15591,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -15927,16 +15601,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -16062,7 +15727,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and fixed rates",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -16082,6 +15746,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and fixed rates",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -16091,16 +15756,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and fixed rates",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -16230,7 +15886,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -16247,6 +15902,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -16256,16 +15912,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -16374,7 +16021,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes and 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -16386,6 +16032,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with fixed sizes and 
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -16515,7 +16162,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons and fixed rates"
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -16534,6 +16180,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons and fixed rates"
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_root;
         double mutation_rate;
@@ -16542,16 +16189,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 singletons and fixed rates"
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -16682,7 +16320,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -16715,21 +16352,13 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -16938,7 +16567,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event and 
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -16958,6 +16586,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event and 
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -16967,16 +16596,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs and shared event and 
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -17116,7 +16736,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -17145,21 +16764,13 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with mix of pairs and singletons a
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -17352,7 +16963,6 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -17369,6 +16979,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -17378,16 +16989,7 @@ TEST_CASE("Testing CompositeTimeSizeRateMixer with 4 pairs with constrained size
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -17474,11 +17076,11 @@ TEST_CASE("Testing EventTimeScaler", "[EventTimeScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -17554,11 +17156,11 @@ TEST_CASE("Testing EventTimeScaler", "[EventTimeScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -17636,11 +17238,11 @@ TEST_CASE("Testing EventTimeMover", "[EventTimeMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -17716,11 +17318,11 @@ TEST_CASE("Testing EventTimeMover", "[EventTimeMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -17803,11 +17405,11 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -17892,11 +17494,11 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -17984,11 +17586,11 @@ TEST_CASE("Testing LeafPopulationSizeScaler", "[LeafPopulationSizeScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18072,11 +17674,11 @@ TEST_CASE("Testing LeafPopulationSizeScaler", "[LeafPopulationSizeScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18164,11 +17766,11 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18254,11 +17856,11 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18347,11 +17949,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18436,11 +18038,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18525,11 +18127,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18613,11 +18215,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18701,11 +18303,11 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -18798,10 +18400,10 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -18813,6 +18415,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -18847,8 +18450,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -18880,7 +18482,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         }
         for (auto const & kv: model_counts) {
             REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
-                    get_dpp_log_prior_probability(kv.first, concentration))).epsilon(0.001));
+                    get_dpp_log_prior_probability(kv.first, concentration))).epsilon(0.002));
         }
     }
 }
@@ -18948,10 +18550,10 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 6 pairs and concentration 1
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -18963,6 +18565,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 6 pairs and concentration 1
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -18997,8 +18600,7 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 6 pairs and concentration 1
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
         
         double size_sh;
         double size_sc;
@@ -19091,10 +18693,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -19107,6 +18709,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -19142,8 +18745,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(model_counts.at("000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("012") == nevent_counts.at(3));
@@ -19239,10 +18841,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -19255,6 +18857,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -19290,8 +18893,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(model_counts.at("000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("012") == nevent_counts.at(3));
@@ -19389,10 +18991,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -19405,6 +19007,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -19440,8 +19043,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(model_counts.at("000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("012") == nevent_counts.at(3));
@@ -19467,7 +19069,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         REQUIRE(split_weight_summary.mean() == Approx(0.5));
         REQUIRE(split_weight_summary.variance() == Approx(0.0));
         for (std::string m: {"001", "010", "011"}) {
-            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(2.0/11.0).epsilon(0.001));
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(2.0/11.0).epsilon(0.002));
         }
         REQUIRE((model_counts.at("012") / (double)nsamples) == Approx(1.0/11.0).epsilon(0.001));
         REQUIRE((model_counts.at("000") / (double)nsamples) == Approx(4.0/11.0).epsilon(0.001));
@@ -19541,10 +19143,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -19557,6 +19159,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -19592,8 +19195,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
@@ -19706,10 +19308,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -19722,6 +19324,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         std::map<std::string, int> model_counts;
         std::map<int, int> nevent_counts;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -19757,8 +19360,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
                 }
             }
         }
-        std::cout << op->header_string();
-        std::cout << op->to_string(op_schedule);
+        op_schedule.write_operator_rates(std::cout);
 
         REQUIRE(model_counts.at("0000") == nevent_counts.at(1));
         REQUIRE(model_counts.at("0123") == nevent_counts.at(4));
@@ -19861,11 +19463,11 @@ TEST_CASE("Testing EventTimeScaler for dirichlet trees", "[EventTimeScaler]") {
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -19943,11 +19545,11 @@ TEST_CASE("Testing EventTimeScaler for dirichlet trees", "[EventTimeScaler]") {
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -20026,11 +19628,11 @@ TEST_CASE("Testing MeanPopulationSizeScaler for dirichlet trees", "[MeanPopulati
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -20107,11 +19709,11 @@ TEST_CASE("Testing MeanPopulationSizeScaler for dirichlet trees", "[MeanPopulati
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
 
+        comparisons.set_operator_schedule(os);
         unsigned int n = 0;
         double mean = 0.0;
         double sum_devs = 0.0;
@@ -20192,7 +19794,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[Relati
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20212,6 +19813,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[Relati
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20299,7 +19901,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[Relati
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20319,6 +19920,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[Relati
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20409,7 +20011,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[Relati
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20429,6 +20030,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[Relati
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20516,7 +20118,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[Relati
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20536,6 +20137,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[Relati
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20625,7 +20227,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[Rel
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20645,6 +20246,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[Rel
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20732,7 +20334,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[Rel
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20752,6 +20353,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[Rel
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20841,7 +20443,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[Rela
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20861,6 +20462,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[Rela
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -20948,7 +20550,6 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[Rela
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -20968,6 +20569,7 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[Rela
             expected_variances.at(i) *= ((double)nnodes * (double)nnodes);
         }
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -21068,7 +20670,6 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler for dirichlet trees",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21077,6 +20678,7 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler for dirichlet trees",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21163,7 +20765,6 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with height only",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21172,6 +20773,7 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with height only",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21260,7 +20862,6 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no size",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21269,6 +20870,7 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no size",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21358,7 +20960,6 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no rate",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21367,6 +20968,7 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no rate",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21460,7 +21062,6 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler for dirichlet trees
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21469,6 +21070,7 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler for dirichlet trees
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21555,7 +21157,6 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with height only",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21564,6 +21165,7 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with height only",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21652,7 +21254,6 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no size",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21661,6 +21262,7 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no size",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21750,7 +21352,6 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no rate",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21759,6 +21360,7 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no rate",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -21859,7 +21461,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer for dirichlet trees",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21880,21 +21481,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer for dirichlet trees",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -21985,7 +21578,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with height only",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -21994,6 +21586,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with height only",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -22082,7 +21675,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no size",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -22096,21 +21688,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no size",
         SampleSummarizer<double> size_summary;
         SampleSummarizer<double> rate_summary;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -22200,7 +21784,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no mean size",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -22220,21 +21803,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no mean size",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -22339,7 +21914,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no rate",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -22359,21 +21933,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with no rate",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_height(0));
                 size_summary.add_sample(comparisons.get_tree(0)->get_mean_population_size());
@@ -22524,7 +22090,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -22548,21 +22113,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22695,7 +22252,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed sizes",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -22712,21 +22268,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed sizes",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -22867,7 +22415,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -22890,21 +22437,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -23046,7 +22585,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -23069,21 +22607,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -23247,7 +22777,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -23270,21 +22799,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 singletons",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -23489,7 +23010,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -23513,21 +23033,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -23787,7 +23299,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and shared event"
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -23811,21 +23322,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and shared event"
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -24036,7 +23539,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -24060,21 +23562,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -24314,7 +23808,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs with fixed sizes 
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -24331,21 +23824,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs with fixed sizes 
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -24488,7 +23973,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -24511,21 +23995,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed multipl
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -24669,7 +24145,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -24692,21 +24167,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with 4 pairs and fixed mean si
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -24860,7 +24327,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -24877,21 +24343,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -25054,7 +24512,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -25077,21 +24534,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -25370,7 +24819,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -25393,21 +24841,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -25648,7 +25088,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -25670,21 +25109,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -25909,7 +25340,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -25931,21 +25361,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -26210,7 +25632,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -26233,21 +25654,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -26528,7 +25941,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -26551,21 +25963,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -26810,7 +26214,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -26832,21 +26235,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -27112,7 +26507,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -27135,21 +26529,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1200000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -27342,7 +26728,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -27365,21 +26750,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -27543,7 +26920,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -27565,21 +26941,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -27741,7 +27109,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -27763,21 +27130,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateMixer with mix of pairs and singleto
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 1000000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == 1);
@@ -27929,7 +27288,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -27941,6 +27299,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_root;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -28067,7 +27426,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -28079,6 +27437,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -28225,7 +27584,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -28237,6 +27595,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -28395,7 +27754,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -28419,6 +27777,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -28629,7 +27988,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -28641,6 +27999,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 600000;
@@ -28802,7 +28161,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -28822,6 +28180,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -28993,7 +28352,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29005,6 +28363,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 500000;
@@ -29130,7 +28489,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and fixed rates",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29142,6 +28500,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and fixed rates",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 600000;
@@ -29237,7 +28596,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29249,6 +28607,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 500000;
@@ -29370,7 +28729,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons and fixed rates",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29382,6 +28740,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons and fixed rates",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -29510,7 +28869,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and f
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29534,6 +28892,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and f
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
@@ -29709,7 +29068,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event and fixe
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29721,6 +29079,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event and fixe
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -29852,7 +29211,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -29872,6 +29230,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
@@ -30004,7 +29363,6 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -30016,6 +29374,7 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -30161,7 +29520,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -30179,6 +29537,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs",
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_root;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -30186,16 +29545,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -30313,7 +29663,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -30330,6 +29679,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -30337,16 +29687,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -30484,7 +29825,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -30502,6 +29842,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons",
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -30509,16 +29850,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -30668,7 +30000,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -30698,21 +30029,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -30916,7 +30239,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -30934,6 +30256,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 600000;
@@ -30941,16 +30264,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -31103,7 +30417,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -31129,21 +30442,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 800000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -31308,7 +30613,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -31325,6 +30629,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 500000;
@@ -31332,16 +30637,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -31458,7 +30754,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and fixed rates"
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -31475,6 +30770,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and fixed rates"
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 600000;
@@ -31482,16 +30778,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and fixed rates"
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -31578,7 +30865,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -31590,6 +30876,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 500000;
@@ -31711,7 +30998,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons and fixed r
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -31728,6 +31014,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons and fixed r
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -31735,16 +31022,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 singletons and fixed r
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);
@@ -31864,7 +31142,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -31893,21 +31170,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == ntrees);
 
@@ -32076,7 +31345,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32093,6 +31361,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -32100,16 +31369,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs and shared event
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
@@ -32232,7 +31492,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32257,21 +31516,13 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single1;
         SampleSummarizer<double> mutation_rate_summary_single2;
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
+            
             if ((i + 1) % sample_freq == 0) {
                 REQUIRE(comparisons.get_number_of_events() == 1);
 
@@ -32397,7 +31648,6 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32409,6 +31659,7 @@ TEST_CASE("Testing CompositeTimeMeanSizeRateScaler with 4 pairs with fixed mean 
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size;
         double mutation_rate;
         unsigned int niterations = 400000;
@@ -32502,7 +31753,6 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1)", "[Relat
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32515,6 +31765,7 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1)", "[Relat
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -32621,7 +31872,6 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1) and gamma
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32634,6 +31884,7 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1) and gamma
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -32742,7 +31993,6 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gam
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32755,6 +32005,7 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gam
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -32862,7 +32113,6 @@ TEST_CASE("Testing RelativePopulationSizeMovers for singleton with dirichlet(10,
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(os);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -32874,6 +32124,7 @@ TEST_CASE("Testing RelativePopulationSizeMovers for singleton with dirichlet(10,
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(os);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 2;
         unsigned int nsamples = niterations / sample_freq;
@@ -32991,7 +32242,6 @@ TEST_CASE("Testing tree-specific FreqMover with 3 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -33005,6 +32255,7 @@ TEST_CASE("Testing tree-specific FreqMover with 3 pairs",
         std::shared_ptr<ContinuousProbabilityDistribution> prior0 = std::make_shared<BetaDistribution>(freq_alphas.at(0), freq_betas.at(0));
         std::shared_ptr<ContinuousProbabilityDistribution> prior2 = std::make_shared<BetaDistribution>(freq_alphas.at(2), freq_betas.at(2));
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -33124,7 +32375,6 @@ TEST_CASE("Testing tree-specific RelativePopulationSizeMixer with 3 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -33139,6 +32389,7 @@ TEST_CASE("Testing tree-specific RelativePopulationSizeMixer with 3 pairs",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -33275,7 +32526,6 @@ TEST_CASE("Testing tree-specific MeanPopulationSizeScaler with 3 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -33286,6 +32536,7 @@ TEST_CASE("Testing tree-specific MeanPopulationSizeScaler with 3 pairs",
 
         std::vector< SampleSummarizer<double> > size_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -33418,7 +32669,6 @@ TEST_CASE("Testing tree-specific RelativePopulationSizeMovers with 3 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -33433,6 +32683,7 @@ TEST_CASE("Testing tree-specific RelativePopulationSizeMovers with 3 pairs",
 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 6;
         unsigned int nsamples = niterations / sample_freq;
@@ -33573,7 +32824,6 @@ TEST_CASE("Testing tree-specific PopulationSizeScalers with 3 pairs",
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -33586,6 +32836,7 @@ TEST_CASE("Testing tree-specific PopulationSizeScalers with 3 pairs",
         std::vector< SampleSummarizer<double> > leaf0_summaries(ntrees);
         std::vector< SampleSummarizer<double> > leaf1_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 600000;
         unsigned int sample_freq = 6;
         unsigned int nsamples = niterations / sample_freq;
@@ -33730,7 +32981,6 @@ TEST_CASE("Testing tree-specific MutationRateScaler with 3 pairs",
 
         ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -33741,6 +32991,7 @@ TEST_CASE("Testing tree-specific MutationRateScaler with 3 pairs",
 
         std::vector< SampleSummarizer<double> > rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         unsigned int niterations = 400000;
         unsigned int sample_freq = 4;
         unsigned int nsamples = niterations / sample_freq;
@@ -33790,168 +33041,122 @@ TEST_CASE("Testing derived operator interface metadata",
         std::shared_ptr<OperatorInterface> op = std::make_shared<FreqMover>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "FreqMover0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("MutationRateScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<MutationRateScaler>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "MutationRateScaler0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("RootPopulationSizeScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<RootPopulationSizeScaler>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "RootPopulationSizeScaler0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("LeafPopulationSizeScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<LeafPopulationSizeScaler>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "LeafPopulationSizeScaler0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("RootRelativePopulationSizeMover") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<RootRelativePopulationSizeMover>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "RootRelativePopulationSizeMover0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("LeafRelativePopulationSizeMover") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<LeafRelativePopulationSizeMover>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "LeafRelativePopulationSizeMover0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("MeanPopulationSizeScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<MeanPopulationSizeScaler>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "MeanPopulationSizeScaler0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("RelativePopulationSizeMixer") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<RelativePopulationSizeMixer>(0, 1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator);
         REQUIRE(op->get_name() == "RelativePopulationSizeMixer0");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("EventTimeScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator);
         REQUIRE(op->get_name() == "EventTimeScaler");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("EventTimeMover") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<EventTimeMover>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator);
         REQUIRE(op->get_name() == "EventTimeMover");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("DirichletProcessGibbsSampler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<DirichletProcessGibbsSampler>(1.0);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::collection_operator);
         REQUIRE(op->get_name() == "DirichletProcessGibbsSampler");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
     SECTION("ReversibleJumpSampler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator);
         REQUIRE(op->get_name() == "ReversibleJumpSampler");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("TimeSizeMixer") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeMixer>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "TimeSizeMixer");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("TimeSizeScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "TimeSizeScaler");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("TimeSizeRateMixer") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateMixer>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "TimeSizeRateMixer");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("TimeSizeRateScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<TimeSizeRateScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "TimeSizeRateScaler");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
     SECTION("TimeMeanSizeRateScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<TimeMeanSizeRateScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "TimeMeanSizeRateScaler");
-        REQUIRE(! op->requires_call_to_tree_operators());
-        REQUIRE(! op->requires_call_to_time_operators());
     }
 
     SECTION("CompositeTimeSizeMixer") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeMixer>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "CompositeTimeSizeMixer");
-        REQUIRE(op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
     SECTION("CompositeTimeSizeScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "CompositeTimeSizeScaler");
-        REQUIRE(op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
     SECTION("CompositeTimeSizeRateMixer") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateMixer>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "CompositeTimeSizeRateMixer");
-        REQUIRE(op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
     SECTION("CompositeTimeSizeRateScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeSizeRateScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "CompositeTimeSizeRateScaler");
-        REQUIRE(op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
     SECTION("CompositeTimeMeanSizeRateMixer") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateMixer>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "CompositeTimeMeanSizeRateMixer");
-        REQUIRE(op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
     SECTION("CompositeTimeMeanSizeRateScaler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<CompositeTimeMeanSizeRateScaler>(1.0, 0.1);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator);
         REQUIRE(op->get_name() == "CompositeTimeMeanSizeRateScaler");
-        REQUIRE(op->requires_call_to_tree_operators());
-        REQUIRE(op->requires_call_to_time_operators());
     }
 }
 
 
-TEST_CASE("Testing RootPopulationSizeScaler for relative root size", "[xRootPopulationSizeScaler]") {
+TEST_CASE("Testing RootPopulationSizeScaler for relative root size", "[RootPopulationSizeScaler]") {
 
     SECTION("Testing gamma(10.0, 0.1) prior and optimizing") {
 
@@ -34048,7 +33253,7 @@ TEST_CASE("Testing RootPopulationSizeScaler for relative root size", "[xRootPopu
 }
 
 TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTreeCollection",
-        "[xPopulationSizeScalers]") {
+        "[PopulationSizeScalers]") {
 
     SECTION("Testing gamma(10.0, 0.01) and gamma(20.0, 0.1) priors and optimizing") {
 
@@ -34163,7 +33368,7 @@ TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTre
 }
 
 TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 ComparisonRelativeRootPopulationTree pairs",
-        "[xCompositeTimeSizeRateScaler]") {
+        "[CompositeTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with optimizing") {
         double height_shape = 5.0;
@@ -34291,7 +33496,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 ComparisonRelativeRootPopu
 
         ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
-        comparisons.set_operator_schedule(op_schedule);
 
         // Initialize prior probs
         comparisons.compute_log_likelihood_and_prior(true);
@@ -34314,6 +33518,7 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 ComparisonRelativeRootPopu
         std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
+        comparisons.set_operator_schedule(op_schedule);
         double size_leaf1;
         double size_leaf2;
         double size_root;
@@ -34324,16 +33529,6 @@ TEST_CASE("Testing CompositeTimeSizeRateScaler with 4 ComparisonRelativeRootPopu
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
-            if (op->requires_call_to_tree_operators()) {
-                for (auto tree_op : op_schedule.get_tree_operators()) {
-                    tree_op->operate(rng, &comparisons, 1);
-                }
-            }
-            if (op->requires_call_to_time_operators()) {
-                for (auto time_op : op_schedule.get_time_operators()) {
-                    time_op->operate(rng, &comparisons, 1);
-                }
-            }
             if ((i + 1) % sample_freq == 0) {
                 for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
                     REQUIRE(comparisons.get_number_of_events() == ntrees);

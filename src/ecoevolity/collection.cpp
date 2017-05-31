@@ -664,16 +664,6 @@ void BaseComparisonPopulationTreeCollection::mcmc(
     for (gen = 0; gen < chain_length; ++gen) {
         OperatorInterface& op = this->operator_schedule_.draw_operator(rng);
         op.operate(rng, this, this->get_number_of_threads());
-        if (op.requires_call_to_time_operators()) {
-            for (std::shared_ptr<OperatorInterface> time_op : this->operator_schedule_.get_time_operators()) {
-                time_op->operate(rng, this, this->get_number_of_threads());
-            }
-        }
-        if (op.requires_call_to_tree_operators()) {
-            for (std::shared_ptr<OperatorInterface> tree_op : this->operator_schedule_.get_tree_operators()) {
-                tree_op->operate(rng, this, this->get_number_of_threads());
-            }
-        }
 
         if ((gen + 1) % sample_frequency == 0) {
             this->log_state(state_log_stream, gen + 1);
