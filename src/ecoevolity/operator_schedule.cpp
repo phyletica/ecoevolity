@@ -146,7 +146,7 @@ OperatorSchedule::OperatorSchedule(
         auto comp_settings = collection_settings.get_comparison_setting(i);
 
         if (comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight() > 0.0) {
-            this->add_operator(std::make_shared<TimeSizeRateMixer>(
+            this->add_operator(std::make_shared<TimeMeanSizeRateMixer>(
                     i,
                     comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight(),
                     comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_scale()
@@ -154,7 +154,7 @@ OperatorSchedule::OperatorSchedule(
         }
 
         if (comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight() > 0.0) {
-            this->add_operator(std::make_shared<TimeSizeRateScaler>(
+            this->add_operator(std::make_shared<TimeMeanSizeRateScaler>(
                     i,
                     comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight(),
                     comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_scale()
