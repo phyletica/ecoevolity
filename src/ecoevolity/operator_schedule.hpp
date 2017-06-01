@@ -60,6 +60,7 @@ class OperatorSchedule {
         OperatorInterface& get_reversible_jump_operator() const;
         std::vector< std::shared_ptr<OperatorInterface> > get_time_operators() const;
         std::vector< std::shared_ptr<OperatorInterface> > get_tree_operators() const;
+        std::vector< std::shared_ptr<OperatorInterface> > get_multivariate_time_operators() const;
 
         double calc_delta(const Operator& op, double log_alpha);
 

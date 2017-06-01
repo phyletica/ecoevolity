@@ -42,10 +42,11 @@ TEST_CASE("Testing draw_heights_from_prior for DPP with 3 pairs and alpha 1.0",
         cfg << "        ConcentrationScaler:\n";
         cfg << "            scale: 0.2\n";
         cfg << "            weight: 0.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -216,15 +217,6 @@ TEST_CASE("Testing draw_from_prior for DPP with 3 pairs and alpha 1.0",
         cfg << "        ConcentrationScaler:\n";
         cfg << "            scale: 0.2\n";
         cfg << "            weight: 0.0\n";
-        cfg << "        EventTimeScaler:\n";
-        cfg << "            scale: 0.3\n";
-        cfg << "            weight: 1.0\n";
-        cfg << "        CompositeTimeSizeRateMixer:\n";
-        cfg << "            scale: 0.3\n";
-        cfg << "            weight: 0.0\n";
-        cfg << "        CompositeTimeSizeRateScaler:\n";
-        cfg << "            scale: 0.3\n";
-        cfg << "            weight: 0.0\n";
         cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
@@ -233,6 +225,15 @@ TEST_CASE("Testing draw_from_prior for DPP with 3 pairs and alpha 1.0",
         cfg << "    constant_sites_removed: true\n";
         cfg << "    equal_population_sizes: false\n";
         cfg << "    operators:\n";
+        cfg << "        EventTimeScaler:\n";
+        cfg << "            scale: 0.3\n";
+        cfg << "            weight: 1.0\n";
+        cfg << "        TimeSizeRateMixer:\n";
+        cfg << "            scale: 0.3\n";
+        cfg << "            weight: 0.0\n";
+        cfg << "        TimeSizeRateScaler:\n";
+        cfg << "            scale: 0.3\n";
+        cfg << "            weight: 0.0\n";
         cfg << "        MutationRateScaler:\n";
         cfg << "            scale: 0.5\n";
         cfg << "            weight: 0.0\n";
@@ -546,9 +547,6 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
         cfg << "        ConcentrationScaler:\n";
         cfg << "            scale: 0.2\n";
         cfg << "            weight: 0.0\n";
-        cfg << "        EventTimeScaler:\n";
-        cfg << "            scale: 0.3\n";
-        cfg << "            weight: 1.0\n";
         cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
@@ -557,6 +555,9 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
         cfg << "    constant_sites_removed: true\n";
         cfg << "    equal_population_sizes: false\n";
         cfg << "    operators:\n";
+        cfg << "        EventTimeScaler:\n";
+        cfg << "            scale: 0.3\n";
+        cfg << "            weight: 1.0\n";
         cfg << "        MutationRateScaler:\n";
         cfg << "            scale: 0.5\n";
         cfg << "            weight: 0.0\n";
@@ -850,10 +851,11 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -1148,10 +1150,11 @@ TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -1473,10 +1476,11 @@ TEST_CASE("Testing draw_from_prior logging for DPP with variable alpha",
         cfg << "        ConcentrationScaler:\n";
         cfg << "            scale: 0.2\n";
         cfg << "            weight: 0.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -1775,10 +1779,11 @@ TEST_CASE("Testing draw_from_prior for fixed 012",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -2060,10 +2065,11 @@ TEST_CASE("Testing draw_from_prior for fixed 000",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -2348,10 +2354,11 @@ TEST_CASE("Testing draw_from_prior logging for fixed 012",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -2650,10 +2657,11 @@ TEST_CASE("Testing draw_from_prior logging for fixed 000",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -2962,10 +2970,11 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -3353,10 +3362,11 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -3753,13 +3763,14 @@ TEST_CASE("Testing draw_from_prior logging for dirichlet collectin and DPP with 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -4115,10 +4126,11 @@ TEST_CASE("Testing tree dirtiness",
         cfg << "    operators:\n";
         cfg << "        ModelOperator:\n";
         cfg << "            weight: 1.0\n";
+        cfg << "global_comparison_settings:\n";
+        cfg << "    operators:\n";
         cfg << "        EventTimeScaler:\n";
         cfg << "            scale: 0.3\n";
         cfg << "            weight: 1.0\n";
-        cfg << "global_comparison_settings:\n";
         cfg << "    genotypes_are_diploid: true\n";
         cfg << "    markers_are_dominant: false\n";
         cfg << "    population_name_delimiter: \" \"\n";
@@ -4165,6 +4177,58 @@ TEST_CASE("Testing tree dirtiness",
         }
 
         collection.set_height(1, 0.01);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+        REQUIRE(collection.get_tree(3)->is_dirty());
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+
+        collection.set_height_of_tree(0, 0.03);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
+            REQUIRE(collection.get_tree(i)->is_dirty());
+        }
+        REQUIRE(! collection.get_tree(3)->is_dirty());
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+
+        collection.set_height_of_tree(1, 0.04);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
+            REQUIRE(collection.get_tree(i)->is_dirty());
+        }
+        REQUIRE(! collection.get_tree(3)->is_dirty());
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+
+        collection.set_height_of_tree(2, 0.05);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
+            REQUIRE(collection.get_tree(i)->is_dirty());
+        }
+        REQUIRE(! collection.get_tree(3)->is_dirty());
+
+        collection.compute_log_likelihood_and_prior(true);
+
+        for (unsigned int i = 0; i < collection.get_number_of_trees(); ++i) {
+            REQUIRE(! collection.get_tree(i)->is_dirty());
+        }
+
+        collection.set_height_of_tree(3, 0.03);
 
         for (unsigned int i = 0; i < collection.get_number_of_trees() - 1; ++i) {
             REQUIRE(! collection.get_tree(i)->is_dirty());

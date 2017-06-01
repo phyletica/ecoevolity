@@ -151,11 +151,34 @@ class BaseOperatorInterface : public OperatorInterface {
 template<class DerivedOperatorType>
 class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
 
+    protected:
+        int tree_index_ = -1;
+
     public:
         TimeOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
+        TimeOperatorInterface(unsigned int tree_index) :
+            BaseOperatorInterface<DerivedOperatorType>(),
+            tree_index_(tree_index)
+        { }
         TimeOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
+        TimeOperatorInterface(
+                unsigned int tree_index,
+                double weight) :
+            BaseOperatorInterface<DerivedOperatorType>(weight),
+            tree_index_(tree_index)
+        { }
 
         virtual void perform_collection_move(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        virtual void perform_global_collection_move(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        virtual void perform_tree_specific_collection_move(
+                RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads);
 
@@ -173,6 +196,8 @@ class TimeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
         virtual void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1) = 0;
+
+        virtual int get_tree_index() const;
 };
 
 template<class DerivedOperatorType>
@@ -594,9 +619,11 @@ class EventTimeScaler : public TimeOperatorInterface<ScaleOperator> {
 
     public:
         EventTimeScaler();
+        EventTimeScaler(unsigned int tree_index);
         EventTimeScaler(double weight);
+        EventTimeScaler(unsigned int tree_index, double weight);
         EventTimeScaler(double weight, double scale);
-        // virtual ~EventTimeScaler() { }
+        EventTimeScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -604,7 +631,15 @@ class EventTimeScaler : public TimeOperatorInterface<ScaleOperator> {
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
         std::string target_parameter() const;
@@ -614,9 +649,11 @@ class EventTimeMover : public TimeOperatorInterface<WindowOperator> {
 
     public:
         EventTimeMover();
+        EventTimeMover(unsigned int tree_index);
         EventTimeMover(double weight);
+        EventTimeMover(unsigned int tree_index, double weight);
         EventTimeMover(double weight, double window_size);
-        // virtual ~EventTimeMover() { }
+        EventTimeMover(unsigned int tree_index, double weight, double window_size);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -624,7 +661,15 @@ class EventTimeMover : public TimeOperatorInterface<WindowOperator> {
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
         std::string target_parameter() const;
@@ -850,20 +895,29 @@ class UnivariateCompositeTimeMeanSizeRateScaler : public CollectionOperatorInter
 
 class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 
-    protected:
-        UnivariateTimeSizeScaler uni_collection_scaler_ = UnivariateTimeSizeScaler(0.0, 0.5);
-
     public:
         TimeSizeMixer();
+        TimeSizeMixer(unsigned int tree_index);
         TimeSizeMixer(double weight);
+        TimeSizeMixer(unsigned int tree_index, double weight);
         TimeSizeMixer(double weight, double scale);
+        TimeSizeMixer(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int nthreads = 1);
+
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
 
@@ -874,37 +928,18 @@ class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
         OperatorInterface::OperatorTypeEnum get_type() const {
             return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
         }
-};
-
-class CompositeTimeSizeMixer : public TimeSizeMixer {
-
-    using TimeSizeMixer::propose;
-
-    public:
-        CompositeTimeSizeMixer() : TimeSizeMixer() { }
-        CompositeTimeSizeMixer(double weight) : TimeSizeMixer(weight) { }
-        CompositeTimeSizeMixer(double weight, double scale) : TimeSizeMixer(weight, scale) { }
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
 };
 
 
 class TimeSizeScaler : public TimeOperatorInterface<ScaleOperator> {
 
-    protected:
-        UnivariateTimeSizeScaler uni_collection_scaler_ = UnivariateTimeSizeScaler(0.0, 0.5);
-
     public:
         TimeSizeScaler();
+        TimeSizeScaler(unsigned int tree_index);
         TimeSizeScaler(double weight);
+        TimeSizeScaler(unsigned int tree_index, double weight);
         TimeSizeScaler(double weight, double scale);
-        // virtual ~TimeSizeScaler() { }
+        TimeSizeScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -912,7 +947,15 @@ class TimeSizeScaler : public TimeOperatorInterface<ScaleOperator> {
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
 
@@ -923,38 +966,18 @@ class TimeSizeScaler : public TimeOperatorInterface<ScaleOperator> {
         OperatorInterface::OperatorTypeEnum get_type() const {
             return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
         }
-};
-
-class CompositeTimeSizeScaler : public TimeSizeScaler {
-
-    using TimeSizeScaler::propose;
-
-    public:
-        CompositeTimeSizeScaler() : TimeSizeScaler() { }
-        CompositeTimeSizeScaler(double weight) : TimeSizeScaler(weight) { }
-        CompositeTimeSizeScaler(double weight, double scale) : TimeSizeScaler(weight, scale) { }
-        // virtual ~CompositeTimeSizeScaler() { }
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
 };
 
 
 class TimeSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
 
-    protected:
-        UnivariateTimeSizeRateScaler uni_collection_scaler_ = UnivariateTimeSizeRateScaler(0.0, 0.5);
-
     public:
         TimeSizeRateMixer();
+        TimeSizeRateMixer(unsigned int tree_index);
         TimeSizeRateMixer(double weight);
+        TimeSizeRateMixer(unsigned int tree_index, double weight);
         TimeSizeRateMixer(double weight, double scale);
-        // virtual ~TimeSizeRateMixer() { }
+        TimeSizeRateMixer(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -962,7 +985,15 @@ class TimeSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
 
@@ -975,32 +1006,15 @@ class TimeSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
         }
 };
 
-class CompositeTimeSizeRateMixer : public TimeSizeRateMixer {
-
-    using TimeSizeRateMixer::propose;
+class TimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
 
     public:
-        CompositeTimeSizeRateMixer() : TimeSizeRateMixer() { }
-        CompositeTimeSizeRateMixer(double weight) : TimeSizeRateMixer(weight) { }
-        CompositeTimeSizeRateMixer(double weight, double scale) : TimeSizeRateMixer(weight, scale) { }
-        // virtual ~CompositeTimeSizeRateMixer() { }
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
-};
-
-
-class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperator> {
-
-    public:
-        CompositeTimeMeanSizeRateMixer();
-        CompositeTimeMeanSizeRateMixer(double weight);
-        CompositeTimeMeanSizeRateMixer(double weight, double scale);
+        TimeMeanSizeRateMixer();
+        TimeMeanSizeRateMixer(unsigned int tree_index);
+        TimeMeanSizeRateMixer(double weight);
+        TimeMeanSizeRateMixer(unsigned int tree_index, double weight);
+        TimeMeanSizeRateMixer(double weight, double scale);
+        TimeMeanSizeRateMixer(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -1008,7 +1022,15 @@ class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperato
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
 
@@ -1024,14 +1046,13 @@ class CompositeTimeMeanSizeRateMixer : public TimeOperatorInterface<ScaleOperato
 
 class TimeSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
-    protected:
-        UnivariateTimeSizeRateScaler uni_collection_scaler_ = UnivariateTimeSizeRateScaler(0.0, 0.5);
-
     public:
         TimeSizeRateScaler();
+        TimeSizeRateScaler(unsigned int tree_index);
         TimeSizeRateScaler(double weight);
+        TimeSizeRateScaler(unsigned int tree_index, double weight);
         TimeSizeRateScaler(double weight, double scale);
-        // virtual ~TimeSizeRateScaler() { }
+        TimeSizeRateScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -1039,7 +1060,15 @@ class TimeSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
 
@@ -1050,25 +1079,6 @@ class TimeSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
         OperatorInterface::OperatorTypeEnum get_type() const {
             return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
         }
-};
-
-class CompositeTimeSizeRateScaler : public TimeSizeRateScaler {
-
-    using TimeSizeRateScaler::propose;
-
-    public:
-        CompositeTimeSizeRateScaler() : TimeSizeRateScaler() { }
-        CompositeTimeSizeRateScaler(double weight) : TimeSizeRateScaler(weight) { }
-        CompositeTimeSizeRateScaler(double weight, double scale) : TimeSizeRateScaler(weight, scale) { }
-        // virtual ~CompositeTimeSizeRateScaler() { }
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
 };
 
 
@@ -1079,8 +1089,11 @@ class TimeMeanSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
     public:
         TimeMeanSizeRateScaler();
+        TimeMeanSizeRateScaler(unsigned int tree_index);
         TimeMeanSizeRateScaler(double weight);
+        TimeMeanSizeRateScaler(unsigned int tree_index, double weight);
         TimeMeanSizeRateScaler(double weight, double scale);
+        TimeMeanSizeRateScaler(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -1088,7 +1101,15 @@ class TimeMeanSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
         double propose(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
                 unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
 
         std::string get_name() const;
 
@@ -1099,25 +1120,6 @@ class TimeMeanSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
         OperatorInterface::OperatorTypeEnum get_type() const {
             return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
         }
-};
-
-class CompositeTimeMeanSizeRateScaler : public TimeMeanSizeRateScaler {
-
-    using TimeMeanSizeRateScaler::propose;
-
-    public:
-        CompositeTimeMeanSizeRateScaler() : TimeMeanSizeRateScaler() { }
-        CompositeTimeMeanSizeRateScaler(double weight) : TimeMeanSizeRateScaler(weight) { }
-        CompositeTimeMeanSizeRateScaler(double weight, double scale) : TimeMeanSizeRateScaler(weight, scale) { }
-        // virtual ~CompositeTimeMeanSizeRateScaler() { }
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
 };
 
 

@@ -62,9 +62,6 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -73,6 +70,9 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -228,9 +228,6 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -239,6 +236,9 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -397,9 +397,6 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -408,6 +405,9 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -563,9 +563,6 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -574,6 +571,9 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -733,9 +733,6 @@ TEST_CASE("Testing constrained singleton error",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -744,6 +741,9 @@ TEST_CASE("Testing constrained singleton error",
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -900,9 +900,6 @@ TEST_CASE("Testing fixed singleton error",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -911,6 +908,9 @@ TEST_CASE("Testing fixed singleton error",
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -1066,9 +1066,6 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.5\n";
-        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -1077,6 +1074,9 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         os << "    constant_sites_removed: true\n";
         os << "    equal_population_sizes: false\n";
         os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";

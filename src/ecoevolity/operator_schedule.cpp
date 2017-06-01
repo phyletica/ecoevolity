@@ -51,29 +51,33 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_composite_time_size_rate_mixer_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeTimeSizeRateMixer>(
-                settings.get_composite_time_size_rate_mixer_settings().get_weight(),
-                settings.get_composite_time_size_rate_mixer_settings().get_scale()
-                ));
-    }
-
-    if (settings.get_composite_time_size_rate_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeTimeSizeRateScaler>(
-                settings.get_composite_time_size_rate_scaler_settings().get_weight(),
-                settings.get_composite_time_size_rate_scaler_settings().get_scale()
-                ));
-    }
-
-    if (settings.get_event_time_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<EventTimeScaler>(
-                settings.get_event_time_scaler_settings().get_weight(),
-                settings.get_event_time_scaler_settings().get_scale()
-                ));
-    }
-
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
         auto comp_settings = collection_settings.get_comparison_setting(i);
+
+        if (comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeSizeRateMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeSizeRateScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_event_time_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<EventTimeScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_event_time_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_event_time_scaler_settings().get_scale()
+                    ));
+        }
+
         if (comp_settings.get_operator_settings().get_mutation_rate_scaler_settings().get_weight() > 0.0) {
             this->add_operator(std::make_shared<MutationRateScaler>(
                     i,
@@ -138,29 +142,33 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_composite_time_size_rate_mixer_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeTimeMeanSizeRateMixer>(
-                settings.get_composite_time_size_rate_mixer_settings().get_weight(),
-                settings.get_composite_time_size_rate_mixer_settings().get_scale()
-                ));
-    }
-
-    if (settings.get_composite_time_size_rate_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeTimeMeanSizeRateScaler>(
-                settings.get_composite_time_size_rate_scaler_settings().get_weight(),
-                settings.get_composite_time_size_rate_scaler_settings().get_scale()
-                ));
-    }
-
-    if (settings.get_event_time_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<EventTimeScaler>(
-                settings.get_event_time_scaler_settings().get_weight(),
-                settings.get_event_time_scaler_settings().get_scale()
-                ));
-    }
-
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
         auto comp_settings = collection_settings.get_comparison_setting(i);
+
+        if (comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeSizeRateMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeSizeRateScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_event_time_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<EventTimeScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_event_time_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_event_time_scaler_settings().get_scale()
+                    ));
+        }
+
         if (comp_settings.get_operator_settings().get_mutation_rate_scaler_settings().get_weight() > 0.0) {
             this->add_operator(std::make_shared<MutationRateScaler>(
                     i,
@@ -253,6 +261,16 @@ std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_time_ope
     std::vector< std::shared_ptr<OperatorInterface> > ops;
     for (std::shared_ptr<OperatorInterface> op: this->operators_) {
         if (op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator) {
+            ops.push_back(op);
+        }
+    }
+    return ops;
+}
+
+std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_multivariate_time_operators() const {
+    std::vector< std::shared_ptr<OperatorInterface> > ops;
+    for (std::shared_ptr<OperatorInterface> op: this->operators_) {
+        if (op->get_type() == OperatorInterface::OperatorTypeEnum::multivariate_time_operator) {
             ops.push_back(op);
         }
     }
