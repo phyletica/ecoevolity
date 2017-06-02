@@ -128,7 +128,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "123456";
+        char arg2[] = "12345";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -201,61 +201,61 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.02));
         REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.02));
         REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.02));
 
         REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.02));
         REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.02));
         REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.02));
 
         REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.02));
         REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.02));
         REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.02));
 
         REQUIRE(size4_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size4_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size4_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size4_summary_a.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
-        REQUIRE(size4_summary_a.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_a.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.02));
         REQUIRE(size4_summary_b.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
-        REQUIRE(size4_summary_b.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_b.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.02));
         REQUIRE(size4_summary_c.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
-        REQUIRE(size4_summary_c.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_c.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.02));
 
         REQUIRE(size5_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size5_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size5_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size5_summary_a.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
-        REQUIRE(size5_summary_a.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_a.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.02));
         REQUIRE(size5_summary_b.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
-        REQUIRE(size5_summary_b.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_b.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.02));
         REQUIRE(size5_summary_c.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
-        REQUIRE(size5_summary_c.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_c.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.02));
 
         REQUIRE(size6_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size6_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size6_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size6_summary_a.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
-        REQUIRE(size6_summary_a.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_a.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.02));
         REQUIRE(size6_summary_b.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
-        REQUIRE(size6_summary_b.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_b.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.02));
         REQUIRE(size6_summary_c.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
-        REQUIRE(size6_summary_c.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_c.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.02));
 
         delete[] cfg_path;
     }
@@ -4682,8 +4682,8 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 1000000\n";
-        os << "    sample_frequency: 50\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -4808,7 +4808,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -5016,8 +5016,8 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixe
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -6040,8 +6040,8 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -6378,8 +6378,8 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -7604,8 +7604,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -8274,8 +8274,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -8622,8 +8622,8 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -8950,8 +8950,8 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -9269,8 +9269,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -9598,8 +9598,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -9926,8 +9926,8 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    fixed: [0, 1, 2]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10051,7 +10051,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -10247,8 +10247,8 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         os << "event_model_prior:\n";
         os << "    fixed: [0, 1, 2]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10372,7 +10372,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -10567,8 +10567,8 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    fixed: [0, 0, 0]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10692,7 +10692,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -10888,8 +10888,8 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         os << "event_model_prior:\n";
         os << "    fixed: [0, 0, 0]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -11013,7 +11013,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -11220,8 +11220,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -11646,8 +11646,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -12072,8 +12072,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -12477,8 +12477,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -12656,7 +12656,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12885,8 +12885,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -13293,8 +13293,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -13460,7 +13460,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");

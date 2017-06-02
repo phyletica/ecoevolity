@@ -116,8 +116,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             //OperatorInterface& o = op_schedule.draw_operator(rng);
@@ -683,8 +683,8 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons",
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -902,8 +902,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs and shared event",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -1066,8 +1066,8 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons and shared ev
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -1411,8 +1411,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -1982,8 +1982,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with mix of pairs and singletons
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -2202,8 +2202,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs and shared event",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -2367,8 +2367,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with mix of pairs and singletons
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -2716,8 +2716,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -3284,8 +3284,8 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons",
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -3503,8 +3503,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs and shared event",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -3667,8 +3667,8 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons and shared eve
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -4012,8 +4012,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 pairs",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -4584,8 +4584,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with mix of pairs and singletons"
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -4804,8 +4804,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 pairs and shared event",
         double size_leaf1;
         double size_leaf2;
         double size_root;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -4969,8 +4969,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with mix of pairs and singletons 
         SampleSummarizer<double> size_leaf_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -5344,8 +5344,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -6061,8 +6061,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -6335,8 +6335,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -6540,8 +6540,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -6950,8 +6950,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and fixed rates",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -7551,8 +7551,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and fixed
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -7789,8 +7789,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event and fixed ra
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -7963,8 +7963,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -8357,8 +8357,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -9078,8 +9078,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -9223,7 +9223,7 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
 }
 
 TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and shared event",
-        "[xTimeSizeRateScaler]") {
+        "[TimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;
@@ -9353,8 +9353,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and shared even
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -9559,8 +9559,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -9971,8 +9971,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and fixed rates
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -10580,8 +10580,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -10819,8 +10819,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and shared even
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -10994,8 +10994,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -11392,8 +11392,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -12109,8 +12109,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -12383,8 +12383,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -12588,8 +12588,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -12998,8 +12998,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and fixed rates",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -13600,8 +13600,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and fixed 
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -13838,8 +13838,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event and fixed rat
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -14012,8 +14012,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -14405,8 +14405,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs",
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -15126,8 +15126,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -15401,8 +15401,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs and shared event
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -15607,8 +15607,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -16019,8 +16019,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs and fixed rates"
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -16626,8 +16626,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -16865,8 +16865,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs and shared event
         double size_leaf2;
         double size_root;
         double mutation_rate;
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -17040,8 +17040,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -18694,8 +18694,8 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         std::map<int, int> nevent_counts;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 2;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
@@ -18844,8 +18844,8 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 6 pairs and concentration 1
         std::map<int, int> nevent_counts;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 2;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
@@ -22392,8 +22392,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -22547,8 +22547,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed sizes",
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -22716,8 +22716,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed multipliers",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -22886,8 +22886,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed mean sizes",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -23078,8 +23078,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 singletons",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -23312,8 +23312,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons",
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -23601,8 +23601,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and shared event",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -23841,8 +23841,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and sh
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -24103,8 +24103,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs with fixed sizes and share
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -24274,8 +24274,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed multipliers and 
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -24446,8 +24446,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed mean sizes and s
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -24622,8 +24622,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -24813,8 +24813,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and fi
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -25120,8 +25120,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and fi
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -25640,8 +25640,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -25933,8 +25933,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and sh
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -26242,8 +26242,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -27029,8 +27029,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -27220,8 +27220,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -27409,8 +27409,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -28188,8 +28188,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -28344,8 +28344,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed si
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -28514,8 +28514,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed mu
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -28685,8 +28685,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed me
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -28878,8 +28878,8 @@ TEST_CASE("Testing tree-specfic TimeMeanSizeRateMixer with 4 singletons",
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -29113,8 +29113,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -29403,8 +29403,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and shared e
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -29644,8 +29644,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -29907,8 +29907,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs with fixed s
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -30079,8 +30079,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed mu
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -30252,8 +30252,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed me
         DirichletDistribution dir_prior = DirichletDistribution(alphas);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -30429,8 +30429,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -30621,8 +30621,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -30929,8 +30929,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -31451,8 +31451,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -31745,8 +31745,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -32055,8 +32055,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -32845,8 +32845,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -33037,8 +33037,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -33227,8 +33227,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         DirichletDistribution dir_prior2 = DirichletDistribution(alphas2);
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 1000000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -33897,8 +33897,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons",
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 800000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -34310,8 +34310,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 800000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op->operate(rng, &comparisons, 1);
@@ -36184,8 +36184,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with mix of pairs and si
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 800000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
@@ -36599,8 +36599,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with mix of pairs and si
         SampleSummarizer<double> mutation_rate_summary_single2;
 
         comparisons.set_operator_schedule(op_schedule);
-        unsigned int niterations = 800000;
-        unsigned int sample_freq = 4;
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
