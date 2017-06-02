@@ -54,7 +54,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -261,7 +261,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
     }
 }
 
-TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior and no optimizing") {
         double time_shape = 10.0;
@@ -298,7 +298,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -406,7 +406,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with optimizing") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -442,7 +444,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -550,7 +552,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior for singleton with optimizing") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -586,7 +590,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -690,7 +694,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained pop sizes and opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with constrained pop sizes and optimizing") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -726,7 +732,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -843,88 +849,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
 
         delete[] cfg_path;
     }
+}
 
-    SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with fixed pop sizes and optimizing") {
-        double time_shape = 10.0;
-        double time_scale = 0.1;
-        double size_shape = 5.0;
-        double size_scale = 0.5;
-        std::string auto_optimize = "true";
-        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-state-run-1.log";
-        std::ofstream os;
-        os.open(test_path);
-        os << "event_time_prior:\n";
-        os << "    gamma_distribution:\n";
-        os << "        shape: " << time_shape << "\n";
-        os << "        scale: " << time_scale << "\n";
-        os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 10\n";
-        os << "operator_settings:\n";
-        os << "    auto_optimize: " << auto_optimize << "\n";
-        os << "    auto_optimize_delay: 10000\n";
-        os << "    operators:\n";
-        os << "        ModelOperator:\n";
-        os << "            number_of_auxiliary_categories: 5\n";
-        os << "            weight: 0.0\n";
-        os << "        ConcentrationScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
-        os << "        TimeSizeRateMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
-        os << "    genotypes_are_diploid: true\n";
-        os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \" \"\n";
-        os << "    population_name_is_prefix: true\n";
-        os << "    constant_sites_removed: true\n";
-        os << "    equal_population_sizes: true\n";
-        os << "    parameters:\n";
-        os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
-        os << "        freq_1:\n";
-        os << "            value: 0.5\n";
-        os << "            estimate: false\n";
-        os << "        mutation_rate:\n";
-        os << "            value: 1.0\n";
-        os << "            estimate: false\n";
-        os << "comparisons:\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129.nex\n";
-        os.close();
-        REQUIRE(path::exists(test_path));
-
-        char arg0[] = "ecoevolity";
-        char arg1[] = "--seed";
-        char arg2[] = "123456";
-        char arg3[] = "--ignore-data";
-        char * cfg_path = new char[test_path.size() + 1];
-        std::copy(test_path.begin(), test_path.end(), cfg_path);
-        cfg_path[test_path.size()] = '\0';
-        char * argv[] = {
-            &arg0[0],
-            &arg1[0],
-            &arg2[0],
-            &arg3[0],
-            cfg_path,
-            NULL
-        };
-        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-        int ret;
-        // Should be no operators with any weight; should throw error
-        REQUIRE_THROWS(ecoevolity_main(argc, argv));
-
-        delete[] cfg_path;
-    }
-
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop sizes and 2 pairs", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with fixed pop sizes, optimizing, 2 pairs") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -962,7 +889,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1119,7 +1046,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer", "[SamplingPrior]
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma priors opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 10.0) and gamma(2.0, 0.5) prior with optimizing") {
         double time_shape = 10.0;
         double time_scale = 10.0;
@@ -4693,7 +4622,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
 
         for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
             REQUIRE((model_counts.at(m) / 100001.0) == Approx(std::exp(
-                    get_dpp_log_prior_probability(m, concentration))).epsilon(0.001));
+                    get_dpp_log_prior_probability(m, concentration))).epsilon(0.002));
         }
 
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -5038,7 +4967,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
 }
 
 TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixer",
-        "[xSamplingPrior]") {
+        "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
         double height_shape = 10.0;
@@ -5916,7 +5845,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "54866549";
+        char arg2[] = "1234567";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6773,7 +6702,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -6942,7 +6871,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -7163,7 +7092,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -7417,7 +7346,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -12162,7 +12091,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -13379,7 +13308,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";

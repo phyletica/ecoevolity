@@ -39298,7 +39298,7 @@ TEST_CASE("Testing derived operator interface metadata",
 }
 
 
-TEST_CASE("Testing tree-specific EventTimeScaler", "[xEventTimeScaler]") {
+TEST_CASE("Testing tree-specific EventTimeScaler", "[EventTimeScaler]") {
 
     SECTION("Testing tree-specific moves with optimizing") {
         double shape = 10.0;
@@ -39386,7 +39386,7 @@ TEST_CASE("Testing tree-specific EventTimeScaler", "[xEventTimeScaler]") {
     }
 }
 
-TEST_CASE("Testing tree-specific EventTimeMover", "[xEventTimeMover]") {
+TEST_CASE("Testing tree-specific EventTimeMover", "[EventTimeMover]") {
 
     SECTION("Testing tree-specific moves with optimizing") {
         double shape = 10.0;
