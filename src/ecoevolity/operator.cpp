@@ -1988,10 +1988,19 @@ void TimeSizeMixer::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Perform sweep of univariate moves
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
         time_op->operate(rng, comparisons, nthreads);
     }
-    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
         tree_op->operate(rng, comparisons, nthreads);
     }
 }
@@ -2165,10 +2174,19 @@ void TimeSizeScaler::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Perform sweep of univariate moves
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
         time_op->operate(rng, comparisons, nthreads);
     }
-    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
         tree_op->operate(rng, comparisons, nthreads);
     }
 }
@@ -2299,10 +2317,19 @@ void TimeSizeRateMixer::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Perform sweep of univariate moves
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
         time_op->operate(rng, comparisons, nthreads);
     }
-    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
         tree_op->operate(rng, comparisons, nthreads);
     }
 }
@@ -2481,10 +2508,19 @@ void TimeMeanSizeRateMixer::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Perform sweep of univariate moves
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
         time_op->operate(rng, comparisons, nthreads);
     }
-    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
         tree_op->operate(rng, comparisons, nthreads);
     }
 }
@@ -2746,10 +2782,19 @@ void TimeSizeRateScaler::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Perform sweep of univariate moves
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
         time_op->operate(rng, comparisons, nthreads);
     }
-    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
         tree_op->operate(rng, comparisons, nthreads);
     }
 }
@@ -2888,10 +2933,19 @@ void TimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
     this->perform_collection_move(rng, comparisons, nthreads);
 
     // Perform sweep of univariate moves
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
         time_op->operate(rng, comparisons, nthreads);
     }
-    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
         tree_op->operate(rng, comparisons, nthreads);
     }
 }

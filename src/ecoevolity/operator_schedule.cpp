@@ -267,6 +267,18 @@ std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_time_ope
     return ops;
 }
 
+std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_time_operators(
+        int tree_index) const {
+    std::vector< std::shared_ptr<OperatorInterface> > ops;
+    for (std::shared_ptr<OperatorInterface> op: this->operators_) {
+        if ((op->get_type() == OperatorInterface::OperatorTypeEnum::time_operator) &&
+                (op->get_tree_index() == tree_index)) {
+            ops.push_back(op);
+        }
+    }
+    return ops;
+}
+
 std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_multivariate_time_operators() const {
     std::vector< std::shared_ptr<OperatorInterface> > ops;
     for (std::shared_ptr<OperatorInterface> op: this->operators_) {
@@ -281,6 +293,18 @@ std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_tree_ope
     std::vector< std::shared_ptr<OperatorInterface> > ops;
     for (std::shared_ptr<OperatorInterface> op: this->operators_) {
         if (op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator) {
+            ops.push_back(op);
+        }
+    }
+    return ops;
+}
+
+std::vector< std::shared_ptr<OperatorInterface> > OperatorSchedule::get_tree_operators(
+        int tree_index) const {
+    std::vector< std::shared_ptr<OperatorInterface> > ops;
+    for (std::shared_ptr<OperatorInterface> op: this->operators_) {
+        if ((op->get_type() == OperatorInterface::OperatorTypeEnum::tree_operator) &&
+                (op->get_tree_index() == tree_index)) {
             ops.push_back(op);
         }
     }

@@ -107,6 +107,8 @@ class OperatorInterface {
         virtual std::string header_string() const = 0;
 
         virtual std::string to_string(const OperatorSchedule& os) const = 0;
+
+        virtual int get_tree_index() const { return -1; }
 };
 
 template<class DerivedOperatorType>

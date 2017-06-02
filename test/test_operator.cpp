@@ -9223,7 +9223,7 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
 }
 
 TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and shared event",
-        "[TimeSizeRateScaler]") {
+        "[xTimeSizeRateScaler]") {
 
     SECTION("Testing 4 pairs with shared event and optimizing") {
         double height_shape = 5.0;

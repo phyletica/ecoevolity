@@ -246,8 +246,16 @@ class BaseComparisonPopulationTreeCollection {
         std::vector< std::shared_ptr<OperatorInterface> > get_time_operators() const {
             return this->operator_schedule_.get_time_operators();
         }
+        std::vector< std::shared_ptr<OperatorInterface> > get_time_operators(
+                int tree_index) const {
+            return this->operator_schedule_.get_time_operators(tree_index);
+        }
         std::vector< std::shared_ptr<OperatorInterface> > get_tree_operators() const {
             return this->operator_schedule_.get_tree_operators();
+        }
+        std::vector< std::shared_ptr<OperatorInterface> > get_tree_operators(
+                int tree_index) const {
+            return this->operator_schedule_.get_tree_operators(tree_index);
         }
         std::vector< std::shared_ptr<OperatorInterface> > get_multivariate_time_operators() const {
             return this->operator_schedule_.get_multivariate_time_operators();
