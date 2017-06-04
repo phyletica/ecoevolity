@@ -2038,14 +2038,14 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2175,14 +2175,14 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2315,14 +2315,14 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2450,14 +2450,14 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2585,14 +2585,14 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2717,14 +2717,14 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -2848,14 +2848,14 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    operators:\n";
         os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -5983,7 +5983,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
+TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         "[SamplingPrior]") {
 
     SECTION("Testing multithreading") {
@@ -6033,7 +6033,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 500000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6137,7 +6137,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "72349827";
         char arg3[] = "--ignore-data";
         char arg4[] = "--nthreads";
         char arg5[] = "3";
@@ -6163,7 +6163,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -6371,7 +6371,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 500000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -6475,7 +6475,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "72349827";
         char arg3[] = "--ignore-data";
         char arg4[] = "--nthreads";
         char arg5[] = "2";
@@ -6501,7 +6501,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -7557,7 +7557,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -7597,7 +7597,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
+        os << "    chain_length: 600000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -7700,7 +7700,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "97429874";
+        char arg2[] = "72938742";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -7722,7 +7722,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 50001;
+        unsigned int expected_sample_size = 60001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -8566,7 +8566,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
 }
 
 TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
         double height_shape = 10.0;
@@ -8615,7 +8615,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 500000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -8719,7 +8719,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "72349827";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -8741,7 +8741,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -9222,7 +9222,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -9262,7 +9262,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 200000\n";
+        os << "    chain_length: 400000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -9387,7 +9387,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -9551,7 +9551,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRateMixer, and fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -9591,7 +9591,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 600000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -9694,7 +9694,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "68412635";
+        char arg2[] = "684126";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -9716,7 +9716,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 60001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -11161,7 +11161,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
     }
 }
 
-TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[SamplingPrior]") {
+TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[xSamplingPrior]") {
 
     SECTION("Testing DPP with 3 dirichlet pairs") {
         double height_shape = 10.0;
@@ -11213,7 +11213,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 200000\n";
+        os << "    chain_length: 400000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -11343,7 +11343,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "28947598";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -11396,7 +11396,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -11587,7 +11587,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
 }
 
 TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without TimeMeanSizeRateMixer",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing DPP with 3 dirichlet pairs without TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
@@ -11639,7 +11639,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 200000\n";
+        os << "    chain_length: 400000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -11769,7 +11769,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "9379834";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -11822,7 +11822,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12013,7 +12013,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
 }
 
 TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only TimeMeanSizeRateMixer",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing DPP with 3 dirichlet pairs with only TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
@@ -12065,7 +12065,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 200000\n";
+        os << "    chain_length: 400000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -12182,7 +12182,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "93745873";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -12235,7 +12235,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12834,7 +12834,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with no TimeMeanSizeRateMixer",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair and no TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
@@ -12877,7 +12877,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 600000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -13003,7 +13003,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "68412635";
+        char arg2[] = "27457849";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -13056,7 +13056,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 60001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
