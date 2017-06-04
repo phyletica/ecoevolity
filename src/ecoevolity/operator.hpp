@@ -1086,9 +1086,6 @@ class TimeSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
 class TimeMeanSizeRateScaler : public TimeOperatorInterface<ScaleOperator> {
 
-    protected:
-        UnivariateTimeMeanSizeRateScaler uni_collection_scaler_ = UnivariateTimeMeanSizeRateScaler(0.0, 0.5);
-
     public:
         TimeMeanSizeRateScaler();
         TimeMeanSizeRateScaler(unsigned int tree_index);
@@ -1179,6 +1176,7 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
+        EventTimeScaler time_scaler_ = EventTimeScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
         void populate_split_subset_size_probabilities(

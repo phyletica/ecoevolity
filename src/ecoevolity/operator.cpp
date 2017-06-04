@@ -3280,6 +3280,7 @@ std::string ReversibleJumpSampler::to_string(const OperatorSchedule& os) const {
         ss << tuning << "\t";
     }
     ss << "\n";
+    ss << this->time_scaler_.to_string(os);
     return ss.str();
 }
 
@@ -3290,9 +3291,10 @@ void ReversibleJumpSampler::operate(RandomNumberGenerator& rng,
         this->perform_collection_move(rng, comparisons, nthreads);
 
         // Perform sweep of univariate time moves
-        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
-            time_op->operate(rng, comparisons, nthreads);
-        }
+        this->time_scaler_.operate(rng, comparisons, nthreads);
+        // for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+        //     time_op->operate(rng, comparisons, nthreads);
+        // }
     }
 }
 
