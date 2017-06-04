@@ -296,6 +296,10 @@ class PopulationTree {
             return this->root_->all_population_sizes_are_fixed();
         }
 
+        virtual bool root_population_size_is_fixed() const {
+            return this->root_->population_size_is_fixed();
+        }
+
         void fix_population_size_multipliers() {
             this->population_size_multipliers_are_fixed_ = true;
             this->make_dirty();

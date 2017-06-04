@@ -933,15 +933,12 @@ class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 };
 
 
-class TimeRootSizeMover : public TimeOperatorInterface<WindowOperator> {
+class TimeRootSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 
     public:
-        TimeRootSizeMover();
-        TimeRootSizeMover(unsigned int tree_index);
-        TimeRootSizeMover(double weight);
-        TimeRootSizeMover(unsigned int tree_index, double weight);
-        TimeRootSizeMover(double weight, double window_size);
-        TimeRootSizeMover(unsigned int tree_index, double weight, double window_size);
+        TimeRootSizeMixer(unsigned int tree_index);
+        TimeRootSizeMixer(unsigned int tree_index, double weight);
+        TimeRootSizeMixer(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,

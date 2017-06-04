@@ -2131,44 +2131,28 @@ std::string TimeSizeMixer::to_string(const OperatorSchedule& os) const {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// TimeRootSizeMover methods
+// TimeRootSizeMixer methods
 //////////////////////////////////////////////////////////////////////////////
 
-TimeRootSizeMover::TimeRootSizeMover(
-        ) : TimeOperatorInterface<WindowOperator>() {
-    this->op_ = WindowOperator();
+TimeRootSizeMixer::TimeRootSizeMixer(
+        unsigned int tree_index) : TimeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
 }
 
-TimeRootSizeMover::TimeRootSizeMover(
-        unsigned int tree_index) : TimeOperatorInterface<WindowOperator>(tree_index) {
-    this->op_ = WindowOperator();
-}
-
-TimeRootSizeMover::TimeRootSizeMover(
-        double weight) : TimeOperatorInterface<WindowOperator>(weight) {
-    this->op_ = WindowOperator();
-}
-
-TimeRootSizeMover::TimeRootSizeMover(
+TimeRootSizeMixer::TimeRootSizeMixer(
         unsigned int tree_index,
-        double weight) : TimeOperatorInterface<WindowOperator>(tree_index, weight) {
-    this->op_ = WindowOperator();
+        double weight) : TimeOperatorInterface<ScaleOperator>(tree_index, weight) {
+    this->op_ = ScaleOperator();
 }
 
-TimeRootSizeMover::TimeRootSizeMover(
-        double weight,
-        double window_size) : TimeOperatorInterface<WindowOperator>(weight) {
-    this->op_ = WindowOperator(window_size);
-}
-
-TimeRootSizeMover::TimeRootSizeMover(
+TimeRootSizeMixer::TimeRootSizeMixer(
         unsigned int tree_index,
         double weight,
-        double window_size) : TimeOperatorInterface<WindowOperator>(tree_index, weight) {
-    this->op_ = WindowOperator(window_size);
+        double scale) : TimeOperatorInterface<ScaleOperator>(tree_index, weight) {
+    this->op_ = ScaleOperator(scale);
 }
 
-void TimeRootSizeMover::operate(RandomNumberGenerator& rng,
+void TimeRootSizeMixer::operate(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
     this->perform_collection_move(rng, comparisons, nthreads);
@@ -2191,7 +2175,7 @@ void TimeRootSizeMover::operate(RandomNumberGenerator& rng,
     }
 }
 
-double TimeRootSizeMover::propose(RandomNumberGenerator& rng,
+double TimeRootSizeMixer::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int index) {
     if (this->tree_index_ < 0) {
@@ -2200,66 +2184,50 @@ double TimeRootSizeMover::propose(RandomNumberGenerator& rng,
     return this->propose_by_tree(rng, comparisons, index);
 }
 
-double TimeRootSizeMover::propose_by_height(RandomNumberGenerator& rng,
+double TimeRootSizeMixer::propose_by_height(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    double addend = this->op_.get_move_amount(rng);
-
-    double new_height = comparisons->get_height(height_index) + addend;
-    if (new_height < 0.0) {
-        return -std::numeric_limits<double>::infinity();
-    }
-    comparisons->set_height(height_index, new_height);
-
-    std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
-    for (auto tree_idx : tree_indices) {
-        std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
-        if (! tree->population_sizes_are_fixed()) {
-            double new_size = tree->get_root_population_size() - addend;
-            if (new_size <= 0.0) {
-                return -std::numeric_limits<double>::infinity();
-            }
-            tree->set_root_population_size(new_size);
-        }
-    }
-    return 0.0;
+    return -std::numeric_limits<double>::infinity();
 }
 
-double TimeRootSizeMover::propose_by_tree(RandomNumberGenerator& rng,
+double TimeRootSizeMixer::propose_by_tree(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
-    double addend = this->op_.get_move_amount(rng);
+    std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_index);
+    if (tree->root_population_size_is_fixed()) {
+        return -std::numeric_limits<double>::infinity();
+    }
 
-    double new_height = comparisons->get_height_of_tree(tree_index) + addend;
+    double multiplier = this->op_.get_move_amount(rng);
+
+    double old_size = tree->get_root_population_size();
+    double new_size = old_size * multiplier;
+    double delta_Nmu = old_size - new_size;
+    double new_height = comparisons->get_height_of_tree(tree_index) + (2.0 * delta_Nmu);
+
     if (new_height < 0.0) {
         return -std::numeric_limits<double>::infinity();
     }
+
+    tree->set_root_population_size(new_size);
     comparisons->set_height_of_tree(tree_index, new_height);
 
-    std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_index);
-    if (! tree->population_sizes_are_fixed()) {
-        double new_size = tree->get_root_population_size() - addend;
-        if (new_size <= 0.0) {
-            return -std::numeric_limits<double>::infinity();
-        }
-        tree->set_root_population_size(new_size);
-    }
-    return 0.0;
+    return std::log(multiplier);
 }
 
-std::string TimeRootSizeMover::get_name() const {
-    std::string name = "TimeRootSizeMover";
+std::string TimeRootSizeMixer::get_name() const {
+    std::string name = "TimeRootSizeMixer";
     if (this->tree_index_ > -1) {
         name += std::to_string(this->tree_index_);
     }
     return name;
 }
 
-std::string TimeRootSizeMover::target_parameter() const {
+std::string TimeRootSizeMixer::target_parameter() const {
     return "node heights and population sizes";
 }
 
-std::string TimeRootSizeMover::to_string(const OperatorSchedule& os) const {
+std::string TimeRootSizeMixer::to_string(const OperatorSchedule& os) const {
     std::ostringstream ss;
     ss << this->get_name() << "\t" 
        << this->get_number_accepted() << "\t"
