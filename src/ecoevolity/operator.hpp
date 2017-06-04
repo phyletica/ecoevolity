@@ -933,6 +933,44 @@ class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 };
 
 
+class TimeRootSizeMover : public TimeOperatorInterface<WindowOperator> {
+
+    public:
+        TimeRootSizeMover();
+        TimeRootSizeMover(unsigned int tree_index);
+        TimeRootSizeMover(double weight);
+        TimeRootSizeMover(unsigned int tree_index, double weight);
+        TimeRootSizeMover(double weight, double window_size);
+        TimeRootSizeMover(unsigned int tree_index, double weight, double window_size);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int index);
+
+        double propose_by_height(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int height_index);
+
+        double propose_by_tree(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string get_name() const;
+
+        std::string target_parameter() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+
+        OperatorInterface::OperatorTypeEnum get_type() const {
+            return OperatorInterface::OperatorTypeEnum::multivariate_time_operator;
+        }
+};
+
+
 class TimeSizeScaler : public TimeOperatorInterface<ScaleOperator> {
 
     public:

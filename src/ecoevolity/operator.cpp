@@ -2131,6 +2131,161 @@ std::string TimeSizeMixer::to_string(const OperatorSchedule& os) const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// TimeRootSizeMover methods
+//////////////////////////////////////////////////////////////////////////////
+
+TimeRootSizeMover::TimeRootSizeMover(
+        ) : TimeOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+}
+
+TimeRootSizeMover::TimeRootSizeMover(
+        unsigned int tree_index) : TimeOperatorInterface<WindowOperator>(tree_index) {
+    this->op_ = WindowOperator();
+}
+
+TimeRootSizeMover::TimeRootSizeMover(
+        double weight) : TimeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+TimeRootSizeMover::TimeRootSizeMover(
+        unsigned int tree_index,
+        double weight) : TimeOperatorInterface<WindowOperator>(tree_index, weight) {
+    this->op_ = WindowOperator();
+}
+
+TimeRootSizeMover::TimeRootSizeMover(
+        double weight,
+        double window_size) : TimeOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(window_size);
+}
+
+TimeRootSizeMover::TimeRootSizeMover(
+        unsigned int tree_index,
+        double weight,
+        double window_size) : TimeOperatorInterface<WindowOperator>(tree_index, weight) {
+    this->op_ = WindowOperator(window_size);
+}
+
+void TimeRootSizeMover::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+
+    // Perform sweep of univariate moves
+    if (this->tree_index_ < 0) {
+        for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators()) {
+            time_op->operate(rng, comparisons, nthreads);
+        }
+        for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators()) {
+            tree_op->operate(rng, comparisons, nthreads);
+        }
+        return;
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+        time_op->operate(rng, comparisons, nthreads);
+    }
+    for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
+        tree_op->operate(rng, comparisons, nthreads);
+    }
+}
+
+double TimeRootSizeMover::propose(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int index) {
+    if (this->tree_index_ < 0) {
+        return this->propose_by_height(rng, comparisons, index);
+    }
+    return this->propose_by_tree(rng, comparisons, index);
+}
+
+double TimeRootSizeMover::propose_by_height(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int height_index) {
+    double addend = this->op_.get_move_amount(rng);
+
+    double new_height = comparisons->get_height(height_index) + addend;
+    if (new_height < 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->set_height(height_index, new_height);
+
+    std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
+    for (auto tree_idx : tree_indices) {
+        std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
+        if (! tree->population_sizes_are_fixed()) {
+            double new_size = tree->get_root_population_size() - addend;
+            if (new_size <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->set_root_population_size(new_size);
+        }
+    }
+    return 0.0;
+}
+
+double TimeRootSizeMover::propose_by_tree(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int tree_index) {
+    double addend = this->op_.get_move_amount(rng);
+
+    double new_height = comparisons->get_height_of_tree(tree_index) + addend;
+    if (new_height < 0.0) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->set_height_of_tree(tree_index, new_height);
+
+    std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_index);
+    if (! tree->population_sizes_are_fixed()) {
+        double new_size = tree->get_root_population_size() - addend;
+        if (new_size <= 0.0) {
+            return -std::numeric_limits<double>::infinity();
+        }
+        tree->set_root_population_size(new_size);
+    }
+    return 0.0;
+}
+
+std::string TimeRootSizeMover::get_name() const {
+    std::string name = "TimeRootSizeMover";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
+}
+
+std::string TimeRootSizeMover::target_parameter() const {
+    return "node heights and population sizes";
+}
+
+std::string TimeRootSizeMover::to_string(const OperatorSchedule& os) const {
+    std::ostringstream ss;
+    ss << this->get_name() << "\t" 
+       << this->get_number_accepted() << "\t"
+       << this->get_number_rejected() << "\t"
+       << this->get_weight() << "\t";
+
+    if (os.get_total_weight() > 0.0) {
+        ss << this->get_weight() / os.get_total_weight() << "\t";
+    }
+    else {
+        ss << "nan\t";
+    }
+
+    double tuning = this->get_coercable_parameter_value();
+    if (std::isnan(tuning)) {
+        ss << "none\t";
+    }
+    else {
+        ss << tuning << "\t";
+    }
+    ss << "\n";
+    return ss.str();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // TimeSizeScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
