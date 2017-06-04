@@ -31,6 +31,12 @@ operator_settings:
         ConcentrationScaler:
             scale: 0.2
             weight: 3.0
+        TimeSizeRateMixer:
+            scale: 0.1
+            weight: 4.0
+        EventTimeScaler:
+            scale: 0.1
+            weight: 4.0
 
 global_comparison_settings:
     ploidy: 2

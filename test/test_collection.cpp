@@ -801,7 +801,7 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
 }
 
 TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
-        "[ComparisonPopulationTreeCollection]") {
+        "[xComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior for reversible jump with 3 pairs") {
         std::string cfg_path = "data/dummy.yml";
@@ -952,7 +952,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
         SampleSummarizer<double> mult2_summary;
         SampleSummarizer<double> mult3_summary;
 
-        unsigned int nsamples = 10000;
+        unsigned int nsamples = 20000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             collection.draw_from_prior(rng);
             height_summary1.add_sample(collection.get_height_of_tree(0));
@@ -1097,7 +1097,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
 }
 
 TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
-        "[ComparisonPopulationTreeCollection]") {
+        "[xComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior logging for reversible jump with 3 pairs") {
         std::string cfg_path = "data/dummy.yml";
@@ -2907,7 +2907,7 @@ TEST_CASE("Testing draw_from_prior logging for fixed 000",
 }
 
 TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split weight 3",
-        "[ComparisonPopulationTreeCollection]") {
+        "[xComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior for reversible jump with 4 pairs and split weight 3") {
         std::string cfg_path = "data/dummy.yml";
@@ -3299,7 +3299,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
 }
 
 TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split weight 1/3",
-        "[ComparisonPopulationTreeCollection]") {
+        "[xComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior for reversible jump with 4 pairs and split weight 1/3") {
         std::string cfg_path = "data/dummy.yml";

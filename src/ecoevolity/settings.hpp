@@ -932,6 +932,12 @@ class OperatorScheduleSettings {
                 3.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
+        ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
+        ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
+                0.0, 0.5);
+        ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
 
     public:
         OperatorScheduleSettings() { }
@@ -941,6 +947,9 @@ class OperatorScheduleSettings {
             this->auto_optimize_delay_ = other.auto_optimize_delay_;
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
+            this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
+            this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
+            this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             return * this;
         }
 
@@ -963,6 +972,15 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_concentration_scaler_settings() const {
             return this->concentration_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_time_size_rate_mixer_settings() const {
+            return this->time_size_rate_mixer_settings_;
+        }
+        const ScaleOperatorSettings& get_time_size_rate_scaler_settings() const {
+            return this->time_size_rate_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_event_time_scaler_settings() const {
+            return this->event_time_scaler_settings_;
         }
 
         void update_from_config(const YAML::Node& operator_node) {
@@ -1023,6 +1041,36 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
+                else if (op->first.as<std::string>() == "TimeSizeRateMixer") {
+                    try {
+                        this->time_size_rate_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeSizeRateMixer settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "TimeSizeRateScaler") {
+                    try {
+                        this->time_size_rate_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeSizeRateScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "EventTimeScaler") {
+                    try {
+                        this->event_time_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing EventTimeScaler settings\n";
+                        throw;
+                    }
+                }
                 else {
                     std::string message = (
                             "Unrecognized operator: " +
@@ -1045,6 +1093,12 @@ class OperatorScheduleSettings {
             ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "TimeSizeRateMixer:\n";
+            ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "TimeSizeRateScaler:\n";
+            ss << this->time_size_rate_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "EventTimeScaler:\n";
+            ss << this->event_time_scaler_settings_.to_string(indent_level + 3);
             return ss.str();
         }
 };
@@ -1057,11 +1111,11 @@ class TreeSpecificOperatorScheduleSettings {
 
     protected:
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                0.0, 0.5);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                0.0, 0.5);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
         WindowOperatorSettings freq_mover_settings_ = WindowOperatorSettings(
@@ -2569,6 +2623,24 @@ class BaseCollectionSettings {
             }
             if ((this->comparisons_.size() < 2) || (this->event_model_is_fixed())) {
                 this->operator_schedule_settings_.model_operator_settings_.set_weight(0.0);
+            }
+            if (this->operator_schedule_settings_.using_population_size_multipliers()) {
+                if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
+                    (this->get_number_of_comparisons_with_free_population_size() < 1)) {
+                    this->operator_schedule_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
+                }
+                if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
+                    (this->get_number_of_comparisons_with_free_population_size() < 1) &&
+                    (this->get_number_of_comparisons_with_free_population_size_multipliers() < 1)) {
+                    this->operator_schedule_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
+                }
+            }
+            else {
+                if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
+                    (this->get_number_of_comparisons_with_free_population_size() < 1)) {
+                    this->operator_schedule_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
+                    this->operator_schedule_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
+                }
             }
         }
 

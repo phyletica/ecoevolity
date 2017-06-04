@@ -18971,7 +18971,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19119,7 +19119,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19269,7 +19269,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19421,7 +19421,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19586,7 +19586,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();

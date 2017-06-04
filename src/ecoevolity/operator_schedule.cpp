@@ -51,6 +51,27 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
+    if (settings.get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeSizeRateMixer>(
+                settings.get_time_size_rate_mixer_settings().get_weight(),
+                settings.get_time_size_rate_mixer_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeSizeRateScaler>(
+                settings.get_time_size_rate_scaler_settings().get_weight(),
+                settings.get_time_size_rate_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_event_time_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<EventTimeScaler>(
+                settings.get_event_time_scaler_settings().get_weight(),
+                settings.get_event_time_scaler_settings().get_scale()
+                ));
+    }
+
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
         auto comp_settings = collection_settings.get_comparison_setting(i);
 
@@ -139,6 +160,27 @@ OperatorSchedule::OperatorSchedule(
         this->add_operator(std::make_shared<ConcentrationScaler>(
                 settings.get_concentration_scaler_settings().get_weight(),
                 settings.get_concentration_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeMeanSizeRateMixer>(
+                settings.get_time_size_rate_mixer_settings().get_weight(),
+                settings.get_time_size_rate_mixer_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeMeanSizeRateScaler>(
+                settings.get_time_size_rate_scaler_settings().get_weight(),
+                settings.get_time_size_rate_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_event_time_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<EventTimeScaler>(
+                settings.get_event_time_scaler_settings().get_weight(),
+                settings.get_event_time_scaler_settings().get_scale()
                 ));
     }
 
