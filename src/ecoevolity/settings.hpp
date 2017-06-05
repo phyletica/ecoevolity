@@ -933,9 +933,9 @@ class OperatorScheduleSettings {
                 3.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings composite_time_size_rate_mixer_settings_ = ScaleOperatorSettings(
+        ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
-        ScaleOperatorSettings composite_time_size_rate_scaler_settings_ = ScaleOperatorSettings(
+        ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.5);
@@ -948,8 +948,8 @@ class OperatorScheduleSettings {
             this->auto_optimize_delay_ = other.auto_optimize_delay_;
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
-            this->composite_time_size_rate_mixer_settings_ = other.composite_time_size_rate_mixer_settings_;
-            this->composite_time_size_rate_scaler_settings_ = other.composite_time_size_rate_scaler_settings_;
+            this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
+            this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
             this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             return * this;
         }
@@ -974,11 +974,11 @@ class OperatorScheduleSettings {
         const ScaleOperatorSettings& get_concentration_scaler_settings() const {
             return this->concentration_scaler_settings_;
         }
-        const ScaleOperatorSettings& get_composite_time_size_rate_mixer_settings() const {
-            return this->composite_time_size_rate_mixer_settings_;
+        const ScaleOperatorSettings& get_time_size_rate_mixer_settings() const {
+            return this->time_size_rate_mixer_settings_;
         }
-        const ScaleOperatorSettings& get_composite_time_size_rate_scaler_settings() const {
-            return this->composite_time_size_rate_scaler_settings_;
+        const ScaleOperatorSettings& get_time_size_rate_scaler_settings() const {
+            return this->time_size_rate_scaler_settings_;
         }
         const ScaleOperatorSettings& get_event_time_scaler_settings() const {
             return this->event_time_scaler_settings_;
@@ -1042,23 +1042,23 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "CompositeTimeSizeRateMixer") {
+                else if (op->first.as<std::string>() == "TimeSizeRateMixer") {
                     try {
-                        this->composite_time_size_rate_mixer_settings_.update_from_config(op->second);
+                        this->time_size_rate_mixer_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing CompositeTimeSizeRateMixer settings\n";
+                                  << "Problem parsing TimeSizeRateMixer settings\n";
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "CompositeTimeSizeRateScaler") {
+                else if (op->first.as<std::string>() == "TimeSizeRateScaler") {
                     try {
-                        this->composite_time_size_rate_scaler_settings_.update_from_config(op->second);
+                        this->time_size_rate_scaler_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing CompositeTimeSizeRateScaler settings\n";
+                                  << "Problem parsing TimeSizeRateScaler settings\n";
                         throw;
                     }
                 }
@@ -1094,10 +1094,10 @@ class OperatorScheduleSettings {
             ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "CompositeTimeSizeRateMixer:\n";
-            ss << this->composite_time_size_rate_mixer_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "CompositeTimeSizeRateScaler:\n";
-            ss << this->composite_time_size_rate_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "TimeSizeRateMixer:\n";
+            ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "TimeSizeRateScaler:\n";
+            ss << this->time_size_rate_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "EventTimeScaler:\n";
             ss << this->event_time_scaler_settings_.to_string(indent_level + 3);
             return ss.str();
@@ -1112,6 +1112,12 @@ class TreeSpecificOperatorScheduleSettings {
     friend class RelativeRootComparisonSettings;
 
     protected:
+        ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
+                0.0, 0.5);
+        ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
+                0.0, 0.5);
+        ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
+                0.0, 0.5);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
         WindowOperatorSettings freq_mover_settings_ = WindowOperatorSettings(
@@ -1125,6 +1131,9 @@ class TreeSpecificOperatorScheduleSettings {
         TreeSpecificOperatorScheduleSettings() { }
         virtual ~TreeSpecificOperatorScheduleSettings() { }
         TreeSpecificOperatorScheduleSettings& operator=(const TreeSpecificOperatorScheduleSettings& other) {
+            this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
+            this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
+            this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             this->mutation_rate_scaler_settings_ = other.mutation_rate_scaler_settings_;
             this->freq_mover_settings_ = other.freq_mover_settings_;
             this->root_population_size_scaler_settings_ = other.root_population_size_scaler_settings_;
@@ -1136,6 +1145,15 @@ class TreeSpecificOperatorScheduleSettings {
             return false;
         }
 
+        const ScaleOperatorSettings& get_time_size_rate_mixer_settings() const {
+            return this->time_size_rate_mixer_settings_;
+        }
+        const ScaleOperatorSettings& get_time_size_rate_scaler_settings() const {
+            return this->time_size_rate_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_event_time_scaler_settings() const {
+            return this->event_time_scaler_settings_;
+        }
         const ScaleOperatorSettings& get_mutation_rate_scaler_settings() const {
             return this->mutation_rate_scaler_settings_;
         }
@@ -1176,7 +1194,37 @@ class TreeSpecificOperatorScheduleSettings {
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
-                if (op->first.as<std::string>() == "MutationRateScaler") {
+                if (op->first.as<std::string>() == "TimeSizeRateMixer") {
+                    try {
+                        this->time_size_rate_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeSizeRateMixer settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "TimeSizeRateScaler") {
+                    try {
+                        this->time_size_rate_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeSizeRateScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "EventTimeScaler") {
+                    try {
+                        this->event_time_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing EventTimeScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "MutationRateScaler") {
                     try {
                         this->mutation_rate_scaler_settings_.update_from_config(op->second);
                     }
@@ -1231,6 +1279,12 @@ class TreeSpecificOperatorScheduleSettings {
             std::string margin = string_util::get_indent(indent_level);
             std::string indent = string_util::get_indent(1);
             ss << margin << "operators:\n";
+            ss << margin << indent << "TimeSizeRateMixer:\n";
+            ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "TimeSizeRateScaler:\n";
+            ss << this->time_size_rate_scaler_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "EventTimeScaler:\n";
+            ss << this->event_time_scaler_settings_.to_string(indent_level + 2);
             ss << margin << indent << "RootPopulationSizeScaler:\n";
             ss << this->root_population_size_scaler_settings_.to_string(indent_level + 2);
             ss << margin << indent << "LeafPopulationSizeScaler:\n";
@@ -1264,6 +1318,9 @@ class DirichletTreeSpecificOperatorScheduleSettings : public TreeSpecificOperato
         DirichletTreeSpecificOperatorScheduleSettings() : TreeSpecificOperatorScheduleSettings() { }
         virtual ~DirichletTreeSpecificOperatorScheduleSettings() { }
         DirichletTreeSpecificOperatorScheduleSettings& operator=(const DirichletTreeSpecificOperatorScheduleSettings& other) {
+            this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
+            this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
+            this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             this->mutation_rate_scaler_settings_ = other.mutation_rate_scaler_settings_;
             this->freq_mover_settings_ = other.freq_mover_settings_;
             this->mean_population_size_scaler_settings_ = other.mean_population_size_scaler_settings_;
@@ -1309,7 +1366,37 @@ class DirichletTreeSpecificOperatorScheduleSettings : public TreeSpecificOperato
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
-                if (op->first.as<std::string>() == "MutationRateScaler") {
+                if (op->first.as<std::string>() == "TimeSizeRateMixer") {
+                    try {
+                        this->time_size_rate_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeSizeRateMixer settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "TimeSizeRateScaler") {
+                    try {
+                        this->time_size_rate_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeSizeRateScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "EventTimeScaler") {
+                    try {
+                        this->event_time_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing EventTimeScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "MutationRateScaler") {
                     try {
                         this->mutation_rate_scaler_settings_.update_from_config(op->second);
                     }
@@ -1384,6 +1471,12 @@ class DirichletTreeSpecificOperatorScheduleSettings : public TreeSpecificOperato
             std::string margin = string_util::get_indent(indent_level);
             std::string indent = string_util::get_indent(1);
             ss << margin << "operators:\n";
+            ss << margin << indent << "TimeSizeRateMixer:\n";
+            ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "TimeSizeRateScaler:\n";
+            ss << this->time_size_rate_scaler_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "EventTimeScaler:\n";
+            ss << this->event_time_scaler_settings_.to_string(indent_level + 2);
             ss << margin << indent << "MeanPopulationSizeScaler:\n";
             ss << this->mean_population_size_scaler_settings_.to_string(indent_level + 2);
             ss << margin << indent << "RelativePopulationSizeMixer:\n";
@@ -1452,6 +1545,11 @@ class BaseComparisonSettings {
             }
             if (this->constrain_population_sizes_) {
                 this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
+            }
+            if (this->mutation_rate_settings_.is_fixed() &&
+                    this->population_size_settings_.is_fixed()) {
+                this->operator_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
+                this->operator_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
             }
         }
 
@@ -2035,6 +2133,15 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 this->operator_settings_.relative_population_size_mixer_settings_.set_weight(0.0);
                 this->operator_settings_.root_relative_population_size_mover_settings_.set_weight(0.0);
                 this->operator_settings_.leaf_relative_population_size_mover_settings_.set_weight(0.0);
+            }
+            if (this->mutation_rate_settings_.is_fixed() && 
+                    this->population_size_settings_.is_fixed()) {
+                this->operator_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
+            }
+            if (this->mutation_rate_settings_.is_fixed() && 
+                    this->population_size_settings_.is_fixed() &&
+                    this->population_size_multiplier_settings_.is_fixed()) {
+                this->operator_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
             }
         }
 
@@ -2764,19 +2871,19 @@ class BaseCollectionSettings {
             if (this->operator_schedule_settings_.using_population_size_multipliers()) {
                 if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
                     (this->get_number_of_comparisons_with_free_population_size() < 1)) {
-                    this->operator_schedule_settings_.composite_time_size_rate_scaler_settings_.set_weight(0.0);
+                    this->operator_schedule_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
                 }
                 if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
                     (this->get_number_of_comparisons_with_free_population_size() < 1) &&
                     (this->get_number_of_comparisons_with_free_population_size_multipliers() < 1)) {
-                    this->operator_schedule_settings_.composite_time_size_rate_mixer_settings_.set_weight(0.0);
+                    this->operator_schedule_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
                 }
             }
             else {
                 if ((this->get_number_of_comparisons_with_free_mutation_rate() < 1) && 
                     (this->get_number_of_comparisons_with_free_population_size() < 1)) {
-                    this->operator_schedule_settings_.composite_time_size_rate_mixer_settings_.set_weight(0.0);
-                    this->operator_schedule_settings_.composite_time_size_rate_scaler_settings_.set_weight(0.0);
+                    this->operator_schedule_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
+                    this->operator_schedule_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
                 }
             }
         }

@@ -190,6 +190,9 @@ class BaseComparisonPopulationTreeCollection {
         double get_height_of_tree(unsigned int tree_index) const {
             return this->get_height(this->get_height_index(tree_index));
         }
+        void set_height_of_tree(unsigned int tree_index, double height) const {
+            this->set_height(this->get_height_index(tree_index), height);
+        }
 
         std::vector<unsigned int> get_indices_of_mapped_trees(
                 unsigned int height_index) const;
@@ -243,8 +246,19 @@ class BaseComparisonPopulationTreeCollection {
         std::vector< std::shared_ptr<OperatorInterface> > get_time_operators() const {
             return this->operator_schedule_.get_time_operators();
         }
+        std::vector< std::shared_ptr<OperatorInterface> > get_time_operators(
+                int tree_index) const {
+            return this->operator_schedule_.get_time_operators(tree_index);
+        }
         std::vector< std::shared_ptr<OperatorInterface> > get_tree_operators() const {
             return this->operator_schedule_.get_tree_operators();
+        }
+        std::vector< std::shared_ptr<OperatorInterface> > get_tree_operators(
+                int tree_index) const {
+            return this->operator_schedule_.get_tree_operators(tree_index);
+        }
+        std::vector< std::shared_ptr<OperatorInterface> > get_multivariate_time_operators() const {
+            return this->operator_schedule_.get_multivariate_time_operators();
         }
 
         void mcmc(RandomNumberGenerator& rng,

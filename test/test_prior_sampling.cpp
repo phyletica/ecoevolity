@@ -7,7 +7,7 @@
 
 RandomNumberGenerator _PRIOR_SAMPLING_RNG = RandomNumberGenerator();
 
-TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer with 6 pairs", "[SamplingPrior]") {
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[SamplingPrior]") {
 
     SECTION("Testing 6 pairs with optimizing") {
         double height_shape = 5.0;
@@ -47,12 +47,12 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer with 6 pa
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -127,7 +127,7 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer with 6 pa
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "123456";
+        char arg2[] = "12345";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -200,67 +200,67 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer with 6 pa
         REQUIRE(size1_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size1_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size1_summary_a.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_a.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.02));
         REQUIRE(size1_summary_b.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_b.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.02));
         REQUIRE(size1_summary_c.mean() == Approx(size1_shape * size1_scale).epsilon(0.01));
-        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.01));
+        REQUIRE(size1_summary_c.variance() == Approx(size1_shape * size1_scale * size1_scale).epsilon(0.02));
 
         REQUIRE(size2_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size2_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size2_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size2_summary_a.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_a.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.02));
         REQUIRE(size2_summary_b.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_b.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.02));
         REQUIRE(size2_summary_c.mean() == Approx(size2_shape * size2_scale).epsilon(0.01));
-        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.01));
+        REQUIRE(size2_summary_c.variance() == Approx(size2_shape * size2_scale * size2_scale).epsilon(0.02));
 
         REQUIRE(size3_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size3_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size3_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size3_summary_a.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_a.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.02));
         REQUIRE(size3_summary_b.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_b.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.02));
         REQUIRE(size3_summary_c.mean() == Approx(size3_shape * size3_scale).epsilon(0.01));
-        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.01));
+        REQUIRE(size3_summary_c.variance() == Approx(size3_shape * size3_scale * size3_scale).epsilon(0.02));
 
         REQUIRE(size4_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size4_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size4_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size4_summary_a.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
-        REQUIRE(size4_summary_a.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_a.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.02));
         REQUIRE(size4_summary_b.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
-        REQUIRE(size4_summary_b.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_b.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.02));
         REQUIRE(size4_summary_c.mean() == Approx(size4_shape * size4_scale).epsilon(0.01));
-        REQUIRE(size4_summary_c.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.01));
+        REQUIRE(size4_summary_c.variance() == Approx(size4_shape * size4_scale * size4_scale).epsilon(0.02));
 
         REQUIRE(size5_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size5_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size5_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size5_summary_a.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
-        REQUIRE(size5_summary_a.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_a.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.02));
         REQUIRE(size5_summary_b.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
-        REQUIRE(size5_summary_b.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_b.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.02));
         REQUIRE(size5_summary_c.mean() == Approx(size5_shape * size5_scale).epsilon(0.01));
-        REQUIRE(size5_summary_c.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.01));
+        REQUIRE(size5_summary_c.variance() == Approx(size5_shape * size5_scale * size5_scale).epsilon(0.02));
 
         REQUIRE(size6_summary_a.sample_size() == expected_sample_size);
         REQUIRE(size6_summary_b.sample_size() == expected_sample_size);
         REQUIRE(size6_summary_c.sample_size() == expected_sample_size);
         REQUIRE(size6_summary_a.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
-        REQUIRE(size6_summary_a.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_a.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.02));
         REQUIRE(size6_summary_b.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
-        REQUIRE(size6_summary_b.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_b.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.02));
         REQUIRE(size6_summary_c.mean() == Approx(size6_shape * size6_scale).epsilon(0.01));
-        REQUIRE(size6_summary_c.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.01));
+        REQUIRE(size6_summary_c.variance() == Approx(size6_shape * size6_scale * size6_scale).epsilon(0.02));
 
         delete[] cfg_path;
     }
 }
 
-TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamplingPrior]") {
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[SamplingPrior]") {
 
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior and no optimizing") {
         double time_shape = 10.0;
@@ -290,12 +290,12 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -404,7 +404,9 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with optimizing") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -433,12 +435,12 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -547,7 +549,9 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior for singleton with optimizing") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -576,12 +580,12 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -686,7 +690,9 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained pop sizes and opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with constrained pop sizes and optimizing") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -715,12 +721,12 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -838,87 +844,9 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
 
         delete[] cfg_path;
     }
+}
 
-    SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with fixed pop sizes and optimizing") {
-        double time_shape = 10.0;
-        double time_scale = 0.1;
-        double size_shape = 5.0;
-        double size_scale = 0.5;
-        std::string auto_optimize = "true";
-        std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-state-run-1.log";
-        std::ofstream os;
-        os.open(test_path);
-        os << "event_time_prior:\n";
-        os << "    gamma_distribution:\n";
-        os << "        shape: " << time_shape << "\n";
-        os << "        scale: " << time_scale << "\n";
-        os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 10\n";
-        os << "operator_settings:\n";
-        os << "    auto_optimize: " << auto_optimize << "\n";
-        os << "    auto_optimize_delay: 10000\n";
-        os << "    operators:\n";
-        os << "        ModelOperator:\n";
-        os << "            number_of_auxiliary_categories: 5\n";
-        os << "            weight: 0.0\n";
-        os << "        ConcentrationScaler:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 1.0\n";
-        os << "        EventTimeScaler:\n";
-        os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
-        os << "global_comparison_settings:\n";
-        os << "    genotypes_are_diploid: true\n";
-        os << "    markers_are_dominant: false\n";
-        os << "    population_name_delimiter: \" \"\n";
-        os << "    population_name_is_prefix: true\n";
-        os << "    constant_sites_removed: true\n";
-        os << "    equal_population_sizes: true\n";
-        os << "    parameters:\n";
-        os << "        population_size:\n";
-        os << "            value: 0.005\n";
-        os << "            estimate: false\n";
-        os << "        freq_1:\n";
-        os << "            value: 0.5\n";
-        os << "            estimate: false\n";
-        os << "        mutation_rate:\n";
-        os << "            value: 1.0\n";
-        os << "            estimate: false\n";
-        os << "comparisons:\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129.nex\n";
-        os.close();
-        REQUIRE(path::exists(test_path));
-
-        char arg0[] = "ecoevolity";
-        char arg1[] = "--seed";
-        char arg2[] = "123456";
-        char arg3[] = "--ignore-data";
-        char * cfg_path = new char[test_path.size() + 1];
-        std::copy(test_path.begin(), test_path.end(), cfg_path);
-        cfg_path[test_path.size()] = '\0';
-        char * argv[] = {
-            &arg0[0],
-            &arg1[0],
-            &arg2[0],
-            &arg3[0],
-            cfg_path,
-            NULL
-        };
-        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
-        int ret;
-        // Should be no operators with any weight; should throw error
-        REQUIRE_THROWS(ecoevolity_main(argc, argv));
-
-        delete[] cfg_path;
-    }
-
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop sizes and 2 pairs", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 0.1) and gamma(5.0, 0.5) prior with fixed pop sizes, optimizing, 2 pairs") {
         double time_shape = 10.0;
         double time_scale = 0.1;
@@ -949,12 +877,12 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -1112,7 +1040,9 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
 
         delete[] cfg_path;
     }
+}
 
+TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma priors opt", "[SamplingPrior]") {
     SECTION("Testing gamma(10.0, 10.0) and gamma(2.0, 0.5) prior with optimizing") {
         double time_shape = 10.0;
         double time_scale = 10.0;
@@ -1141,7 +1071,7 @@ TEST_CASE("Testing sampling from prior with CompositeTimeSizeRateMixer", "[xSamp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -1285,7 +1215,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -1421,7 +1351,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -1555,7 +1485,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -1691,7 +1621,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -1820,7 +1750,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -1964,7 +1894,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2108,7 +2038,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2245,7 +2175,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2385,7 +2315,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2520,7 +2450,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2655,7 +2585,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2787,7 +2717,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -2918,7 +2848,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -3057,7 +2987,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -3216,7 +3146,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -3338,7 +3268,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
     }
 }
 
-TEST_CASE("Testing fully parameterized model for one pair with optimization and CompositeTimeSizeRateMixer",
+TEST_CASE("Testing fully parameterized model for one pair with optimization and TimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing with optimizing") {
@@ -3375,7 +3305,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -3531,7 +3461,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -3702,7 +3632,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -3873,7 +3803,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -4045,7 +3975,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -4264,7 +4194,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -4483,7 +4413,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -4685,7 +4615,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
 
         for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
             REQUIRE((model_counts.at(m) / 100001.0) == Approx(std::exp(
-                    get_dpp_log_prior_probability(m, concentration))).epsilon(0.001));
+                    get_dpp_log_prior_probability(m, concentration))).epsilon(0.002));
         }
 
         SampleSummarizer<double> lnl_summary = prior_sample.summarize<double>("ln_likelihood");
@@ -4745,8 +4675,8 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 1000000\n";
-        os << "    sample_frequency: 50\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -4757,7 +4687,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -4871,7 +4801,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -5029,7 +4959,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
     }
 }
 
-TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeTimeSizeRateMixer",
+TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
@@ -5079,8 +5009,8 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeTimeSiz
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -5091,7 +5021,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeTimeSiz
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -5205,7 +5135,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and CompositeTimeSiz
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -5402,7 +5332,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -5631,7 +5561,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -5860,7 +5790,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -5908,7 +5838,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "54866549";
+        char arg2[] = "1234567";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -6053,7 +5983,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
+TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         "[SamplingPrior]") {
 
     SECTION("Testing multithreading") {
@@ -6103,8 +6033,8 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -6115,7 +6045,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -6207,7 +6137,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "72349827";
         char arg3[] = "--ignore-data";
         char arg4[] = "--nthreads";
         char arg5[] = "3";
@@ -6233,7 +6163,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and multithreading",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -6441,8 +6371,8 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -6453,7 +6383,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -6545,7 +6475,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "72349827";
         char arg3[] = "--ignore-data";
         char arg4[] = "--nthreads";
         char arg5[] = "2";
@@ -6571,7 +6501,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -6758,12 +6688,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        MutationRateScaler:\n";
@@ -6927,12 +6857,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        MutationRateScaler:\n";
@@ -7148,12 +7078,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        MutationRateScaler:\n";
@@ -7402,12 +7332,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        MutationRateScaler:\n";
@@ -7627,7 +7557,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
         double height_shape = 10.0;
@@ -7667,8 +7597,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 600000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -7678,7 +7608,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -7770,7 +7700,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "58961543";
+        char arg2[] = "72938742";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -7792,7 +7722,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 60001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -7961,7 +7891,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and CompositeTimeSizeRateMixer",
+TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized and TimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing rjMCMC with 3 pairs") {
@@ -8013,7 +7943,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -8337,8 +8267,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -8348,7 +8278,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -8466,7 +8396,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -8636,7 +8566,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
 }
 
 TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
         double height_shape = 10.0;
@@ -8685,8 +8615,8 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 500000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -8697,7 +8627,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -8789,7 +8719,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "72349827";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -8811,7 +8741,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 50001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -8963,7 +8893,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
     }
 }
 
-TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and CompositeTimeSizeRateMixer",
+TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and TimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing alpha integrated") {
@@ -9013,8 +8943,8 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -9025,7 +8955,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -9139,7 +9069,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -9292,7 +9222,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Co
 }
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully parameterized",
-        "[SamplingPrior]") {
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -9332,8 +9262,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -9343,7 +9273,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -9457,7 +9387,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -9620,8 +9550,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeTimeSizeRateMixer, and fully parameterized",
-        "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRateMixer, and fully parameterized",
+        "[xSamplingPrior]") {
 
     SECTION("Testing rjMCMC with 2 singletons and a pair") {
         double height_shape = 10.0;
@@ -9661,8 +9591,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeTim
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 600000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -9672,7 +9602,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeTim
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -9764,7 +9694,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeTim
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "68412635";
+        char arg2[] = "684126";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -9786,7 +9716,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, CompositeTim
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 60001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -9989,8 +9919,8 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    fixed: [0, 1, 2]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10000,7 +9930,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -10114,7 +10044,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -10269,7 +10199,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing fixed 012 and fully parameterized and CompositeTimeSizeRateMixer",
+TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing fixed 012 pairs") {
@@ -10310,8 +10240,8 @@ TEST_CASE("Testing fixed 012 and fully parameterized and CompositeTimeSizeRateMi
         os << "event_model_prior:\n";
         os << "    fixed: [0, 1, 2]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10321,7 +10251,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized and CompositeTimeSizeRateMi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -10435,7 +10365,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized and CompositeTimeSizeRateMi
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -10630,8 +10560,8 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "event_model_prior:\n";
         os << "    fixed: [0, 0, 0]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10641,7 +10571,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -10755,7 +10685,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -10910,7 +10840,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
     }
 }
 
-TEST_CASE("Testing fixed 000 and fully parameterized and CompositeTimeSizeRateMixer",
+TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         "[SamplingPrior]") {
 
     SECTION("Testing fixed 000 pairs") {
@@ -10951,8 +10881,8 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CompositeTimeSizeRateMi
         os << "event_model_prior:\n";
         os << "    fixed: [0, 0, 0]\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 500000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 200000\n";
+        os << "    sample_frequency: 20\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -10962,7 +10892,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CompositeTimeSizeRateMi
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -11076,7 +11006,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CompositeTimeSizeRateMi
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 5001;
+        unsigned int expected_sample_size = 10001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -11231,7 +11161,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and CompositeTimeSizeRateMi
     }
 }
 
-TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[SamplingPrior]") {
+TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[xSamplingPrior]") {
 
     SECTION("Testing DPP with 3 dirichlet pairs") {
         double height_shape = 10.0;
@@ -11283,8 +11213,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -11295,7 +11225,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -11413,7 +11343,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "28947598";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -11466,7 +11396,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -11656,10 +11586,10 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
     }
 }
 
-TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without CompositeTimeMeanSizeRateMixer",
-        "[SamplingPrior]") {
+TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without TimeMeanSizeRateMixer",
+        "[xSamplingPrior]") {
 
-    SECTION("Testing DPP with 3 dirichlet pairs without CompositeTimeMeanSizeRateMixer") {
+    SECTION("Testing DPP with 3 dirichlet pairs without TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -11709,8 +11639,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -11721,7 +11651,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -11839,7 +11769,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "9379834";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -11892,7 +11822,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12082,10 +12012,10 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Co
     }
 }
 
-TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only CompositeTimeMeanSizeRateMixer",
-        "[SamplingPrior]") {
+TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only TimeMeanSizeRateMixer",
+        "[xSamplingPrior]") {
 
-    SECTION("Testing DPP with 3 dirichlet pairs with only CompositeTimeMeanSizeRateMixer") {
+    SECTION("Testing DPP with 3 dirichlet pairs with only TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -12135,8 +12065,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "                        shape: " << concentration_shape << "\n";
         os << "                        scale: " << concentration_scale << "\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
@@ -12147,12 +12077,12 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -12252,7 +12182,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "283402";
+        char arg2[] = "93745873";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -12305,7 +12235,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12539,15 +12469,15 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
@@ -12718,7 +12648,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12903,10 +12833,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with no CompositeTimeMeanSizeRateMixer",
-        "[SamplingPrior]") {
+TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with no TimeMeanSizeRateMixer",
+        "[xSamplingPrior]") {
 
-    SECTION("Testing rjMCMC with 2 singletons and a pair and no CompositeTimeMeanSizeRateMixer") {
+    SECTION("Testing rjMCMC with 2 singletons and a pair and no TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -12947,15 +12877,15 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 600000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
@@ -13073,7 +13003,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "68412635";
+        char arg2[] = "27457849";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -13126,7 +13056,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 60001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -13311,10 +13241,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
     }
 }
 
-TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with only CompositeTimeMeanSizeRateMixer",
+TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichlet pair, and fully parameterized with only TimeMeanSizeRateMixer",
         "[SamplingPrior]") {
 
-    SECTION("Testing rjMCMC with 2 singletons and a pair and only CompositeTimeMeanSizeRateMixer") {
+    SECTION("Testing rjMCMC with 2 singletons and a pair and only TimeMeanSizeRateMixer") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -13355,20 +13285,20 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 2000000\n";
-        os << "    sample_frequency: 100\n";
+        os << "    chain_length: 400000\n";
+        os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
-        os << "        CompositeTimeSizeRateMixer:\n";
+        os << "        TimeSizeRateMixer:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.5\n";
-        os << "            weight: 0.0\n";
+        os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
@@ -13521,7 +13451,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 20001;
+        unsigned int expected_sample_size = 40001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");

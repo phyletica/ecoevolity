@@ -31,15 +31,15 @@ operator_settings:
         ConcentrationScaler:
             scale: 0.2
             weight: 3.0
-        CompositeTimeSizeRateMixer:
-            scale: 0.4
-            weight: 2.0
-        CompositeTimeSizeRateScaler:
+        TimeSizeRateMixer:
             scale: 0.1
-            weight: 1.0
+            weight: 4.0
+        TimeSizeRateScaler:
+            scale: 0.1
+            weight: 4.0
         EventTimeScaler:
-            scale: 0.3
-            weight: 3.0
+            scale: 0.1
+            weight: 4.0
 
 global_comparison_settings:
     ploidy: 2
@@ -75,6 +75,15 @@ global_comparison_settings:
             value: 1.0
             estimate: false
     operators:
+        TimeSizeRateMixer:
+            scale: 0.4
+            weight: 2.0
+        TimeSizeRateScaler:
+            scale: 0.1
+            weight: 1.0
+        EventTimeScaler:
+            scale: 0.3
+            weight: 3.0
         MutationRateScaler:
             weight: 2.0
             scale: 0.6
