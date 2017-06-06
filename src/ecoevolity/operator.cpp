@@ -1997,7 +1997,11 @@ void TimeSizeMixer::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
@@ -2167,7 +2171,11 @@ void TimeRootSizeMixer::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
@@ -2306,7 +2314,11 @@ void TimeSizeScaler::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
@@ -2449,7 +2461,11 @@ void TimeSizeRateMixer::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
@@ -2488,9 +2504,11 @@ double TimeSizeRateMixer::propose_by_height(RandomNumberGenerator& rng,
                 number_of_free_parameters_inverse_scaled += tree->scale_root_population_size(1.0/multiplier);
                 unsigned int nleaves = tree->get_leaf_node_count();
                 for (unsigned int i = 0; i < nleaves; ++i) { 
-                    tree->set_child_population_size(i, 
-                            tree->get_child_population_size(i) * multiplier);
-                    ++number_of_free_parameters_scaled;
+                    if (! tree->get_child_population_size_parameter(i)->is_fixed()) {
+                        tree->set_child_population_size(i, 
+                                tree->get_child_population_size(i) * multiplier);
+                        ++number_of_free_parameters_scaled;
+                    }
                 }
             }
         }
@@ -2529,9 +2547,11 @@ double TimeSizeRateMixer::propose_by_tree(RandomNumberGenerator& rng,
             number_of_free_parameters_inverse_scaled += tree->scale_root_population_size(1.0/multiplier);
             unsigned int nleaves = tree->get_leaf_node_count();
             for (unsigned int i = 0; i < nleaves; ++i) { 
-                tree->set_child_population_size(i, 
-                        tree->get_child_population_size(i) * multiplier);
-                ++number_of_free_parameters_scaled;
+                if (! tree->get_child_population_size_parameter(i)->is_fixed()) {
+                    tree->set_child_population_size(i, 
+                            tree->get_child_population_size(i) * multiplier);
+                    ++number_of_free_parameters_scaled;
+                }
             }
         }
     }
@@ -2640,7 +2660,11 @@ void TimeMeanSizeRateMixer::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
@@ -2914,7 +2938,11 @@ void TimeSizeRateScaler::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
@@ -3065,7 +3093,11 @@ void TimeMeanSizeRateScaler::operate(RandomNumberGenerator& rng,
         }
         return;
     }
-    for (std::shared_ptr<OperatorInterface> time_op : comparisons->get_time_operators(this->tree_index_)) {
+    std::vector< std::shared_ptr<OperatorInterface> > time_operators = comparisons->get_time_operators(this->tree_index_);
+    if (time_operators.size() < 1) {
+        time_operators = comparisons->get_time_operators();
+    }
+    for (std::shared_ptr<OperatorInterface> time_op : time_operators) {
         time_op->operate(rng, comparisons, nthreads);
     }
     for (std::shared_ptr<OperatorInterface> tree_op : comparisons->get_tree_operators(this->tree_index_)) {
