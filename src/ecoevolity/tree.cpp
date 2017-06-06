@@ -1430,6 +1430,9 @@ unsigned int RelativeRootPopulationTree::scale_all_population_sizes(
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
         return ret;
     }
+    if (! this->leaf_population_sizes_are_fixed_) {
+        --ret;
+    }
     if (this->relative_root_population_size_is_fixed()) {
         this->update_root_population_size();
         return ret;
@@ -1476,6 +1479,7 @@ void RelativeRootPopulationTree::set_population_sizes_as_proportions(
     }
     this->update_relative_root_population_size();
 }
+
 void RelativeRootPopulationTree::set_population_sizes(const std::vector<double> & sizes) {
     PopulationTree::set_population_sizes(sizes);
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
@@ -1508,8 +1512,13 @@ double RelativeRootPopulationTree::compute_log_prior_density_of_population_sizes
     if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
         return PopulationTree::compute_log_prior_density_of_population_sizes();
     }
-    double ln_p = this->root_->calculate_ln_relative_population_size_prior_density();
-    ln_p -= this->root_->get_population_size_relative_prior_ln_pdf();
+    double ln_p = 0.0;
+    if (! this->leaf_population_sizes_are_fixed_) {
+        // Can't call relative_ln_pdf when pop sizes were fixed, because root
+        // size will not have a prior
+        ln_p = this->root_->calculate_ln_relative_population_size_prior_density();
+        ln_p -= this->root_->get_population_size_relative_prior_ln_pdf();
+    }
     ln_p += this->relative_root_population_size_->relative_prior_ln_pdf();
     return ln_p;
 }

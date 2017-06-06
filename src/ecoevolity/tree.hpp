@@ -476,6 +476,7 @@ class RelativeRootPopulationTree: public PopulationTree {
         std::shared_ptr<PositiveRealParameter> relative_root_population_size_ = std::make_shared<PositiveRealParameter>(
                 std::make_shared<GammaDistribution>(10.0, 0.1),
                 1.0);
+        bool leaf_population_sizes_are_fixed_ = false;
 
         void update_root_population_size();
         void update_relative_root_population_size();
@@ -543,9 +544,11 @@ class RelativeRootPopulationTree: public PopulationTree {
             if (! this->relative_root_population_size_is_fixed()) {
                 this->root_->estimate_population_size();
             }
+            this->leaf_population_sizes_are_fixed_ = true;
         }
         void estimate_population_sizes() {
             PopulationTree::estimate_population_sizes();
+            this->leaf_population_sizes_are_fixed_ = false;
         }
         virtual void constrain_population_sizes() {
             PopulationTree::constrain_population_sizes();
