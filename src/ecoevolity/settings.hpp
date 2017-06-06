@@ -1913,6 +1913,12 @@ class RelativeRootComparisonSettings : public BaseComparisonSettings<TreeSpecifi
                     this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
                 }
             }
+            if (this->mutation_rate_settings_.is_fixed() &&
+                    this->population_size_settings_.is_fixed() &&
+                    this->relative_root_population_size_settings_.is_fixed()) {
+                this->operator_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
+                this->operator_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
+            }
         }
 
         void parse_parameter_settings(const YAML::Node& node) {
