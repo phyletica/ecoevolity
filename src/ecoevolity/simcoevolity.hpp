@@ -33,29 +33,10 @@
 #include "collection.hpp"
 
 
-void write_sim_splash(std::ostream& out) {
-    std::string v = "Version ";
-    v += PROJECT_DETAILED_VERSION;
-    out << string_util::banner('=') << "\n" 
-        << string_util::center("Simcoevolity") << "\n"
-        << string_util::center("Simulating evolutionary coevality") << "\n"
-        << string_util::center("Part of:") << "\n"
-        << string_util::center(PROJECT_NAME) << "\n"
-        << string_util::center(v) << "\n"
-        << string_util::banner('=') << "\n";
-}
+void write_sim_splash(std::ostream& out);
 
-void check_output_path(const std::string& path) {
-    if (path::exists(path)) {
-        std::ostringstream message;
-        message << "ERROR: The simcoevolity output file \'"
-                << path
-                << "\' already exists!\n"
-                << "Please use a different output file or clear out previous "
-                << "simulations\n";
-        throw EcoevolityError(message.str());
-    }
-}
+void check_output_path(const std::string& path);
+
 
 template <class SettingsType, class CollectionType>
 int simcoevolity_main(int argc, char * argv[]) {

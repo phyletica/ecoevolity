@@ -19,3 +19,14 @@
 
 #include "ecoevolity.hpp"
 
+
+void write_splash(std::ostream& out) {
+    std::string v = "Version ";
+    v += PROJECT_DETAILED_VERSION;
+    out << string_util::banner('=') << "\n" 
+        << string_util::center(PROJECT_NAME) << "\n"
+        << string_util::center("Estimating evolutionary coevality") << "\n"
+        << string_util::center(v) << "\n"
+        << string_util::banner('=') << "\n";
+}
+

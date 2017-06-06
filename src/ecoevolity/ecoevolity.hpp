@@ -32,15 +32,9 @@
 #include "settings.hpp"
 #include "collection.hpp"
 
-void write_splash(std::ostream& out) {
-    std::string v = "Version ";
-    v += PROJECT_DETAILED_VERSION;
-    out << string_util::banner('=') << "\n" 
-        << string_util::center(PROJECT_NAME) << "\n"
-        << string_util::center("Estimating evolutionary coevality") << "\n"
-        << string_util::center(v) << "\n"
-        << string_util::banner('=') << "\n";
-}
+
+void write_splash(std::ostream& out);
+
 
 template <class SettingsType, class CollectionType>
 int ecoevolity_main(int argc, char * argv[]) {
