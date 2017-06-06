@@ -20,6 +20,6 @@
 #include "ecoevolity.hpp"
 
 int main(int argc, char *argv[]) {
-    ecoevolity_main(argc, argv, true);
+    ecoevolity_main<RelativeRootCollectionSettings, ComparisonRelativeRootPopulationTreeCollection>(argc, argv);
     return 0;
 }

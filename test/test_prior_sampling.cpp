@@ -142,7 +142,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -340,7 +340,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -485,7 +485,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -630,7 +630,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -771,7 +771,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -933,7 +933,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1121,7 +1121,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1274,7 +1274,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1410,7 +1410,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1547,7 +1547,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1683,7 +1683,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1812,7 +1812,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -1956,7 +1956,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2100,7 +2100,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2237,7 +2237,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2377,7 +2377,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2512,7 +2512,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2647,7 +2647,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2779,7 +2779,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -2910,7 +2910,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -3055,7 +3055,7 @@ TEST_CASE("Testing fully parameterized model for one pair",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -3214,7 +3214,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -3373,7 +3373,7 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -3522,7 +3522,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -3693,7 +3693,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -3864,7 +3864,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -4038,7 +4038,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -4257,7 +4257,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -4482,7 +4482,7 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -4794,7 +4794,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -5128,7 +5128,7 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixe
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -5395,7 +5395,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -5624,7 +5624,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -5853,7 +5853,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -6156,7 +6156,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -6494,7 +6494,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -6749,7 +6749,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -6920,7 +6920,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -7147,7 +7147,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -7401,7 +7401,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -7715,7 +7715,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -8050,7 +8050,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -8389,7 +8389,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -8734,7 +8734,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -9062,7 +9062,7 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -9380,7 +9380,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -9709,7 +9709,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -10037,7 +10037,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -10358,7 +10358,7 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -10678,7 +10678,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -10999,7 +10999,7 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -11358,7 +11358,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[xSampl
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv, true);
+        ret = ecoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -11784,7 +11784,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv, true);
+        ret = ecoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -12197,7 +12197,7 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv, true);
+        ret = ecoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -12610,7 +12610,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv, true);
+        ret = ecoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -13018,7 +13018,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv, true);
+        ret = ecoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
@@ -13413,7 +13413,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        ret = ecoevolity_main(argc, argv, true);
+        ret = ecoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
         REQUIRE(path::exists(log_path));
 
