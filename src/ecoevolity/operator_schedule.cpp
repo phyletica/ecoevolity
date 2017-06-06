@@ -163,17 +163,17 @@ OperatorSchedule::OperatorSchedule(
                 ));
     }
 
-    if (settings.get_composite_time_size_rate_mixer_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeTimeSizeRateMixer>(
-                settings.get_composite_time_size_rate_mixer_settings().get_weight(),
-                settings.get_composite_time_size_rate_mixer_settings().get_scale()
+    if (settings.get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeSizeRateMixer>(
+                settings.get_time_size_rate_mixer_settings().get_weight(),
+                settings.get_time_size_rate_mixer_settings().get_scale()
                 ));
     }
 
-    if (settings.get_composite_time_size_rate_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<CompositeTimeSizeRateScaler>(
-                settings.get_composite_time_size_rate_scaler_settings().get_weight(),
-                settings.get_composite_time_size_rate_scaler_settings().get_scale()
+    if (settings.get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeSizeRateScaler>(
+                settings.get_time_size_rate_scaler_settings().get_weight(),
+                settings.get_time_size_rate_scaler_settings().get_scale()
                 ));
     }
 
