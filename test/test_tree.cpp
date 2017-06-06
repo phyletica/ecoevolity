@@ -8696,3 +8696,489 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree draw_from_prior for fixe
         REQUIRE(pop_size_1.variance() == Approx(0.0));
     }
 }
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for fully fixed", "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fully fixed pair") {
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: false\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: false\n";
+        os << "    population_size:\n";
+        os << "        value: 0.001\n";
+        os << "        estimate: false\n";
+        os << "    root_relative_population_size:\n";
+        os << "        value: 1.0\n";
+        os << "        estimate: false\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+        for (unsigned int i = 0; i < 10; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_root_population_size() == 0.001);
+            REQUIRE(tree.get_child_population_size(0) == 0.001);
+            REQUIRE(tree.get_child_population_size(1) == 0.001);
+            REQUIRE(tree.get_u() == Approx(1.0));
+            REQUIRE(tree.get_v() == Approx(1.0));
+            REQUIRE(tree.get_freq_1() == 0.5);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+        }
+    }
+}
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for fully fixed and constrained", "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fully fixed pair") {
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: true\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: false\n";
+        os << "    population_size:\n";
+        os << "        value: 0.001\n";
+        os << "        estimate: false\n";
+        os << "    root_relative_population_size:\n";
+        os << "        value: 1.0\n";
+        os << "        estimate: false\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+        for (unsigned int i = 0; i < 10; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_root_population_size() == 0.001);
+            REQUIRE(tree.get_child_population_size(0) == 0.001);
+            REQUIRE(tree.get_child_population_size(1) == 0.001);
+            REQUIRE(tree.get_u() == Approx(1.0));
+            REQUIRE(tree.get_v() == Approx(1.0));
+            REQUIRE(tree.get_freq_1() == 0.5);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+        }
+    }
+}
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for constrained sizes", "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for constrained sizes") {
+
+        double size_shape = 2.0;
+        double size_scale = 1.2;
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: true\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: false\n";
+        os << "    population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << size_shape << "\n";
+        os << "                scale: " << size_scale << "\n";
+        os << "    root_relative_population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: 20.0\n";
+        os << "                scale: 0.05\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+        SampleSummarizer<double> pop_size;
+
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_u() == Approx(1.0));
+            REQUIRE(tree.get_v() == Approx(1.0));
+            REQUIRE(tree.get_freq_1() == 0.5);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+
+            REQUIRE(tree.get_relative_root_population_size() == Approx(1.0));
+            REQUIRE(tree.get_root_population_size() == tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() == tree.get_child_population_size(1));
+
+            pop_size.add_sample(tree.get_root_population_size());
+        }
+
+        REQUIRE(pop_size.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+    }
+}
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for unconstrained sizes", "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for unconstrained sizes") {
+        double size_shape = 2.0;
+        double size_scale = 1.2;
+        double rel_size_shape = 10.0;
+        double rel_size_scale = 0.1;
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: false\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: false\n";
+        os << "    population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << size_shape << "\n";
+        os << "                scale: " << size_scale << "\n";
+        os << "    root_relative_population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << rel_size_shape << "\n";
+        os << "                scale: " << rel_size_scale << "\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+        SampleSummarizer<double> pop_size_root;
+        SampleSummarizer<double> pop_size_0;
+        SampleSummarizer<double> pop_size_1;
+
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_u() == Approx(1.0));
+            REQUIRE(tree.get_v() == Approx(1.0));
+            REQUIRE(tree.get_freq_1() == 0.5);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
+            REQUIRE(tree.get_child_population_size(0) != tree.get_child_population_size(1));
+
+            pop_size_root.add_sample(tree.get_relative_root_population_size());
+            pop_size_0.add_sample(tree.get_child_population_size(0));
+            pop_size_1.add_sample(tree.get_child_population_size(1));
+        }
+
+        REQUIRE(pop_size_root.mean() == Approx(rel_size_shape * rel_size_scale).epsilon(0.1));
+        REQUIRE(pop_size_root.variance() == Approx(rel_size_shape * rel_size_scale * rel_size_scale).epsilon(0.1));
+        REQUIRE(pop_size_0.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_0.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_1.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_1.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+    }
+}
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for fully parameterized", "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fully parameterized") {
+        double size_shape = 2.0;
+        double size_scale = 1.2;
+        double rel_size_shape = 10.0;
+        double rel_size_scale = 0.1;
+        double mu_shape = 3.0;
+        double mu_scale = 1.1;
+        double f_a = 0.5;
+        double f_b = 0.8;
+
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(f_a, f_b);
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: false\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << mu_shape << "\n";
+        os << "                scale: " << mu_scale << "\n";
+        os << "    population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << size_shape << "\n";
+        os << "                scale: " << size_scale << "\n";
+        os << "    root_relative_population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << rel_size_shape << "\n";
+        os << "                scale: " << rel_size_scale << "\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            beta_distribution:\n";
+        os << "                alpha: " << f_a << "\n";
+        os << "                beta: " << f_b << "\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+        SampleSummarizer<double> pop_size_root;
+        SampleSummarizer<double> pop_size_0;
+        SampleSummarizer<double> pop_size_1;
+        SampleSummarizer<double> rate;
+        SampleSummarizer<double> f;
+
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
+            REQUIRE(tree.get_child_population_size(0) != tree.get_child_population_size(1));
+
+            pop_size_root.add_sample(tree.get_relative_root_population_size());
+            pop_size_0.add_sample(tree.get_child_population_size(0));
+            pop_size_1.add_sample(tree.get_child_population_size(1));
+            rate.add_sample(tree.get_mutation_rate());
+            f.add_sample(tree.get_freq_1());
+        }
+
+        REQUIRE(pop_size_root.mean() == Approx(rel_size_shape * rel_size_scale).epsilon(0.1));
+        REQUIRE(pop_size_root.variance() == Approx(rel_size_shape * rel_size_scale * rel_size_scale).epsilon(0.1));
+        REQUIRE(pop_size_0.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_0.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_1.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_1.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+        REQUIRE(f.mean() == Approx(f_prior->get_mean()).epsilon(0.01));
+        REQUIRE(f.variance() == Approx(f_prior->get_variance()).epsilon(0.01));
+        REQUIRE(rate.mean() == Approx(mu_shape * mu_scale).epsilon(0.1));
+        REQUIRE(rate.variance() == Approx(mu_shape * mu_scale * mu_scale).epsilon(0.1));
+    }
+}
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for fixed relative root size",
+        "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fixed relative root size") {
+        double size_shape = 2.0;
+        double size_scale = 1.2;
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: false\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: false\n";
+        os << "    population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << size_shape << "\n";
+        os << "                scale: " << size_scale << "\n";
+        os << "    root_relative_population_size:\n";
+        os << "        value: 2.0\n";
+        os << "        estimate: false\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: 10.0\n";
+        os << "                scale: 0.1\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+        SampleSummarizer<double> pop_size_0;
+        SampleSummarizer<double> pop_size_1;
+
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_u() == Approx(1.0));
+            REQUIRE(tree.get_v() == Approx(1.0));
+            REQUIRE(tree.get_freq_1() == 0.5);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
+            REQUIRE(tree.get_child_population_size(0) != tree.get_child_population_size(1));
+
+            REQUIRE(tree.get_relative_root_population_size() == Approx(2.0));
+            pop_size_0.add_sample(tree.get_child_population_size(0));
+            pop_size_1.add_sample(tree.get_child_population_size(1));
+        }
+
+        REQUIRE(pop_size_0.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_0.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_1.mean() == Approx(size_shape * size_scale).epsilon(0.1));
+        REQUIRE(pop_size_1.variance() == Approx(size_shape * size_scale * size_scale).epsilon(0.1));
+    }
+}
+
+TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior for fixed leaf sizes",
+        "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing draw_from_prior for fixed leaf sizes") {
+        double rel_size_shape = 10.0;
+        double rel_size_scale = 0.1;
+
+        std::stringstream os;
+        os << "path: data/diploid-standard-data-ntax5-nchar5.nex\n";
+        os << "genotypes_are_diploid: true\n";
+        os << "markers_are_dominant: false\n";
+        os << "population_name_delimiter: \" \"\n";
+        os << "population_name_is_prefix: true\n";
+        os << "constant_sites_removed: true\n";
+        os << "equal_population_sizes: false\n";
+        os << "parameters:\n";
+        os << "    mutation_rate:\n";
+        os << "        value: 0.8\n";
+        os << "        estimate: false\n";
+        os << "    population_size:\n";
+        os << "        value: 0.001\n";
+        os << "        estimate: false\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: 2.0\n";
+        os << "                scale: 1.2\n";
+        os << "    root_relative_population_size:\n";
+        os << "        estimate: true\n";
+        os << "        prior:\n";
+        os << "            gamma_distribution:\n";
+        os << "                shape: " << rel_size_shape << "\n";
+        os << "                scale: " << rel_size_scale << "\n";
+        os << "    freq_1:\n";
+        os << "        value: 0.5\n";
+        os << "        estimate: false\n";
+
+        YAML::Node n;
+        n = YAML::Load(os);
+        RelativeRootComparisonSettings settings = RelativeRootComparisonSettings(
+                n,
+                "dummy-config-path.yml");
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        ComparisonRelativeRootPopulationTree tree = ComparisonRelativeRootPopulationTree(settings, rng);
+
+
+        SampleSummarizer<double> pop_size_root;
+        SampleSummarizer<double> pop_size_0;
+        SampleSummarizer<double> pop_size_1;
+
+        for (unsigned int i = 0; i < 10000; ++i) {
+            tree.draw_from_prior(rng);
+
+            REQUIRE(tree.get_u() == Approx(1.0));
+            REQUIRE(tree.get_v() == Approx(1.0));
+            REQUIRE(tree.get_freq_1() == 0.5);
+            REQUIRE(tree.get_mutation_rate() == 0.8);
+
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(0));
+            REQUIRE(tree.get_root_population_size() != tree.get_child_population_size(1));
+            REQUIRE(tree.get_child_population_size(0) == tree.get_child_population_size(1));
+
+            pop_size_root.add_sample(tree.get_relative_root_population_size());
+            pop_size_0.add_sample(tree.get_child_population_size(0));
+            pop_size_1.add_sample(tree.get_child_population_size(1));
+        }
+
+        REQUIRE(pop_size_root.mean() == Approx(rel_size_shape * rel_size_scale).epsilon(0.1));
+        REQUIRE(pop_size_root.variance() == Approx(rel_size_shape * rel_size_scale * rel_size_scale).epsilon(0.1));
+        REQUIRE(pop_size_0.mean() == Approx(0.001));
+        REQUIRE(pop_size_0.variance() == Approx(0.0));
+        REQUIRE(pop_size_1.mean() == Approx(0.001));
+        REQUIRE(pop_size_1.variance() == Approx(0.0));
+    }
+}

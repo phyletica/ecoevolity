@@ -1116,6 +1116,8 @@ class TreeSpecificOperatorScheduleSettings {
                 0.0, 0.5);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
+        ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
@@ -1133,6 +1135,7 @@ class TreeSpecificOperatorScheduleSettings {
         TreeSpecificOperatorScheduleSettings& operator=(const TreeSpecificOperatorScheduleSettings& other) {
             this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
             this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
+            this->time_root_size_mixer_settings_ = other.time_root_size_mixer_settings_;
             this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             this->mutation_rate_scaler_settings_ = other.mutation_rate_scaler_settings_;
             this->freq_mover_settings_ = other.freq_mover_settings_;
@@ -1150,6 +1153,9 @@ class TreeSpecificOperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_time_size_rate_scaler_settings() const {
             return this->time_size_rate_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_time_root_size_mixer_settings() const {
+            return this->time_root_size_mixer_settings_;
         }
         const ScaleOperatorSettings& get_event_time_scaler_settings() const {
             return this->event_time_scaler_settings_;
@@ -1211,6 +1217,16 @@ class TreeSpecificOperatorScheduleSettings {
                     catch (...) {
                         std::cerr << "ERROR: "
                                   << "Problem parsing TimeSizeRateScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "TimeRootSizeMixer") {
+                    try {
+                        this->time_root_size_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeRootSizeMixer settings\n";
                         throw;
                     }
                 }
@@ -1293,6 +1309,8 @@ class TreeSpecificOperatorScheduleSettings {
             ss << this->mutation_rate_scaler_settings_.to_string(indent_level + 2);
             ss << margin << indent << "FreqMover:\n";
             ss << this->freq_mover_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "TimeRootSizeMixer:\n";
+            ss << this->time_root_size_mixer_settings_.to_string(indent_level + 2);
             return ss.str();
         }
 };
@@ -1542,6 +1560,7 @@ class BaseComparisonSettings {
             if (this->population_size_settings_.is_fixed()) {
                 this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
                 this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_settings_.time_root_size_mixer_settings_.set_weight(0.0);
             }
             if (this->constrain_population_sizes_) {
                 this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
@@ -1908,9 +1927,11 @@ class RelativeRootComparisonSettings : public BaseComparisonSettings<TreeSpecifi
             if (this->relative_root_population_size_settings_.is_fixed()) {
                 if (! this->constrain_population_sizes_) {
                     this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                    this->operator_settings_.time_root_size_mixer_settings_.set_weight(0.0);
                 }
                 if (this->constrain_population_sizes_ && this->population_size_settings_.is_fixed()) {
                     this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                    this->operator_settings_.time_root_size_mixer_settings_.set_weight(0.0);
                 }
             }
             if (this->mutation_rate_settings_.is_fixed() &&
