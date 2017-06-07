@@ -11393,9 +11393,6 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
-        os << "        TimeRootSizeMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -11822,9 +11819,6 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
-        os << "        TimeRootSizeMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -12250,10 +12244,6 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
-        os << "    operators:\n";
-        os << "        TimeRootSizeMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -12655,9 +12645,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
-        os << "        TimeRootSizeMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -13066,9 +13053,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
-        os << "        TimeRootSizeMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -13476,10 +13460,6 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
-        os << "    operators:\n";
-        os << "        TimeRootSizeMixer:\n";
-        os << "            scale: 0.2\n";
-        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
