@@ -573,6 +573,10 @@ class PopulationNode: public BaseNode<PopulationNode>{
             return true;
         }
 
+        double get_population_size_relative_prior_ln_pdf() const {
+            return this->population_size_->relative_prior_ln_pdf();
+        }
+
 };
 
 #endif

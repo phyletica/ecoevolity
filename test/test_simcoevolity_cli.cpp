@@ -172,7 +172,9 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv), EcoevolityConstantSitesError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityConstantSitesError);
 
         delete[] cfg_path;
     }
@@ -349,7 +351,9 @@ TEST_CASE("Testing simcoevolity constant sites error for dirichlet trees", "[Sim
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv, true), EcoevolityConstantSitesError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv)),
+                EcoevolityConstantSitesError);
 
         delete[] cfg_path;
     }
@@ -523,7 +527,7 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        ret = simcoevolity_main(argc, argv);
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
         REQUIRE(path::exists("data/test3-simcoevolity-model-used-for-sims.yml"));
@@ -721,7 +725,7 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting for dirichlet tre
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        ret = simcoevolity_main(argc, argv, true);
+        ret = simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
         REQUIRE(path::exists("data/test4-simcoevolity-model-used-for-sims.yml"));
@@ -911,7 +915,9 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv), EcoevolityMissingDataError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityMissingDataError);
 
         delete[] cfg_path;
     }
@@ -1088,7 +1094,9 @@ TEST_CASE("Testing simcoevolity missing sites error for dirichlet trees", "[Simc
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv, true), EcoevolityMissingDataError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv)),
+                EcoevolityMissingDataError);
 
         delete[] cfg_path;
     }
@@ -1262,7 +1270,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        ret = simcoevolity_main(argc, argv);
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
         REQUIRE(path::exists("data/test7-simcoevolity-model-used-for-sims.yml"));
@@ -1460,7 +1468,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting for dirichlet tree
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        ret = simcoevolity_main(argc, argv, true);
+        ret = simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
         REQUIRE(path::exists("data/test8-simcoevolity-model-used-for-sims.yml"));
@@ -1651,7 +1659,9 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv), EcoevolityComparisonSettingError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityComparisonSettingError);
 
         delete[] cfg_path;
     }
@@ -1824,7 +1834,9 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv), EcoevolityComparisonSettingError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityComparisonSettingError);
 
         delete[] cfg_path;
     }
@@ -2008,7 +2020,9 @@ TEST_CASE("Testing simcoevolity fixed singleton error for dirichlet tree",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv, true), EcoevolityComparisonSettingError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv)),
+                EcoevolityComparisonSettingError);
 
         delete[] cfg_path;
     }
@@ -2180,7 +2194,9 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(simcoevolity_main(argc, argv), EcoevolityCollectionSettingError);
+        REQUIRE_THROWS_AS(
+                (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityCollectionSettingError);
 
         delete[] cfg_path;
     }

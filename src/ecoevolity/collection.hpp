@@ -345,6 +345,26 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 );
 };
 
+class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopulationTreeCollection {
+
+    public:
+        ComparisonRelativeRootPopulationTreeCollection() : BaseComparisonPopulationTreeCollection() { }
+        ComparisonRelativeRootPopulationTreeCollection(
+                const RelativeRootCollectionSettings & settings,
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
+
+    protected:
+        void init_trees(
+                const std::vector<RelativeRootComparisonSettings> & comparison_settings,
+                RandomNumberGenerator & rng,
+                bool strict_on_constant_sites = true,
+                bool strict_on_missing_sites = true
+                );
+};
+
 class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulationTreeCollection {
 
     public:

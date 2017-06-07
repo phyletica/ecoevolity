@@ -258,9 +258,6 @@ void PopulationTree::fold_patterns() {
 void PopulationTree::set_root_height(double height) {
     this->root_->set_height(height);
 }
-void PopulationTree::update_root_height(double height) {
-    this->root_->update_height(height);
-}
 double PopulationTree::get_root_height() const {
     return this->root_->get_height();
 }
@@ -283,13 +280,6 @@ void PopulationTree::set_freq_1(double p) {
         return;
     }
     this->freq_1_->set_value(p);
-    this->make_dirty();
-}
-void PopulationTree::update_freq_1(double p) {
-    if (this->state_frequencies_are_fixed()) {
-        return;
-    }
-    this->freq_1_->update_value(p);
     this->make_dirty();
 }
 double PopulationTree::get_freq_1() const {
@@ -323,13 +313,6 @@ void PopulationTree::set_mutation_rate(double m) {
     this->mutation_rate_->set_value(m);
     this->make_dirty();
 }
-void PopulationTree::update_mutation_rate(double m) {
-    if (this->mutation_rate_is_fixed()) {
-        return;
-    }
-    this->mutation_rate_->update_value(m);
-    this->make_dirty();
-}
 double PopulationTree::get_mutation_rate() const {
     return this->mutation_rate_->get_value();
 }
@@ -354,7 +337,7 @@ std::shared_ptr<PositiveRealParameter> PopulationTree::get_mutation_rate_paramet
 }
 
 void PopulationTree::set_root_population_size(double size) {
-    if (this->population_sizes_are_fixed()) {
+    if (this->root_->population_size_is_fixed()) {
         return;
     }
     this->root_->set_population_size(size);
@@ -373,7 +356,7 @@ unsigned int PopulationTree::scale_all_population_sizes(double scale) {
     return number_of_free_parameters_scaled;
 }
 unsigned int PopulationTree::scale_root_population_size(double scale) {
-    if (this->population_sizes_are_fixed()) {
+    if (this->root_->population_size_is_fixed()) {
         return 0;
     }
     this->root_->set_population_size(this->root_->get_population_size() * scale);
@@ -468,6 +451,18 @@ double PopulationTree::get_mean_population_size() const {
     this->get_population_sizes(this->root_, sizes);
     double sum_size = std::accumulate(sizes.begin(), sizes.end(), 0.0);
     return sum_size / (double)num_nodes;
+}
+
+double PopulationTree::get_leaf_mean_population_size() const {
+    unsigned int num_nodes = this->get_node_count();
+    std::vector<double> sizes(num_nodes, 0.0);
+    this->get_population_sizes(this->root_, sizes);
+    unsigned int nleaves = this->get_leaf_node_count();
+    double sum_size = 0.0;
+    for (unsigned int i = 0; i < nleaves; ++i) {
+        sum_size += sizes.at(i);
+    }
+    return sum_size / (double)nleaves;
 }
 
 void PopulationTree::set_mean_population_size(double size) {
@@ -1370,4 +1365,419 @@ double ComparisonDirichletPopulationTree::compute_log_prior_density_of_populatio
                 this->get_population_sizes_as_proportions());
     }
     return ln_p;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// RelativeRootPopulationTree methods
+//////////////////////////////////////////////////////////////////////////////
+
+void RelativeRootPopulationTree::update_root_population_size() {
+    this->root_->set_population_size(
+            this->relative_root_population_size_->get_value() *
+            this->get_leaf_mean_population_size());
+    this->make_dirty();
+}
+
+void RelativeRootPopulationTree::update_relative_root_population_size() {
+    this->relative_root_population_size_->set_value(
+            this->root_->get_population_size() /
+            this->get_leaf_mean_population_size());
+    this->make_dirty();
+}
+
+void RelativeRootPopulationTree::set_root_population_size(double size) {
+    if (this->population_sizes_are_constrained()) {
+        PopulationTree::set_root_population_size(size);
+        return;
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        return;
+    }
+    ECOEVOLITY_ASSERT(! this->root_->population_size_is_fixed());
+    PopulationTree::set_root_population_size(size);
+    this->update_relative_root_population_size();
+}
+
+double RelativeRootPopulationTree::get_root_population_size() const {
+    if (this->population_sizes_are_constrained()) {
+        return PopulationTree::get_root_population_size();
+    }
+    double size = this->root_->get_population_size();
+    ECOEVOLITY_ASSERT_APPROX_EQUAL(size, 
+            (this->relative_root_population_size_->get_value() *
+             this->get_leaf_mean_population_size()));
+    return size;
+}
+
+void RelativeRootPopulationTree::set_all_population_sizes(
+        double size) {
+    PopulationTree::set_all_population_sizes(size);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return;
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
+}
+
+unsigned int RelativeRootPopulationTree::scale_all_population_sizes(
+        double scale) {
+    unsigned int ret = PopulationTree::scale_all_population_sizes(scale);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return ret;
+    }
+    if (! this->leaf_population_sizes_are_fixed_) {
+        --ret;
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return ret;
+    }
+    this->update_relative_root_population_size();
+    return ret;
+}
+
+unsigned int RelativeRootPopulationTree::scale_root_population_size(
+        double scale) {
+    if (this->population_sizes_are_constrained()) {
+        return PopulationTree::scale_root_population_size(scale);
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        return 0;
+    }
+    ECOEVOLITY_ASSERT(! this->root_->population_size_is_fixed());
+    unsigned int ret = PopulationTree::scale_root_population_size(scale);
+    this->update_relative_root_population_size();
+    return ret;
+}
+
+void RelativeRootPopulationTree::set_mean_population_size(double size) {
+    PopulationTree::set_mean_population_size(size);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return;
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
+}
+
+void RelativeRootPopulationTree::set_population_sizes_as_proportions(
+        const std::vector<double> & proportions) {
+    PopulationTree::set_population_sizes_as_proportions(proportions);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return;
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
+}
+
+void RelativeRootPopulationTree::set_population_sizes(const std::vector<double> & sizes) {
+    PopulationTree::set_population_sizes(sizes);
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return;
+    }
+    if (this->relative_root_population_size_is_fixed()) {
+        this->update_root_population_size();
+        return;
+    }
+    this->update_relative_root_population_size();
+}
+
+void RelativeRootPopulationTree::set_relative_root_population_size_prior(
+        std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+    this->relative_root_population_size_->prior = prior;
+    this->make_dirty();
+}
+
+void RelativeRootPopulationTree::store_all_population_sizes() {
+    this->root_->store_all_population_sizes();
+    this->relative_root_population_size_->store();
+}
+
+void RelativeRootPopulationTree::restore_all_population_sizes() {
+    this->root_->restore_all_population_sizes();
+    this->relative_root_population_size_->restore();
+}
+
+double RelativeRootPopulationTree::compute_log_prior_density_of_population_sizes() const {
+    if (this->population_sizes_are_fixed() || this->population_sizes_are_constrained()) {
+        return PopulationTree::compute_log_prior_density_of_population_sizes();
+    }
+    double ln_p = 0.0;
+    if (! this->leaf_population_sizes_are_fixed_) {
+        // Can't call relative_ln_pdf when pop sizes were fixed, because root
+        // size will not have a prior
+        ln_p = this->root_->calculate_ln_relative_population_size_prior_density();
+        ln_p -= this->root_->get_population_size_relative_prior_ln_pdf();
+    }
+    ln_p += this->relative_root_population_size_->relative_prior_ln_pdf();
+    return ln_p;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// ComparisonRelativeRootPopulationTree methods
+//////////////////////////////////////////////////////////////////////////////
+
+ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
+    this->comparison_init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+}
+void ComparisonRelativeRootPopulationTree::comparison_init(
+        std::string path, 
+        char population_name_delimiter,
+        bool population_name_is_prefix,
+        bool genotypes_are_diploid,
+        bool markers_are_dominant,
+        bool constant_sites_removed,
+        bool validate,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        double ploidy) {
+    this->init(path,
+               population_name_delimiter,
+               population_name_is_prefix,
+               genotypes_are_diploid,
+               markers_are_dominant,
+               constant_sites_removed,
+               validate,
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               ploidy);
+    if (this->data_.get_number_of_populations() > 2) {
+        throw EcoevolityComparisonSettingError(
+                "ComparisonRelativeRootPopulationTree() does not support more than 2 populations",
+                path);
+    }
+    this->root_->set_label("root-" + this->root_->get_child(0)->get_label());
+}
+
+ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
+        const RelativeRootComparisonSettings& settings,
+        RandomNumberGenerator& rng,
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites) {
+    this->comparison_init(settings.get_path(),
+               settings.get_population_name_delimiter(),
+               settings.population_name_is_prefix(),
+               settings.genotypes_are_diploid(),
+               settings.markers_are_dominant(),
+               settings.constant_sites_removed(),
+               true, // validate
+               strict_on_constant_sites,
+               strict_on_missing_sites,
+               settings.get_ploidy());
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
+        this->fold_patterns();
+    }
+
+    PositiveRealParameter p = PositiveRealParameter(
+            settings.get_population_size_settings(),
+            rng);
+    this->set_all_population_sizes(p.get_value());
+
+    this->relative_root_population_size_ = std::make_shared<PositiveRealParameter>(
+            settings.get_relative_root_population_size_settings(),
+            rng);
+    this->update_root_population_size();
+
+    this->set_population_size_prior(
+            settings.get_population_size_settings().get_prior_settings().get_instance());
+
+    if (settings.constrain_population_sizes()) {
+        this->constrain_population_sizes();
+    }
+
+    if (settings.get_population_size_settings().is_fixed()) {
+        this->fix_population_sizes();
+    }
+    
+    this->set_freq_1_prior(settings.get_freq_1_settings().get_prior_settings().get_instance());
+    if (settings.constrain_state_frequencies()) {
+        this->constrain_state_frequencies();
+    }
+    else {
+        PositiveRealParameter freq_1 = PositiveRealParameter(
+                settings.get_freq_1_settings(),
+                rng);
+        this->set_freq_1(freq_1.get_value());
+        if (freq_1.is_fixed()) {
+            this->fix_state_frequencies();
+        }
+    }
+    this->set_mutation_rate_parameter(
+            std::make_shared<PositiveRealParameter>(
+                    settings.get_mutation_rate_settings(),
+                    rng));
+    if (
+        (this->data_.get_number_of_populations() == 1) &&
+        (
+            (this->population_sizes_are_constrained()) ||
+            (
+                settings.get_population_size_settings().is_fixed() &&
+                this->relative_root_population_size_is_fixed() &&
+                (this->get_root_population_size() == this->get_child_population_size(0))
+            )
+        )
+    ) {
+        std::ostringstream message;
+        message << "\n#######################################################################\n"
+                <<   "###############################  ERROR  ###############################\n"
+                << "The alignment in:\n    \'"
+                << this->data_.get_path() << "\'\n"
+                << "contains only a single population, but you have fixed and/or\n"
+                << "constrained the population sizes for this comparison. The timing of\n"
+                << "population expansion/contraction cannot be estimated if the ancestral\n"
+                << "and descendant population sizes for this comparison are either\n"
+                << "fixed or constrained to be equal. Please update your configuration\n"
+                << "file to estimate the unconstrained population sizes for this\n"
+                << "comparison and re-run the analysis.\n"
+                << "#######################################################################\n";
+        throw EcoevolityComparisonSettingError(message.str(), this->data_.get_path());
+    }
+}
+
+void ComparisonRelativeRootPopulationTree::set_child_population_size(
+        unsigned int child_index,
+        double size) {
+    if (this->root_->get_child(child_index)->population_size_is_fixed()) {
+        return;
+    }
+    this->root_->get_child(child_index)->set_population_size(size);
+    ECOEVOLITY_ASSERT(! this->root_->population_size_is_fixed());
+    this->update_root_population_size();
+}
+
+double ComparisonRelativeRootPopulationTree::get_child_population_size(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size();
+}
+
+std::shared_ptr<PositiveRealParameter> ComparisonRelativeRootPopulationTree::get_child_population_size_parameter(
+        unsigned int child_index) const {
+    return this->root_->get_child(child_index)->get_population_size_parameter();
+}
+
+// Node height sharing needs to be dealt with in next level up in
+// class hierarchy (ComparisonRelativeRootPopulationTreeCollection)
+double ComparisonRelativeRootPopulationTree::compute_log_prior_density() {
+    double d = 0.0;
+    d += this->compute_log_prior_density_of_state_frequencies();
+    d += this->compute_log_prior_density_of_mutation_rate();
+    // d += this->compute_log_prior_density_of_node_heights();
+    d += this->compute_log_prior_density_of_population_sizes();
+    this->log_prior_density_.set_value(d);
+    return d;
+}
+
+// Node height (re)storing is managed by ComparisonRelativeRootPopulationTree.
+void ComparisonRelativeRootPopulationTree::store_parameters() {
+    this->store_freq_1();
+    this->store_mutation_rate();
+    this->store_all_population_sizes();
+    // this->store_all_heights();
+}
+void ComparisonRelativeRootPopulationTree::restore_parameters() {
+    this->restore_freq_1();
+    this->restore_mutation_rate();
+    this->restore_all_population_sizes();
+    // this->restore_all_heights();
+}
+
+void ComparisonRelativeRootPopulationTree::write_state_log_header(
+        std::ostream& out,
+        bool include_event_index,
+        const std::string& delimiter) const {
+    std::string suffix = "_" + this->root_->get_child(0)->get_label();
+    if (include_event_index) {
+        out << "root_height_index" << suffix << delimiter;
+    }
+    out << "ln_likelihood" << suffix << delimiter
+        << "ln_prior" << suffix << delimiter
+        << "root_height" << suffix << delimiter
+        << "mutation_rate" << suffix << delimiter
+        << "freq_1" << suffix << delimiter
+        << "pop_size" << suffix << delimiter;
+    if (this->root_->get_number_of_children() > 1) {
+        out << "pop_size" << "_" << this->root_->get_child(1)->get_label() << delimiter;
+    }
+    out << "pop_size_root" << suffix;
+}
+
+void ComparisonRelativeRootPopulationTree::log_state(
+        std::ostream& out,
+        const std::string& delimiter) const {
+    out << this->log_likelihood_.get_value() << delimiter
+        << this->log_prior_density_.get_value() << delimiter
+        << this->get_root_height() << delimiter
+        << this->get_mutation_rate() << delimiter
+        << this->get_freq_1() << delimiter
+        << this->get_child_population_size(0) << delimiter;
+    if (this->root_->get_number_of_children() > 1) {
+        out << this->get_child_population_size(1) << delimiter;
+    }
+    out << this->get_root_population_size();
+}
+void ComparisonRelativeRootPopulationTree::log_state(
+        std::ostream& out,
+        unsigned int event_index,
+        const std::string& delimiter) const {
+    out << event_index << delimiter;
+    this->log_state(out, delimiter);
+}
+
+void ComparisonRelativeRootPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
+    if ((! this->state_frequencies_are_fixed()) && (! this->state_frequencies_are_constrained())) {
+        this->freq_1_->set_value_from_prior(rng);
+    }
+    if (! this->mutation_rate_is_fixed()) {
+        this->mutation_rate_->set_value_from_prior(rng);
+    }
+    if (! this->population_sizes_are_fixed()) {
+        if (this->population_sizes_are_constrained()) {
+            this->set_root_population_size(this->population_size_prior_->draw(rng));
+        }
+        else {
+            if (! this->root_->get_child(0)->population_size_is_fixed()) {
+                this->set_child_population_size(0, this->population_size_prior_->draw(rng));
+            }
+            if (this->root_->get_number_of_children() > 1) {
+                if (! this->root_->get_child(1)->population_size_is_fixed()) {
+                    this->set_child_population_size(1, this->population_size_prior_->draw(rng));
+                }
+            }
+            if (! this->relative_root_population_size_is_fixed()) {
+                this->relative_root_population_size_->set_value_from_prior(rng);
+                this->update_root_population_size();
+            }
+        }
+    }
 }

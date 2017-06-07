@@ -167,7 +167,9 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(ecoevolity_main(argc, argv), EcoevolityConstantSitesError);
+        REQUIRE_THROWS_AS(
+                (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityConstantSitesError);
 
         delete[] cfg_path;
     }
@@ -335,7 +337,7 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
         delete[] cfg_path;
@@ -502,7 +504,9 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(ecoevolity_main(argc, argv), EcoevolityMissingDataError);
+        REQUIRE_THROWS_AS(
+                (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityMissingDataError);
 
         delete[] cfg_path;
     }
@@ -670,7 +674,7 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        ret = ecoevolity_main(argc, argv);
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
         delete[] cfg_path;
@@ -838,7 +842,9 @@ TEST_CASE("Testing constrained singleton error",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        REQUIRE_THROWS_AS(ecoevolity_main(argc, argv), EcoevolityComparisonSettingError);
+        REQUIRE_THROWS_AS(
+                (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityComparisonSettingError);
 
         delete[] cfg_path;
     }
@@ -1005,7 +1011,9 @@ TEST_CASE("Testing fixed singleton error",
         };
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
-        REQUIRE_THROWS_AS(ecoevolity_main(argc, argv), EcoevolityComparisonSettingError);
+        REQUIRE_THROWS_AS(
+                (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityComparisonSettingError);
 
         delete[] cfg_path;
     }
@@ -1171,7 +1179,9 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
         int ret;
 
-        REQUIRE_THROWS_AS(ecoevolity_main(argc, argv), EcoevolityCollectionSettingError);
+        REQUIRE_THROWS_AS(
+                (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
+                EcoevolityCollectionSettingError);
 
         delete[] cfg_path;
     }

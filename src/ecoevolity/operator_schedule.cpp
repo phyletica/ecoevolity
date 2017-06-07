@@ -130,6 +130,109 @@ OperatorSchedule::OperatorSchedule(
                     comp_settings.get_operator_settings().get_freq_mover_settings().get_window()
                     ));
         }
+
+        if (comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeRootSizeMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_scale()
+                    ));
+        }
+    }
+}
+
+OperatorSchedule::OperatorSchedule(
+        const RelativeRootCollectionSettings& collection_settings,
+        bool use_dpp) {
+    const OperatorScheduleSettings & settings = collection_settings.get_operator_schedule_settings();
+
+    this->turn_off_auto_optimize();
+    if (settings.auto_optimizing()) {
+        this->turn_on_auto_optimize();
+    }
+    this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
+
+    if (settings.get_model_operator_settings().get_weight() > 0.0) {
+        if (use_dpp) {
+            this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
+        else {
+            this->add_operator(std::make_shared<ReversibleJumpSampler>(
+                    settings.get_model_operator_settings().get_weight()));
+        }
+    }
+
+    if (settings.get_concentration_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<ConcentrationScaler>(
+                settings.get_concentration_scaler_settings().get_weight(),
+                settings.get_concentration_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeSizeRateMixer>(
+                settings.get_time_size_rate_mixer_settings().get_weight(),
+                settings.get_time_size_rate_mixer_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<TimeSizeRateScaler>(
+                settings.get_time_size_rate_scaler_settings().get_weight(),
+                settings.get_time_size_rate_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_event_time_scaler_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<EventTimeScaler>(
+                settings.get_event_time_scaler_settings().get_weight(),
+                settings.get_event_time_scaler_settings().get_scale()
+                ));
+    }
+
+    for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
+        auto comp_settings = collection_settings.get_comparison_setting(i);
+        if (comp_settings.get_operator_settings().get_mutation_rate_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<MutationRateScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_mutation_rate_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_mutation_rate_scaler_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_root_population_size_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<RootPopulationSizeScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_root_population_size_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_root_population_size_scaler_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_leaf_population_size_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<LeafPopulationSizeScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_leaf_population_size_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_leaf_population_size_scaler_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_freq_mover_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<FreqMover>(
+                    i,
+                    comp_settings.get_operator_settings().get_freq_mover_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_freq_mover_settings().get_window()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeRootSizeMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_scale()
+                    ));
+        }
     }
 }
 

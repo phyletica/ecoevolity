@@ -48,6 +48,9 @@ class OperatorSchedule {
                 const CollectionSettings& settings,
                 bool use_dpp = true);
         OperatorSchedule(
+                const RelativeRootCollectionSettings& settings,
+                bool use_dpp = true);
+        OperatorSchedule(
                 const DirichletCollectionSettings& settings,
                 bool use_dpp = true);
         virtual ~OperatorSchedule() { }

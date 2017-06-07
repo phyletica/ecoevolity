@@ -500,6 +500,7 @@ class PositiveRealParameterSettings {
 
     template<typename T> friend class BaseComparisonSettings;
     friend class DirichletComparisonSettings;
+    friend class RelativeRootComparisonSettings;
     template<typename T> friend class BaseCollectionSettings;
 
     private:
@@ -550,9 +551,18 @@ class PositiveRealParameterSettings {
                 throw EcoevolityYamlConfigError(
                         "empty parameter node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator arg = node.begin();
                     arg != node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate parameter key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "value") {
                     if (arg->second.IsSequence()) {
                         std::vector<double> temp_values;
@@ -722,9 +732,18 @@ class OperatorSettings {
                 throw EcoevolityYamlConfigError(message);
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -778,9 +797,18 @@ class ModelOperatorSettings : public OperatorSettings {
                 throw EcoevolityYamlConfigError(message);
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -834,10 +862,19 @@ class ScaleOperatorSettings : public OperatorSettings {
                         YamlCppUtils::get_node_type(parameters));
                 throw EcoevolityYamlConfigError(message);
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -891,10 +928,18 @@ class WindowOperatorSettings : public OperatorSettings {
                         YamlCppUtils::get_node_type(parameters));
                 throw EcoevolityYamlConfigError(message);
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -989,10 +1034,19 @@ class OperatorScheduleSettings {
                         "Expecting operator_settings node to be a map, but found: " +
                         YamlCppUtils::get_node_type(operator_node));
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator setting = operator_node.begin();
                     setting != operator_node.end();
                     ++setting) {
+                if (keys.count(setting->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator settings: " +
+                            setting->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(setting->first.as<std::string>());
+
                 if (setting->first.as<std::string>() == "auto_optimize") {
                     this->auto_optimize_ = setting->second.as<bool>();
                 }
@@ -1018,9 +1072,18 @@ class OperatorScheduleSettings {
                         YamlCppUtils::get_node_type(operators));
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
+                if (keys.count(op->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(op->first.as<std::string>());
+
                 if (op->first.as<std::string>() == "ModelOperator") {
                     try {
                         this->model_operator_settings_.update_from_config(op->second);
@@ -1108,12 +1171,15 @@ class TreeSpecificOperatorScheduleSettings {
 
     template<typename T1> friend class BaseCollectionSettings;
     template<typename T> friend class BaseComparisonSettings;
+    friend class RelativeRootComparisonSettings;
 
     protected:
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
+        ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
+                1.0, 0.5);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
                 0.0, 0.5);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
@@ -1131,6 +1197,7 @@ class TreeSpecificOperatorScheduleSettings {
         TreeSpecificOperatorScheduleSettings& operator=(const TreeSpecificOperatorScheduleSettings& other) {
             this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
             this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
+            this->time_root_size_mixer_settings_ = other.time_root_size_mixer_settings_;
             this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             this->mutation_rate_scaler_settings_ = other.mutation_rate_scaler_settings_;
             this->freq_mover_settings_ = other.freq_mover_settings_;
@@ -1148,6 +1215,9 @@ class TreeSpecificOperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_time_size_rate_scaler_settings() const {
             return this->time_size_rate_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_time_root_size_mixer_settings() const {
+            return this->time_root_size_mixer_settings_;
         }
         const ScaleOperatorSettings& get_event_time_scaler_settings() const {
             return this->event_time_scaler_settings_;
@@ -1188,10 +1258,19 @@ class TreeSpecificOperatorScheduleSettings {
                         "Expecting operators node to be a map, but found: " +
                         YamlCppUtils::get_node_type(operators));
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
+                if (keys.count(op->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(op->first.as<std::string>());
+
                 if (op->first.as<std::string>() == "TimeSizeRateMixer") {
                     try {
                         this->time_size_rate_mixer_settings_.update_from_config(op->second);
@@ -1209,6 +1288,16 @@ class TreeSpecificOperatorScheduleSettings {
                     catch (...) {
                         std::cerr << "ERROR: "
                                   << "Problem parsing TimeSizeRateScaler settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "TimeRootSizeMixer") {
+                    try {
+                        this->time_root_size_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeRootSizeMixer settings\n";
                         throw;
                     }
                 }
@@ -1291,6 +1380,8 @@ class TreeSpecificOperatorScheduleSettings {
             ss << this->mutation_rate_scaler_settings_.to_string(indent_level + 2);
             ss << margin << indent << "FreqMover:\n";
             ss << this->freq_mover_settings_.to_string(indent_level + 2);
+            ss << margin << indent << "TimeRootSizeMixer:\n";
+            ss << this->time_root_size_mixer_settings_.to_string(indent_level + 2);
             return ss.str();
         }
 };
@@ -1360,10 +1451,19 @@ class DirichletTreeSpecificOperatorScheduleSettings : public TreeSpecificOperato
                         "Expecting operators node to be a map, but found: " +
                         YamlCppUtils::get_node_type(operators));
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
+                if (keys.count(op->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(op->first.as<std::string>());
+
                 if (op->first.as<std::string>() == "TimeSizeRateMixer") {
                     try {
                         this->time_size_rate_mixer_settings_.update_from_config(op->second);
@@ -1540,6 +1640,7 @@ class BaseComparisonSettings {
             if (this->population_size_settings_.is_fixed()) {
                 this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
                 this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
+                this->operator_settings_.time_root_size_mixer_settings_.set_weight(0.0);
             }
             if (this->constrain_population_sizes_) {
                 this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
@@ -1574,9 +1675,18 @@ class BaseComparisonSettings {
                 throw EcoevolityYamlConfigError(
                         "empty comparison parameters node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator parameter = node.begin();
                     parameter != node.end();
                     ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
                 if (parameter->first.as<std::string>() == "population_size") {
                     this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
@@ -1611,10 +1721,19 @@ class BaseComparisonSettings {
                 throw EcoevolityYamlConfigError(
                         "empty comparison node");
             }
+            std::unordered_set<std::string> keys;
             this->path_ = "";
             for (YAML::const_iterator arg = comparison_node.begin();
                     arg != comparison_node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
@@ -1724,6 +1843,14 @@ class BaseComparisonSettings {
 
         virtual bool using_population_size_multipliers() const {
             return false;
+        }
+        virtual bool using_relative_root_population_size() const {
+            return false;
+        }
+
+        virtual bool relative_root_population_size_is_fixed() const {
+            throw EcoevolityComparisonSettingError(
+                    "ComparisonSettings does not support relative root size");
         }
 
         virtual bool population_size_multipliers_are_fixed() const {
@@ -1841,6 +1968,264 @@ class ComparisonSettings : public BaseComparisonSettings<TreeSpecificOperatorSch
                     global_defaults) { }
 };
 
+class RelativeRootComparisonSettings : public BaseComparisonSettings<TreeSpecificOperatorScheduleSettings> {
+
+    template<typename T1> friend class BaseCollectionSettings;
+
+    protected:
+        PositiveRealParameterSettings relative_root_population_size_settings_;
+
+        void make_consistent() {
+            if (this->population_size_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for population_size");
+            }
+            if (this->mutation_rate_settings_.use_empirical_value()) {
+                throw EcoevolityPositiveRealParameterSettingError(
+                        "empirical value not supported for mutation_rate");
+            }
+            if (this->genotypes_are_diploid_ && (this->ploidy_ != 2.0)) {
+                throw EcoevolityComparisonSettingError(
+                        "Genotypes cannot be diploid when ploidy is not 2",
+                        this->path_);
+            }
+            if (this->constrain_population_sizes_) {
+                this->relative_root_population_size_settings_.value_ = 1.0;
+                this->relative_root_population_size_settings_.is_fixed_ = true;
+                this->relative_root_population_size_settings_.prior_settings_.nullify();
+            }
+        }
+        
+        void update_relative_root_population_size_settings() {
+            if ((! this->relative_root_population_size_settings_.is_fixed_) &&
+                    (this->relative_root_population_size_settings_.prior_settings_.get_name() == "none")) {
+                std::stringstream ss;
+                ss << "gamma_distribution:\n";
+                ss << "    shape: 50.0\n";
+                ss << "    scale: 0.02\n";
+                YAML::Node n;
+                n = YAML::Load(ss);
+                this->relative_root_population_size_settings_.prior_settings_ = ContinuousDistributionSettings(n);
+            }
+        }
+
+        void update_operator_settings() {
+            if (this->mutation_rate_settings_.is_fixed()) {
+                this->operator_settings_.mutation_rate_scaler_settings_.set_weight(0.0);
+            }
+            if (this->freq_1_settings_.is_fixed()) {
+                this->operator_settings_.freq_mover_settings_.set_weight(0.0);
+            }
+            if (this->population_size_settings_.is_fixed()) {
+                this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
+            }
+            if (this->constrain_population_sizes_) {
+                this->operator_settings_.leaf_population_size_scaler_settings_.set_weight(0.0);
+            }
+            if (this->relative_root_population_size_settings_.is_fixed()) {
+                if (! this->constrain_population_sizes_) {
+                    this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                    this->operator_settings_.time_root_size_mixer_settings_.set_weight(0.0);
+                }
+                if (this->constrain_population_sizes_ && this->population_size_settings_.is_fixed()) {
+                    this->operator_settings_.root_population_size_scaler_settings_.set_weight(0.0);
+                    this->operator_settings_.time_root_size_mixer_settings_.set_weight(0.0);
+                }
+            }
+            if (this->mutation_rate_settings_.is_fixed() &&
+                    this->population_size_settings_.is_fixed() &&
+                    this->relative_root_population_size_settings_.is_fixed()) {
+                this->operator_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
+                this->operator_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
+            }
+        }
+
+        void parse_parameter_settings(const YAML::Node& node) {
+            if (! node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "comparison parameters node should be a map, but found: " +
+                        YamlCppUtils::get_node_type(node));
+            }
+            if (node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty comparison parameters node");
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator parameter = node.begin();
+                    parameter != node.end();
+                    ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
+                if (parameter->first.as<std::string>() == "root_relative_population_size") {
+                    this->relative_root_population_size_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "population_size") {
+                    this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "freq_1") {
+                    this->freq_1_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else if (parameter->first.as<std::string>() == "mutation_rate") {
+                    this->mutation_rate_settings_ = PositiveRealParameterSettings(parameter->second);
+                }
+                else {
+                    std::string message = "Unrecognized comparison parameter: " +
+                            parameter->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
+        void update_from_config(
+                const YAML::Node& comparison_node,
+                const std::string& config_path,
+                bool global_defaults = false) {
+            if (! comparison_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "comparison node should be a map, but found: " +
+                        YamlCppUtils::get_node_type(comparison_node));
+            }
+            if (comparison_node.size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty comparison node");
+            }
+            std::unordered_set<std::string> keys;
+            this->path_ = "";
+            for (YAML::const_iterator arg = comparison_node.begin();
+                    arg != comparison_node.end();
+                    ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
+                if (arg->first.as<std::string>() == "path") {
+                    std::string p = string_util::strip(arg->second.as<std::string>());
+                    this->path_ = path::join(path::dirname(config_path), p);
+                }
+                else if (arg->first.as<std::string>() == "ploidy") {
+                    this->ploidy_ = arg->second.as<double>();
+                }
+                else if (arg->first.as<std::string>() == "genotypes_are_diploid") {
+                    this->genotypes_are_diploid_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "markers_are_dominant") {
+                    this->markers_are_dominant_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_delimiter") {
+                    this->population_name_delimiter_ = arg->second.as<char>();
+                }
+                else if (arg->first.as<std::string>() == "population_name_is_prefix") {
+                    this->population_name_is_prefix_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "constant_sites_removed") {
+                    this->constant_sites_removed_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "equal_population_sizes") {
+                    this->constrain_population_sizes_ = arg->second.as<bool>();
+                }
+                else if (arg->first.as<std::string>() == "parameters") {
+                    this->parse_parameter_settings(arg->second);
+                }
+                else if (arg->first.as<std::string>() == "operators") {
+                    this->operator_settings_.update_from_config(arg->second);
+                }
+                else {
+                    std::string message = "Unrecognized comparison key: " +
+                            arg->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+            if ((this->path_ == "") && (! global_defaults)) {
+                throw EcoevolityYamlConfigError("Every comparison must include a path");
+            }
+            this->make_consistent();
+            if (! global_defaults) {
+                this->update_settings_contingent_upon_data();
+                this->update_operator_settings();
+            }
+            this->update_relative_root_population_size_settings();
+        }
+
+    public:
+        RelativeRootComparisonSettings() { }
+        RelativeRootComparisonSettings(
+                const YAML::Node& comparison_node,
+                const std::string& config_path,
+                bool global_defaults = false) {
+            this->update_from_config(comparison_node, config_path, global_defaults);
+        }
+
+        RelativeRootComparisonSettings& operator=(const RelativeRootComparisonSettings& other) {
+            this->path_                                    = other.path_;
+            this->population_size_settings_                = other.population_size_settings_;
+            this->relative_root_population_size_settings_  = other.relative_root_population_size_settings_;
+            this->freq_1_settings_                         = other.freq_1_settings_;
+            this->mutation_rate_settings_                  = other.mutation_rate_settings_;
+            this->population_name_delimiter_               = other.population_name_delimiter_;
+            this->population_name_is_prefix_               = other.population_name_is_prefix_;
+            this->genotypes_are_diploid_                   = other.genotypes_are_diploid_;
+            this->markers_are_dominant_                    = other.markers_are_dominant_;
+            this->constant_sites_removed_                  = other.constant_sites_removed_;
+            this->ploidy_                                  = other.ploidy_;
+            this->operator_settings_                       = other.operator_settings_;
+            return * this;
+        }
+
+        const PositiveRealParameterSettings& get_relative_root_population_size_settings() const {
+            return this->relative_root_population_size_settings_;
+        }
+
+        bool using_relative_root_population_size() const {
+            return true;
+        }
+
+        bool relative_root_population_size_is_fixed() const {
+            return this->relative_root_population_size_settings_.is_fixed();
+        }
+
+        virtual std::string to_string(unsigned int indent_level = 0) const {
+            std::ostringstream ss;
+            ss << std::boolalpha;
+            std::string margin = string_util::get_indent(indent_level);
+            std::string indent = string_util::get_indent(1);
+            ss << margin << "path: " << this->path_ << "\n";
+            ss << margin << "ploidy: " << this->get_ploidy() << "\n";
+            ss << margin << "genotypes_are_diploid: " << this->genotypes_are_diploid_ << "\n";
+            ss << margin << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
+            ss << margin << "population_name_delimiter: '" << this->population_name_delimiter_ << "'\n";
+            ss << margin << "population_name_is_prefix: " << this->population_name_is_prefix_ << "\n";
+            ss << margin << "constant_sites_removed: " << this->constant_sites_removed_ << "\n";
+            ss << margin << "equal_population_sizes: " << this->constrain_population_sizes_ << "\n";
+            ss << margin << "parameters:\n";
+
+            ss << margin << indent << "population_size:\n";
+            ss << this->population_size_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "root_relative_population_size:\n";
+            ss << this->relative_root_population_size_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "mutation_rate:\n";
+            ss << this->mutation_rate_settings_.to_string(indent_level + 2);
+
+            ss << margin << indent << "freq_1:\n";
+            ss << this->freq_1_settings_.to_string(indent_level + 2);
+
+            ss << this->operator_settings_.to_string(indent_level);
+
+            return ss.str();
+        }
+};
+
 
 class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeSpecificOperatorScheduleSettings> {
 
@@ -1916,10 +2301,19 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 throw EcoevolityYamlConfigError(
                         "empty comparison node");
             }
+            std::unordered_set<std::string> keys;
             this->path_ = "";
             for (YAML::const_iterator arg = comparison_node.begin();
                     arg != comparison_node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
@@ -1974,9 +2368,18 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 throw EcoevolityYamlConfigError(
                         "empty comparison parameters node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator parameter = node.begin();
                     parameter != node.end();
                     ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
                 if (parameter->first.as<std::string>() == "population_size") {
                     this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
@@ -2258,7 +2661,9 @@ class BaseCollectionSettings {
         unsigned int get_number_of_comparisons_with_free_population_size() const {
             unsigned int nfree = 0;
             for (const ComparisonSettingsType& comparison : this->comparisons_) {
-                if (! comparison.population_size_settings_.is_fixed()) {
+                if (! comparison.population_size_settings_.is_fixed() ||
+                        (comparison.using_relative_root_population_size() &&
+                        (! comparison.relative_root_population_size_is_fixed()))) {
                     ++nfree;
                 }
             }
@@ -2567,9 +2972,18 @@ class BaseCollectionSettings {
                     default_parameters);
             ///////////////////////////////////////////////////////////////////
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator top = top_level_node.begin();
                     top != top_level_node.end();
                     ++top) {
+                if (keys.count(top->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate top-level key: " +
+                            top->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(top->first.as<std::string>());
+
                 // parse mcmc settings
                 if (top->first.as<std::string>() == "mcmc_settings") {
                     this->parse_mcmc_settings(top->second);
@@ -2667,7 +3081,16 @@ class BaseCollectionSettings {
                         "Expecting mcmc_settings to be a map, but found: " +
                         YamlCppUtils::get_node_type(mcmc_node));
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator mcmc = mcmc_node.begin(); mcmc != mcmc_node.end(); ++mcmc) {
+                if (keys.count(mcmc->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate mcmc settings key: " +
+                            mcmc->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(mcmc->first.as<std::string>());
+
                 if (mcmc->first.as<std::string>() == "chain_length") {
                     this->chain_length_ = mcmc->second.as<unsigned int>();
 
@@ -2809,6 +3232,10 @@ class BaseCollectionSettings {
                 throw EcoevolityYamlConfigError(
                         "dirichlet_process must have a parameters key");
             }
+            if (dpp_node["parameters"].size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "dirichlet_process parameters node must have a single concentration key");
+            }
             if (! dpp_node["parameters"]["concentration"]) {
                 throw EcoevolityYamlConfigError(
                         "dirichlet_process must specify concentration parameter settings");
@@ -2850,9 +3277,18 @@ class BaseCollectionSettings {
                         "empty concentration parameter node");
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator arg = node.begin();
                     arg != node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate concentration key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "value") {
                     if (arg->second.as<std::string>() == "empirical") {
                         throw EcoevolityPositiveRealParameterSettingError(
@@ -2893,9 +3329,18 @@ class BaseCollectionSettings {
                         "empty split_weight parameter node");
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator arg = node.begin();
                     arg != node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate split_weight key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "value") {
                     double v = arg->second.as<double>();
                         if (v < 0.0) {
@@ -3009,6 +3454,37 @@ class CollectionSettings: public BaseCollectionSettings<ComparisonSettings>{
                 : BaseClass(
                         yaml_config_path) { }
         CollectionSettings(
+                std::istream& yaml_config_stream,
+                const std::string& yaml_config_path)
+                : BaseClass(
+                        yaml_config_stream,
+                        yaml_config_path) { }
+};
+
+
+class RelativeRootCollectionSettings: public BaseCollectionSettings<RelativeRootComparisonSettings>{
+    private:
+        typedef BaseCollectionSettings<RelativeRootComparisonSettings> BaseClass;
+
+    public:
+        RelativeRootCollectionSettings() : BaseClass() { }
+        RelativeRootCollectionSettings(
+                const ContinuousDistributionSettings& time_prior,
+                unsigned int chain_length,
+                unsigned int sample_frequency,
+                const PositiveRealParameterSettings& concentration_settings,
+                bool use_dpp)
+                : BaseClass(
+                        time_prior,
+                        chain_length,
+                        sample_frequency,
+                        concentration_settings,
+                        use_dpp) { }
+        RelativeRootCollectionSettings(
+                const std::string & yaml_config_path)
+                : BaseClass(
+                        yaml_config_path) { }
+        RelativeRootCollectionSettings(
                 std::istream& yaml_config_stream,
                 const std::string& yaml_config_path)
                 : BaseClass(
