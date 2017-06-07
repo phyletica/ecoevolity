@@ -551,9 +551,18 @@ class PositiveRealParameterSettings {
                 throw EcoevolityYamlConfigError(
                         "empty parameter node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator arg = node.begin();
                     arg != node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate parameter key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "value") {
                     if (arg->second.IsSequence()) {
                         std::vector<double> temp_values;
@@ -723,9 +732,18 @@ class OperatorSettings {
                 throw EcoevolityYamlConfigError(message);
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -779,9 +797,18 @@ class ModelOperatorSettings : public OperatorSettings {
                 throw EcoevolityYamlConfigError(message);
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -835,10 +862,19 @@ class ScaleOperatorSettings : public OperatorSettings {
                         YamlCppUtils::get_node_type(parameters));
                 throw EcoevolityYamlConfigError(message);
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
+
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -892,10 +928,18 @@ class WindowOperatorSettings : public OperatorSettings {
                         YamlCppUtils::get_node_type(parameters));
                 throw EcoevolityYamlConfigError(message);
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator p = parameters.begin();
                     p != parameters.end();
                     ++p) {
+                if (keys.count(p->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator parameters: " +
+                            p->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(p->first.as<std::string>());
                 if (p->first.as<std::string>() == "weight") {
                     this->set_weight(p->second.as<double>());
                 }
@@ -990,10 +1034,19 @@ class OperatorScheduleSettings {
                         "Expecting operator_settings node to be a map, but found: " +
                         YamlCppUtils::get_node_type(operator_node));
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator setting = operator_node.begin();
                     setting != operator_node.end();
                     ++setting) {
+                if (keys.count(setting->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate key in operator settings: " +
+                            setting->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(setting->first.as<std::string>());
+
                 if (setting->first.as<std::string>() == "auto_optimize") {
                     this->auto_optimize_ = setting->second.as<bool>();
                 }
@@ -1019,9 +1072,18 @@ class OperatorScheduleSettings {
                         YamlCppUtils::get_node_type(operators));
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
+                if (keys.count(op->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(op->first.as<std::string>());
+
                 if (op->first.as<std::string>() == "ModelOperator") {
                     try {
                         this->model_operator_settings_.update_from_config(op->second);
@@ -1196,10 +1258,19 @@ class TreeSpecificOperatorScheduleSettings {
                         "Expecting operators node to be a map, but found: " +
                         YamlCppUtils::get_node_type(operators));
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
+                if (keys.count(op->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(op->first.as<std::string>());
+
                 if (op->first.as<std::string>() == "TimeSizeRateMixer") {
                     try {
                         this->time_size_rate_mixer_settings_.update_from_config(op->second);
@@ -1380,10 +1451,19 @@ class DirichletTreeSpecificOperatorScheduleSettings : public TreeSpecificOperato
                         "Expecting operators node to be a map, but found: " +
                         YamlCppUtils::get_node_type(operators));
             }
+            std::unordered_set<std::string> keys;
 
             for (YAML::const_iterator op = operators.begin();
                     op != operators.end();
                     ++op) {
+                if (keys.count(op->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate operator: " +
+                            op->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(op->first.as<std::string>());
+
                 if (op->first.as<std::string>() == "TimeSizeRateMixer") {
                     try {
                         this->time_size_rate_mixer_settings_.update_from_config(op->second);
@@ -1595,9 +1675,18 @@ class BaseComparisonSettings {
                 throw EcoevolityYamlConfigError(
                         "empty comparison parameters node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator parameter = node.begin();
                     parameter != node.end();
                     ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
                 if (parameter->first.as<std::string>() == "population_size") {
                     this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
@@ -1632,10 +1721,19 @@ class BaseComparisonSettings {
                 throw EcoevolityYamlConfigError(
                         "empty comparison node");
             }
+            std::unordered_set<std::string> keys;
             this->path_ = "";
             for (YAML::const_iterator arg = comparison_node.begin();
                     arg != comparison_node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
@@ -1952,9 +2050,18 @@ class RelativeRootComparisonSettings : public BaseComparisonSettings<TreeSpecifi
                 throw EcoevolityYamlConfigError(
                         "empty comparison parameters node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator parameter = node.begin();
                     parameter != node.end();
                     ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
                 if (parameter->first.as<std::string>() == "root_relative_population_size") {
                     this->relative_root_population_size_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
@@ -1988,10 +2095,19 @@ class RelativeRootComparisonSettings : public BaseComparisonSettings<TreeSpecifi
                 throw EcoevolityYamlConfigError(
                         "empty comparison node");
             }
+            std::unordered_set<std::string> keys;
             this->path_ = "";
             for (YAML::const_iterator arg = comparison_node.begin();
                     arg != comparison_node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
@@ -2185,10 +2301,19 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 throw EcoevolityYamlConfigError(
                         "empty comparison node");
             }
+            std::unordered_set<std::string> keys;
             this->path_ = "";
             for (YAML::const_iterator arg = comparison_node.begin();
                     arg != comparison_node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "path") {
                     std::string p = string_util::strip(arg->second.as<std::string>());
                     this->path_ = path::join(path::dirname(config_path), p);
@@ -2243,9 +2368,18 @@ class DirichletComparisonSettings : public BaseComparisonSettings<DirichletTreeS
                 throw EcoevolityYamlConfigError(
                         "empty comparison parameters node");
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator parameter = node.begin();
                     parameter != node.end();
                     ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate comparison parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
                 if (parameter->first.as<std::string>() == "population_size") {
                     this->population_size_settings_ = PositiveRealParameterSettings(parameter->second);
                 }
@@ -2838,9 +2972,18 @@ class BaseCollectionSettings {
                     default_parameters);
             ///////////////////////////////////////////////////////////////////
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator top = top_level_node.begin();
                     top != top_level_node.end();
                     ++top) {
+                if (keys.count(top->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate top-level key: " +
+                            top->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(top->first.as<std::string>());
+
                 // parse mcmc settings
                 if (top->first.as<std::string>() == "mcmc_settings") {
                     this->parse_mcmc_settings(top->second);
@@ -2938,7 +3081,16 @@ class BaseCollectionSettings {
                         "Expecting mcmc_settings to be a map, but found: " +
                         YamlCppUtils::get_node_type(mcmc_node));
             }
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator mcmc = mcmc_node.begin(); mcmc != mcmc_node.end(); ++mcmc) {
+                if (keys.count(mcmc->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate mcmc settings key: " +
+                            mcmc->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(mcmc->first.as<std::string>());
+
                 if (mcmc->first.as<std::string>() == "chain_length") {
                     this->chain_length_ = mcmc->second.as<unsigned int>();
 
@@ -3080,6 +3232,10 @@ class BaseCollectionSettings {
                 throw EcoevolityYamlConfigError(
                         "dirichlet_process must have a parameters key");
             }
+            if (dpp_node["parameters"].size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "dirichlet_process parameters node must have a single concentration key");
+            }
             if (! dpp_node["parameters"]["concentration"]) {
                 throw EcoevolityYamlConfigError(
                         "dirichlet_process must specify concentration parameter settings");
@@ -3121,9 +3277,18 @@ class BaseCollectionSettings {
                         "empty concentration parameter node");
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator arg = node.begin();
                     arg != node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate concentration key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "value") {
                     if (arg->second.as<std::string>() == "empirical") {
                         throw EcoevolityPositiveRealParameterSettingError(
@@ -3164,9 +3329,18 @@ class BaseCollectionSettings {
                         "empty split_weight parameter node");
             }
 
+            std::unordered_set<std::string> keys;
             for (YAML::const_iterator arg = node.begin();
                     arg != node.end();
                     ++arg) {
+                if (keys.count(arg->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate split_weight key: " +
+                            arg->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(arg->first.as<std::string>());
+
                 if (arg->first.as<std::string>() == "value") {
                     double v = arg->second.as<double>();
                         if (v < 0.0) {
