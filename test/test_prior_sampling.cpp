@@ -13637,7 +13637,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
 }
 
 
-TEST_CASE("Testing relative root models with with mix of 5 comparisons", "[xSamplingPrior]") {
+TEST_CASE("Testing relative root models with with mix of 5 comparisons", "[SamplingPrior]") {
 
     SECTION("Testing relative root models") {
         double height_shape = 10.0;

@@ -801,7 +801,7 @@ TEST_CASE("Testing draw_from_prior for DPP with variable alpha",
 }
 
 TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
-        "[xComparisonPopulationTreeCollection]") {
+        "[ComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior for reversible jump with 3 pairs") {
         std::string cfg_path = "data/dummy.yml";
@@ -1097,7 +1097,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 3 pairs",
 }
 
 TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
-        "[xComparisonPopulationTreeCollection]") {
+        "[ComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior logging for reversible jump with 3 pairs") {
         std::string cfg_path = "data/dummy.yml";
@@ -2907,7 +2907,7 @@ TEST_CASE("Testing draw_from_prior logging for fixed 000",
 }
 
 TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split weight 3",
-        "[xComparisonPopulationTreeCollection]") {
+        "[ComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior for reversible jump with 4 pairs and split weight 3") {
         std::string cfg_path = "data/dummy.yml";
@@ -3299,7 +3299,7 @@ TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split we
 }
 
 TEST_CASE("Testing draw_from_prior for reversible jump with 4 pairs and split weight 1/3",
-        "[xComparisonPopulationTreeCollection]") {
+        "[ComparisonPopulationTreeCollection]") {
 
     SECTION("Testing draw_from_prior for reversible jump with 4 pairs and split weight 1/3") {
         std::string cfg_path = "data/dummy.yml";
