@@ -54,6 +54,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -297,6 +301,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -442,6 +450,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -587,6 +599,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -728,6 +744,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -884,6 +904,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1078,6 +1102,10 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -1223,6 +1251,9 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -1359,6 +1390,9 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -1493,6 +1527,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -1629,6 +1666,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -1758,6 +1798,9 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -1902,6 +1945,9 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2046,6 +2092,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2183,6 +2232,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2323,6 +2375,9 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2458,6 +2513,9 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2593,6 +2651,9 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -2725,6 +2786,9 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -2856,6 +2920,9 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -2995,6 +3062,9 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -3154,6 +3224,9 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -3313,6 +3386,9 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -3469,6 +3545,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -3640,6 +3719,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -3811,6 +3893,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -3983,6 +4068,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -4202,6 +4290,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -4421,6 +4512,9 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -4695,6 +4789,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -5029,6 +5126,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixe
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -5340,6 +5440,9 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -5569,6 +5672,9 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -5798,6 +5904,9 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -6053,6 +6162,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -6391,6 +6503,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -6696,6 +6811,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -6865,6 +6983,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -7086,6 +7207,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -7340,6 +7464,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 0.0\n";
@@ -7616,6 +7743,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -7951,6 +8081,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8286,6 +8419,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8635,6 +8771,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -8963,6 +9102,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -9281,6 +9423,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -9610,6 +9755,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -9938,6 +10086,9 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -10259,6 +10410,9 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -10579,6 +10733,9 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -10900,6 +11057,9 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -11233,6 +11393,9 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -11659,6 +11822,9 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -12084,6 +12250,10 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
@@ -12485,6 +12655,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -12893,6 +13066,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        MutationRateScaler:\n";
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
@@ -13300,6 +13476,10 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "            scale: 0.5\n";
         os << "            weight: 1.0\n";
         os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "    genotypes_are_diploid: true\n";
         os << "    markers_are_dominant: false\n";
         os << "    population_name_delimiter: \" \"\n";
