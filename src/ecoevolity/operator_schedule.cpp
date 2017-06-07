@@ -130,6 +130,14 @@ OperatorSchedule::OperatorSchedule(
                     comp_settings.get_operator_settings().get_freq_mover_settings().get_window()
                     ));
         }
+
+        if (comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeRootSizeMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_scale()
+                    ));
+        }
     }
 }
 
@@ -215,6 +223,14 @@ OperatorSchedule::OperatorSchedule(
                     i,
                     comp_settings.get_operator_settings().get_freq_mover_settings().get_weight(),
                     comp_settings.get_operator_settings().get_freq_mover_settings().get_window()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeRootSizeMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_root_size_mixer_settings().get_scale()
                     ));
         }
     }
