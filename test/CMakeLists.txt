@@ -23,7 +23,7 @@ set(ECOEVOLITY_SOURCES
 # Using EXCLUDE_FROM_ALL and ADD_CUSTOM_TARGET so that tests compile and run
 # ONLY when 'make check' target is called
 add_executable(test_ecoevolity EXCLUDE_FROM_ALL ecoevolity_testing.cpp ${ECOEVOLITY_SOURCES} ${ECOEVOLITY_TEST_SOURCES})
-target_link_libraries(test_ecoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} Threads::Threads)
+target_link_libraries(test_ecoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 
 # add_test(NAME run_tests COMMAND test_ecoevolity)
 

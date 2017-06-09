@@ -21,7 +21,7 @@ add_executable(ecoevolity
         ecoevolity_main.cpp
         ${ECOEVOLITY_SOURCES}
         )
-target_link_libraries(ecoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} Threads::Threads)
+target_link_libraries(ecoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS ecoevolity
         DESTINATION bin
         )
@@ -30,7 +30,7 @@ add_executable(simcoevolity
         simcoevolity_main.cpp
         ${ECOEVOLITY_SOURCES}
         )
-target_link_libraries(simcoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} Threads::Threads)
+target_link_libraries(simcoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS simcoevolity
         DESTINATION bin
         )
