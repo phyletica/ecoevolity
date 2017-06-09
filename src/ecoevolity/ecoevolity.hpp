@@ -43,7 +43,7 @@ int ecoevolity_main(int argc, char * argv[]) {
     std::cout << "\n";
 
     const std::string usage = 
-        "usage: %prog [--seed SEED] [--ignore-data] YAML-CONFIG-FILE";
+        "usage: %prog [OPTIONS] YAML-CONFIG-FILE";
 
     std::ostringstream version_ss;
     version_ss << PROJECT_NAME << " version " << PROJECT_DETAILED_VERSION;
@@ -66,7 +66,7 @@ int ecoevolity_main(int argc, char * argv[]) {
             .action("store")
             .type("long")
             .dest("seed")
-            .help("Random number seed. Default: Set from clock.");
+            .help("Seed for random number generator. Default: Set from clock.");
     parser.add_option("--ignore-data")
             .action("store_true")
             .dest("ignore_data")
@@ -78,12 +78,14 @@ int ecoevolity_main(int argc, char * argv[]) {
             .dest("nthreads")
             .set_default("1")
             .help("Number of threads to use for likelihood calculations. "
-                  "Default: 1 (i.e., no multithreading). The maximum is the "
-                  "number of comparisons in the analysis. If a number larger "
-                  "than the number of comparisons is specified, the number of "
-                  "threads equal to the number of comparisons will be used. If "
-                  "you are using the \'--ignore-data\' option, its often "
-                  "fastest to NOT use multi-threading.");
+                  "Default: 1 (no multithreading). If you are using "
+                  "the \'--ignore-data\' option, no likelihood calculations "
+                  "will be performed, and so no multithreading is used.");
+    parser.add_option("--prefix")
+            .action("store")
+            .dest("prefix")
+            .set_default("")
+            .help("Optional string to prefix all output files.");
     parser.add_option("--relax-constant-sites")
             .action("store_true")
             .dest("relax_constant_sites")
@@ -173,6 +175,11 @@ int ecoevolity_main(int argc, char * argv[]) {
     }
     else {
         comparisons.use_data();
+    }
+
+    if (options.is_set_by_user("prefix")) {
+        std::string output_prefix = options.get("prefix").get_str() + "-";
+        comparisons.add_log_prefix(output_prefix);
     }
 
     std::cout << "\n" << string_util::banner('-') << "\n";

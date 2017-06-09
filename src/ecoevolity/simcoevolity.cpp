@@ -25,7 +25,7 @@ void write_sim_splash(std::ostream& out) {
     v += PROJECT_DETAILED_VERSION;
     out << string_util::banner('=') << "\n" 
         << string_util::center("Simcoevolity") << "\n"
-        << string_util::center("Simulating evolutionary coevality") << "\n"
+        << string_util::center("Simulating evolutionary coevality") << "\n\n"
         << string_util::center("Part of:") << "\n"
         << string_util::center(PROJECT_NAME) << "\n"
         << string_util::center(v) << "\n"
