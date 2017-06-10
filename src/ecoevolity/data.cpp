@@ -963,6 +963,9 @@ void BiallelicData::write_summary(
             << "Number of sites: "
             << this->get_number_of_sites() << "\n"
         << margin << indent
+            << "Number of variable sites: "
+            << this->get_number_of_variable_sites() << "\n"
+        << margin << indent
             << "Number of patterns: "
             << this->get_number_of_patterns() << "\n"
         << margin << indent
