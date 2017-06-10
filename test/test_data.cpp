@@ -31,6 +31,7 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 5);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -92,6 +93,7 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 5);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -157,6 +159,7 @@ TEST_CASE("Testing standard diploid with only 0/1 genotypes", "[BiallelicData]")
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 5);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -247,6 +250,7 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 5);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -298,6 +302,7 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 5);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -338,6 +343,7 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 5);
+        REQUIRE(bd.get_number_of_variable_sites() == 5);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -447,6 +453,7 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 7);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -496,6 +503,7 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 7);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -521,6 +529,7 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 6);
         REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -576,6 +585,7 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -627,6 +637,7 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -650,6 +661,7 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 6);
         REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -705,6 +717,7 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -756,6 +769,7 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 4);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -783,6 +797,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -836,6 +851,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -885,6 +901,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -907,6 +924,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -960,6 +978,7 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1036,6 +1055,7 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -1091,6 +1111,7 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
+        REQUIRE(bd.get_number_of_variable_sites() == 3);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1138,6 +1159,7 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
+        REQUIRE(bd.get_number_of_variable_sites() == 3);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1163,6 +1185,7 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -1218,6 +1241,7 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
+        REQUIRE(bd.get_number_of_variable_sites() == 3);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1272,6 +1296,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -1331,6 +1356,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1380,6 +1406,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
+        REQUIRE(bd.get_number_of_variable_sites() == 3);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1427,6 +1454,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
+        REQUIRE(bd.get_number_of_variable_sites() == 3);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1452,6 +1480,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -1511,6 +1540,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 4);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1560,6 +1590,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 2);
         REQUIRE(bd.get_number_of_sites() == 3);
+        REQUIRE(bd.get_number_of_variable_sites() == 3);
         REQUIRE(bd.markers_are_dominant());
         REQUIRE(! bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1627,6 +1658,7 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 5);
         REQUIRE(bd.get_number_of_sites() == 8);
+        REQUIRE(bd.get_number_of_variable_sites() == 6);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -1680,6 +1712,7 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 3);
         REQUIRE(bd.get_number_of_sites() == 4);
+        REQUIRE(bd.get_number_of_variable_sites() == 2);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == true);
@@ -1729,6 +1762,7 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 1);
         REQUIRE(bd.get_number_of_sites() == 2);
+        REQUIRE(bd.get_number_of_variable_sites() == 2);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);
@@ -1774,6 +1808,7 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.get_number_of_populations() == 2);
         REQUIRE(bd.get_number_of_patterns() == 1);
         REQUIRE(bd.get_number_of_sites() == 2);
+        REQUIRE(bd.get_number_of_variable_sites() == 2);
         REQUIRE(! bd.markers_are_dominant());
         REQUIRE(bd.genotypes_are_diploid());
         REQUIRE(bd.has_constant_patterns() == false);

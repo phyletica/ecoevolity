@@ -432,6 +432,18 @@ unsigned int BiallelicData::get_number_of_sites() const {
     return nsites;
 }
 
+unsigned int BiallelicData::get_number_of_variable_sites() const {
+    unsigned int nsites = 0;
+    for (unsigned int i = 0; i < this->get_number_of_patterns(); ++i) {
+        if (! this->pattern_is_constant(
+                this->get_red_allele_counts(i),
+                this->get_allele_counts(i))) {
+            nsites += this->get_pattern_weight(i);
+        }
+    }
+    return nsites;
+}
+
 unsigned int BiallelicData::get_number_of_populations() const {
     return this->population_labels_.size();
 }

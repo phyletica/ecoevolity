@@ -81,6 +81,7 @@ class BiallelicData {
 
         unsigned int get_number_of_patterns() const;
         unsigned int get_number_of_sites() const;
+        unsigned int get_number_of_variable_sites() const;
         unsigned int get_number_of_populations() const;
 
         bool markers_are_dominant() const;
