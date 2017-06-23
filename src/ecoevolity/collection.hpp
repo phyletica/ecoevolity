@@ -281,6 +281,11 @@ class BaseComparisonPopulationTreeCollection {
                 RandomNumberGenerator& rng,
                 bool validate = true) const;
 
+        std::map<std::string, BiallelicData> simulate_complete_biallelic_data_sets(
+                RandomNumberGenerator& rng,
+                unsigned int locus_size = 1,
+                bool validate = true) const;
+
         bool all_population_sizes_are_fixed() const {
             for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
                 if (! this->trees_.at(i)->population_sizes_are_fixed()) {

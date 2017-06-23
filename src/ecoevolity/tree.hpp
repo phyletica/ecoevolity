@@ -395,11 +395,13 @@ class PopulationTree {
                 const std::shared_ptr<PopulationNode> node,
                 std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
                 const unsigned int pattern_index,
-                RandomNumberGenerator & rng) const;
+                RandomNumberGenerator & rng,
+                const bool use_max_allele_counts = false) const;
 
         std::shared_ptr<GeneTreeSimNode> simulate_gene_tree(
                 const unsigned int pattern_index,
-                RandomNumberGenerator& rng) const;
+                RandomNumberGenerator& rng,
+                const bool use_max_allele_counts = false) const;
 
         static double coalesce_in_branch(
                 std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
@@ -413,11 +415,23 @@ class PopulationTree {
                 RandomNumberGenerator& rng,
                 bool validate = true) const;
 
+        std::pair<BiallelicData, unsigned int>
+        simulate_complete_biallelic_data_set(
+                RandomNumberGenerator& rng,
+                unsigned int locus_size = 1,
+                bool validate = true) const;
+
         std::pair<
                 std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
                 std::shared_ptr<GeneTreeSimNode> >
         simulate_biallelic_site(
                 const unsigned int pattern_idx,
+                RandomNumberGenerator& rng,
+                const bool use_max_allele_counts = false) const;
+
+        std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
+        simulate_biallelic_site(
+                std::shared_ptr<GeneTreeSimNode> gene_tree,
                 RandomNumberGenerator& rng) const;
 
         void write_data_summary(

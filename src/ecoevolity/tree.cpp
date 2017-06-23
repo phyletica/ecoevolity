@@ -609,7 +609,8 @@ void PopulationTree::simulate_gene_tree(
         const std::shared_ptr<PopulationNode> node,
         std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
         const unsigned int pattern_index,
-        RandomNumberGenerator & rng) const {
+        RandomNumberGenerator & rng,
+        const bool use_max_allele_counts) const {
 
     std::vector< std::shared_ptr<GeneTreeSimNode> > lineages;
     if (node->has_children()) {
@@ -621,7 +622,11 @@ void PopulationTree::simulate_gene_tree(
             int child_idx = child->get_population_index();
             ECOEVOLITY_ASSERT(child_idx >= 0);
             if (branch_lineages.count(child_idx) < 1) {
-                this->simulate_gene_tree(child, branch_lineages, pattern_index, rng);
+                this->simulate_gene_tree(child,
+                        branch_lineages,
+                        pattern_index,
+                        rng,
+                        use_max_allele_counts);
             }
             for (unsigned int j = 0; j < branch_lineages.at(child_idx).size(); ++j) {
                 lineages.push_back(branch_lineages.at(child_idx).at(j));
@@ -661,9 +666,15 @@ void PopulationTree::simulate_gene_tree(
         // Handle terminal branch: create genealogy tips and coalesce to top of
         // branch
         unsigned int allele_count;
-        allele_count = this->data_.get_allele_count(
-                pattern_index,
-                node->get_population_index());
+        if (use_max_allele_counts) {
+            allele_count = this->data_.get_max_allele_count(
+                    node->get_population_index());
+        }
+        else {
+            allele_count = this->data_.get_allele_count(
+                    pattern_index,
+                    node->get_population_index());
+        }
         if (this->data_.markers_are_dominant()) {
             allele_count *= 2;
         }
@@ -691,14 +702,16 @@ void PopulationTree::simulate_gene_tree(
 
 std::shared_ptr<GeneTreeSimNode> PopulationTree::simulate_gene_tree(
         const unsigned int pattern_index,
-        RandomNumberGenerator& rng) const {
+        RandomNumberGenerator& rng,
+        const bool use_max_allele_counts) const {
     std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > branch_lineages;
     branch_lineages.reserve(this->get_node_count());
     this->simulate_gene_tree(
             this->root_,
             branch_lineages,
             pattern_index,
-            rng);
+            rng,
+            use_max_allele_counts);
     ECOEVOLITY_ASSERT(branch_lineages.at(this->root_->get_population_index()).size() == 1);
     return branch_lineages.at(this->root_->get_population_index()).at(0);
 }
@@ -758,7 +771,8 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
             while (! site_added) {
                 auto pattern_tree = this->simulate_biallelic_site(
                         pattern_idx,
-                        rng);
+                        rng,
+                        false);
                 auto pattern = pattern_tree.first;
                 std::vector<unsigned int> red_allele_counts = pattern.first;
                 std::vector<unsigned int> allele_counts = pattern.second;
@@ -779,18 +793,75 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
     return sim_data;
 }
 
+std::pair<BiallelicData, unsigned int>
+PopulationTree::simulate_complete_biallelic_data_set(
+        RandomNumberGenerator& rng,
+        unsigned int locus_size,
+        bool validate) const {
+    ECOEVOLITY_ASSERT(locus_size > 0);
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    const bool filtering_constant_sites = this->constant_sites_removed_;
+    std::shared_ptr<GeneTreeSimNode> current_gene_tree;
+    auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
+    auto pattern = pattern_tree.first;
+    current_gene_tree = pattern_tree.second;
+    unsigned int number_of_loci = 1;
+    unsigned int locus_site_count = 0;
+    for (unsigned int site_idx = 0;
+            site_idx < this->data_.get_number_of_sites();
+            ++site_idx) {
+        bool site_added = false;
+        while (! site_added) {
+            if (locus_site_count < locus_size) {
+                pattern = this->simulate_biallelic_site(
+                        current_gene_tree,
+                        rng);
+            }
+            else {
+                pattern_tree = this->simulate_biallelic_site(0, rng, true);
+                pattern = pattern_tree.first;
+                current_gene_tree = pattern_tree.second;
+                locus_site_count = 0;
+                ++number_of_loci;
+            }
+            std::vector<unsigned int> red_allele_counts = pattern.first;
+            std::vector<unsigned int> allele_counts = pattern.second;
+            site_added = sim_data.add_site(red_allele_counts,
+                    allele_counts,
+                    filtering_constant_sites);
+            ++locus_site_count;
+        }
+    }
+    sim_data.update_max_allele_counts();
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
+    return std::make_pair(sim_data, number_of_loci);
+}
+
 std::pair<
         std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
         std::shared_ptr<GeneTreeSimNode> >
 PopulationTree::simulate_biallelic_site(
         const unsigned int pattern_idx,
-        RandomNumberGenerator& rng) const {
+        RandomNumberGenerator& rng,
+        const bool use_max_allele_counts) const {
 
-    std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(pattern_idx, rng);
+    std::shared_ptr<GeneTreeSimNode> gene_tree = this->simulate_gene_tree(
+            pattern_idx,
+            rng,
+            use_max_allele_counts);
     gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
     gene_tree->simulate_binary_character(this->get_freq_0(), rng);
 
-    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
+    std::vector<unsigned int> expected_allele_counts;
+    if (use_max_allele_counts) {
+        expected_allele_counts = this->data_.get_max_allele_counts();
+    }
+    else {
+        expected_allele_counts = this->data_.get_allele_counts(pattern_idx);
+    }
     std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
     std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
     if (this->data_.markers_are_dominant()) {
@@ -810,6 +881,35 @@ PopulationTree::simulate_biallelic_site(
     std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
             std::make_pair(red_allele_counts, allele_counts);
     return std::make_pair(pattern, gene_tree);
+}
+
+std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
+PopulationTree::simulate_biallelic_site(
+        std::shared_ptr<GeneTreeSimNode> gene_tree,
+        RandomNumberGenerator& rng) const {
+    gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
+    gene_tree->simulate_binary_character(this->get_freq_0(), rng);
+
+    const std::vector<unsigned int>& expected_allele_counts = this->data_.get_max_allele_counts();
+    std::vector<unsigned int> allele_counts(expected_allele_counts.size(), 0);
+    std::vector<unsigned int> red_allele_counts(expected_allele_counts.size(), 0);
+    if (this->data_.markers_are_dominant()) {
+        std::vector<int> last_allele(expected_allele_counts.size(), -1);
+        gene_tree->get_allele_counts(
+                allele_counts,
+                red_allele_counts,
+                last_allele);
+    }
+    else {
+        gene_tree->get_allele_counts(
+                allele_counts,
+                red_allele_counts);
+    }
+
+    ECOEVOLITY_ASSERT(allele_counts == expected_allele_counts);
+    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
+            std::make_pair(red_allele_counts, allele_counts);
+    return pattern;
 }
 
 
