@@ -2652,6 +2652,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
 
         for (unsigned int i = 0; i < nsamples; ++i) {
             data = tree.simulate_biallelic_data_set(rng, false);
+            REQUIRE(data.get_number_of_sites() == 100000);
             double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
             divergence.add_sample(x);
         }
@@ -2669,6 +2670,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
 
         for (unsigned int i = 0; i < nsamples; ++i) {
             data = tree.simulate_biallelic_data_set(rng, false);
+            REQUIRE(data.get_number_of_sites() == 100000);
             double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
             divergence2.add_sample(x);
         }
@@ -2714,6 +2716,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
         for (unsigned int i = 0; i < nsamples; ++i) {
             auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, false);
             REQUIRE(data_nloci.second == 100);
+            REQUIRE(data_nloci.first.get_number_of_sites() == 100000);
             double x = (double)data_nloci.first.get_number_of_variable_sites() / (double)data_nloci.first.get_number_of_sites();
             divergence.add_sample(x);
         }
@@ -2732,6 +2735,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
         for (unsigned int i = 0; i < nsamples; ++i) {
             auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, false);
             REQUIRE(data_nloci.second == 100);
+            REQUIRE(data_nloci.first.get_number_of_sites() == 100000);
             double x = (double)data_nloci.first.get_number_of_variable_sites() / (double)data_nloci.first.get_number_of_sites();
             divergence2.add_sample(x);
         }
