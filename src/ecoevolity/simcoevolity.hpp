@@ -89,6 +89,28 @@ int simcoevolity_main(int argc, char * argv[]) {
                   "simulated datasets. By default, the same priors will "
                   "specified in your subsequent analyses as were used to "
                   "simulate the datasets.");
+    parser.add_option("-l", "--locus-size")
+            .action("store")
+            .type("unsigned int")
+            .dest("locus_size")
+            .set_default("1")
+            .help("Number of sites simulated on each gene tree. Default: 1 "
+                  "(every site is unlinked). NOTE: When locus size is greater "
+                  "than 1, 'complete' datasets are simulated (i.e., no missing "
+                  "data). When the locus size is 1 (default), the pattern of "
+                  "missing data in every simulated aligment will match the "
+                  "corresponding empirical alignment");
+    parser.add_option("--parameters-only")
+            .action("store_true")
+            .dest("parameters_only")
+            .help("By default, sequence alignments and associated config files "
+                  "are generated for each replicate. When this option is "
+                  "specified, only a single file is produced containing the "
+                  "parameters drawn for each replicate (no sequence data are "
+                  "simulated). Because no data or configs are created, the "
+                  "settings for the '-l/--locus-size' and '-p/--prior' options "
+                  "will be ignored."
+                );
     parser.add_option("--prefix")
             .action("store")
             .dest("prefix")
@@ -135,8 +157,16 @@ int simcoevolity_main(int argc, char * argv[]) {
     }
     std::cout << "Number of simulation replicates: " << nreps << std::endl;
 
+    unsigned int locus_size = options.get("locus_size");
+    if (locus_size < 1) {
+        throw EcoevolityError(
+                "Number of sites simulated per locus must be 1 or greater");
+    }
+    std::cout << "Number of sites simulated per locus: " << locus_size << std::endl;
+
     const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
+    const bool simulate_sequences = (! options.get("parameters_only"));
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
@@ -239,48 +269,77 @@ int simcoevolity_main(int argc, char * argv[]) {
     time_t finish;
     time(&start);
 
-    unsigned int pad_width = std::to_string(nreps).size();
-    std::string sim_prefix = path::join(output_dir,
-            output_prefix + "sim-");
-    std::map<std::string, BiallelicData> sim_alignments;
-    for (unsigned int i = 0; i < nreps; ++i) {
-        std::string rep_str = string_util::pad_int(i, pad_width);
-        std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
-        check_output_path(analysis_config_path);
-        std::string true_state_path = sim_prefix + rep_str + "-true-values.txt";
-        check_output_path(true_state_path);
+    std::cout << "Starting simulations..." << std::endl;
+    if (simulate_sequences) {
+        unsigned int pad_width = std::to_string(nreps).size();
+        std::string sim_prefix = path::join(output_dir,
+                output_prefix + "sim-");
+        std::map<std::string, BiallelicData> sim_alignments;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            std::cout << "Simulating data set " << (i + 1) << " of " << nreps << "\n";
+            std::string rep_str = string_util::pad_int(i, pad_width);
+            std::string analysis_config_path = sim_prefix + rep_str + "-config.yml";
+            check_output_path(analysis_config_path);
+            std::string true_state_path = sim_prefix + rep_str + "-true-values.txt";
+            check_output_path(true_state_path);
 
-        comparisons.draw_from_prior(rng);
-        sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
+            comparisons.draw_from_prior(rng);
+            if (locus_size < 2) {
+                sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
+            }
+            else {
+                sim_alignments = comparisons.simulate_complete_biallelic_data_sets(rng,
+                        locus_size,
+                        true);
+            }
 
-        std::ofstream true_state_stream;
-        true_state_stream.open(true_state_path);
-        true_state_stream.precision(comparisons.get_logging_precision());
-        comparisons.write_state_log_header(true_state_stream);
-        comparisons.log_state(true_state_stream, 0);
-        true_state_stream.close();
+            std::ofstream true_state_stream;
+            true_state_stream.open(true_state_path);
+            true_state_stream.precision(comparisons.get_logging_precision());
+            comparisons.write_state_log_header(true_state_stream);
+            comparisons.log_state(true_state_stream, 0);
+            true_state_stream.close();
 
-        std::ofstream sim_alignment_stream;
-        for (auto const & k_v: sim_alignments) {
-            std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
-            check_output_path(sim_alignment_path);
+            std::ofstream sim_alignment_stream;
+            for (auto const & k_v: sim_alignments) {
+                std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+                check_output_path(sim_alignment_path);
 
-            char delim = prior_settings.get_population_name_delimiter(k_v.first);
-            prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
+                char delim = prior_settings.get_population_name_delimiter(k_v.first);
+                prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
 
-            sim_alignment_stream.open(sim_alignment_path);
-            k_v.second.write_nexus(sim_alignment_stream, delim);
-            sim_alignment_stream.close();
+                sim_alignment_stream.open(sim_alignment_path);
+                k_v.second.write_nexus(sim_alignment_stream, delim);
+                sim_alignment_stream.close();
+            }
+            prior_settings.blanket_set_population_name_is_prefix(true);
+            std::ofstream analysis_settings_stream;
+            analysis_settings_stream.open(analysis_config_path);
+            prior_settings.write_settings(analysis_settings_stream);
+            analysis_settings_stream.close();
+            for (auto const & k_v: sim_alignments) {
+                std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
+                prior_settings.replace_comparison_path(path::basename(sim_alignment_path), k_v.first);
+            }
         }
-        prior_settings.blanket_set_population_name_is_prefix(true);
-        std::ofstream analysis_settings_stream;
-        analysis_settings_stream.open(analysis_config_path);
-        prior_settings.write_settings(analysis_settings_stream);
-        analysis_settings_stream.close();
-        for (auto const & k_v: sim_alignments) {
-            std::string sim_alignment_path = sim_prefix + rep_str + "-" + path::basename(k_v.first);
-            prior_settings.replace_comparison_path(path::basename(sim_alignment_path), k_v.first);
+    }
+    else {
+        std::string state_path = path::join(
+                output_dir,
+                output_prefix + "parameter-values.txt");
+        check_output_path(state_path);
+        std::ofstream state_stream;
+        state_stream.open(state_path);
+        state_stream.precision(comparisons.get_logging_precision());
+        comparisons.write_state_log_header(state_stream);
+        std::cout << "Only drawing samples of parameters and writing to:" << std::endl;
+        std::cout << "    " << state_path << std::endl;
+        std::cout << "You can monitor that file for progress." << std::endl;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            comparisons.draw_from_prior(rng);
+            comparisons.log_state(state_stream, i + 1);
         }
+        state_stream.close();
     }
 
     time(&finish);
