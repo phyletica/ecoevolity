@@ -657,6 +657,68 @@ TEST_CASE("Testing dirichet_process(6, 1.7)", "[RandomNumberGenerator]") {
     }
 }
 
+TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.0)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing pitman_yor_process(6, 1.7, 0.0)") {
+        unsigned int nsamples = 100000;
+        unsigned int n = 6;
+        double a = 1.7;
+        double d = 0.0;
+
+        std::vector<unsigned int> elements (6, 0);
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0},
+                {4, 0},
+                {5, 0},
+                {6, 0}
+        };
+
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int ncats = rng.pitman_yor_process(elements, a, d);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: elements) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            REQUIRE(max_index + 1 == ncats);
+            ++nevent_counts.at(ncats);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+        }
+
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+
+        REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
+
+        for (std::string m: {"000000", "012345", "012344", "012340", "001234", "012314"}) {
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(std::exp(
+                    get_dpp_log_prior_probability(m, a))).epsilon(0.001));
+        }
+    }
+}
+
 TEST_CASE("Testing dirichet_process(3, 0.6)", "[RandomNumberGenerator]") {
 
     SECTION("Testing dirichlet_process(3, 0.6)") {
@@ -675,6 +737,66 @@ TEST_CASE("Testing dirichet_process(3, 0.6)", "[RandomNumberGenerator]") {
         RandomNumberGenerator rng(342254);
         for (unsigned int i = 0; i < nsamples; ++i) {
             unsigned int ncats = rng.dirichlet_process(elements, a);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: elements) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            REQUIRE(max_index + 1 == ncats);
+            ++nevent_counts.at(ncats);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+        }
+
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+
+        for (std::string m: {"000", "001", "010", "011", "012"}) {
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(std::exp(
+                    get_dpp_log_prior_probability(m, a))).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.0)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing pitman_yor_process(3, 0.6, 0.0)") {
+        unsigned int nsamples = 200000;
+        unsigned int n = 3;
+        double a = 0.6;
+        double d = 0.0;
+
+        std::vector<unsigned int> elements (3, 0);
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0},
+        };
+
+        RandomNumberGenerator rng(342254);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int ncats = rng.pitman_yor_process(elements, a, d);
             std::ostringstream stream;
             unsigned int max_index = 0;
             for (auto e: elements) {
@@ -775,6 +897,66 @@ TEST_CASE("Testing dirichet_process(3, 4.2)", "[RandomNumberGenerator]") {
     }
 }
 
+TEST_CASE("Testing pitman_yor_process(3, 4.2, 0.0)", "[RandomNumberGenerator]") {
+
+    SECTION("Testing pitman_yor_process(3, 4.2, 0.0)") {
+        unsigned int nsamples = 200000;
+        unsigned int n = 3;
+        double a = 4.2;
+        double d = 0.0;
+
+        std::vector<unsigned int> elements (3, 0);
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0},
+        };
+
+        RandomNumberGenerator rng(42342);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int ncats = rng.pitman_yor_process(elements, a, d);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: elements) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            REQUIRE(max_index + 1 == ncats);
+            ++nevent_counts.at(ncats);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+        }
+
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+
+        for (std::string m: {"000", "001", "010", "011", "012"}) {
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(std::exp(
+                    get_dpp_log_prior_probability(m, a))).epsilon(0.002));
+        }
+    }
+}
+
 TEST_CASE("Testing vector return version of dirichet_process(3, 0.6)",
         "[RandomNumberGenerator]") {
 
@@ -793,6 +975,67 @@ TEST_CASE("Testing vector return version of dirichet_process(3, 0.6)",
         RandomNumberGenerator rng(342254);
         for (unsigned int i = 0; i < nsamples; ++i) {
             std::pair< unsigned int, std::vector<unsigned int> > ret = rng.dirichlet_process(n, a);
+            std::ostringstream stream;
+            unsigned int max_index = 0;
+            for (auto e: ret.second) {
+                stream << e;
+                if (e > max_index) {
+                    max_index = e;
+                }
+            }
+            unsigned int ncats = ret.first;
+            REQUIRE(max_index + 1 == ncats);
+            ++nevent_counts.at(ncats);
+            std::string model_str = stream.str();
+            if (model_counts.count(model_str) < 1) {
+                model_counts[model_str] = 1;
+            }
+            else {
+                ++model_counts[model_str];
+            }
+        }
+
+        int total = 0;
+        for (auto const &kv: model_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+        total = 0;
+        for (auto const &kv: nevent_counts) {
+            total += kv.second;
+        }
+        REQUIRE(total == nsamples);
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+
+        for (std::string m: {"000", "001", "010", "011", "012"}) {
+            REQUIRE((model_counts.at(m) / (double)nsamples) == Approx(std::exp(
+                    get_dpp_log_prior_probability(m, a))).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing vector return version of pitman_yor_process(3, 0.6, 0.0)",
+        "[RandomNumberGenerator]") {
+
+    SECTION("Testing dirichlet_process(3, 0.6)") {
+        unsigned int nsamples = 200000;
+        unsigned int n = 3;
+        double a = 0.6;
+        double d = 0.0;
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts = {
+                {1, 0},
+                {2, 0},
+                {3, 0},
+        };
+
+        RandomNumberGenerator rng(342254);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::pair< unsigned int, std::vector<unsigned int> > ret = rng.pitman_yor_process(n, a, d);
             std::ostringstream stream;
             unsigned int max_index = 0;
             for (auto e: ret.second) {
