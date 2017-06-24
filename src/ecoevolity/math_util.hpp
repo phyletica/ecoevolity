@@ -78,6 +78,53 @@ inline double get_dpp_expected_number_of_categories(
     return expected_ncats * concentration;
 }
 
+
+/**
+ * Calculate the log of Pochhammer's symbol:
+ *
+ * (x)_n = x(x + 1)(x + 2)...(x + n - 1) = Gamma(x + n) / Gamma(x)
+ *
+ */
+
+inline double ln_pochhammer(double x, unsigned int n) {
+    return std::lgamma(x + n) - std::lgamma(x);
+}
+
+
+/**
+ * Calculate the expected number of categories under a Pitman-Yor process.
+ *
+ * Calculates and returns the expected number of categories for
+ * 'number_of_elements' elements under a Pitman-Yor process controlled by
+ * 'concentration' and 'discount' parameters.
+ *
+ * From Equation 161 of Pitman (2002):
+ *
+ * Pitman, Jim. 2002. Combinatorial Stochastic Processes. Technical Report No.
+ * 621. Lecture notes for St. Flour Course, July 2002.
+ * http://www.stat.berkeley.edu/~pitman/621.pdf
+ */
+
+inline double get_pyp_expected_number_of_categories(
+        double concentration,
+        double discount,
+        unsigned int number_of_elements) {
+    ECOEVOLITY_ASSERT((discount >= 0.0) && (discount < 1.0));
+    ECOEVOLITY_ASSERT(concentration > -discount);
+    if (discount == 0.0) {
+        return get_dpp_expected_number_of_categories(concentration,
+                number_of_elements);
+    }
+    // Calculate first term on log scale, because Pochhammer factorials can be
+    // huge. Then exponentiate after taking the ratio of two huge numbers.
+    double ln_numerator = ln_pochhammer(concentration + discount, number_of_elements);
+    double ln_denom = (std::log(discount) +
+            ln_pochhammer(concentration + 1.0, number_of_elements - 1));
+    double ln_term_1 = ln_numerator - ln_denom;
+    return std::exp(ln_term_1) - (concentration / discount);
+}
+
+
 /**
  * Calculate the Dirichlet-process concentration parameter.
  *

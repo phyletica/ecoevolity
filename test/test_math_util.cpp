@@ -1,5 +1,7 @@
 #include "catch.hpp"
+#include "ecoevolity/rng.hpp"
 #include "ecoevolity/math_util.hpp"
+#include "ecoevolity/stats_util.hpp"
 
 TEST_CASE("Testing get_uniform_model_log_prior_probability with n=1, split_weight=1.0",
         "[math_util]") {
@@ -369,6 +371,26 @@ TEST_CASE("Testing get_dpp_expected_number_of_categories 0.814 7282", "[math_uti
 TEST_CASE("Testing get_dpp_expected_number_of_categories 1.068 7282", "[math_util]") {
     double e = get_dpp_expected_number_of_categories(1.068, 7282);
     REQUIRE(e == Approx(10.0).epsilon(0.0001));
+}
+
+TEST_CASE("Testing get_dpp_expected_number_of_categories 2.9, 10", "[math_util]") {
+    SECTION("Testing 2.9, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double e = get_dpp_expected_number_of_categories(a, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.dirichlet_process(elements, a);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
 }
 
 TEST_CASE("Testing get_dpp_concentration 3.0 7282", "[math_util]") {
@@ -1562,5 +1584,85 @@ TEST_CASE("Testing get_pyp_log_prior_probability with {0,0,1,0,2} alpha=1.0, dis
         REQUIRE(get_pyp_log_prior_probability(partition,
                 concentration,
                 discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 0.218, 0.0, 7282", "[math_util]") {
+    double e = get_pyp_expected_number_of_categories(0.218, 0.0, 7282);
+    REQUIRE(e == Approx(3.0).epsilon(0.001));
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 1.068, 0.0, 7282", "[math_util]") {
+    double e = get_pyp_expected_number_of_categories(1.068, 0.0, 7282);
+    REQUIRE(e == Approx(10.0).epsilon(0.0001));
+}
+
+TEST_CASE("Testing ln_pochhammer", "[math_util]") {
+    SECTION("testing ln_pochhammer(1, 5)") {
+        REQUIRE(ln_pochhammer(1, 5) == Approx(std::log(120.0)));
+        REQUIRE(ln_pochhammer(2.9, 10) == Approx(std::log(203697425)));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.5, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.5, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.5;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.pitman_yor_process(elements, a, d);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.1, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.1, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.1;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.pitman_yor_process(elements, a, d);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.9, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.1, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.9;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.pitman_yor_process(elements, a, d);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
     }
 }
