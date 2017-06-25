@@ -1647,7 +1647,7 @@ TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.1, 10", "[math_u
 }
 
 TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.9, 10", "[math_util]") {
-    SECTION("Testing 2.9, 0.1, 10") {
+    SECTION("Testing 2.9, 0.9, 10") {
         unsigned int num_elements = 10;
         double a = 2.9;
         double d = 0.9;
@@ -1666,3 +1666,66 @@ TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.9, 10", "[math_u
         REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
     }
 }
+
+TEST_CASE("Testing get_pyp_concentration 3.0, 0.0,  7282", "[math_util]") {
+    double e = get_pyp_concentration(3.0, 7282, 0.0);
+    REQUIRE(e == Approx(0.218).epsilon(0.001));
+}
+TEST_CASE("Testing get_pyp_concentration 10.0, 0.0, 7282", "[math_util]") {
+    double e = get_pyp_concentration(10.0, 7282, 0.0);
+    REQUIRE(e == Approx(1.068).epsilon(0.0001));
+}
+
+TEST_CASE("Testing get_pyp_concentration 2.9, 0.1, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.1, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.1;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        double conc = get_pyp_concentration(e, num_elements, d);
+
+        REQUIRE(conc == Approx(a).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration 2.9, 0.5, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.5, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.5;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        double conc = get_pyp_concentration(e, num_elements, d);
+
+        REQUIRE(conc == Approx(a).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration 2.9, 0.9, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.9, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.9;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        double conc = get_pyp_concentration(e, num_elements, d);
+
+        REQUIRE(conc == Approx(a).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration_gamma_scale", "[math_util]") {
+    SECTION("Testing 2.9, 0.5, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.5;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+        std::vector<double> shapes {0.001, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 100.0, 10000.0};
+        for (auto shape : shapes) {
+            double scale = get_pyp_concentration_gamma_scale(e, num_elements, d, shape);
+            REQUIRE(a == Approx(shape * scale).epsilon(0.001));
+        }
+    }
+}
+

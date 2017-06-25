@@ -145,9 +145,10 @@ inline double get_dpp_concentration(
         double precision = 0.000001,
         double buffer = 0.001) {
     double c = precision;
-    double n = (double) number_of_elements;
+    const double n = (double) number_of_elements;
     double e = expected_number_of_categories;
-    double current_e = get_dpp_expected_number_of_categories(c, n);
+    double current_e = get_dpp_expected_number_of_categories(c,
+            number_of_elements);
 
     ECOEVOLITY_ASSERT(e <= n);
     ECOEVOLITY_ASSERT(e >= 1.0);
@@ -178,7 +179,8 @@ inline double get_dpp_concentration(
             increase = false;
             c -= increment;
         }
-        current_e = get_dpp_expected_number_of_categories(c, n);
+        current_e = get_dpp_expected_number_of_categories(c,
+                number_of_elements);
     }
     return c;
 }
@@ -202,6 +204,92 @@ inline double get_dpp_gamma_scale(
             buffer);
     return concentration / shape;
 }
+
+
+/**
+ * Calculate the Pitman-Yor process concentration parameter.
+ *
+ * Calculates and returns the Pitman-Yor process concentration parameter that
+ * has an expected number of categories equal to
+ * 'expected_number_of_categories' for 'number_of_elements' elements and a
+ * given value of the 'discount' parameter.
+ *
+ * @note    Modified from `calculateFromPriorMean` function of `util.h` from
+ *          [`DPPDiv`](http://phylo.bio.ku.edu/content/tracy-heath-dppdiv)
+ *          version 1.0b (Copyright Tracy Heath, Mark Holder, and John
+ *          Huelsenback; licensed under GPL v3;
+ *          <http://phylo.bio.ku.edu/content/tracy-heath-dppdiv>).
+ */
+inline double get_pyp_concentration(
+        double expected_number_of_categories,
+        unsigned int number_of_elements,
+        double discount,
+        double increment = 0.1,
+        double precision = 0.000001,
+        double buffer = 0.001) {
+    double c = precision;
+    const double n = (double) number_of_elements;
+    double e = expected_number_of_categories;
+    double current_e = get_pyp_expected_number_of_categories(c, discount,
+            number_of_elements);
+
+    ECOEVOLITY_ASSERT(e <= n);
+    ECOEVOLITY_ASSERT(e >= 1.0);
+    if (e > (n - buffer)) {
+        e = n - buffer;
+    }
+    else if (e < (1.0 + buffer)) {
+        e = 1.0 + buffer;
+    }
+    bool increase = false;
+    if (current_e < e) {
+        increase = true;
+    }
+    while (fabs(current_e - e) > precision) {
+        if ((current_e < e) && increase) {
+            c += increment;
+        }
+        else if ((current_e > e) && (! increase)) {
+            c -= increment;
+        }
+        else if ((current_e < e) && (! increase)) {
+            increment /= 2.0;
+            increase = true;
+            c += increment;
+        }
+        else {
+            increment /= 2.0;
+            increase = false;
+            c -= increment;
+        }
+        current_e = get_pyp_expected_number_of_categories(c, discount,
+                number_of_elements);
+    }
+    return c;
+}
+
+/**
+ * Calculate the scale parameter of a gamma hyper prior on the concentration
+ * parameter of a Pitman-Yor process.
+ */
+inline double get_pyp_concentration_gamma_scale(
+        double expected_number_of_categories,
+        unsigned int number_of_elements,
+        double discount,
+        double shape,
+        double increment = 0.1,
+        double precision = 0.000001,
+        double buffer = 0.001) {
+    double concentration = get_pyp_concentration(
+            expected_number_of_categories,
+            number_of_elements,
+            discount,
+            increment,
+            precision,
+            buffer);
+    return concentration / shape;
+}
+
 
 template <typename T>
 inline double get_dpp_log_prior_probability(
