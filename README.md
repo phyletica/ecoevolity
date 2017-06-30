@@ -1,6 +1,5 @@
 
-![logo]
-(https://raw.githubusercontent.com/phyletica/ecoevolity/master/doc/source/_static/ecoevolity-logo.png)
+![logo](https://raw.githubusercontent.com/phyletica/ecoevolity/master/doc/source/_static/ecoevolity-logo.png)
 
 Table of Contents
 =================
