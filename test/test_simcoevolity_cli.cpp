@@ -2373,8 +2373,8 @@ TEST_CASE("Testing simcoevolity parameters only setting", "[SimcoevolityCLI]") {
         ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
         REQUIRE(ret == 0);
 
-        REQUIRE(path::exists("data/test-params-only-simcoevolity-model-used-for-sims.yml"));
-        REQUIRE(path::exists("data/test-params-only-simcoevolity-parameter-values.txt"));
+        REQUIRE(! path::exists("data/test-params-only-simcoevolity-model-used-for-sims.yml"));
+        REQUIRE(! path::exists("data/test-params-only-simcoevolity-parameter-values.txt"));
 
         for (unsigned int i = 0; i < 10; ++i) {
             std::string sim_rep = string_util::pad_int(i, 2);
