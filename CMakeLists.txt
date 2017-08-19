@@ -37,14 +37,14 @@ set(TEST_DATA_DIR "${TEST_DIR}/data")
 
 #######################################################################
 # Find and set up NCL variables
-option (FORCE_BUNDLED_NCL "Use included NCL library" OFF)
+option (FORCE_BUNDLED_NCL "Use included NCL library" ON)
 include(FindNCL)
 include_directories("${NCL_INCLUDE_DIRS}")
 
 
 #######################################################################
 # Find and set up yaml-cpp variables
-option (FORCE_BUNDLED_YAML_CPP "Use included yaml-cpp library" OFF)
+option (FORCE_BUNDLED_YAML_CPP "Use included yaml-cpp library" ON)
 if (NOT FORCE_BUNDLED_YAML_CPP)
     include(FindYamlCpp)
 else()
