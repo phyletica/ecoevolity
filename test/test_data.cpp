@@ -39,6 +39,8 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
         REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1};
 
@@ -166,6 +168,8 @@ TEST_CASE("Testing standard diploid with only 0/1 genotypes", "[BiallelicData]")
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,2,1};
 
@@ -257,6 +261,8 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,2,1,1};
 
@@ -309,6 +315,8 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_red_counts[0] = {1, 0};
         expected_red_counts[3] = {1, 1};
@@ -350,6 +358,8 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,2,1,1};
 
@@ -460,6 +470,8 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,2,3};
 
@@ -510,6 +522,8 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_red_counts[0] = {2, 0};
 
@@ -536,6 +550,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1};
 
@@ -592,6 +608,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {1,1,1,1};
 
@@ -644,6 +662,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         rm_expected_red_counts[1] = {3, 1};
         rm_expected_red_counts[3] = {3, 0};
@@ -668,6 +688,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1};
 
@@ -724,6 +746,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {1,1,1,1};
 
@@ -776,6 +800,8 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         rm_expected_red_counts[1] = {3, 1};
         rm_expected_red_counts[3] = {3, 0};
@@ -804,6 +830,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,2,1,1};
 
@@ -858,6 +886,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {1,2,1};
 
@@ -908,6 +938,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         rm_expected_red_counts[1] = {1, 0};
 
@@ -931,6 +963,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,2,1,1};
 
@@ -985,6 +1019,8 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {1,2,1};
 
@@ -1062,6 +1098,8 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,2,1,1,1};
 
@@ -1118,6 +1156,8 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {2,1};
 
@@ -1192,6 +1232,8 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,2,1,1,1};
 
@@ -1248,6 +1290,8 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {2,1};
 
@@ -1303,6 +1347,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,2,1,1,1};
 
@@ -1363,6 +1409,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {2,1,1};
 
@@ -1413,6 +1461,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_rm_expected_wts = {2,1};
 
@@ -1461,6 +1511,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         rm_rm_expected_red_counts[1] = {1, 1};
 
@@ -1487,6 +1539,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,2,1,1,1};
 
@@ -1547,6 +1601,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {2,1,1};
 
@@ -1597,6 +1653,8 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_rm_expected_wts = {2,1};
 
@@ -1665,6 +1723,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {3,1,2,1,1};
 
@@ -1719,6 +1779,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {2,1,1};
 
@@ -1769,6 +1831,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_rm_expected_wts = {2};
 
@@ -1815,6 +1879,8 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         REQUIRE(bd.has_missing_population_patterns() == false);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         rm_rm_expected_red_counts[0] = {3, 1};
 
@@ -1850,6 +1916,8 @@ TEST_CASE("Testing for mirrored diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {3,1,2,1,1};
 
@@ -1903,6 +1971,8 @@ TEST_CASE("Testing for mirrored diploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.has_missing_population_patterns() == true);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {3,1,2,2};
 
@@ -1974,6 +2044,8 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1,1};
 
@@ -2039,6 +2111,8 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1,1};
 
@@ -2093,6 +2167,8 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> rm_expected_wts = {3,1,1,1};
 
@@ -2149,6 +2225,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {2,1,1,1,1,1,1,1};
 
@@ -2214,6 +2292,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {2,2,1,1,1,1,1};
@@ -2259,6 +2339,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {2,2,1,1,1,1};
@@ -2302,6 +2384,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {2,2,1,1};
@@ -2368,6 +2452,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
@@ -2441,6 +2527,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
@@ -2491,6 +2579,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
@@ -2539,6 +2629,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
         REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
@@ -2616,6 +2708,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
 
@@ -2683,6 +2777,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1,1};
@@ -2728,6 +2824,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -2771,6 +2869,8 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -2855,6 +2955,8 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
 
@@ -2925,6 +3027,8 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1,1};
@@ -2973,6 +3077,8 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == true);
         REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {1,1,1,1,1,1};
@@ -3019,6 +3125,8 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         REQUIRE(bd.get_path() == nex_path);
         REQUIRE(bd.has_mirrored_patterns() == false);
         REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
 
         expected_wts.clear();
         expected_wts = {1,2,1,1,1};
@@ -4470,5 +4578,779 @@ TEST_CASE("Testing writing methods for quoted spaces",
             REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
             REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
         }
+    }
+}
+
+//
+// Test alignment:
+//
+// #NEXUS
+// Begin data;
+// 	Dimensions ntax=8 nchar=10;
+// 	Format datatype=dna gap=-;
+// 	Matrix
+// pop1_a  ATC-CRGAYA
+// pop1_b  GCCCYAGAYG
+// pop1_c  ACTGTA?ACA
+// pop2_d  ATCGCAGATR
+// pop2_e  GCT?YA-ACC
+// pop2_f  GCC?YA-ARA
+// pop3_g  GCT?Y?GAAT
+// pop3_h  ATCCY??AGY
+// 	;
+// End;
+//
+// Recoded as biallelic:
+//
+// pop1_a  000-010010
+// pop1_b  2200100012
+// pop1_c  022220?000
+// pop2_d  0002000021
+// pop2_e  222?10-002
+// pop2_f  220?10-020
+// pop3_g  222?1?0022
+// pop3_h  00001??022
+//
+// Distilled to allele counts | mirror allele counts:
+//
+// 2/6 4/6 2/4  | 2 4 2 
+// 4/6 4/6 2/4  | 2 2 2*
+// 2/6 2/6 2/4  | 2 2 2
+// 2/4 2/2 0/2  | 2 2 0
+// 3/6 2/6 2/4  | 3 2 4
+// 1/6 0/6 0/0  | 1 0 0
+// 0/4 0/2 0/2  | 0 0 0
+// 0/6 0/6 0/4  | 0 0 0
+// 2/6 4/6 4/4  | 4 2 0*
+// 2/6 3/6 4/4  | 4 3 0*
+
+TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant sites", "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-dna-constant-missing-triallelic.nex") {
+        std::string nex_path = "data/diploid-dna-constant-missing-triallelic.nex";
+        BiallelicData bd(nex_path);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 10);
+        REQUIRE(bd.get_number_of_sites() == 10);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(10);
+        expected_allele_counts[0] = {6, 6, 4};
+        expected_allele_counts[1] = {6, 6, 4};
+        expected_allele_counts[2] = {6, 6, 4};
+        expected_allele_counts[3] = {4, 2, 2};
+        expected_allele_counts[4] = {6, 6, 4};
+        expected_allele_counts[5] = {6, 6, 0};
+        expected_allele_counts[6] = {4, 2, 2};
+        expected_allele_counts[7] = {6, 6, 4};
+        expected_allele_counts[8] = {6, 6, 4};
+        expected_allele_counts[9] = {6, 6, 4};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(10);
+        expected_red_counts[0] = {2, 4, 2};
+        expected_red_counts[1] = {4, 4, 2};
+        expected_red_counts[2] = {2, 2, 2};
+        expected_red_counts[3] = {2, 2, 0};
+        expected_red_counts[4] = {3, 2, 2};
+        expected_red_counts[5] = {1, 0, 0};
+        expected_red_counts[6] = {0, 0, 0};
+        expected_red_counts[7] = {0, 0, 0};
+        expected_red_counts[8] = {2, 4, 4};
+        expected_red_counts[9] = {2, 3, 4};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        // Folding
+        unsigned int number_removed = bd.fold_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 9);
+        REQUIRE(bd.get_number_of_sites() == 10);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        expected_wts.clear();
+        expected_wts = {1,2,1,1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 0});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({3, 2, 2});
+        expected_red_counts.push_back({1, 0, 0});
+        expected_red_counts.push_back({0, 0, 0});
+        expected_red_counts.push_back({0, 0, 0});
+        expected_red_counts.push_back({4, 2, 0});
+        expected_red_counts.push_back({4, 3, 0});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+    
+        // Remove missing
+        number_removed = bd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 8);
+        REQUIRE(bd.get_number_of_sites() == 9);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        expected_wts.clear();
+        expected_wts = {1,2,1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({3, 2, 2});
+        expected_red_counts.push_back({0, 0, 0});
+        expected_red_counts.push_back({0, 0, 0});
+        expected_red_counts.push_back({4, 2, 0});
+        expected_red_counts.push_back({4, 3, 0});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range);
+
+        // Remove constant
+        number_removed = bd.remove_constant_patterns();
+        REQUIRE(number_removed == 2);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        expected_wts.clear();
+        expected_wts = {1,2,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({3, 2, 2});
+        expected_red_counts.push_back({4, 2, 0});
+        expected_red_counts.push_back({4, 3, 0});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        expected_labels.clear();
+        expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        std::vector<unsigned int> expected_max_cts = {6,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+    }
+}
+
+TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic sites, and no hets",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex") {
+        std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
+        BiallelicData bd(nex_path);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 9);
+        REQUIRE(bd.get_number_of_sites() == 9);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+
+        std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(9);
+        expected_allele_counts[0] = {6, 6, 4};
+        expected_allele_counts[1] = {6, 6, 4};
+        expected_allele_counts[2] = {6, 6, 4};
+        expected_allele_counts[3] = {4, 2, 2};
+        expected_allele_counts[4] = {6, 6, 4};
+        expected_allele_counts[5] = {6, 6, 0};
+        expected_allele_counts[6] = {4, 2, 2};
+        expected_allele_counts[7] = {6, 6, 4};
+        expected_allele_counts[8] = {6, 6, 4};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(9);
+        expected_red_counts[0] = {2, 4, 2};
+        expected_red_counts[1] = {4, 4, 2};
+        expected_red_counts[2] = {2, 2, 2};
+        expected_red_counts[3] = {2, 2, 0};
+        expected_red_counts[4] = {2, 0, 0};
+        expected_red_counts[5] = {4, 6, 0};
+        expected_red_counts[6] = {0, 0, 0};
+        expected_red_counts[7] = {0, 0, 0};
+        expected_red_counts[8] = {4, 2, 4};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        std::vector<unsigned int> expected_max_cts = {6,6,4};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        // Remove constant
+        unsigned int number_removed = bd.remove_constant_patterns();
+        REQUIRE(number_removed == 2);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 7);
+        REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
+
+        expected_wts.clear();
+        expected_wts = {1,1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 0});
+        expected_allele_counts.push_back({6, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({4, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({2, 0, 0});
+        expected_red_counts.push_back({4, 6, 0});
+        expected_red_counts.push_back({4, 2, 4});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+    
+        // Remove missing
+        number_removed = bd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+
+        expected_wts.clear();
+        expected_wts = {1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({4, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({2, 0, 0});
+        expected_red_counts.push_back({4, 2, 4});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+
+        // Folding
+        number_removed = bd.fold_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 5);
+        REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        REQUIRE(bd.get_number_of_constant_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_green_sites_removed() == 2);
+        REQUIRE(bd.get_number_of_constant_red_sites_removed() == 0);
+        REQUIRE(bd.get_number_of_missing_sites_removed() == 1);
+
+        expected_wts.clear();
+        expected_wts = {1,2,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({4, 2, 2});
+        expected_allele_counts.push_back({6, 6, 4});
+        expected_allele_counts.push_back({6, 6, 4});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({2, 4, 2});
+        expected_red_counts.push_back({2, 2, 2});
+        expected_red_counts.push_back({2, 2, 0});
+        expected_red_counts.push_back({2, 0, 0});
+        expected_red_counts.push_back({2, 4, 0});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        expected_labels.clear();
+        expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+    }
+
+    SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as dominant") {
+        std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+    }
+
+    SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as dominant and haploid") {
+        std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
+    }
+
+    SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as haploid") {
+        std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
+        BiallelicData bd(nex_path, ' ', true, false);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 9);
+        REQUIRE(bd.get_number_of_sites() == 9);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        std::vector<unsigned int> expected_wts = {1,1,1,1,1,1,1,1,1};
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(9);
+        expected_allele_counts[0] = {3, 3, 2};
+        expected_allele_counts[1] = {3, 3, 2};
+        expected_allele_counts[2] = {3, 3, 2};
+        expected_allele_counts[3] = {2, 1, 1};
+        expected_allele_counts[4] = {3, 3, 2};
+        expected_allele_counts[5] = {3, 3, 0};
+        expected_allele_counts[6] = {2, 1, 1};
+        expected_allele_counts[7] = {3, 3, 2};
+        expected_allele_counts[8] = {3, 3, 2};
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(9);
+        expected_red_counts[0] = {1, 2, 1};
+        expected_red_counts[1] = {2, 2, 1};
+        expected_red_counts[2] = {1, 1, 1};
+        expected_red_counts[3] = {1, 1, 0};
+        expected_red_counts[4] = {1, 0, 0};
+        expected_red_counts[5] = {2, 3, 0};
+        expected_red_counts[6] = {0, 0, 0};
+        expected_red_counts[7] = {0, 0, 0};
+        expected_red_counts[8] = {2, 1, 2};
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        // Remove constant
+        unsigned int number_removed = bd.remove_constant_patterns();
+        REQUIRE(number_removed == 2);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 7);
+        REQUIRE(bd.get_number_of_sites() == 7);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == true);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        expected_wts.clear();
+        expected_wts = {1,1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({2, 1, 1});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 0});
+        expected_allele_counts.push_back({3, 3, 2});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({1, 2, 1});
+        expected_red_counts.push_back({2, 2, 1});
+        expected_red_counts.push_back({1, 1, 1});
+        expected_red_counts.push_back({1, 1, 0});
+        expected_red_counts.push_back({1, 0, 0});
+        expected_red_counts.push_back({2, 3, 0});
+        expected_red_counts.push_back({2, 1, 2});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+    
+        // Remove missing
+        number_removed = bd.remove_missing_population_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 6);
+        REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == true);
+        REQUIRE(bd.patterns_are_folded() == false);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        expected_wts.clear();
+        expected_wts = {1,1,1,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({2, 1, 1});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({1, 2, 1});
+        expected_red_counts.push_back({2, 2, 1});
+        expected_red_counts.push_back({1, 1, 1});
+        expected_red_counts.push_back({1, 1, 0});
+        expected_red_counts.push_back({1, 0, 0});
+        expected_red_counts.push_back({2, 1, 2});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+
+        // Folding
+        number_removed = bd.fold_patterns();
+        REQUIRE(number_removed == 1);
+        REQUIRE(bd.get_number_of_populations() == 3);
+        REQUIRE(bd.get_number_of_patterns() == 5);
+        REQUIRE(bd.get_number_of_sites() == 6);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == false);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.has_recoded_triallelic_sites() == true);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 2);
+
+        expected_wts.clear();
+        expected_wts = {1,2,1,1,1};
+
+        expected_allele_counts.clear();
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({2, 1, 1});
+        expected_allele_counts.push_back({3, 3, 2});
+        expected_allele_counts.push_back({3, 3, 2});
+
+        expected_red_counts.clear();
+        expected_red_counts.push_back({1, 2, 1});
+        expected_red_counts.push_back({1, 1, 1});
+        expected_red_counts.push_back({1, 1, 0});
+        expected_red_counts.push_back({1, 0, 0});
+        expected_red_counts.push_back({1, 2, 0});
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+        }
+
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+
+        REQUIRE(bd.get_population_index("pop1") == 0);
+        REQUIRE(bd.get_population_index("pop2") == 1);
+        REQUIRE(bd.get_population_index("pop3") == 2);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE(bd.get_population_label(0) == "pop1");
+        REQUIRE(bd.get_population_label(1) == "pop2");
+        REQUIRE(bd.get_population_label(2) == "pop3");
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+
+        expected_labels.clear();
+        expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
+        REQUIRE(bd.get_sequence_labels(0) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop2 d", "pop2 e", "pop2 f"};
+        REQUIRE(bd.get_sequence_labels(1) == expected_labels);
+        expected_labels.clear();
+        expected_labels = {"pop3 g", "pop3 h"};
+        REQUIRE(bd.get_sequence_labels(2) == expected_labels);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+
+        std::vector<unsigned int> expected_max_cts = {3,3,2};
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
     }
 }

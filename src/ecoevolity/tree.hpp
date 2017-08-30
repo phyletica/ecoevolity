@@ -93,6 +93,7 @@ class PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -106,6 +107,7 @@ class PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -507,6 +509,7 @@ class RelativeRootPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 ) : PopulationTree(
                     path,
@@ -518,6 +521,7 @@ class RelativeRootPopulationTree: public PopulationTree {
                     validate,
                     strict_on_constant_sites,
                     strict_on_missing_sites,
+                    strict_on_triallelic_sites,
                     ploidy) { }
 
         bool using_relative_root_population_size() const {
@@ -591,6 +595,7 @@ class DirichletPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -623,13 +628,15 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
         ComparisonPopulationTree(
                 const ComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true
                 );
         void comparison_init(
                 std::string path, 
@@ -641,6 +648,7 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -687,13 +695,15 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
         ComparisonRelativeRootPopulationTree(
                 const RelativeRootComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true
                 );
         void comparison_init(
                 std::string path, 
@@ -705,6 +715,7 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -751,13 +762,15 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
         ComparisonDirichletPopulationTree(
                 const DirichletComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true
                 );
         void comparison_init(
                 std::string path, 
@@ -769,6 +782,7 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 

@@ -215,6 +215,7 @@ void BiallelicData::init(
             std::vector<unsigned int> red_allele_cts (this->get_number_of_populations(), 0);
             NxsDiscreteStateCell red_code = -1;
             NxsDiscreteStateCell green_code = -1;
+            bool triallelic_site = false;
             for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
                 const NxsDiscreteStateCell state_code = char_block->GetInternalRepresentation(taxon_idx, site_idx);
                 if (state_code >= 0) {
@@ -265,15 +266,23 @@ void BiallelicData::init(
                             allele_cts[population_idx] += 1 * pm;
                             continue;
                         }
+                        // Handle 3rd or 4th alleles
                         else {
-                            throw EcoevolityInvalidCharacterError(
-                                    "A third character state was found",
-                                    this->path_,
-                                    char_block->GetTaxonLabel(taxon_idx),
-                                    site_idx);
+                            // Code 3rd or 4th alleles as red (1)
+                            red_allele_cts[population_idx] += 1 * pm;
+                            allele_cts[population_idx] += 1 * pm;
+                            triallelic_site = true;
+                            /* throw EcoevolityInvalidCharacterError( */
+                            /*         "A third character state was found", */
+                            /*         this->path_, */
+                            /*         char_block->GetTaxonLabel(taxon_idx), */
+                            /*         site_idx); */
                         }
                     }
                 }
+            }
+            if (triallelic_site) {
+                ++this->number_of_triallelic_sites_recoded_;
             }
             this->get_pattern_index(pattern_was_found, found_pattern_idx,
                     red_allele_cts,
@@ -470,6 +479,10 @@ bool BiallelicData::has_mirrored_patterns() const {
 
 bool BiallelicData::patterns_are_folded() const {
     return this->patterns_are_folded_;
+}
+
+bool BiallelicData::has_recoded_triallelic_sites() const {
+    return (this->number_of_triallelic_sites_recoded_ > 0);
 }
 
 void BiallelicData::update_has_constant_patterns() {
@@ -777,6 +790,10 @@ unsigned int BiallelicData::get_number_of_constant_red_sites_removed() const {
 
 unsigned int BiallelicData::get_number_of_missing_sites_removed() const {
     return this->number_of_missing_sites_removed_;
+}
+
+unsigned int BiallelicData::get_number_of_triallelic_sites_recoded() const {
+    return this->number_of_triallelic_sites_recoded_;
 }
 
 double BiallelicData::get_proportion_of_red_alleles() const {

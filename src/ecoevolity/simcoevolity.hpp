@@ -122,9 +122,8 @@ int simcoevolity_main(int argc, char * argv[]) {
             .help("By default, if you specify \'constant_sites_removed = true\' "
                   "and constant sites are found, Simcoevolity throws an error. "
                   "With this option, Simcoevolity will automatically ignore the "
-                  "constant sites and only issue a warning (and correct for "
-                  "constant sites in the likelihood calculation). Please make sure "
-                  "you understand what you are doing when you use this option."
+                  "constant sites and only issue a warning. Simulated data sets "
+                  "will have fewer sites than the original alignment."
                 );
     parser.add_option("--relax-missing-sites")
             .action("store_true")
@@ -132,7 +131,18 @@ int simcoevolity_main(int argc, char * argv[]) {
             .help("By default, if a column is found for which there is no data "
                   "for at least one population, Simcoevolity throws an error. "
                   "With this option, Simcoevolity will automatically ignore such "
-                  "sites and only issue a warning."
+                  "sites and only issue a warning. Simulated data sets will have "
+                  "fewer sites than the original alignment."
+                );
+    parser.add_option("--relax-triallelic-sites")
+            .action("store_true")
+            .dest("relax_triallelic_sites")
+            .help("By default, if a DNA site is found for which there is more "
+                  "than two nucleotide states, Simcoevolity throws an error. "
+                  "With this option, Simcoevolity will only issue a warning. "
+                  "The number of sites with more than two nucleotides will be "
+                  "retained, but all simulated sites will have at most two "
+                  "character states."
                 );
 
     optparse::Values& options = parser.parse_args(argc, argv);
@@ -166,6 +176,7 @@ int simcoevolity_main(int argc, char * argv[]) {
 
     const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
+    const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
     const bool simulate_sequences = (! options.get("parameters_only"));
 
     if (args.size() < 1) {
@@ -254,7 +265,8 @@ int simcoevolity_main(int argc, char * argv[]) {
             settings,
             rng,
             strict_on_constant_sites,
-            strict_on_missing_sites);
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
 
     if (using_prior_config) {
         // Not used but creating instance to vet settings
@@ -263,7 +275,8 @@ int simcoevolity_main(int argc, char * argv[]) {
                 prior_settings,
                 rng,
                 strict_on_constant_sites,
-                strict_on_missing_sites);
+                strict_on_missing_sites,
+                strict_on_triallelic_sites);
     }
 
     std::cerr << "\n" << string_util::banner('-') << "\n";

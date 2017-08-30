@@ -102,6 +102,15 @@ class EcoevolityMissingDataError: public EcoevolityBaseError {
                     file_name) { }
 };
 
+class EcoevolityTriallelicDataError: public EcoevolityBaseError {
+    public:
+        EcoevolityTriallelicDataError(
+                const std::string & message,
+                const std::string & file_name) :
+            EcoevolityBaseError("EcoevolityTriallelicDataError", message,
+                    file_name) { }
+};
+
 class EcoevolityParsingError: public EcoevolityBaseError {
     public:
         EcoevolityParsingError(

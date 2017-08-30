@@ -104,6 +104,21 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "With this option, Ecoevolity will automatically ignore such "
                   "sites and only issue a warning."
                 );
+    parser.add_option("--relax-triallelic-sites")
+            .action("store_true")
+            .dest("relax_triallelic_sites")
+            .help("By default, if a DNA site is found for which there is more "
+                  "than two nucleotide states, Ecoevolity throws an error. "
+                  "With this option, Ecoevolity will automatically recode such "
+                  "sites as biallelic and only issue a warning. These sites "
+                  "are recoded by assigning state 0 to the first nucleotide "
+                  "found and state 1 to all others. If you do not wish to "
+                  "recode such sites and prefer to ignore them, please remove "
+                  "all sites with more than two nucleotide states from your "
+                  "DNA alignments. NOTE: only alignments of nucleotides are "
+                  "affected by this option, not alignments of standard "
+                  "characters (i.e., 0, 1, 2)."
+                );
     parser.add_option("--dry-run")
             .action("store_true")
             .dest("dry_run")
@@ -136,6 +151,7 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
+    const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
 
     unsigned int nthreads = options.get("nthreads");
 
@@ -168,7 +184,8 @@ int ecoevolity_main(int argc, char * argv[]) {
             settings,
             rng,
             strict_on_constant_sites,
-            strict_on_missing_sites);
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
 
     if (ignore_data) {
         comparisons.ignore_data();

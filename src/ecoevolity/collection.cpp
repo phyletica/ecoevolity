@@ -867,7 +867,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         const CollectionSettings & settings,
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -884,7 +885,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->init_trees(settings.get_comparison_settings(),
             rng,
             strict_on_constant_sites,
-            strict_on_missing_sites);
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
     if (settings.event_model_is_fixed()) {
@@ -896,7 +898,8 @@ void ComparisonPopulationTreeCollection::init_trees(
         const std::vector<ComparisonSettings> & comparison_settings,
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites
         ) {
     std::unordered_set<std::string> population_labels;
     double fresh_height;
@@ -909,7 +912,8 @@ void ComparisonPopulationTreeCollection::init_trees(
                 comparison_settings.at(tree_idx),
                 rng,
                 strict_on_constant_sites,
-                strict_on_missing_sites
+                strict_on_missing_sites,
+                strict_on_triallelic_sites
                 );
         for (auto const& pop_label: new_tree->get_population_labels()) {
             auto p = population_labels.insert(pop_label);
@@ -945,7 +949,8 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
         const RelativeRootCollectionSettings & settings,
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -962,7 +967,8 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
     this->init_trees(settings.get_comparison_settings(),
             rng,
             strict_on_constant_sites,
-            strict_on_missing_sites);
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
     if (settings.event_model_is_fixed()) {
@@ -974,7 +980,8 @@ void ComparisonRelativeRootPopulationTreeCollection::init_trees(
         const std::vector<RelativeRootComparisonSettings> & comparison_settings,
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites
         ) {
     std::unordered_set<std::string> population_labels;
     double fresh_height;
@@ -987,7 +994,8 @@ void ComparisonRelativeRootPopulationTreeCollection::init_trees(
                 comparison_settings.at(tree_idx),
                 rng,
                 strict_on_constant_sites,
-                strict_on_missing_sites
+                strict_on_missing_sites,
+                strict_on_triallelic_sites
                 );
         for (auto const& pop_label: new_tree->get_population_labels()) {
             auto p = population_labels.insert(pop_label);
@@ -1023,7 +1031,8 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
         const DirichletCollectionSettings & settings,
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -1040,7 +1049,8 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
     this->init_trees(settings.get_comparison_settings(),
             rng,
             strict_on_constant_sites,
-            strict_on_missing_sites);
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
     if (settings.event_model_is_fixed()) {
@@ -1052,7 +1062,8 @@ void ComparisonDirichletPopulationTreeCollection::init_trees(
         const std::vector<DirichletComparisonSettings> & comparison_settings,
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites
         ) {
     std::unordered_set<std::string> population_labels;
     double fresh_height;
@@ -1065,7 +1076,8 @@ void ComparisonDirichletPopulationTreeCollection::init_trees(
                 comparison_settings.at(tree_idx),
                 rng,
                 strict_on_constant_sites,
-                strict_on_missing_sites
+                strict_on_missing_sites,
+                strict_on_triallelic_sites
                 );
         for (auto const& pop_label: new_tree->get_population_labels()) {
             auto p = population_labels.insert(pop_label);

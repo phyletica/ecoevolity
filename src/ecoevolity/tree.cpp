@@ -29,6 +29,7 @@ PopulationTree::PopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -39,6 +40,7 @@ PopulationTree::PopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
 }
 
@@ -52,6 +54,7 @@ void PopulationTree::init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     if (genotypes_are_diploid && (ploidy != 2.0)) {
         throw EcoevolityBiallelicDataError(
@@ -70,6 +73,33 @@ void PopulationTree::init(
         throw EcoevolityError("PopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
+    if (this->data_.has_recoded_triallelic_sites()) {
+        if (strict_on_triallelic_sites) {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "###############################  ERROR  ###############################\n"
+                    << this->data_.get_number_of_triallelic_sites_recoded()
+                    << " sites from the alignment in:\n    \'"
+                    << path << "\'\n"
+                    << "have more than two character states.\n"
+                    << "#######################################################################\n";
+            throw EcoevolityTriallelicDataError(message.str(), path);
+        }
+        else {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "##############################  WARNING  ##############################\n"
+                    << this->data_.get_number_of_triallelic_sites_recoded()
+                    << " sites had more than two nucleotide states from the alignment in:\n    \'"
+                    << path << "\'.\n"
+                    << "These sites have been recoded as biallelic, by treating the first\n"
+                    << "nucleotide as 0 and all others as 1. If you would prefer to ignore\n"
+                    << "these sites, please remove all sites with more than two nucleotide\n"
+                    << "states from your DNA alignments and re-run the analysis.\n"
+                    << "#######################################################################\n";
+            std::cerr << message.str() << std::endl;
+        }
+    }
     if (number_of_missing_patterns_removed > 0) {
         if (strict_on_missing_sites) {
             std::ostringstream message;
@@ -923,6 +953,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->comparison_init(path,
                population_name_delimiter,
@@ -933,6 +964,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
 }
 void ComparisonPopulationTree::comparison_init(
@@ -945,6 +977,7 @@ void ComparisonPopulationTree::comparison_init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -955,6 +988,7 @@ void ComparisonPopulationTree::comparison_init(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
@@ -967,7 +1001,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         const ComparisonSettings& settings,
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites, 
+        bool strict_on_triallelic_sites) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -977,6 +1012,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                settings.get_ploidy());
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
@@ -1218,6 +1254,7 @@ DirichletPopulationTree::DirichletPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -1228,6 +1265,7 @@ DirichletPopulationTree::DirichletPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
@@ -1261,6 +1299,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->comparison_init(path,
                population_name_delimiter,
@@ -1271,6 +1310,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
@@ -1286,6 +1326,7 @@ void ComparisonDirichletPopulationTree::comparison_init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -1296,6 +1337,7 @@ void ComparisonDirichletPopulationTree::comparison_init(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
@@ -1309,7 +1351,8 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
         const DirichletComparisonSettings& settings,
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1319,6 +1362,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                settings.get_ploidy());
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
@@ -1638,6 +1682,7 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->comparison_init(path,
                population_name_delimiter,
@@ -1648,6 +1693,7 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
 }
 void ComparisonRelativeRootPopulationTree::comparison_init(
@@ -1660,6 +1706,7 @@ void ComparisonRelativeRootPopulationTree::comparison_init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -1670,6 +1717,7 @@ void ComparisonRelativeRootPopulationTree::comparison_init(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
@@ -1683,7 +1731,8 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
         const RelativeRootComparisonSettings& settings,
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1693,6 +1742,7 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                settings.get_ploidy());
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();

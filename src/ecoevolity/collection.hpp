@@ -343,7 +343,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 const CollectionSettings & settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 
     protected:
@@ -351,7 +352,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 const std::vector<ComparisonSettings> & comparison_settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 };
 
@@ -363,7 +365,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 const RelativeRootCollectionSettings & settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 
     protected:
@@ -371,7 +374,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 const std::vector<RelativeRootComparisonSettings> & comparison_settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 };
 
@@ -383,7 +387,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 const DirichletCollectionSettings & settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 
     protected:
@@ -391,7 +396,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 const std::vector<DirichletComparisonSettings> & comparison_settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 };
 
