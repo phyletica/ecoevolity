@@ -2960,7 +2960,7 @@ class BaseCollectionSettings {
                         default_shape);
             }
             else {
-                this->use_dpp_ = false;
+                this->use_dpp_ = true;
                 this->concentration_settings_.value_ = 1.0;
                 this->concentration_settings_.is_fixed_ = true;
             }
