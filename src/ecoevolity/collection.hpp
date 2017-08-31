@@ -61,8 +61,8 @@ class BaseComparisonPopulationTreeCollection {
         BaseComparisonPopulationTreeCollection() { }
 
         void add_log_prefix(const std::string & prefix) {
-            this->state_log_path_ = prefix + this->state_log_path_;
-            this->operator_log_path_ = prefix + this->operator_log_path_;
+            this->state_log_path_ = prefix + path::basename(this->state_log_path_);
+            this->operator_log_path_ = prefix + path::basename(this->operator_log_path_);
         }
 
         void store_state();
