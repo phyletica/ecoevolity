@@ -83,7 +83,7 @@ COMPILETHREADS="4"
 
 if [ "$(echo "$@" | grep -c "=")" -gt 0 ]
 then
-    echo "ERROR: Do not use '=' for arugments. For example, use"
+    echo "ERROR: Do not use '=' for arguments. For example, use"
     echo "'--nthreads 2' instead of '--nthreads=2'."
     exit 1
 fi
