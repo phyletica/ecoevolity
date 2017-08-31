@@ -2,7 +2,8 @@ include_directories("${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
 set(ECOEVOLITY_MAIN_SOURCES
     ecoevolity_main.cpp
-    simcoevolity_main.cpp)
+    simcoevolity_main.cpp
+    dpprobs_main.cpp)
 
 set(ECOEVOLITY_SOURCES
     error.cpp
@@ -15,6 +16,7 @@ set(ECOEVOLITY_SOURCES
     "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     ecoevolity.cpp
     simcoevolity.cpp
+    dpprobs.cpp
     data.cpp)
 
 add_executable(ecoevolity
@@ -32,5 +34,14 @@ add_executable(simcoevolity
         )
 target_link_libraries(simcoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS simcoevolity
+        DESTINATION bin
+        )
+
+add_executable(dpprobs
+        dpprobs_main.cpp
+        ${ECOEVOLITY_SOURCES}
+        )
+target_link_libraries(dpprobs ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+install(TARGETS dpprobs
         DESTINATION bin
         )
