@@ -166,6 +166,15 @@ class Spreadsheet {
 
         }
 
+        std::vector<std::string> get_keys() const {
+            std::vector<std::string> keys;
+            keys.reserve(this->data.size());
+            for (auto const & kv: this->data) {
+                keys.push_back(kv.first);
+            }
+            return keys;
+        }
+
         template <typename T>
         void get(
                 const std::string& column_label,
