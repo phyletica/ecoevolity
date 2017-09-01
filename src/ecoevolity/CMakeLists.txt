@@ -3,7 +3,8 @@ include_directories("${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 set(ECOEVOLITY_MAIN_SOURCES
     ecoevolity_main.cpp
     simcoevolity_main.cpp
-    dpprobs_main.cpp)
+    dpprobs_main.cpp
+    sumcoevolity_main.cpp)
 
 set(ECOEVOLITY_SOURCES
     error.cpp
@@ -17,6 +18,7 @@ set(ECOEVOLITY_SOURCES
     ecoevolity.cpp
     simcoevolity.cpp
     dpprobs.cpp
+    sumcoevolity.cpp
     data.cpp)
 
 add_executable(ecoevolity
@@ -43,5 +45,14 @@ add_executable(dpprobs
         )
 target_link_libraries(dpprobs ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 install(TARGETS dpprobs
+        DESTINATION bin
+        )
+
+add_executable(sumcoevolity
+        sumcoevolity_main.cpp
+        ${ECOEVOLITY_SOURCES}
+        )
+target_link_libraries(sumcoevolity ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+install(TARGETS sumcoevolity
         DESTINATION bin
         )
