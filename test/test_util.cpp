@@ -56,3 +56,75 @@ SCENARIO("map_at provides easy map element access", "[util]") {
         }
     }
 }
+
+SCENARIO("sort_pairs provides easy sorting", "[util]") {
+
+    GIVEN("An unsorted vector of pairs of ints and unsigned ints") {
+        std::vector< std::pair<int, unsigned int> > pairs;
+        pairs.push_back(std::make_pair(1, 3));
+        pairs.push_back(std::make_pair(-1, 5));
+        pairs.push_back(std::make_pair(2, 2));
+        pairs.push_back(std::make_pair(-3, 9));
+        pairs.push_back(std::make_pair(0, 0));
+
+        WHEN("sort_pairs(pairs, true, false) is called") {
+            sort_pairs(pairs, true, false);
+            
+            THEN("the pairs are sorted ascending by first") {
+                std::vector< std::pair<int, unsigned int> > expected;
+                expected.push_back(std::make_pair(-3, 9));
+                expected.push_back(std::make_pair(-1, 5));
+                expected.push_back(std::make_pair(0, 0));
+                expected.push_back(std::make_pair(1, 3));
+                expected.push_back(std::make_pair(2, 2));
+
+                REQUIRE(pairs == expected);
+            }
+        }
+
+        WHEN("sort_pairs(pairs, true, true) is called") {
+            sort_pairs(pairs, true, true);
+            
+            THEN("the pairs are sorted descending by first") {
+                std::vector< std::pair<int, unsigned int> > expected;
+                expected.push_back(std::make_pair(2, 2));
+                expected.push_back(std::make_pair(1, 3));
+                expected.push_back(std::make_pair(0, 0));
+                expected.push_back(std::make_pair(-1, 5));
+                expected.push_back(std::make_pair(-3, 9));
+
+                REQUIRE(pairs == expected);
+            }
+        }
+
+        WHEN("sort_pairs(pairs, false, false) is called") {
+            sort_pairs(pairs, false, false);
+            
+            THEN("the pairs are sorted ascending by second") {
+                std::vector< std::pair<int, unsigned int> > expected;
+                expected.push_back(std::make_pair(0, 0));
+                expected.push_back(std::make_pair(2, 2));
+                expected.push_back(std::make_pair(1, 3));
+                expected.push_back(std::make_pair(-1, 5));
+                expected.push_back(std::make_pair(-3, 9));
+
+                REQUIRE(pairs == expected);
+            }
+        }
+
+        WHEN("sort_pairs(pairs, false, true) is called") {
+            sort_pairs(pairs, false, true);
+            
+            THEN("the pairs are sorted descending by second") {
+                std::vector< std::pair<int, unsigned int> > expected;
+                expected.push_back(std::make_pair(-3, 9));
+                expected.push_back(std::make_pair(-1, 5));
+                expected.push_back(std::make_pair(1, 3));
+                expected.push_back(std::make_pair(2, 2));
+                expected.push_back(std::make_pair(0, 0));
+
+                REQUIRE(pairs == expected);
+            }
+        }
+    }
+}
