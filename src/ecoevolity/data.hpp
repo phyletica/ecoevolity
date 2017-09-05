@@ -152,6 +152,24 @@ class BiallelicData {
         const std::vector<unsigned int>& get_pattern_weights() const {
             return this->pattern_weights_;
         }
+
+        /**
+         * Get the unique allele counts.
+         *
+         * Normally, the BiallelicData class works with allele patterns and
+         * their weights (the number of sites that have the pattern), which
+         * include the red allele counts and total allele counts from each
+         * population. Here what we want is only the unique total allele counts
+         * and their weights (so, ignoring the red allele counts).
+         *
+         * Returns a pair of (1) a vector the unique allele count vectors, and
+         * (2) the weighs of those allele counts.
+         *
+         */
+        std::pair< std::vector< std::vector<unsigned int> >, std::vector<unsigned int> >
+        get_unique_allele_counts() const;
+
+
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;
         unsigned int number_of_constant_green_sites_removed_ = 0;
