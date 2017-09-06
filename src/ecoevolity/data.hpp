@@ -162,11 +162,11 @@ class BiallelicData {
          * population. Here what we want is only the unique total allele counts
          * and their weights (so, ignoring the red allele counts).
          *
-         * Returns a pair of (1) a vector the unique allele count vectors, and
-         * (2) the weighs of those allele counts.
+         * Returns a map of unique allele count vectors to
+         * the weights of those allele counts.
          *
          */
-        std::pair< std::vector< std::vector<unsigned int> >, std::vector<unsigned int> >
+        std::map< std::vector<unsigned int>, unsigned int >
         get_unique_allele_counts() const;
 
 

@@ -996,3 +996,19 @@ void BiallelicData::write_summary(
             << " (" << this->get_max_allele_count(i) << ")\n";
     }
 }
+
+std::map<std::vector<unsigned int>, unsigned int>
+BiallelicData::get_unique_allele_counts() const {
+    std::map<std::vector<unsigned int>, unsigned int> unique_allele_counts;
+    for (unsigned int pattern_idx = 0; pattern_idx < this->get_number_of_patterns(); ++pattern_idx) {
+        const std::vector<unsigned int>& allele_cts = this->get_allele_counts(pattern_idx);
+        unsigned int w = this->get_pattern_weight(pattern_idx);
+        if (unique_allele_counts.count(allele_cts) < 1) {
+            unique_allele_counts[allele_cts] = w;
+        }
+        else {
+            unique_allele_counts[allele_cts] += w;
+        }
+    }
+    return unique_allele_counts;
+}

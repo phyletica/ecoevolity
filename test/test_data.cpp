@@ -50,6 +50,11 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         expected_allele_counts[2] = {6, 4};
         expected_allele_counts[3] = {6, 4};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 4;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(4);
         expected_red_counts[0] = {0, 2};
         expected_red_counts[1] = {1, 2};
@@ -178,6 +183,11 @@ TEST_CASE("Testing standard diploid with only 0/1 genotypes", "[BiallelicData]")
         expected_allele_counts[1] = {4, 4};
         expected_allele_counts[2] = {4, 6};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 3;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(3);
         expected_red_counts[0] = {1, 3};
         expected_red_counts[1] = {1, 1};
@@ -271,6 +281,11 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
         expected_allele_counts[1] = {2, 2};
         expected_allele_counts[2] = {2, 3};
         expected_allele_counts[3] = {2, 3};
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 3;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > expected_red_counts(4);
         expected_red_counts[0] = {1, 3};
@@ -368,6 +383,11 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
         expected_allele_counts[1] = {2, 2};
         expected_allele_counts[2] = {2, 3};
         expected_allele_counts[3] = {2, 3};
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 3;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > expected_red_counts(4);
         expected_red_counts[0] = {1, 3};
@@ -480,6 +500,11 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
         expected_allele_counts[1] = {4, 4};
         expected_allele_counts[2] = {4, 6};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(3);
         expected_red_counts[0] = {2, 6};
         expected_red_counts[1] = {2, 2};
@@ -563,6 +588,12 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         expected_allele_counts[4] = {6, 4};
         expected_allele_counts[5] = {4, 2};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 4;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(6);
         expected_red_counts[0] = {0, 0};
         expected_red_counts[1] = {1, 2};
@@ -618,6 +649,11 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
         rm_expected_allele_counts[1] = {6, 4};
         rm_expected_allele_counts[2] = {6, 4};
         rm_expected_allele_counts[3] = {6, 4};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 3;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(4);
         rm_expected_red_counts[0] = {1, 2};
@@ -842,6 +878,12 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         expected_allele_counts[3] = {3, 2};
         expected_allele_counts[4] = {2, 1};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 4;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {0, 0};
         expected_red_counts[1] = {1, 1};
@@ -895,6 +937,11 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         rm_expected_allele_counts[0] = {3, 1};
         rm_expected_allele_counts[1] = {3, 2};
         rm_expected_allele_counts[2] = {3, 2};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 3;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(3);
         rm_expected_red_counts[0] = {1, 1};
@@ -1110,6 +1157,14 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         expected_allele_counts[3] = {0, 0};
         expected_allele_counts[4] = {0, 3};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {1, 0};
         expected_red_counts[1] = {1, 1};
@@ -1164,6 +1219,11 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
         std::vector< std::vector<unsigned int> > rm_expected_allele_counts(2);
         rm_expected_allele_counts[0] = {2, 2};
         rm_expected_allele_counts[1] = {2, 3};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 2;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(2);
         rm_expected_red_counts[0] = {1, 1};
@@ -1244,6 +1304,14 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         expected_allele_counts[3] = {0, 0};
         expected_allele_counts[4] = {0, 3};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {1, 0};
         expected_red_counts[1] = {1, 1};
@@ -1298,6 +1366,11 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
         std::vector< std::vector<unsigned int> > rm_expected_allele_counts(2);
         rm_expected_allele_counts[0] = {2, 2};
         rm_expected_allele_counts[1] = {2, 3};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 2;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(2);
         rm_expected_red_counts[0] = {1, 1};
@@ -1359,6 +1432,14 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         expected_allele_counts[3] = {0, 0};
         expected_allele_counts[4] = {0, 3};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {1, 0};
         expected_red_counts[1] = {1, 1};
@@ -1419,6 +1500,12 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         rm_expected_allele_counts[1] = {2, 3};
         rm_expected_allele_counts[2] = {0, 3};
 
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 2;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(3);
         rm_expected_red_counts[0] = {1, 1};
         rm_expected_red_counts[1] = {1, 2};
@@ -1469,6 +1556,11 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
         std::vector< std::vector<unsigned int> > rm_rm_expected_allele_counts(2);
         rm_rm_expected_allele_counts[0] = {2, 2};
         rm_rm_expected_allele_counts[1] = {2, 3};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_rm_expected_unique_allele_counts;
+        rm_rm_expected_unique_allele_counts[rm_rm_expected_allele_counts.at(0)] = 2;
+        rm_rm_expected_unique_allele_counts[rm_rm_expected_allele_counts.at(1)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == rm_rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_rm_expected_red_counts(2);
         rm_rm_expected_red_counts[0] = {1, 1};
@@ -1735,6 +1827,13 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         expected_allele_counts[3] = {6, 2};
         expected_allele_counts[4] = {6, 2};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 3;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {3, 0};
         expected_red_counts[1] = {0, 3};
@@ -1789,6 +1888,11 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
         rm_expected_allele_counts[1] = {6, 2};
         rm_expected_allele_counts[2] = {6, 2};
 
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 2;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(3);
         rm_expected_red_counts[0] = {3, 3};
         rm_expected_red_counts[1] = {0, 0};
@@ -1838,6 +1942,10 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
 
         std::vector< std::vector<unsigned int> > rm_rm_expected_allele_counts(1);
         rm_rm_expected_allele_counts[0] = {6, 4};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_rm_expected_unique_allele_counts;
+        rm_rm_expected_unique_allele_counts[rm_rm_expected_allele_counts.at(0)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == rm_rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_rm_expected_red_counts(1);
         rm_rm_expected_red_counts[0] = {3, 3};
@@ -1928,6 +2036,13 @@ TEST_CASE("Testing for mirrored diploid site patterns", "[BiallelicData]") {
         expected_allele_counts[3] = {6, 2};
         expected_allele_counts[4] = {6, 2};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 3;
+        expected_unique_allele_counts[expected_allele_counts.at(1)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {3, 0};
         expected_red_counts[1] = {0, 3};
@@ -1981,6 +2096,13 @@ TEST_CASE("Testing for mirrored diploid site patterns", "[BiallelicData]") {
         rm_expected_allele_counts[1] = {0, 4};
         rm_expected_allele_counts[2] = {6, 4};
         rm_expected_allele_counts[3] = {6, 2};
+
+        std::map<std::vector<unsigned int>, unsigned int> rm_expected_unique_allele_counts;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(0)] = 3;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(1)] = 1;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(2)] = 2;
+        rm_expected_unique_allele_counts[rm_expected_allele_counts.at(3)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == rm_expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > rm_expected_red_counts(4);
         rm_expected_red_counts[0] = {3, 0};
@@ -2055,6 +2177,11 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
         expected_allele_counts[2] = {4, 2};
         expected_allele_counts[3] = {6, 4};
         expected_allele_counts[4] = {6, 4};
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > expected_red_counts(5);
         expected_red_counts[0] = {2, 2};
@@ -2240,6 +2367,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_allele_counts[6] = {4, 2, 2};
         expected_allele_counts[7] = {6, 6, 4};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(8);
         expected_red_counts[0] = {2, 4, 2};
         expected_red_counts[1] = {4, 4, 2};
@@ -2307,6 +2440,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_allele_counts.push_back({4, 2, 2});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({2, 2, 2});
@@ -2353,6 +2492,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_allele_counts.push_back({4, 2, 2});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({2, 2, 2});
@@ -2395,6 +2539,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({4, 2, 2});
         expected_allele_counts.push_back({6, 6, 4});
+
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
@@ -2470,6 +2619,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts[6] = {4, 2, 2};
         expected_allele_counts[7] = {6, 6, 4};
         expected_allele_counts[8] = {6, 6, 4};
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         std::vector< std::vector<unsigned int> > expected_red_counts(9);
         expected_red_counts[0] = {2, 4, 2};
@@ -2547,6 +2702,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts.push_back({6, 6, 0});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({4, 4, 2});
@@ -2597,6 +2758,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts.push_back({4, 2, 2});
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
+
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
@@ -2724,6 +2890,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts[7] = {3, 3, 2};
         expected_allele_counts[8] = {3, 3, 2};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(9);
         expected_red_counts[0] = {1, 2, 1};
         expected_red_counts[1] = {2, 2, 1};
@@ -2792,6 +2964,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts.push_back({3, 3, 0});
         expected_allele_counts.push_back({3, 3, 2});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({1, 2, 1});
         expected_red_counts.push_back({2, 2, 1});
@@ -2838,6 +3016,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts.push_back({3, 3, 2});
         expected_allele_counts.push_back({3, 3, 2});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({1, 2, 1});
         expected_red_counts.push_back({2, 2, 1});
@@ -2881,6 +3064,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_allele_counts.push_back({2, 1, 1});
         expected_allele_counts.push_back({3, 3, 2});
         expected_allele_counts.push_back({3, 3, 2});
+
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         expected_red_counts.clear();
         expected_red_counts.push_back({1, 2, 1});
@@ -4656,6 +4844,12 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         expected_allele_counts[8] = {6, 6, 4};
         expected_allele_counts[9] = {6, 6, 4};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 7;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(10);
         expected_red_counts[0] = {2, 4, 2};
         expected_red_counts[1] = {4, 4, 2};
@@ -4727,6 +4921,12 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 7;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(4)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({2, 2, 2});
@@ -4777,6 +4977,11 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 7;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 2;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({2, 2, 2});
@@ -4823,6 +5028,11 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
+
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
@@ -4902,6 +5112,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts[7] = {6, 6, 4};
         expected_allele_counts[8] = {6, 6, 4};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(9);
         expected_red_counts[0] = {2, 4, 2};
         expected_red_counts[1] = {4, 4, 2};
@@ -4978,6 +5194,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts.push_back({6, 6, 0});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({4, 4, 2});
@@ -5029,6 +5251,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
         expected_red_counts.push_back({4, 4, 2});
@@ -5077,6 +5304,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts.push_back({4, 2, 2});
         expected_allele_counts.push_back({6, 6, 4});
         expected_allele_counts.push_back({6, 6, 4});
+
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         expected_red_counts.clear();
         expected_red_counts.push_back({2, 4, 2});
@@ -5155,6 +5387,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts[7] = {3, 3, 2};
         expected_allele_counts[8] = {3, 3, 2};
 
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 6;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 2;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         std::vector< std::vector<unsigned int> > expected_red_counts(9);
         expected_red_counts[0] = {1, 2, 1};
         expected_red_counts[1] = {2, 2, 1};
@@ -5223,6 +5461,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts.push_back({3, 3, 0});
         expected_allele_counts.push_back({3, 3, 2});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        expected_unique_allele_counts[expected_allele_counts.at(5)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({1, 2, 1});
         expected_red_counts.push_back({2, 2, 1});
@@ -5269,6 +5513,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts.push_back({3, 3, 2});
         expected_allele_counts.push_back({3, 3, 2});
 
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(3)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
         expected_red_counts.clear();
         expected_red_counts.push_back({1, 2, 1});
         expected_red_counts.push_back({2, 2, 1});
@@ -5312,6 +5561,11 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_allele_counts.push_back({2, 1, 1});
         expected_allele_counts.push_back({3, 3, 2});
         expected_allele_counts.push_back({3, 3, 2});
+
+        expected_unique_allele_counts.clear();
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = 5;
+        expected_unique_allele_counts[expected_allele_counts.at(2)] = 1;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
 
         expected_red_counts.clear();
         expected_red_counts.push_back({1, 2, 1});
