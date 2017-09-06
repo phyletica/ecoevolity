@@ -1588,14 +1588,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        PopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         PopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -1613,44 +1605,15 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood();
-        double l_removed = t_removed.compute_log_likelihood();
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        PopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood();
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -1667,14 +1630,6 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of Population
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        PopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         PopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -1692,44 +1647,15 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of Population
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood(4);
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood(2);
-        double l_removed = t_removed.compute_log_likelihood(3);
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        PopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood(4);
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -4218,14 +4144,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of DirichletPopulation
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        DirichletPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         DirichletPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -4243,44 +4161,15 @@ TEST_CASE("Testing affect of constant sites on likelihood of DirichletPopulation
         t_included.set_freq_1(0.05);
         t_included.set_mean_population_size(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_mean_population_size(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood();
-        double l_removed = t_removed.compute_log_likelihood();
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        DirichletPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_mean_population_size(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood();
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -4297,14 +4186,6 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of DirichletP
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        DirichletPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         DirichletPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -4322,44 +4203,15 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of DirichletP
         t_included.set_freq_1(0.05);
         t_included.set_mean_population_size(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_mean_population_size(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood(4);
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood(2);
-        double l_removed = t_removed.compute_log_likelihood(3);
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        DirichletPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_mean_population_size(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood(4);
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -7133,14 +6985,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of RelativeRootPopulat
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        RelativeRootPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         RelativeRootPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -7158,44 +7002,15 @@ TEST_CASE("Testing affect of constant sites on likelihood of RelativeRootPopulat
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood();
-        double l_removed = t_removed.compute_log_likelihood();
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        RelativeRootPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood();
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -7212,14 +7027,6 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of RelativeRo
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        RelativeRootPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         RelativeRootPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -7237,44 +7044,15 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of RelativeRo
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood(4);
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood(2);
-        double l_removed = t_removed.compute_log_likelihood(3);
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        RelativeRootPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood(4);
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 

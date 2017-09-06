@@ -85,17 +85,17 @@ double compute_pattern_likelihood(
         const bool markers_are_dominant
         );
 
-void compute_constant_pattern_likelihoods(
+void compute_constant_pattern_log_likelihood_correction(
         PopulationNode& root,
-        const std::vector<unsigned int>& max_allele_counts,
+        const std::vector< std::vector<unsigned int> > & unique_allele_counts,
+        const std::vector<unsigned int> & unique_allele_count_weights,
         const double u,
         const double v,
         const double mutation_rate,
         const double ploidy,
         const bool markers_are_dominant,
         const bool state_frequencies_are_constrained,
-        double& all_red_pattern_likelihood,
-        double& all_green_pattern_likelihood
+        double& constant_log_likelihood_correction
         );
 
 double get_log_likelihood_for_pattern_range(
@@ -117,7 +117,8 @@ double get_log_likelihood(
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,
         const std::vector<unsigned int>& pattern_weights,
-        const std::vector<unsigned int>& max_allele_counts,
+        const std::vector< std::vector<unsigned int> > & unique_allele_counts,
+        const std::vector<unsigned int> & unique_allele_count_weights,
         const double u,
         const double v,
         const double mutation_rate,
@@ -125,8 +126,7 @@ double get_log_likelihood(
         const bool markers_are_dominant,
         const bool state_frequencies_are_constrained,
         const bool constant_sites_removed,
-        double& all_red_pattern_likelihood,
-        double& all_green_pattern_likelihood,
+        double& constant_log_likelihood_correction,
         unsigned int nthreads = 1
         );
 

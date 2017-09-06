@@ -168,6 +168,17 @@ void PopulationTree::init(
     this->init_tree();
 
     this->root_->resize_all();
+
+    // Store unique allele counts and weights for calculating the likelihood
+    // correction term for constant sites.
+    // At this point, no data manipulation should happen that would require
+    // these to be updated (only pattern folding, which will not change the
+    // unique allele counts or weights).
+    std::map<std::vector<unsigned int>, unsigned int> unique_allele_count_map = this->data_.get_unique_allele_counts();
+    for (auto const & kv: unique_allele_count_map) {
+        this->unique_allele_counts_.push_back(kv.first);
+        this->unique_allele_count_weights_.push_back(kv.second);
+    }
 }
 
 void PopulationTree::init_tree() {
@@ -263,12 +274,12 @@ double PopulationTree::calculate_log_binomial(
     return f;
 }
 
-bool PopulationTree::constant_site_counts_were_provided() {
-    if ((this->provided_number_of_constant_green_sites_ > -1) && (this->provided_number_of_constant_red_sites_ > -1)) {
-        return true;
-    }
-    return false;
-}
+// bool PopulationTree::constant_site_counts_were_provided() {
+//     if ((this->provided_number_of_constant_green_sites_ > -1) && (this->provided_number_of_constant_red_sites_ > -1)) {
+//         return true;
+//     }
+//     return false;
+// }
 
 double PopulationTree::get_log_likelihood_value() const {
     return this->log_likelihood_.get_value();
@@ -516,8 +527,6 @@ void PopulationTree::store_state() {
 }
 void PopulationTree::store_likelihood() {
     this->log_likelihood_.store();
-    this->all_green_pattern_likelihood_.store();
-    this->all_red_pattern_likelihood_.store();
 }
 void PopulationTree::store_prior_density() {
     this->log_prior_density_.store();
@@ -542,8 +551,6 @@ void PopulationTree::restore_state() {
 }
 void PopulationTree::restore_likelihood() {
     this->log_likelihood_.restore();
-    this->all_green_pattern_likelihood_.restore();
-    this->all_red_pattern_likelihood_.restore();
 }
 void PopulationTree::restore_prior_density() {
     this->log_prior_density_.restore();
@@ -624,16 +631,16 @@ void PopulationTree::make_clean() {
     this->root_->make_all_clean();
 }
 
-void PopulationTree::provide_number_of_constant_sites(
-                unsigned int number_all_red,
-                unsigned int number_all_green) {
-    if (! this->constant_sites_removed_) {
-        throw EcoevolityError(
-                "Trying to provide number of constant sites, but they haven't been removed");
-    }
-    this->provided_number_of_constant_red_sites_ = number_all_red;
-    this->provided_number_of_constant_green_sites_ = number_all_green;
-}
+// void PopulationTree::provide_number_of_constant_sites(
+//                 unsigned int number_all_red,
+//                 unsigned int number_all_green) {
+//     if (! this->constant_sites_removed_) {
+//         throw EcoevolityError(
+//                 "Trying to provide number of constant sites, but they haven't been removed");
+//     }
+//     this->provided_number_of_constant_red_sites_ = number_all_red;
+//     this->provided_number_of_constant_green_sites_ = number_all_green;
+// }
 
 void PopulationTree::simulate_gene_tree(
         const std::shared_ptr<PopulationNode> node,
@@ -1181,14 +1188,14 @@ double PopulationTree::compute_log_likelihood(
         this->log_likelihood_.set_value(0.0);
         return 0.0;
     }
-    double all_red_pattern_prob = 0.0;
-    double all_green_pattern_prob = 0.0;
+    double constant_pattern_lnl_correction = 0.0;
     double log_likelihood = get_log_likelihood(
             this->get_mutable_root(),
             this->data_.get_red_allele_count_matrix(),
             this->data_.get_allele_count_matrix(),
             this->data_.get_pattern_weights(),
-            this->data_.get_max_allele_counts(),
+            this->unique_allele_counts_,
+            this->unique_allele_count_weights_,
             this->get_u(),
             this->get_v(),
             this->get_mutation_rate(),
@@ -1196,25 +1203,21 @@ double PopulationTree::compute_log_likelihood(
             this->data_.markers_are_dominant(),
             this->state_frequencies_are_constrained(),
             this->constant_sites_removed(),
-            all_red_pattern_prob,
-            all_green_pattern_prob,
+            constant_pattern_lnl_correction,
             nthreads);
 
-    this->all_red_pattern_likelihood_.set_value(all_red_pattern_prob);
-    this->all_green_pattern_likelihood_.set_value(all_green_pattern_prob);
-
     if (this->constant_sites_removed()) {
-        if (this->constant_site_counts_were_provided()) {
-            double constant_log_likelihood =
-                    ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
-                    ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
-            log_likelihood += constant_log_likelihood;
-        }
         //////////////////////////////////////////////////////////////////////
         // No reason to use removed site counts. Simply leave constant sites in
         // and calc likelihood without correction. This is better, because it
         // doesn't treat all constant site patterns equally (i.e., it accounts
         // for constant patterns with missing data).
+        // if (this->constant_site_counts_were_provided()) {
+        //     double constant_log_likelihood =
+        //             ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
+        //             ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
+        //     log_likelihood += constant_log_likelihood;
+        // }
         // else if (this->use_removed_constant_site_counts_){
         //     double constant_log_likelihood =
         //             ((double)this->data_.get_number_of_constant_green_sites_removed() *
@@ -1224,13 +1227,10 @@ double PopulationTree::compute_log_likelihood(
         //     log_likelihood += constant_log_likelihood;
         // }
         //////////////////////////////////////////////////////////////////////
-        else {
-            log_likelihood -= ((double)this->data_.get_number_of_sites() * 
-                    std::log(1.0 - all_green_pattern_prob -
-                            all_red_pattern_prob));
-        }
+        // else {
+        log_likelihood -= constant_pattern_lnl_correction;
+        // }
     }
-
 
     log_likelihood += this->get_likelihood_correction();
 

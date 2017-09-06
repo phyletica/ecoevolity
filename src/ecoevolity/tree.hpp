@@ -47,11 +47,9 @@ class PopulationTree {
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         bool likelihood_correction_was_calculated_ = false;
-        ProbabilityDensity all_green_pattern_likelihood_ = ProbabilityDensity(0.0);
-        ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
         bool constant_sites_removed_ = true;
-        int provided_number_of_constant_red_sites_ = -1;
-        int provided_number_of_constant_green_sites_ = -1;
+        // int provided_number_of_constant_red_sites_ = -1;
+        // int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool population_sizes_are_constrained_ = false;
         bool population_size_multipliers_are_fixed_ = false;
@@ -61,9 +59,18 @@ class PopulationTree {
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
+        // Vectors for storing unique allele counts and associated weights.
+        // These are used for calculating the likelihood correction term for
+        // constant site patterns. It is a bit weird to store data here, but
+        // it's cheaper than calling 'this->data_.get_unique_allele_counts()'
+        // every time the likelihood needs to be calculated.
+        // These vectors are populated in 'init' method.
+        std::vector< std::vector<unsigned int> > unique_allele_counts_;
+        std::vector<unsigned int> unique_allele_count_weights_;
+
         // methods
         void init_tree();
-        bool constant_site_counts_were_provided();
+        // bool constant_site_counts_were_provided();
         void calculate_likelihood_correction();
 
         double calculate_log_binomial(
@@ -130,12 +137,12 @@ class PopulationTree {
             return this->constant_sites_removed_;
         }
 
-        int get_provided_number_of_constant_red_sites() const {
-            return this->provided_number_of_constant_red_sites_;
-        }
-        int get_provided_number_of_constant_green_sites() const {
-            return this->provided_number_of_constant_green_sites_;
-        }
+        // int get_provided_number_of_constant_red_sites() const {
+        //     return this->provided_number_of_constant_red_sites_;
+        // }
+        // int get_provided_number_of_constant_green_sites() const {
+        //     return this->provided_number_of_constant_green_sites_;
+        // }
 
         bool initialized() const {return (bool)this->root_;}
         const PopulationNode& get_root() const {return *this->root_;}
@@ -206,9 +213,9 @@ class PopulationTree {
             return this->ignore_data_;
         }
 
-        void provide_number_of_constant_sites(
-                unsigned int number_all_red,
-                unsigned int number_all_green);
+        // void provide_number_of_constant_sites(
+        //         unsigned int number_all_red,
+        //         unsigned int number_all_green);
 
         std::shared_ptr<PositiveRealParameter> get_freq_1_parameter() const;
 
