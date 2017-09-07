@@ -2806,13 +2806,13 @@ class BaseCollectionSettings {
         }
 
         void blanket_set_population_name_is_prefix(bool b) {
-            for (auto comp : this->comparisons_) {
+            for (auto & comp : this->comparisons_) {
                 comp.population_name_is_prefix_ = b;
             }
         }
 
         void blanket_set_genotypes_are_diploid(bool b) {
-            for (auto comp : this->comparisons_) {
+            for (auto & comp : this->comparisons_) {
                 comp.genotypes_are_diploid_ = b;
             }
         }
