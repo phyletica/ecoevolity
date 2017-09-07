@@ -2811,6 +2811,12 @@ class BaseCollectionSettings {
             }
         }
 
+        void blanket_set_genotypes_are_diploid(bool b) {
+            for (auto comp : this->comparisons_) {
+                comp.genotypes_are_diploid_ = b;
+            }
+        }
+
         bool event_model_is_fixed() const {
             if (this->fixed_event_model_indices_.size() > 0) {
                 return true;

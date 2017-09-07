@@ -331,6 +331,7 @@ int simcoevolity_main(int argc, char * argv[]) {
                 sim_alignment_stream.close();
             }
             prior_settings.blanket_set_population_name_is_prefix(true);
+            prior_settings.blanket_set_genotypes_are_diploid(false);
             std::ofstream analysis_settings_stream;
             analysis_settings_stream.open(analysis_config_path);
             prior_settings.write_settings(analysis_settings_stream);
