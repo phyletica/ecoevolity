@@ -5048,11 +5048,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
 
-        // Now handling correction for constant patterns differently than SNAPP
-        // when there are allele count patterns with missing data, so are no
-        // longer expected to match
-        REQUIRE(tree.get_log_prior_density_value() != Approx(-504.53672771643153));
-        REQUIRE(tree.get_stored_log_prior_density_value() != Approx(-447.43599077244653));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-504.53672771643153));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 14);
 
         tree.store_state();
@@ -5070,11 +5067,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
 
-        // Now handling correction for constant patterns differently than SNAPP
-        // when there are allele count patterns with missing data, so are no
-        // longer expected to match
-        REQUIRE(tree.get_log_prior_density_value() != Approx(-56.876713494126008));
-        REQUIRE(tree.get_stored_log_prior_density_value() != Approx(-504.53672771643153));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(-56.876713494126008));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-504.53672771643153));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 15);
 
         tree.store_state();
@@ -5092,11 +5086,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
 
-        // Now handling correction for constant patterns differently than SNAPP
-        // when there are allele count patterns with missing data, so are no
-        // longer expected to match
-        REQUIRE(tree.get_log_prior_density_value() != Approx(0.22402344985899036));
-        REQUIRE(tree.get_stored_log_prior_density_value() != Approx(-56.876713494126008));
+        REQUIRE(tree.get_log_prior_density_value() == Approx(0.22402344985899036));
+        REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-56.876713494126008));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 16);
 
         REQUIRE(tree.get_degree_of_root() == 2);
