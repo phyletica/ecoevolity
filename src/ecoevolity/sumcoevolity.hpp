@@ -139,10 +139,11 @@ int sumcoevolity_main(int argc, char * argv[]) {
     }
 
     unsigned int burnin = options.get("burnin");
-    if (burnin < 0) {
-        throw EcoevolityError(
-                "Burn in must be 0 or greater");
-    }
+    // Using unsigned int for burnin, so no need to check if negative
+    // if (burnin < 0) {
+    //     throw EcoevolityError(
+    //             "Burn in must be 0 or greater");
+    // }
 
     std::string config_path = options.get("config").get_str();
     bool running_sims = false;
@@ -315,16 +316,12 @@ int sumcoevolity_main(int argc, char * argv[]) {
     }
 
     double min_post_prob = 1.0 / (double)number_of_posterior_samples;
-    double min_post_odds = min_post_prob / (1.0 - min_post_prob);
 
     double min_prior_prob = 1.0 / (double)nreps;
-    double min_prior_odds = min_prior_prob / (1.0 - min_prior_prob);
 
     double max_post_prob = (number_of_posterior_samples - 1) / (double)number_of_posterior_samples;
-    double max_post_odds = max_post_prob / (1.0 - max_post_prob);
 
     double max_prior_prob = (nreps - 1) / (double)nreps;
-    double max_prior_odds = max_prior_prob / (1.0 - max_prior_prob);
 
     // output nevents results
     std::string nevents_path = prefix + "sumcoevolity-results-nevents.txt";
