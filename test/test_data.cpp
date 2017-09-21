@@ -3708,7 +3708,7 @@ TEST_CASE("Testing writing methods for diploid standard data set",
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t48.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -3805,7 +3805,7 @@ TEST_CASE("Testing writing methods for standard diploid with only 0/1 genotypes"
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t49.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -3896,7 +3896,7 @@ TEST_CASE("Testing writing methods for standard haploid", "[BiallelicData]") {
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t50.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -3987,7 +3987,7 @@ TEST_CASE("Testing writing methods for standard haploid dominant", "[BiallelicDa
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t51.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4070,7 +4070,7 @@ TEST_CASE("Testing writing methods for constant diploid site patterns",
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t52.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4098,7 +4098,7 @@ TEST_CASE("Testing writing methods for constant diploid site patterns",
         bd.fold_patterns();
 
         tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        test_path = "data/tmp-data-" + tag + ".cfg";
+        test_path = "data/tmp-data-" + tag + "t53.cfg";
         os.open(test_path);
         bd.write_nexus(os, delim);
         os.close();
@@ -4125,7 +4125,7 @@ TEST_CASE("Testing writing methods for constant diploid site patterns",
         bd.remove_constant_patterns();
 
         tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        test_path = "data/tmp-data-" + tag + ".cfg";
+        test_path = "data/tmp-data-" + tag + "t54.cfg";
         os.open(test_path);
         bd.write_nexus(os, delim);
         os.close();
@@ -4166,7 +4166,7 @@ TEST_CASE("Testing writing methods for aflp data",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t55.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4210,7 +4210,7 @@ TEST_CASE("Testing writing methods for aflp data with folding",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t56.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4254,7 +4254,7 @@ TEST_CASE("Testing writing methods for aflp data with removing",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t57.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4299,7 +4299,7 @@ TEST_CASE("Testing writing methods for aflp data with folding and removing",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t58.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4341,7 +4341,7 @@ TEST_CASE("Testing writing methods for dominant aflp data",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t59.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4385,7 +4385,7 @@ TEST_CASE("Testing writing methods for dominant aflp data with removing",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t60.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4427,7 +4427,7 @@ TEST_CASE("Testing writing methods for hemi data",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t61.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4471,7 +4471,7 @@ TEST_CASE("Testing writing methods for hemi data with folding",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t62.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4515,7 +4515,7 @@ TEST_CASE("Testing writing methods for hemi data with removing",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t63.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4560,7 +4560,7 @@ TEST_CASE("Testing writing methods for hemi data with folding and removing",
 
         char delim = ' ';
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t64.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4651,7 +4651,7 @@ TEST_CASE("Testing writing methods for quoted underscores",
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t65.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
@@ -4742,7 +4742,7 @@ TEST_CASE("Testing writing methods for quoted spaces",
         REQUIRE(nexus.str() == expected_nexus.str());
 
         std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
-        std::string test_path = "data/tmp-data-" + tag + ".cfg";
+        std::string test_path = "data/tmp-data-" + tag + "t66.cfg";
         std::ofstream os;
         os.open(test_path);
         bd.write_nexus(os, delim);
