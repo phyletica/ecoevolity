@@ -32,8 +32,8 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t1.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t1-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -200,8 +200,8 @@ TEST_CASE("Testing relaxed constant sites setting", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t2.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t2-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -369,8 +369,8 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t3.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t3-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -537,8 +537,8 @@ TEST_CASE("Testing relaxed missing sites setting", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t4.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t4-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -707,8 +707,8 @@ TEST_CASE("Testing constrained singleton error",
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t5.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t5-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -876,8 +876,8 @@ TEST_CASE("Testing fixed singleton error",
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t6.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t6-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1044,8 +1044,8 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t7.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t7-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1212,8 +1212,8 @@ TEST_CASE("Testing relaxed triallelic sites setting", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t8.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t8-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1381,8 +1381,8 @@ TEST_CASE("Testing triallelic sites error", "[EcoevolityCLI]") {
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _ECOEVOLITY_CLI_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t9.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t9-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
