@@ -72,6 +72,7 @@ int ecoevolity_main(int argc, char * argv[]) {
             .dest("ignore_data")
             .help("Ignore data to sample from the prior distribution. Default: "
                   "Use data to sample from the posterior distribution");
+#ifdef BUILD_WITH_THREADS
     parser.add_option("--nthreads")
             .action("store")
             .type("unsigned int")
@@ -81,6 +82,7 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "Default: 1 (no multithreading). If you are using "
                   "the \'--ignore-data\' option, no likelihood calculations "
                   "will be performed, and so no multithreading is used.");
+#endif
     parser.add_option("--prefix")
             .action("store")
             .dest("prefix")
@@ -153,7 +155,11 @@ int ecoevolity_main(int argc, char * argv[]) {
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
     const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
 
+#ifdef BUILD_WITH_THREADS 
     unsigned int nthreads = options.get("nthreads");
+#else
+    unsigned int nthreads = 1;
+#endif
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");

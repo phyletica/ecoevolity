@@ -2,9 +2,10 @@
 
 usage () {
     echo ""
-    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-s|--static] [-i|--install]"
+    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-s|--static] [-t|--threads] [-i|--install]"
     echo "  -h|--help        Show help message and exit."
     echo "  -s|--static      Build statically linked binaries. Default: dynamic."
+    echo "  -t|--threads     Compile with multithreading. Default: No multithreading."
     echo "  -i|--install     Install the executables."
     echo "  -p|--prefix      Install path. Default: '/usr/local'."
     echo "  -b|--build-type  Build type. Options: debug, release, relwithdebinfo."
@@ -73,6 +74,7 @@ export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
 # process args
 extra_args=""
 static=""
+threads=""
 install_prefix=""
 ECOEVOLITY_RUN_INSTALL=""
 universal_mac_build=""
@@ -84,7 +86,7 @@ COMPILETHREADS="4"
 if [ "$(echo "$@" | grep -c "=")" -gt 0 ]
 then
     echo "ERROR: Do not use '=' for arguments. For example, use"
-    echo "'--nthreads 2' instead of '--nthreads=2'."
+    echo "'--prefix /usr/local' instead of '--prefix=/usr/local'."
     exit 1
 fi
 
@@ -106,7 +108,10 @@ do
         -s| --static)
             static=1
             ;;
-        -n| --nthreads)
+        -t| --threads)
+            threads=1
+            ;;
+        -j)
             shift
             COMPILETHREADS="$1"
             ;;
@@ -140,6 +145,10 @@ fi
 if [ -n "$static" ]
 then
     args="${args} -DSTATIC_LINKING=yes"
+fi
+if [ -n "$threads" ]
+then
+    args="${args} -DBUILD_WITH_THREADS=yes"
 fi
 if [ -n "$extra_args" ]
 then

@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.1)
 
 project("ecoevolity" C CXX)
 
+
 #######################################################################
 # Get local cmake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
@@ -59,10 +60,16 @@ if (NOT YAML_CPP_FOUND)
 endif()
 MESSAGE(STATUS "USING_BUNDLED_YAML_CPP: ${USING_BUNDLED_YAML_CPP}")
 
+
 #######################################################################
 # Find and set up threads variables
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
+option (BUILD_WITH_THREADS "Build to use multithreading" OFF)
+if (BUILD_WITH_THREADS)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    add_definitions(-DBUILD_WITH_THREADS)
+endif()
+MESSAGE(STATUS "BUILD_WITH_THREADS: ${BUILD_WITH_THREADS}")
 
 
 #######################################################################

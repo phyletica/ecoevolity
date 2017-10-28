@@ -22,7 +22,10 @@
 
 #include <algorithm>
 #include <memory>
+
+#ifdef BUILD_WITH_THREADS
 #include <future>
+#endif
 
 #include "node.hpp"
 #include "matrix.hpp"
