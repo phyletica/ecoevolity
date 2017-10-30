@@ -154,7 +154,7 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test1";
+        char arg6[] = "test1-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -333,7 +333,7 @@ TEST_CASE("Testing simcoevolity constant sites error for dirichlet trees", "[Sim
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test2";
+        char arg6[] = "test2-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -507,7 +507,7 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting", "[SimcoevolityC
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test3";
+        char arg6[] = "test3-";
         char arg7[] = "--relax-constant-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -705,7 +705,7 @@ TEST_CASE("Testing simcoevolity relaxed constant sites setting for dirichlet tre
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test4";
+        char arg6[] = "test4-";
         char arg7[] = "--relax-constant-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -897,7 +897,7 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test5";
+        char arg6[] = "test5-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -1076,7 +1076,7 @@ TEST_CASE("Testing simcoevolity missing sites error for dirichlet trees", "[Simc
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test6";
+        char arg6[] = "test6-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -1250,7 +1250,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting", "[SimcoevolityCL
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test7";
+        char arg6[] = "test7-";
         char arg7[] = "--relax-missing-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -1448,7 +1448,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting for dirichlet tree
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test8";
+        char arg6[] = "test8-";
         char arg7[] = "--relax-missing-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -1642,7 +1642,7 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test9";
+        char arg6[] = "test9-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -1817,7 +1817,7 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test10";
+        char arg6[] = "test10-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -2003,7 +2003,7 @@ TEST_CASE("Testing simcoevolity fixed singleton error for dirichlet tree",
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test11";
+        char arg6[] = "test11-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -2176,7 +2176,7 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test12";
+        char arg6[] = "test12-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -2350,7 +2350,7 @@ TEST_CASE("Testing simcoevolity parameters only setting", "[SimcoevolityCLI]") {
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test-params-only";
+        char arg6[] = "test-params-only-";
         char arg7[] = "--parameters-only";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -2544,7 +2544,7 @@ TEST_CASE("Testing simcoevolity triallelic sites error", "[xSimcoevolityCLI]") {
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test13";
+        char arg6[] = "test13-";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
         cfg_path[test_path.size()] = '\0';
@@ -2719,7 +2719,7 @@ TEST_CASE("Testing simcoevolity relax triallelic sites option", "[xSimcoevolityC
         char arg3[] = "-n";
         char arg4[] = "10";
         char arg5[] = "--prefix";
-        char arg6[] = "test14";
+        char arg6[] = "test14-";
         char arg7[] = "--relax-triallelic-sites";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);

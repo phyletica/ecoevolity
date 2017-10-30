@@ -226,7 +226,7 @@ int simcoevolity_main(int argc, char * argv[]) {
 
     std::string output_prefix = "";
     if (options.is_set_by_user("prefix")) {
-        output_prefix = options.get("prefix").get_str() + "-";
+        output_prefix = options.get("prefix").get_str();
     }
     output_prefix += "simcoevolity-";
 

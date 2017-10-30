@@ -165,7 +165,7 @@ int sumcoevolity_main(int argc, char * argv[]) {
 
     std::string prefix = "";
     if (options.is_set_by_user("prefix")) {
-        prefix = options.get("prefix").get_str() + "-";
+        prefix = options.get("prefix").get_str();
     }
 
     bool prevent_overwrite = (! options.get("force"));

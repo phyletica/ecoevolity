@@ -201,7 +201,7 @@ int ecoevolity_main(int argc, char * argv[]) {
     }
 
     if (options.is_set_by_user("prefix")) {
-        std::string output_prefix = options.get("prefix").get_str() + "-";
+        std::string output_prefix = options.get("prefix").get_str();
         comparisons.add_log_prefix(output_prefix);
     }
 
