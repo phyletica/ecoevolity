@@ -387,7 +387,6 @@ double get_log_likelihood_for_pattern_range(
     return log_likelihood;
 }
 
-#ifndef BUILD_WITH_THREADS
 double get_log_likelihood(
         PopulationNode& root,
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
@@ -405,51 +404,9 @@ double get_log_likelihood(
         double& constant_log_likelihood_correction,
         unsigned int nthreads
         ) {
-    if (constant_sites_removed) {
-        compute_constant_pattern_log_likelihood_correction(
-                root,
-                unique_allele_counts,
-                unique_allele_count_weights,
-                u,
-                v,
-                mutation_rate,
-                ploidy,
-                markers_are_dominant,
-                state_frequencies_are_constrained,
-                constant_log_likelihood_correction);
-    }
-    return get_log_likelihood_for_pattern_range(
-            root,
-            red_allele_count_matrix,
-            allele_count_matrix,
-            pattern_weights,
-            0,
-            pattern_weights.size(),
-            u,
-            v,
-            mutation_rate,
-            ploidy,
-            markers_are_dominant);
-}
-#else
-double get_log_likelihood(
-        PopulationNode& root,
-        const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
-        const std::vector< std::vector<unsigned int> >& allele_count_matrix,
-        const std::vector<unsigned int>& pattern_weights,
-        const std::vector< std::vector<unsigned int> > & unique_allele_counts,
-        const std::vector<unsigned int> & unique_allele_count_weights,
-        const double u,
-        const double v,
-        const double mutation_rate,
-        const double ploidy,
-        const bool markers_are_dominant,
-        const bool state_frequencies_are_constrained,
-        const bool constant_sites_removed,
-        double& constant_log_likelihood_correction,
-        unsigned int nthreads
-        ) {
+#ifdef BUILD_WITH_THREADS
     if (nthreads < 2) {
+#endif
         if (constant_sites_removed) {
             compute_constant_pattern_log_likelihood_correction(
                     root,
@@ -475,6 +432,7 @@ double get_log_likelihood(
                 mutation_rate,
                 ploidy,
                 markers_are_dominant);
+#ifdef BUILD_WITH_THREADS
     }
     double log_likelihood = 0.0;
     const unsigned int npatterns = pattern_weights.size();
@@ -539,5 +497,5 @@ double get_log_likelihood(
         log_likelihood += t.get();
     }
     return log_likelihood;
-}
 #endif
+}
