@@ -6092,6 +6092,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
     }
 }
 
+#ifdef BUILD_WITH_THREADS
 TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         "[SamplingPrior]") {
 
@@ -6432,7 +6433,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         delete[] cfg_path;
     }
 }
+#endif
 
+#ifdef BUILD_WITH_THREADS
 TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         "[SamplingPrior]") {
 
@@ -6773,6 +6776,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         delete[] cfg_path;
     }
 }
+#endif
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
 
@@ -8359,6 +8363,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
     }
 }
 
+#ifdef BUILD_WITH_THREADS
 TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 2 threads",
         "[SamplingPrior]") {
 
@@ -8700,6 +8705,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         delete[] cfg_path;
     }
 }
+#endif
 
 TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         "[SamplingPrior]") {
