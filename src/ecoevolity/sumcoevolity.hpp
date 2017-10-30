@@ -99,6 +99,10 @@ int sumcoevolity_main(int argc, char * argv[]) {
             .help("Seed for random number generator. "
                   "Only used if YAML config file is provided. "
                   "Default: Set from clock.");
+    parser.add_option("-f", "--force")
+            .action("store_true")
+            .dest("force")
+            .help("Force overwriting of existing output files, if they exist.");
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> log_paths = parser.args();
@@ -161,8 +165,10 @@ int sumcoevolity_main(int argc, char * argv[]) {
 
     std::string prefix = "";
     if (options.is_set_by_user("prefix")) {
-        std::string prefix = options.get("prefix").get_str() + "-";
+        prefix = options.get("prefix").get_str() + "-";
     }
+
+    bool prevent_overwrite = (! options.get("force"));
 
 
     // Start real work
@@ -325,7 +331,9 @@ int sumcoevolity_main(int argc, char * argv[]) {
 
     // output nevents results
     std::string nevents_path = prefix + "sumcoevolity-results-nevents.txt";
-    check_sumcoevolity_output_path(nevents_path);
+    if (prevent_overwrite) {
+        check_sumcoevolity_output_path(nevents_path);
+    }
 
     std::cerr << "Writing summary for number of events...\n";
     std::ofstream nevents_stream;
@@ -412,7 +420,9 @@ int sumcoevolity_main(int argc, char * argv[]) {
 
     // output model results
     std::string model_path = prefix + "sumcoevolity-results-model.txt";
-    check_sumcoevolity_output_path(model_path);
+    if (prevent_overwrite) {
+        check_sumcoevolity_output_path(model_path);
+    }
 
     std::cerr << "Writing summary for event models...\n";
     std::ofstream model_stream;
