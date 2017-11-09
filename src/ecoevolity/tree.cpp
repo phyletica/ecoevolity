@@ -790,8 +790,40 @@ double PopulationTree::coalesce_in_branch(
     return current_height;
 }
 
+bool PopulationTree::sample_pattern(
+        RandomNumberGenerator& rng,
+        const float singleton_sample_probability,
+        const std::vector<unsigned int>& red_allele_counts,
+        const std::vector<unsigned int>& allele_counts) const {
+    ECOEVOLITY_ASSERT(red_allele_counts.size() == allele_counts.size());
+    if (singleton_sample_probability >= 1.0) {
+        return true;
+    }
+    unsigned int number_of_reds = 0;
+    unsigned int number_of_alleles = 0;
+    for (unsigned int count_idx = 0;
+            count_idx < allele_counts.size();
+            ++count_idx) {
+        number_of_reds += red_allele_counts.at(count_idx);
+        number_of_alleles += allele_counts.at(count_idx);
+    }
+    if (number_of_alleles < 4) {
+        throw EcoevolityBiallelicDataError(
+                "Singleton filtering requires 4 or more sampled alleles for each site",
+                this->data_.get_path());
+    }
+    if ((number_of_reds == 1) || (number_of_reds == (number_of_alleles - 1))) {
+        double u = rng.uniform_real();
+        if (u > singleton_sample_probability) {
+            return false;
+        }
+    }
+    return true;
+}
+
 BiallelicData PopulationTree::simulate_biallelic_data_set(
         RandomNumberGenerator& rng,
+        float singleton_sample_probability,
         bool validate) const {
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
@@ -813,6 +845,16 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
                 auto pattern = pattern_tree.first;
                 std::vector<unsigned int> red_allele_counts = pattern.first;
                 std::vector<unsigned int> allele_counts = pattern.second;
+                if (singleton_sample_probability < 1.0) {
+                    bool sample_pattern = this->sample_pattern(
+                            rng,
+                            singleton_sample_probability,
+                            red_allele_counts,
+                            allele_counts);
+                    if (! sample_pattern) {
+                        continue;
+                    }
+                }
                 std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
                 site_added = sim_data.add_site(red_allele_counts,
                         allele_counts,
@@ -834,6 +876,7 @@ std::pair<BiallelicData, unsigned int>
 PopulationTree::simulate_complete_biallelic_data_set(
         RandomNumberGenerator& rng,
         unsigned int locus_size,
+        float singleton_sample_probability,
         bool validate) const {
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
@@ -863,6 +906,16 @@ PopulationTree::simulate_complete_biallelic_data_set(
             }
             std::vector<unsigned int> red_allele_counts = pattern.first;
             std::vector<unsigned int> allele_counts = pattern.second;
+            if (singleton_sample_probability < 1.0) {
+                bool sample_pattern = this->sample_pattern(
+                        rng,
+                        singleton_sample_probability,
+                        red_allele_counts,
+                        allele_counts);
+                if (! sample_pattern) {
+                    continue;
+                }
+            }
             site_added = sim_data.add_site(red_allele_counts,
                     allele_counts,
                     filtering_constant_sites);

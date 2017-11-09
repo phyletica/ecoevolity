@@ -89,6 +89,16 @@ int simcoevolity_main(int argc, char * argv[]) {
                   "simulated datasets. By default, the same priors will "
                   "specified in your subsequent analyses as were used to "
                   "simulate the datasets.");
+    parser.add_option("--singleton-sample-probability")
+            .action("store")
+            .type("double")
+            .dest("singleton_sample_probability")
+            .set_default("1.0")
+            .help("The probability of sampling singleton site patterns. This "
+                  "is used to simulate data acquisition biases against "
+                  "character patterns where only gene copy has an allele "
+                  "that is different from all the others. "
+                  "Default: 1.0 (no acquisition bias).");
     parser.add_option("-l", "--locus-size")
             .action("store")
             .type("unsigned int")
@@ -160,14 +170,17 @@ int simcoevolity_main(int argc, char * argv[]) {
     rng.set_seed(seed);
     std::cerr << "Seed: " << seed << std::endl;
 
-    unsigned int nreps = options.get("number_of_replicates");
+    const unsigned int nreps = options.get("number_of_replicates");
     if (nreps < 1) {
         throw EcoevolityError(
                 "Number of simulation replicates must be 1 or greater");
     }
     std::cerr << "Number of simulation replicates: " << nreps << std::endl;
 
-    unsigned int locus_size = options.get("locus_size");
+    const double singleton_sample_probability = options.get(
+            "singleton_sample_probability");
+
+    const unsigned int locus_size = options.get("locus_size");
     if (locus_size < 1) {
         throw EcoevolityError(
                 "Number of sites simulated per locus must be 1 or greater");
@@ -303,11 +316,14 @@ int simcoevolity_main(int argc, char * argv[]) {
 
             comparisons.draw_from_prior(rng);
             if (locus_size < 2) {
-                sim_alignments = comparisons.simulate_biallelic_data_sets(rng, true);
+                sim_alignments = comparisons.simulate_biallelic_data_sets(rng,
+                        singleton_sample_probability,
+                        true);
             }
             else {
                 sim_alignments = comparisons.simulate_complete_biallelic_data_sets(rng,
                         locus_size,
+                        singleton_sample_probability,
                         true);
             }
 

@@ -838,11 +838,12 @@ void BaseComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerat
 
 std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::simulate_biallelic_data_sets(
         RandomNumberGenerator& rng,
+        float singleton_sample_probability,
         bool validate) const {
     std::map<std::string, BiallelicData> alignments;
     for (auto tree: this->trees_) {
         alignments[tree->get_data().get_path()] = tree->simulate_biallelic_data_set(
-                rng, validate);
+                rng, singleton_sample_probability, validate);
     }
     return alignments;
 }
@@ -850,11 +851,12 @@ std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::sim
 std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::simulate_complete_biallelic_data_sets(
         RandomNumberGenerator& rng,
         unsigned int locus_size,
+        float singleton_sample_probability,
         bool validate) const {
     std::map<std::string, BiallelicData> alignments;
     for (auto tree: this->trees_) {
         auto alignment_nloci = tree->simulate_complete_biallelic_data_set(
-                rng, locus_size, validate);
+                rng, locus_size, singleton_sample_probability, validate);
         alignments[tree->get_data().get_path()] = alignment_nloci.first;
     }
     return alignments;

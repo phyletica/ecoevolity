@@ -420,14 +420,22 @@ class PopulationTree {
                 double top_of_branch_height = std::numeric_limits<double>::infinity()
                 );
 
+        bool sample_pattern(
+                RandomNumberGenerator& rng,
+                const float singleton_sample_probability,
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts) const;
+
         BiallelicData simulate_biallelic_data_set(
                 RandomNumberGenerator& rng,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         std::pair<BiallelicData, unsigned int>
         simulate_complete_biallelic_data_set(
                 RandomNumberGenerator& rng,
                 unsigned int locus_size = 1,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         std::pair<

@@ -2790,6 +2790,112 @@ TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
     }
 }
 
+TEST_CASE("Testing singleton acquisition bioas", "[ComparisonPopulationTree]") {
+    SECTION("Testing for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ', true, false, false, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        BiallelicData data1 = tree.simulate_biallelic_data_set(rng, 1.0);
+        BiallelicData data0 = tree.simulate_biallelic_data_set(rng, 0.0);
+
+        REQUIRE(data1.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data1.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data1.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data1.markers_are_dominant() == false);
+        REQUIRE(data0.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data0.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data0.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data0.markers_are_dominant() == false);
+        REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+        unsigned int singleton_count10 = 0;
+        unsigned int singleton_count05 = 0;
+        unsigned int singleton_count00 = 0;
+        RandomNumberGenerator rng10 = RandomNumberGenerator(123);
+        RandomNumberGenerator rng05 = RandomNumberGenerator(123);
+        RandomNumberGenerator rng00 = RandomNumberGenerator(123);
+        for (unsigned int rep = 0; rep < 100; ++rep) {
+            BiallelicData data00 = tree.simulate_biallelic_data_set(rng00, 0.0);
+            BiallelicData data05 = tree.simulate_biallelic_data_set(rng05, 0.5);
+            BiallelicData data10 = tree.simulate_biallelic_data_set(rng10, 1.0);
+            for (unsigned int i = 0; i < data00.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data00.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data00.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count00 += data00.get_pattern_weight(i);
+                }
+            }
+            for (unsigned int i = 0; i < data05.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data05.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data05.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count05 += data05.get_pattern_weight(i);
+                }
+            }
+            for (unsigned int i = 0; i < data10.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data10.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data10.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count10 += data10.get_pattern_weight(i);
+                }
+            }
+        }
+        REQUIRE(singleton_count10 > 0);
+        REQUIRE(singleton_count05 > 0);
+        REQUIRE(singleton_count00 == 0);
+        REQUIRE((double)singleton_count05 == Approx(singleton_count10 * 0.5).epsilon(0.05));
+    }
+}
+
 TEST_CASE("Testing scaling of dataset simulation for singleton",
         "[ComparisonPopulationTree]") {
 
@@ -2825,7 +2931,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
         unsigned int nsamples = 100;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            data = tree.simulate_biallelic_data_set(rng, false);
+            data = tree.simulate_biallelic_data_set(rng, 1.0, false);
             REQUIRE(data.get_number_of_sites() == 100000);
             double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
             divergence.add_sample(x);
@@ -2843,7 +2949,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
         SampleSummarizer<double> divergence2;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            data = tree.simulate_biallelic_data_set(rng, false);
+            data = tree.simulate_biallelic_data_set(rng, 1.0, false);
             REQUIRE(data.get_number_of_sites() == 100000);
             double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
             divergence2.add_sample(x);
@@ -2888,7 +2994,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
         unsigned int nsamples = 100;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, false);
+            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, 1.0, false);
             REQUIRE(data_nloci.second == 100);
             REQUIRE(data_nloci.first.get_number_of_sites() == 100000);
             double x = (double)data_nloci.first.get_number_of_variable_sites() / (double)data_nloci.first.get_number_of_sites();
@@ -2907,7 +3013,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
         SampleSummarizer<double> divergence2;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, false);
+            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, 1.0, false);
             REQUIRE(data_nloci.second == 100);
             REQUIRE(data_nloci.first.get_number_of_sites() == 100000);
             double x = (double)data_nloci.first.get_number_of_variable_sites() / (double)data_nloci.first.get_number_of_sites();

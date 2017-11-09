@@ -279,11 +279,13 @@ class BaseComparisonPopulationTreeCollection {
 
         std::map<std::string, BiallelicData> simulate_biallelic_data_sets(
                 RandomNumberGenerator& rng,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         std::map<std::string, BiallelicData> simulate_complete_biallelic_data_sets(
                 RandomNumberGenerator& rng,
                 unsigned int locus_size = 1,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         bool all_population_sizes_are_fixed() const {
