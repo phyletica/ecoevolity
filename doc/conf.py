@@ -210,6 +210,9 @@ rst_epilog = """
 .. |eco_copyright| replace:: **Copyright 2015-{this_year} Jamie R. Oaks**
 
 .. |git| replace:: Git
-.. _Git: http://git-scm.com/
+.. _git: http://git-scm.com/
 .. |gpl3| replace:: http://www.gnu.org/licenses/gpl-3.0-standalone.html
+
+..|cmake| replace:: CMake
+.. _cmake: https://cmake.org/
 """.format(this_year = time.strftime('%Y'))
