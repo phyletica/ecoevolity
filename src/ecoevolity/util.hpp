@@ -48,4 +48,47 @@ const typename T::value_type::second_type& map_at(
     return it->second;
 }
 
+template <typename T1, typename T2>
+bool second_of_pair_is_greater(
+        const std::pair<T1, T2> & a,
+        const std::pair<T1, T2> & b) {
+    return a.second > b.second;
+}
+
+template <typename T1, typename T2>
+bool second_of_pair_is_lesser(
+        const std::pair<T1, T2> & a,
+        const std::pair<T1, T2> & b) {
+    return a.second < b.second;
+}
+
+template <typename T1, typename T2>
+bool first_of_pair_is_greater(
+        const std::pair<T1, T2> & a,
+        const std::pair<T1, T2> & b) {
+    return a.first > b.first;
+}
+
+template <typename T1, typename T2>
+void sort_pairs(std::vector< std::pair<T1, T2> > & pairs,
+        bool sort_by_first = true,
+        bool reverse = false) {
+    if (sort_by_first) {
+        if (reverse) {
+            std::sort(pairs.begin(), pairs.end(), first_of_pair_is_greater<T1, T2>);
+        }
+        else {
+            std::sort(pairs.begin(), pairs.end());
+        }
+    }
+    else {
+        if (reverse) {
+            std::sort(pairs.begin(), pairs.end(), second_of_pair_is_greater<T1, T2>);
+        }
+        else {
+            std::sort(pairs.begin(), pairs.end(), second_of_pair_is_lesser<T1, T2>);
+        }
+    }
+}
+
 #endif

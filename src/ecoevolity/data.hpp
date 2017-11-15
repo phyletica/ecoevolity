@@ -91,6 +91,7 @@ class BiallelicData {
         bool has_missing_population_patterns() const;
         bool has_mirrored_patterns() const;
         bool patterns_are_folded() const;
+        bool has_recoded_triallelic_sites() const;
 
         static bool pattern_is_constant(
                 const std::vector<unsigned int>& red_allele_counts,
@@ -112,6 +113,7 @@ class BiallelicData {
         unsigned int get_number_of_constant_red_sites_removed() const;
         unsigned int get_number_of_constant_green_sites_removed() const;
         unsigned int get_number_of_missing_sites_removed() const;
+        unsigned int get_number_of_triallelic_sites_recoded() const;
 
         double get_proportion_of_red_alleles() const;
         double get_proportion_1() const {
@@ -150,10 +152,29 @@ class BiallelicData {
         const std::vector<unsigned int>& get_pattern_weights() const {
             return this->pattern_weights_;
         }
+
+        /**
+         * Get the unique allele counts.
+         *
+         * Normally, the BiallelicData class works with allele patterns and
+         * their weights (the number of sites that have the pattern), which
+         * include the red allele counts and total allele counts from each
+         * population. Here what we want is only the unique total allele counts
+         * and their weights (so, ignoring the red allele counts).
+         *
+         * Returns a map of unique allele count vectors to
+         * the weights of those allele counts.
+         *
+         */
+        std::map< std::vector<unsigned int>, unsigned int >
+        get_unique_allele_counts() const;
+
+
     private:
         unsigned int number_of_constant_red_sites_removed_ = 0;
         unsigned int number_of_constant_green_sites_removed_ = 0;
         unsigned int number_of_missing_sites_removed_ = 0;
+        unsigned int number_of_triallelic_sites_recoded_ = 0;
         bool markers_are_dominant_ = true;
         bool genotypes_are_diploid_ = true;
         bool has_missing_population_patterns_ = false;

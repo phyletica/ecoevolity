@@ -61,8 +61,8 @@ class BaseComparisonPopulationTreeCollection {
         BaseComparisonPopulationTreeCollection() { }
 
         void add_log_prefix(const std::string & prefix) {
-            this->state_log_path_ = prefix + this->state_log_path_;
-            this->operator_log_path_ = prefix + this->operator_log_path_;
+            this->state_log_path_ = prefix + path::basename(this->state_log_path_);
+            this->operator_log_path_ = prefix + path::basename(this->operator_log_path_);
         }
 
         void store_state();
@@ -279,11 +279,13 @@ class BaseComparisonPopulationTreeCollection {
 
         std::map<std::string, BiallelicData> simulate_biallelic_data_sets(
                 RandomNumberGenerator& rng,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         std::map<std::string, BiallelicData> simulate_complete_biallelic_data_sets(
                 RandomNumberGenerator& rng,
                 unsigned int locus_size = 1,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         bool all_population_sizes_are_fixed() const {
@@ -343,7 +345,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 const CollectionSettings & settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 
     protected:
@@ -351,7 +354,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 const std::vector<ComparisonSettings> & comparison_settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 };
 
@@ -363,7 +367,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 const RelativeRootCollectionSettings & settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 
     protected:
@@ -371,7 +376,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 const std::vector<RelativeRootComparisonSettings> & comparison_settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 };
 
@@ -383,7 +389,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 const DirichletCollectionSettings & settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 
     protected:
@@ -391,7 +398,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 const std::vector<DirichletComparisonSettings> & comparison_settings,
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
-                bool strict_on_missing_sites = true
+                bool strict_on_missing_sites = true,
+                bool strict_on_triallelic_sites = true
                 );
 };
 

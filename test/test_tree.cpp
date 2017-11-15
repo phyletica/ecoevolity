@@ -19,11 +19,19 @@ TEST_CASE("Testing simple likelihood of PopulationTree", "[PopulationTree]") {
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -36,11 +44,19 @@ TEST_CASE("Testing threaded likelihood of PopulationTree", "[PopulationTree]") {
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -53,11 +69,19 @@ TEST_CASE("Testing over-threaded likelihood of PopulationTree", "[PopulationTree
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(10);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(10);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -80,12 +104,20 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 10.0, 1.0, 1.0)", "[PopulationT
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -99,12 +131,20 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.01, 10.0, 1.0, 1.0)", "[Po
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -221,12 +261,20 @@ TEST_CASE("Testing hemi129.nex likelihood (0.0, 10.0, 1.0, 1.0)", "[PopulationTr
         tree.set_root_height(0.0);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -240,12 +288,20 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.0, 10.0, 1.0, 1.0)", "[Pop
         tree.set_root_height(0.0);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(7);
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(7);
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -360,12 +416,20 @@ TEST_CASE("Testing hemi129.nex likelihood (0.2, 10.0, 1.0, 1.0)", "[PopulationTr
         tree.set_root_height(0.2);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -379,12 +443,20 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.2, 10.0, 1.0, 1.0)", "[Pop
         tree.set_root_height(0.2);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -503,7 +575,11 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -524,7 +600,11 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -653,7 +733,11 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -674,7 +758,11 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -804,7 +892,11 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "[Pop
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_all_population_sizes(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -819,7 +911,11 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 111.1, 10.0/19.0, 10.0
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_all_population_sizes(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(100000);
-        REQUIRE(l == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -924,11 +1020,19 @@ TEST_CASE("Testing simple likelihood of ComparisonPopulationTree", "[ComparisonP
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -942,11 +1046,19 @@ TEST_CASE("Testing simple threaded likelihood of ComparisonPopulationTree", "[Co
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -1073,7 +1185,11 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
 
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
@@ -1083,8 +1199,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
@@ -1095,15 +1215,23 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
@@ -1120,8 +1248,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-328.39238828878365));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
@@ -1141,8 +1273,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.6991237645509));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.8315389903985));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
@@ -1158,8 +1294,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-327.7437811413033));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1347.1157822333005));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.6991237645509));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
@@ -1176,8 +1316,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-265.0023534261969));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-47.141114882027253));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1347.1157822333005));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
@@ -1195,8 +1339,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-224.40177558289847));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.9800426669165));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-47.141114882027253));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
@@ -1213,8 +1361,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.9800426669165));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
@@ -1232,8 +1384,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.9800426669165));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
@@ -1256,8 +1412,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
@@ -1278,8 +1438,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-207.43599077244659));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -1294,8 +1458,12 @@ TEST_CASE("Testing hemi129.nex state manipulation", "[ComparisonPopulationTree]"
         REQUIRE(tree.get_child_population_size(0) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.get_child_population_size(1) == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -1351,7 +1519,11 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
 
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1340.6289538974045));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
@@ -1361,8 +1533,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1340.5289538974043));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1340.6289538974045));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
@@ -1372,15 +1548,23 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1340.6289538974045));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1340.6289538974045));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1340.6289538974045));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1340.6289538974045));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
@@ -1397,8 +1581,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-328.39238828878365));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.5289538974043));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1340.5289538974043));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
@@ -1416,8 +1604,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1340.6965386715569));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.5289538974043));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
@@ -1433,8 +1625,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-327.7437811413033));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1345.1131971403065));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1340.6965386715569));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
@@ -1449,8 +1645,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-265.0023534261969));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-45.138529789033207));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1345.1131971403065));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
@@ -1466,8 +1666,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-224.40177558289847));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.6774575739223));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-45.138529789033207));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
@@ -1482,8 +1686,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-1342.6774575739223));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.6774575739223));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
@@ -1499,8 +1707,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.35742912931147));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-1342.6774575739223));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
@@ -1521,8 +1733,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.35742912931147));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
@@ -1539,8 +1755,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-206.13340567945255));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -1552,8 +1772,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for PopulationTree", "[Populat
         REQUIRE(tree.get_mutation_rate() == 1.0);
         REQUIRE(tree.get_root_population_size() == 2.0/(10.0 * 2 * tree.get_ploidy()));
         REQUIRE(tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -1588,14 +1812,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        PopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         PopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -1613,44 +1829,15 @@ TEST_CASE("Testing affect of constant sites on likelihood of PopulationTree", "[
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood();
-        double l_removed = t_removed.compute_log_likelihood();
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        PopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood();
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -1667,14 +1854,6 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of Population
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        PopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         PopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -1692,44 +1871,15 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of Population
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood(4);
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood(2);
-        double l_removed = t_removed.compute_log_likelihood(3);
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        PopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood(4);
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -1754,7 +1904,11 @@ TEST_CASE("Testing hemi129.nex likelihood (0.01, 100.0, 200.0, 500.0)", "[Compar
         tree.set_child_population_size(1, 2.0/(200.0 * 2 * tree.get_ploidy()));
         tree.set_root_population_size(2.0/(500.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-226.11914854623677));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-226.11914854623677));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -1778,7 +1932,11 @@ TEST_CASE("Testing hemi129.nex likelihood (0.00506843962151613554, 2.0 / 0.00018
         tree.set_root_height(0.00506843962151613554);
         tree.set_all_population_sizes(0.00018955324120485613 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-277.06960543551577));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-277.06960543551577));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -1801,7 +1959,11 @@ TEST_CASE("Testing hemi129.nex likelihood (9.08323190033687971e-09, 2.0 / 2.4797
         tree.set_root_height(9.08323190033687971e-09);
         tree.set_all_population_sizes(2.47975039926886321e-08 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-221.69627648370943));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-221.69627648370943));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -1824,7 +1986,11 @@ TEST_CASE("Testing hemi129.nex likelihood (1.04921319733994759e-08, 2.0 / 2.7597
         tree.set_root_height(1.04921319733994759e-08);
         tree.set_all_population_sizes(2.75977168733651178e-10 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-324.2737564069293));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-324.2737564069293));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -1897,7 +2063,11 @@ TEST_CASE("Testing hemi129.nex weirdness", "[ComparisonPopulationTree]") {
         tree.set_child_population_size(1, 7.39871781998828579e-08 / 4.0);
         tree.set_root_population_size(2.71077053326002069e-13 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-96.34394008351177));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-96.34394008351177));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -1924,7 +2094,11 @@ TEST_CASE("Testing hemi129.nex weirdness 2", "[ComparisonPopulationTree]") {
         tree.set_child_population_size(1, 6.70991782555376588e-08 / 4.0);
         tree.set_root_population_size(1.33514111020266258e-08 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-44.95791900747736));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-44.95791900747736));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -2616,6 +2790,112 @@ TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
     }
 }
 
+TEST_CASE("Testing singleton acquisition bioas", "[ComparisonPopulationTree]") {
+    SECTION("Testing for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ', true, false, false, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        BiallelicData data1 = tree.simulate_biallelic_data_set(rng, 1.0);
+        BiallelicData data0 = tree.simulate_biallelic_data_set(rng, 0.0);
+
+        REQUIRE(data1.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data1.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data1.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data1.markers_are_dominant() == false);
+        REQUIRE(data0.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data0.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data0.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data0.markers_are_dominant() == false);
+        REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+        unsigned int singleton_count10 = 0;
+        unsigned int singleton_count05 = 0;
+        unsigned int singleton_count00 = 0;
+        RandomNumberGenerator rng10 = RandomNumberGenerator(123);
+        RandomNumberGenerator rng05 = RandomNumberGenerator(123);
+        RandomNumberGenerator rng00 = RandomNumberGenerator(123);
+        for (unsigned int rep = 0; rep < 100; ++rep) {
+            BiallelicData data00 = tree.simulate_biallelic_data_set(rng00, 0.0);
+            BiallelicData data05 = tree.simulate_biallelic_data_set(rng05, 0.5);
+            BiallelicData data10 = tree.simulate_biallelic_data_set(rng10, 1.0);
+            for (unsigned int i = 0; i < data00.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data00.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data00.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count00 += data00.get_pattern_weight(i);
+                }
+            }
+            for (unsigned int i = 0; i < data05.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data05.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data05.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count05 += data05.get_pattern_weight(i);
+                }
+            }
+            for (unsigned int i = 0; i < data10.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data10.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data10.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count10 += data10.get_pattern_weight(i);
+                }
+            }
+        }
+        REQUIRE(singleton_count10 > 0);
+        REQUIRE(singleton_count05 > 0);
+        REQUIRE(singleton_count00 == 0);
+        REQUIRE((double)singleton_count05 == Approx(singleton_count10 * 0.5).epsilon(0.05));
+    }
+}
+
 TEST_CASE("Testing scaling of dataset simulation for singleton",
         "[ComparisonPopulationTree]") {
 
@@ -2651,7 +2931,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
         unsigned int nsamples = 100;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            data = tree.simulate_biallelic_data_set(rng, false);
+            data = tree.simulate_biallelic_data_set(rng, 1.0, false);
             REQUIRE(data.get_number_of_sites() == 100000);
             double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
             divergence.add_sample(x);
@@ -2669,7 +2949,7 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
         SampleSummarizer<double> divergence2;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            data = tree.simulate_biallelic_data_set(rng, false);
+            data = tree.simulate_biallelic_data_set(rng, 1.0, false);
             REQUIRE(data.get_number_of_sites() == 100000);
             double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
             divergence2.add_sample(x);
@@ -2714,7 +2994,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
         unsigned int nsamples = 100;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, false);
+            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, 1.0, false);
             REQUIRE(data_nloci.second == 100);
             REQUIRE(data_nloci.first.get_number_of_sites() == 100000);
             double x = (double)data_nloci.first.get_number_of_variable_sites() / (double)data_nloci.first.get_number_of_sites();
@@ -2733,7 +3013,7 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
         SampleSummarizer<double> divergence2;
 
         for (unsigned int i = 0; i < nsamples; ++i) {
-            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, false);
+            auto data_nloci = tree.simulate_complete_biallelic_data_set(rng, 1000, 1.0, false);
             REQUIRE(data_nloci.second == 100);
             REQUIRE(data_nloci.first.get_number_of_sites() == 100000);
             double x = (double)data_nloci.first.get_number_of_variable_sites() / (double)data_nloci.first.get_number_of_sites();
@@ -2964,11 +3244,19 @@ TEST_CASE("Testing simple likelihood of DirichletPopulationTree", "[DirichletPop
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -2981,11 +3269,19 @@ TEST_CASE("Testing threaded likelihood of DirichletPopulationTree", "[DirichletP
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -2998,11 +3294,19 @@ TEST_CASE("Testing over-threaded likelihood of DirichletPopulationTree", "[Diric
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(10);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(10);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -3025,12 +3329,20 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.01, 10.0, 1.0, 1.0)", "[Dirichl
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3044,12 +3356,20 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.01, 10.0, 1.0, 1.0)", 
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3166,12 +3486,20 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.0, 10.0, 1.0, 1.0)", "[Dirichle
         tree.set_root_height(0.0);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3185,12 +3513,20 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.0, 10.0, 1.0, 1.0)", "
         tree.set_root_height(0.0);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(7);
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(7);
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3305,12 +3641,20 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.2, 10.0, 1.0, 1.0)", "[Dirichle
         tree.set_root_height(0.2);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3324,12 +3668,20 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.2, 10.0, 1.0, 1.0)", "
         tree.set_root_height(0.2);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3448,7 +3800,11 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -3469,7 +3825,11 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.03, 10.0, 10.0, 10.0/1
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -3598,7 +3958,11 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -3619,7 +3983,11 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.03, 10.0, 10.0/19.0, 1
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -3749,7 +4117,11 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.03, 111.1, 10.0/19.0, 10.0)", "
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_mean_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3764,7 +4136,11 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.03, 111.1, 10.0/19.0, 
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_mean_population_size(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(100000);
-        REQUIRE(l == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -3981,7 +4357,11 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         tree.compute_log_likelihood_and_prior();
 
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-474.97145724683253));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
@@ -3991,8 +4371,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-474.87145724683256));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-474.97145724683253));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
@@ -4002,15 +4386,23 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-474.97145724683253));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-474.97145724683253));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-474.97145724683253));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-474.97145724683253));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
@@ -4027,8 +4419,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-328.39238828878365));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-476.87145724683256));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-474.87145724683256));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
@@ -4046,8 +4442,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-475.03904202098477));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-476.87145724683256));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
@@ -4063,8 +4463,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-327.7437811413033));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-479.45570048973445));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-475.03904202098477));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
@@ -4079,8 +4483,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-265.0023534261969));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-46.130811372643343));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-479.45570048973445));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
@@ -4096,8 +4504,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-224.40177558289847));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-477.01996092335042));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-46.130811372643343));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
@@ -4112,8 +4524,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-477.01996092335042));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-477.01996092335042));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
@@ -4129,8 +4545,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.35742912931147));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-477.01996092335042));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
@@ -4151,8 +4571,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.35742912931147));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
@@ -4169,8 +4593,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-206.13340567945255));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -4182,8 +4610,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for DirichletPopulationTree", 
         REQUIRE(tree.get_mutation_rate() == 1.0);
         REQUIRE(tree.get_root_population_size() == Approx(2.0/(10.0 * 2 * tree.get_ploidy())));
         REQUIRE(tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -4218,14 +4650,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of DirichletPopulation
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        DirichletPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         DirichletPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -4243,44 +4667,15 @@ TEST_CASE("Testing affect of constant sites on likelihood of DirichletPopulation
         t_included.set_freq_1(0.05);
         t_included.set_mean_population_size(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_mean_population_size(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood();
-        double l_removed = t_removed.compute_log_likelihood();
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        DirichletPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_mean_population_size(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood();
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -4297,14 +4692,6 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of DirichletP
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        DirichletPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         DirichletPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -4322,44 +4709,15 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of DirichletP
         t_included.set_freq_1(0.05);
         t_included.set_mean_population_size(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_mean_population_size(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood(4);
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood(2);
-        double l_removed = t_removed.compute_log_likelihood(3);
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        DirichletPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_mean_population_size(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood(4);
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -4388,11 +4746,19 @@ TEST_CASE("Testing simple likelihood of ComparisonDirichletPopulationTree", "[Co
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -4406,11 +4772,19 @@ TEST_CASE("Testing simple threaded likelihood of ComparisonDirichletPopulationTr
         tree.set_root_height(0.01);
         tree.set_mean_population_size(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -4476,7 +4850,11 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
 
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
@@ -4486,8 +4864,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
@@ -4498,15 +4880,23 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
@@ -4523,8 +4913,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-328.39238828878365));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
@@ -4544,8 +4938,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-509.99999577402207));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.13241099986988));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
@@ -4561,8 +4959,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-327.7437811413033));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-514.41665424277176));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-509.99999577402207));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
@@ -4579,8 +4981,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-265.0023534261969));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-81.091765125680695));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-514.41665424277176));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
@@ -4598,8 +5004,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-224.40177558289847));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.28091467638774));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-81.091765125680695));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
@@ -4616,8 +5026,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-510.28091467638774));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.28091467638774));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
@@ -4635,8 +5049,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-510.28091467638774));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
@@ -4659,8 +5077,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
@@ -4679,8 +5101,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-207.43599077244659));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -4695,8 +5121,12 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.get_child_population_size(0) == Approx(2.0/(10.0 * 2 * tree.get_ploidy())));
         REQUIRE(tree.get_child_population_size(1) == Approx(2.0/(10.0 * 2 * tree.get_ploidy())));
         REQUIRE(tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -4723,6 +5153,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
+
         REQUIRE(tree.get_log_prior_density_value() == Approx(-504.53672771643153));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 14);
@@ -4741,6 +5172,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
+
         REQUIRE(tree.get_log_prior_density_value() == Approx(-56.876713494126008));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-504.53672771643153));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 15);
@@ -4759,6 +5191,7 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree state manipulation",
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
+
         REQUIRE(tree.get_log_prior_density_value() == Approx(0.22402344985899036));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-56.876713494126008));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 16);
@@ -4794,7 +5227,11 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree likelihood (0.01, 100.0, 20
                 (0.001 / 0.0085)}; 
         tree.set_population_sizes_as_proportions(proportions);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-226.11914854623677));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-226.11914854623677));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -4819,7 +5256,11 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree likelihood (0.0050684396215
         tree.set_root_height(0.00506843962151613554);
         tree.set_mean_population_size(0.00018955324120485613 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-277.06960543551577));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-277.06960543551577));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -4842,7 +5283,11 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree likelihood (9.0832319003368
         tree.set_root_height(9.08323190033687971e-09);
         tree.set_mean_population_size(2.47975039926886321e-08 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-221.69627648370943));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-221.69627648370943));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -4865,7 +5310,11 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree likelihood (1.0492131973399
         tree.set_root_height(1.04921319733994759e-08);
         tree.set_mean_population_size(2.75977168733651178e-10 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-324.2737564069293));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-324.2737564069293));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -4944,7 +5393,11 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree weirdness", "[ComparisonDir
         /* } */
         /* tree.set_population_sizes_as_proportions(proportions); */
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-96.34394008351177));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-96.34394008351177));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -5885,11 +6338,19 @@ TEST_CASE("Testing simple likelihood of RelativeRootPopulationTree", "[RelativeR
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -5902,11 +6363,19 @@ TEST_CASE("Testing threaded likelihood of RelativeRootPopulationTree", "[Relativ
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -5919,11 +6388,19 @@ TEST_CASE("Testing over-threaded likelihood of RelativeRootPopulationTree", "[Re
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(10);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(10);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -5946,12 +6423,20 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.01, 10.0
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -5965,12 +6450,20 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-248.93254688526213));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6087,12 +6580,20 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.0, 10.0,
         tree.set_root_height(0.0);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6106,12 +6607,20 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.set_root_height(0.0);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(7);
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(7);
-        REQUIRE(l == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-328.39238828878365));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6226,12 +6735,20 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.2, 10.0,
         tree.set_root_height(0.2);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6245,12 +6762,20 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.set_root_height(0.2);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-227.41048391087554));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6369,7 +6894,11 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -6390,7 +6919,11 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.05); // tree.set_u(10.0);
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -6519,7 +7052,11 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -6540,7 +7077,11 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         double l = tree.compute_log_likelihood(4);
-        REQUIRE(l == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
 
         tree.fold_patterns();
@@ -6670,7 +7211,11 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.03, 111.
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_all_population_sizes(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6685,7 +7230,11 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.set_freq_1(0.95); // tree.set_u(10.0/19.0);
         tree.set_all_population_sizes(2.0/(111.1 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(100000);
-        REQUIRE(l == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-224.40177558289847));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
@@ -6896,7 +7445,11 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
 
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-894.67638803083958));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
@@ -6906,8 +7459,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-894.57638803083955));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-894.67638803083958));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
@@ -6917,15 +7474,23 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-894.67638803083958));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-894.67638803083958));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-894.67638803083958));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-894.67638803083958));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
@@ -6942,8 +7507,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-328.39238828878365));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.57638803083955));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-894.57638803083955));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
@@ -6961,8 +7530,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-894.74397280499181));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.57638803083955));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
@@ -6978,8 +7551,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-327.7437811413033));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-899.1606312737415));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-894.74397280499181));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
@@ -6994,8 +7571,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-265.0023534261969));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-32.510853039559265));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-899.1606312737415));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
@@ -7011,8 +7592,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-224.40177558289847));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.72489170735741));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-32.510853039559265));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
@@ -7027,8 +7612,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.72489170735741));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.72489170735741));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
@@ -7044,8 +7633,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.35742912931147));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.72489170735741));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
@@ -7066,8 +7659,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.35742912931147));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
@@ -7084,8 +7681,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-206.13340567945255));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -7097,8 +7698,12 @@ TEST_CASE("Testing hemi129.nex state manipulation for RelativeRootPopulationTree
         REQUIRE(tree.get_mutation_rate() == 1.0);
         REQUIRE(tree.get_root_population_size() == Approx(2.0/(10.0 * 2 * tree.get_ploidy())));
         REQUIRE(tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.13340567945249));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -7133,14 +7738,6 @@ TEST_CASE("Testing affect of constant sites on likelihood of RelativeRootPopulat
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        RelativeRootPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         RelativeRootPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -7158,44 +7755,15 @@ TEST_CASE("Testing affect of constant sites on likelihood of RelativeRootPopulat
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood();
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood();
-        double l_removed = t_removed.compute_log_likelihood();
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        RelativeRootPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood();
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -7212,14 +7780,6 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of RelativeRo
                 false,    // constant sites removed
                 true);    // validate
         std::string nex_path2 = "data/haploid-standard-full-constant-removed.nex";
-        RelativeRootPopulationTree t_removed(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
         RelativeRootPopulationTree t(
                 nex_path2, // path
                 ' ',       // pop name delimiter
@@ -7237,44 +7797,15 @@ TEST_CASE("Testing affect of constant sites on threaded likelihood of RelativeRo
         t_included.set_freq_1(0.05);
         t_included.set_all_population_sizes(2.0/(10.0 * 2 * t_included.get_ploidy()));
 
-        t_removed.set_root_height(0.03);
-        t_removed.set_freq_1(0.05);
-        t_removed.set_all_population_sizes(2.0/(10.0 * 2 * t_removed.get_ploidy()));
-
-        t_removed.provide_number_of_constant_sites(3, 6);
-
         double l = t.compute_log_likelihood(4);
         REQUIRE(l == Approx(-23.81984255023975));
         REQUIRE(t.get_likelihood_correction() == Approx(-6.87935580446044));
 
         double l_included = t_included.compute_log_likelihood(2);
-        double l_removed = t_removed.compute_log_likelihood(3);
 
         REQUIRE(l_included == Approx(-55.01646493341547));
-        REQUIRE(l_included == Approx(l_removed));
 
-        REQUIRE(t.get_likelihood_correction() == t_removed.get_likelihood_correction());
         REQUIRE(t.get_likelihood_correction() == t_included.get_likelihood_correction());
-
-        RelativeRootPopulationTree t_mistake(
-                nex_path2, // path
-                ' ',       // pop name delimiter
-                true,      // pop name is prefix
-                false,     // genotypes are diploid
-                false,     // markers are dominant
-                true,      // constant sites removed
-                true);     // validate
-
-        t_mistake.set_root_height(0.03);
-        t_mistake.set_freq_1(0.05);
-        t_mistake.set_all_population_sizes(2.0/(10.0 * 2 * t_mistake.get_ploidy()));
-
-        // Oops, mixing up red/green here to make sure it counts!
-        t_mistake.provide_number_of_constant_sites(6, 3);
-        double l_mistake = t_mistake.compute_log_likelihood(4);
-
-        REQUIRE(l_removed != Approx(l_mistake));
-        REQUIRE(t_mistake.get_likelihood_correction() == t_removed.get_likelihood_correction());
     }
 }
 
@@ -7297,11 +7828,19 @@ TEST_CASE("Testing simple likelihood of ComparisonRelativeRootPopulationTree", "
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -7315,11 +7854,19 @@ TEST_CASE("Testing simple threaded likelihood of ComparisonRelativeRootPopulatio
         tree.set_root_height(0.01);
         tree.set_all_population_sizes(2.0/(10.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
 
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
-        REQUIRE(l == Approx(-31.77866581319647));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-31.77866581319647));
         REQUIRE(tree.get_degree_of_root() == 2);
     }
 }
@@ -7391,7 +7938,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
 
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 1);
 
@@ -7401,8 +7952,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 2);
@@ -7413,15 +7968,23 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
 
         tree.compute_log_likelihood_and_prior();
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-328.39238828878365));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-248.93254688526213));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-328.39238828878365));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-248.93254688526213));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 3);
@@ -7438,8 +8001,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-328.39238828878365));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-328.39238828878365));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 5);
@@ -7459,8 +8026,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-327.7437811413033));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-327.7437811413033));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-896.74655789798578));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.87897312383359));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 6);
@@ -7476,8 +8047,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-265.0023534261969));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-327.7437811413033));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-265.0023534261969));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-327.7437811413033));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-901.16321636673547));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-896.74655789798578));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 7);
@@ -7494,8 +8069,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-224.40177558289847));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-265.0023534261969));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-224.40177558289847));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-265.0023534261969));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-34.513438132553311));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-901.16321636673547));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 8);
@@ -7513,8 +8092,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-224.40177558289847));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-224.40177558289847));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-897.02747680035145));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-34.513438132553311));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 9);
@@ -7531,8 +8114,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-897.02747680035145));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-897.02747680035145));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 10);
@@ -7550,8 +8137,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-897.02747680035145));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 11);
@@ -7574,8 +8165,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.66001422230551));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 12);
@@ -7596,8 +8191,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.is_dirty());
         tree.compute_log_likelihood_and_prior();
         REQUIRE(! tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-207.43599077244659));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -7612,8 +8211,12 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex state manipu
         REQUIRE(tree.get_child_population_size(0) == Approx(2.0/(10.0 * 2 * tree.get_ploidy())));
         REQUIRE(tree.get_child_population_size(1) == Approx(2.0/(10.0 * 2 * tree.get_ploidy())));
         REQUIRE(tree.is_dirty());
-        REQUIRE(tree.get_log_likelihood_value() == Approx(-227.41048391087554));
-        REQUIRE(tree.get_stored_log_likelihood_value() == Approx(-227.41048391087554));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(tree.get_log_likelihood_value() != Approx(-227.41048391087554));
+        REQUIRE(tree.get_stored_log_likelihood_value() != Approx(-227.41048391087554));
         REQUIRE(tree.get_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_stored_log_prior_density_value() == Approx(-447.43599077244653));
         REQUIRE(tree.get_number_of_likelihood_calculations() == 13);
@@ -7642,7 +8245,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex likelihood (
         tree.set_child_population_size(1, 2.0/(200.0 * 2 * tree.get_ploidy()));
         tree.set_root_population_size(2.0/(500.0 * 2 * tree.get_ploidy()));
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-226.11914854623677));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-226.11914854623677));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -7666,7 +8273,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex likelihood (
         tree.set_root_height(0.00506843962151613554);
         tree.set_all_population_sizes(0.00018955324120485613 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-277.06960543551577));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-277.06960543551577));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -7689,7 +8300,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex likelihood (
         tree.set_root_height(9.08323190033687971e-09);
         tree.set_all_population_sizes(2.47975039926886321e-08 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-221.69627648370943));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-221.69627648370943));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -7712,7 +8327,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex likelihood (
         tree.set_root_height(1.04921319733994759e-08);
         tree.set_all_population_sizes(2.75977168733651178e-10 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-324.2737564069293));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-324.2737564069293));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -7785,7 +8404,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex weirdness", 
         tree.set_child_population_size(1, 7.39871781998828579e-08 / 4.0);
         tree.set_root_population_size(2.71077053326002069e-13 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-96.34394008351177));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-96.34394008351177));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -7812,7 +8435,11 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex weirdness 2"
         tree.set_child_population_size(1, 6.70991782555376588e-08 / 4.0);
         tree.set_root_population_size(1.33514111020266258e-08 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(l == Approx(-44.95791900747736));
+
+        // Now handling correction for constant patterns differently than SNAPP
+        // when there are allele count patterns with missing data, so are no
+        // longer expected to match
+        REQUIRE(l != Approx(-44.95791900747736));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }

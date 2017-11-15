@@ -1132,7 +1132,7 @@ TEST_CASE("Testing draw_from_prior logging for reversible jump with 3 pairs",
         std::string auto_optimize = "true";
 
         std::string tag = _COLLECTION_RNG.random_string(10);
-        std::string log_path = "data/tmp-prior-sampling-" + tag + ".log";
+        std::string log_path = "data/tmp-prior-sampling-" + tag + "-t508.log";
 
         std::stringstream cfg;
         cfg << "event_time_prior:\n";
@@ -1447,7 +1447,7 @@ TEST_CASE("Testing draw_from_prior logging for DPP with variable alpha",
         std::string auto_optimize = "true";
 
         std::string tag = _COLLECTION_RNG.random_string(10);
-        std::string log_path = "data/tmp-prior-sampling-" + tag + ".log";
+        std::string log_path = "data/tmp-prior-sampling-" + tag + "-t509.log";
 
         std::stringstream cfg;
         cfg << "event_time_prior:\n";
@@ -2336,7 +2336,7 @@ TEST_CASE("Testing draw_from_prior logging for fixed 012",
         std::string auto_optimize = "true";
 
         std::string tag = _COLLECTION_RNG.random_string(10);
-        std::string log_path = "data/tmp-prior-sampling-" + tag + ".log";
+        std::string log_path = "data/tmp-prior-sampling-" + tag + "-t510.log";
 
         std::stringstream cfg;
         cfg << "event_time_prior:\n";
@@ -2639,7 +2639,7 @@ TEST_CASE("Testing draw_from_prior logging for fixed 000",
         std::string auto_optimize = "true";
 
         std::string tag = _COLLECTION_RNG.random_string(10);
-        std::string log_path = "data/tmp-prior-sampling-" + tag + ".log";
+        std::string log_path = "data/tmp-prior-sampling-" + tag + "-t511.log";
 
         std::stringstream cfg;
         cfg << "event_time_prior:\n";
@@ -3734,7 +3734,7 @@ TEST_CASE("Testing draw_from_prior logging for dirichlet collectin and DPP with 
         std::string auto_optimize = "true";
 
         std::string tag = _COLLECTION_RNG.random_string(10);
-        std::string log_path = "data/tmp-prior-sampling-" + tag + ".log";
+        std::string log_path = "data/tmp-prior-sampling-" + tag + "-t512.log";
 
         std::stringstream os;
         os << "event_time_prior:\n";
