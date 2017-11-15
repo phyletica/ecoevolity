@@ -213,6 +213,6 @@ rst_epilog = """
 .. _git: http://git-scm.com/
 .. |gpl3| replace:: http://www.gnu.org/licenses/gpl-3.0-standalone.html
 
-..|cmake| replace:: CMake
+.. |cmake| replace:: CMake
 .. _cmake: https://cmake.org/
 """.format(this_year = time.strftime('%Y'))

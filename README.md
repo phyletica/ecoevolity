@@ -16,7 +16,7 @@ Inferring shared evolutionary events using full-likelihood Bayesian inference.
 This is a work in progess...
 
 Acknowledgments
-================
+===============
 
 This software benefited from funding provided to Jamie Oaks from the National
 Science Foundation (DBI 1308885).

@@ -1,5 +1,28 @@
 .. _installation:
 
+############
+Installation
+############
+
+
+.. _prerequisites:
+
+*************
+Prerequisites
+*************
+
+Compiling |eco|_ requires |cmake|_ and a new-ish C++ compiler (one that
+supports the C++11 standard).
+If you are on a Linux machine, use your package manager to update/install g++
+and cmake.
+On a fresh install of Ubuntu 16.04 you can simply::
+
+    $ sudo apt install cmake g++
+
+If you are on a Mac, you can install Xcode command line tools and download and
+install |cmake|_ from https://cmake.org/.
+
+
 ************
 Installation
 ************
@@ -39,7 +62,7 @@ You should see output that looks something like::
     ======================================================================
                                   Ecoevolity
                       Estimating evolutionary coevality
-            Version 0.1.0 (dev a5f964c: 2017-11-09T14:15:52-06:00)
+          Version 0.1.0 (master 07eab4d: 2017-10-30T16:01:34-05:00)
     ======================================================================
     
     Usage: ecoevolity [OPTIONS] YAML-CONFIG-FILE
@@ -52,6 +75,10 @@ You should see output that looks something like::
       --seed=SEED           Seed for random number generator. Default: Set from clock.
       --ignore-data         Ignore data to sample from the prior distribution.
                             Default: Use data to sample from the posterior distribution
+      --nthreads=NTHREADS   Number of threads to use for likelihood calculations.
+                            Default: 1 (no multithreading). If you are using the
+                            '--ignore-data' option, no likelihood calculations
+                            will be performed, and so no multithreading is used.
       --prefix=PREFIX       Optional string to prefix all output files.
       --relax-constant-sites
                             By default, if you specify 'constant_sites_removed =
@@ -80,4 +107,3 @@ You should see output that looks something like::
                             affected by this option, not alignments of standard
                             characters (i.e., 0, 1, 2).
       --dry-run             Do not run analysis; only process and report settings.
-    
