@@ -211,6 +211,11 @@ rst_epilog = """
 
 .. |git| replace:: Git
 .. _git: http://git-scm.com/
+
+.. |yaml| replace:: YAML 
+.. _yaml: http://yaml.org/
+.. |yamllint| replace:: http://www.yamllint.com/
+
 .. |gpl3| replace:: http://www.gnu.org/licenses/gpl-3.0-standalone.html
 
 .. |cmake| replace:: CMake
