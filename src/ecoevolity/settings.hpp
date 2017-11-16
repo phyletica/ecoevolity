@@ -974,15 +974,15 @@ class OperatorScheduleSettings {
         unsigned int auto_optimize_delay_ = 10000;
         bool using_population_size_multipliers_ = false;
         ModelOperatorSettings model_operator_settings_ = ModelOperatorSettings(
-                3.0, 4);
+                10.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                3.0, 1.0);
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                6.0, 0.1);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                1.0, 0.1);
 
     public:
         OperatorScheduleSettings() { }
@@ -1175,21 +1175,21 @@ class TreeSpecificOperatorScheduleSettings {
 
     protected:
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                3.0, 0.05);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
         WindowOperatorSettings freq_mover_settings_ = WindowOperatorSettings(
                 1.0, 0.1);
         ScaleOperatorSettings root_population_size_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                1.0, 0.1);
         ScaleOperatorSettings leaf_population_size_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                1.0, 0.1);
 
     public:
         TreeSpecificOperatorScheduleSettings() { }
