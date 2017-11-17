@@ -477,8 +477,12 @@ section and/or for each comparison::
 
 This allows you to specify whether or not you want estimate each parameter, and
 if so, what prior to use.
-The ``mutation_rate`` setting is for the mutation rate (:math:`\mutationRate`)
-of the comparison.
+
+mutation_rate
+-------------
+
+The ``mutation_rate`` settings are for the mutation rate
+(:math:`\mutationRate`) of the comparison.
 How you scale this is up to you, but you need to make sure you are consistent
 in how you scale time and effective population sizes.
 For example, if you set the mutation rate to 1, then time and effective
@@ -486,15 +490,118 @@ population sizes will be scaled by the mutation rate.
 Specifically, time will be in units of :math:`\eventTime\mutationRate` (i.e.,
 expected substitutions per site), and effective population size will be measured
 in units of :math:`\effectivePopSize\mutationRate`.
-Alternatively, if you specify an actual rate of mutation per site per year
-(the time unit is arbitrary), then time will be in units of years,
-and population size will in units of the effective number of individuals (:math:`effectivePopSize`).
-The ``population_size`` setting is for the effective sizes of the leaf
-populations of the pair (i.e., :math:`\effectivePopSize`).
-NOTE: the values you expect for ``population_size`` (:math:`\effectivePopSize`)
-need to make sense in relation to how you have scaled the mutation rate.
-In other words
+Alternatively, if you specify an actual rate of mutation per site per
+generation, then time will be in units of generations,
+and population size will in units of the effective number of diploid
+individuals or gene copies (:math:`effectivePopSize`) if the ploidy is 2 or 1,
+respectively.
+Differences in generation times among pairs can also be accounted for
+via the ``mutation_rate`` parameters, with the appropriate scaling
+of the effective population sizes.
+To help ensure the population sizes are scaled correctly, it can help to
+remember that :math:`\ploidy 2 \effectivePopSize\mutationRate` should equal the
+expected differences per base between two randomly selected genomes from a
+population.
 
+population_size
+---------------
+
+The ``population_size`` settings are for the effective sizes of the leaf
+populations of the pair (i.e., :math:`\effectivePopSize`, but see discussion of
+scaling the mutation rate above).
+
+root_relative_population_size
+-----------------------------
+
+The population size of the root (ancestral) population is parameterized a bit
+differently.
+You specify a prior on the effective population size of the root *relative* to
+the mean population size of the leaf (descendant) populations.
+For example::
+
+            root_relative_population_size:
+                value: 1.0
+                estimate: false
+
+Constrains the root population to always have an effective population
+size that is equal to the mean size of the leaf populations.
+Thus, it is not an estimated (free) parameter; it is a deterministic function
+of the leaf population sizes.
+Similarly, ::
+
+            root_relative_population_size:
+                value: 2.0
+                estimate: false
+
+constrains the effective population size of the root to be twice
+the mean effective population size of the leaves.
+Alternatively, ::
+
+            root_relative_population_size:
+                estimate: true
+                prior:
+                    gamma_distribution:
+                        shape: 100.0
+                        scale: 0.01
+
+allows the effective population size of the root to be estimated, and centers
+the prior on its relative size on 1 (i.e., centers the prior expectation for
+the actual root effective population size on the mean of the leaf sizes);
+the mean of a gamma distribution is the product of the
+shape and scale parameters: :math:`100 \times 0.01 = 1`
+Similarly ::
+
+            root_relative_population_size:
+                estimate: true
+                prior:
+                    gamma_distribution:
+                        shape: 100.0
+                        scale: 0.02
+
+allows the effective population size of the root to be estimated, and centers
+the prior on its relative size on 2 (i.e., centers the prior expectation for
+the actual root effective population size on twice the mean of the leaf sizes.
+
+The hope of this parameterization is to allow you to specify a more informative
+prior on the root effective population size.
+There is usually a lot of prior uncertainty in the actual value of the root
+population size, but we might have good reason to expect that it is similar to
+the mean of the leaf sizes.
+
+freq_1
+------
+
+The ``freq_1`` parameter is the equilibrium frequency of the "1" allele (or 1
+minus the frequency of the "0" allele).
+If you are using nucleotide data, I recommend that you fix the frequencies
+of the "0" and "1" states to be equal::
+
+            freq_1:
+                value: 0.5
+                estimate: false
+
+This is because there is no natural way to recode the 4 nucleotide states to
+binary.
+Thus, if you try to estimate frequencies of the binary states, your results
+will be sensitive to the vagaries of how you decide to code your nucleotides as
+binary.
+
+However, if the characters you are using are truly binary, then it might make
+sense to estimate the frequencies of the two states.
+Another option is::
+
+            freq_1:
+                value: empirical
+                estimate: false
+
+which fixes the frequencies of the two states to their empirical frequencies
+(i.e., the frequencies at which they appear in your data).
+
+
+The operators section
+=====================
+
+::
 
         operators:
             RootPopulationSizeScaler:
