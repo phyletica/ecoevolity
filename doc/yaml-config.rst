@@ -4,6 +4,10 @@
 The Configuration File
 ######################
 
+.. contents:: Configuration File Components
+    :local:
+    :depth: 3
+
 Most of the settings for an |eco|_ analysis you specify in a configuration
 file.
 We use a |yaml|_ configuration file.
@@ -167,7 +171,10 @@ parameter, for example::
 will allow the concentration parameter to be estimated.
 Generally, if you have a large number of comparisons (say 6 or more), it can be
 helpful to allow the concentration parameter to vary.
-NOTE: the prior on the concentration parameter must be a gamma distribution.
+
+.. note::
+
+    The prior on the concentration parameter must be a gamma distribution.
 
 If you've installed |eco|_, you should have a command line tool called
 ``dpprobs`` that can help you choose a value for the concentration parameter.
@@ -303,16 +310,29 @@ I recommend trying the defaults first (i.e., simply do not specify the
 ``operator_settings`` section in the configuration file), and make adjustments
 if your chains do not mix and/or converge well.
 
-NOTE: you do not have to specify all settings within a group. For
-example you can use::
+.. note::
 
-    operator_settings:
-        operators:
-            ModelOperator:
-                number_of_auxiliary_categories: 2
+    If you specify a weight for an operator that only updates parameters that
+    are fixed (not estimated), |eco|_ will automatically "turn off" the
+    operator (i.e., change the weight to zero).
 
-in your config file to change the number of auxiliary categories to 2, but
-leave all other operator settings at their default values.
+    **BUT**, if you set the weight of an operator to zero for a free parameter,
+    |eco|_ will **not** automatically "turn on" that operator. So, unless there
+    is another operator that updates the parameter, it will effectively be
+    fixed to the starting value (it will not be updated during the MCMC).
+
+.. note::
+
+    You do not have to specify all settings within a group. For example you can
+    use::
+
+        operator_settings:
+            operators:
+                ModelOperator:
+                    number_of_auxiliary_categories: 2
+
+    in your config file to change the number of auxiliary categories to 2, but
+    leave all other operator settings at their default values.
 
 
 **************************
@@ -478,28 +498,52 @@ section and/or for each comparison::
 This allows you to specify whether or not you want estimate each parameter, and
 if so, what prior to use.
 
+General parameter syntax
+------------------------
+
+Before we discuss each parameter, let's look at the general syntax that applies
+to all parameters (including the concentration parameter of the Dirichlet
+process that we saw above).
+
+The general syntax for a parameter is::
+
+    parameter_name:
+        estimate: true # or false
+        value: 1.0
+        prior:
+            a_valid_distribution:
+                distribution_parameter: 1.0
+
+So, you can specify
+
+#.  Whether or not the parameter should be fixed or estimated.
+#.  A value for the parameter. This is only the starting value if ``estimate``
+    is ``true``, or is the fixed value if ``estimate`` is ``false``.
+#.  The prior probability distribution. This is ignored if ``estimate`` is
+    ``false``.
+
 mutation_rate
 -------------
 
 The ``mutation_rate`` settings are for the mutation rate
-(:math:`\mutationRate`) of the comparison.
+(:math:`\mutationrate`) of the comparison.
 How you scale this is up to you, but you need to make sure you are consistent
 in how you scale time and effective population sizes.
 For example, if you set the mutation rate to 1, then time and effective
 population sizes will be scaled by the mutation rate.
-Specifically, time will be in units of :math:`\eventTime\mutationRate` (i.e.,
+Specifically, time will be in units of :math:`\eventtime\mutationrate` (i.e.,
 expected substitutions per site), and effective population size will be measured
-in units of :math:`\effectivePopSize\mutationRate`.
+in units of :math:`\epopsize\mutationrate`.
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then time will be in units of generations,
 and population size will in units of the effective number of diploid
-individuals or gene copies (:math:`effectivePopSize`) if the ploidy is 2 or 1,
+individuals or gene copies (:math:`\epopsize`) if the ploidy is 2 or 1,
 respectively.
 Differences in generation times among pairs can also be accounted for
 via the ``mutation_rate`` parameters, with the appropriate scaling
 of the effective population sizes.
 To help ensure the population sizes are scaled correctly, it can help to
-remember that :math:`\ploidy 2 \effectivePopSize\mutationRate` should equal the
+remember that :math:`\textrm{ploidy} \times 2\epopsize\mutationrate` should equal the
 expected differences per base between two randomly selected genomes from a
 population.
 
@@ -507,7 +551,7 @@ population_size
 ---------------
 
 The ``population_size`` settings are for the effective sizes of the leaf
-populations of the pair (i.e., :math:`\effectivePopSize`, but see discussion of
+populations of the pair (i.e., :math:`\epopsize`, but see discussion of
 scaling the mutation rate above).
 
 root_relative_population_size
@@ -597,11 +641,22 @@ Another option is::
 which fixes the frequencies of the two states to their empirical frequencies
 (i.e., the frequencies at which they appear in your data).
 
+.. note::
+    
+    The ``empirical`` option for the value only works for the ``freq_1``
+    parameter.  You should get an error if you try to use it for any other
+    parameters.
+
 
 The operators section
 =====================
 
-::
+The ``operators`` settings control the behavior of the MCMC operators that act
+upon the parameters of a comparison.
+I.e., each comparison gets its own copy of the specified operators, as opposed
+to the "global" operators discussed above.
+The following operators can only be specified here (listing them in the global
+``operator_settings`` will result in an error::
 
         operators:
             RootPopulationSizeScaler:
@@ -613,3 +668,105 @@ The operators section
             TimeRootSizeMixer:
                 weight: 3.0
                 scale: 0.05
+            FreqMover:
+                weight: 1.0
+                window: 0.1
+            MutationRateScaler:
+                weight: 1.0
+                scale: 0.3
+
+Other operators that can be specified here are::
+
+        operators:
+            TimeSizeRateMixer:
+                weight: 5.0
+                scale: 0.02
+            TimeSizeRateScaler:
+                weight: 0.0
+                scale: 0.02
+            EventTimeScaler:
+                weight: 1.0
+                scale: 0.02
+
+These three can also be "global" operators that act on all comparisons (see
+``operator_settings`` section above).
+The only time you might need to apply these operators to *each* comparison
+is if you are having mixing trouble.
+For example, the "global" ``EventTimeScaler`` might not work well for
+the divergence time of a particular pair.
+Giving that pair its own ``EventTimeScaler`` might help in such a case.
+
+As with the "global" operators, the default settings will likely work fine.
+I recommend you try the defaults first (simply do not specify operator
+settings), and resort to adjustments if you have poor mixing.
+
+***********
+comparisons
+***********
+
+In its simplest form, the ``comparisons`` section simply is a list of
+the paths of the character alignments::
+
+    comparisons:
+    - comparison:
+        path: "../alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex"
+    - comparison:
+        path: "../alignments/G-mindorensis-mindorensis-Lubang-Luzon.nex"
+    - comparison:
+        path: "../alignments/G-mindorensis-mindorensis-MaestreDeCampo-Masbate.nex"
+    - comparison:
+        path: "../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex"
+
+However, as noted above, *all* of the options discussed for the
+``global_comparison_settings`` section can also be applied to each comparison.
+For example::
+
+    global_comparison_settings:
+        ploidy: 2
+        genotypes_are_diploid: true
+        markers_are_dominant: false
+        population_name_delimiter: " "
+        population_name_is_prefix: false
+        constant_sites_removed: false
+        equal_population_sizes: false
+        parameters:
+            population_size:
+                estimate: true
+                prior:
+                    gamma_distribution:
+                        shape: 4.0
+                        scale: 0.001
+        operators:
+            TimeRootSizeMixer:
+                weight: 3.0
+                scale: 0.05
+    
+    comparisons:
+    - comparison:
+        path: "alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex"
+    - comparison:
+        path: "alignments/G-mindorensis-mindorensis-Lubang-Luzon.nex"
+        ploidy: 1
+        genotypes_are_diploid: false
+        population_name_delimiter: "-"
+        population_name_is_prefix: true
+        constant_sites_removed: true
+        parameters:
+            population_size:
+                estimate: true
+                value: 0.005
+                prior:
+                    gamma_distribution:
+                        shape: 2.0
+                        scale: 0.0025
+        operators:
+            TimeRootSizeMixer:
+                weight: 5.0
+                scale: 0.01
+    - comparison:
+        path: "alignments/G-mindorensis-mindorensis-MaestreDeCampo-Masbate.nex"
+    - comparison:
+        path: "alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex"
+
+Here, we have overridden many of the "global" settings for the second
+comparison.

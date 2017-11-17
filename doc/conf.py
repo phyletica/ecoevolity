@@ -197,6 +197,20 @@ epub_copyright = copyright
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
+imgmath_image_format = "svg"
+imgmath_latex_preamble = r"""
+\usepackage{xspace}
+\newcommand{\given}{\ensuremath{\,|\,}\xspace}
+\newcommand{\data}{\ensuremath{D}\xspace}
+\newcommand{\model}[1][]{\ensuremath{M_{#1}}\xspace}
+\newcommand{\parameters}[1][]{\ensuremath{\theta_{#1}}\xspace}
+\newcommand{\diff}[1]{\ensuremath{\mathrm{d}#1}}
+\newcommand{\epopsize}[1][]{\ensuremath{N_e{#1}}\xspace}
+\newcommand{\mutationrate}[1][]{\ensuremath{\mu{#1}}\xspace}
+\newcommand{\eventtime}[1][]{\ensuremath{t{#1}}\xspace}
+\newcommand{\ploidy}[1][]{\ensuremath{\rho{#1}}\xspace}
+"""
+
 rst_epilog = """
 .. |jro| replace:: Jamie Oaks
 .. _jro: http://phyletica.org

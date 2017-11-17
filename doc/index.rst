@@ -15,6 +15,7 @@ Welcome to Ecoevolity's documentation!
     :caption: Contents:
 
     installation
+    yaml-config
     acknowledgments
 
 
