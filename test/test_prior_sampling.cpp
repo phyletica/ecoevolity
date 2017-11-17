@@ -270,7 +270,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
         double time_shape = 10.0;
         double time_scale = 0.1;
         double size_shape = 5.0;
-        double size_scale = 0.5;
+        double size_scale = 0.2;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
         std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + "-t451.cfg";
@@ -419,7 +419,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
         double time_shape = 10.0;
         double time_scale = 0.1;
         double size_shape = 5.0;
-        double size_scale = 0.5;
+        double size_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
         std::string test_path = "data/tmp-config-collection-scaler-test2-" + tag + "-t452.cfg";
@@ -871,7 +871,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
         double time_shape = 10.0;
         double time_scale = 0.1;
         double size_shape = 5.0;
-        double size_scale = 0.5;
+        double size_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
         std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + "-t455.cfg";

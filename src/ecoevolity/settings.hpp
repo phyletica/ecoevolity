@@ -971,7 +971,7 @@ class OperatorScheduleSettings {
 
     private:
         bool auto_optimize_ = true;
-        unsigned int auto_optimize_delay_ = 10000;
+        unsigned int auto_optimize_delay_ = 1000;
         bool using_population_size_multipliers_ = false;
         ModelOperatorSettings model_operator_settings_ = ModelOperatorSettings(
                 10.0, 4);
