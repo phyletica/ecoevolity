@@ -428,7 +428,7 @@ then you should specify::
 and |eco|_ will know that the data in the first two rows came from
 "population1" and the data in the third and forth rows came from "population2".
 
-.. note:: Underscore gotcha!
+.. note:: **Underscore gotcha!**
 
     The nexus format standard interprets underscores as spaces, unless the
     labels are quoted. So if you have::
