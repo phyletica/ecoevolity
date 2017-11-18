@@ -6,7 +6,13 @@ SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
 SPHINXPROJ    = Ecoevolity
 SOURCEDIR     = .
-BUILDDIR      = _build
+# Updating path to build html in neighboring directory, within which there is a
+# clone of the gh-pages branch of *this* repo as the 'html' subdirectory.
+# Keeping the gh-pages branch outside so that it is easy to compile the
+# documentation html there and commit and push it.
+# Idea from https://daler.github.io/sphinxdoc-test/includeme.html
+# BUILDDIR      = _build
+BUILDDIR      = ../../ecoevolity-docs
 
 # Put it first so that "make" without argument is like "make help".
 help:
