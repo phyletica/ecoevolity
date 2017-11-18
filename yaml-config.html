@@ -1,0 +1,867 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. The Configuration File &#8212; Ecoevolity 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Acknowledgments" href="acknowledgments.html" />
+    <link rel="prev" title="1. Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/ecoevolity-logo-short.svg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Estimating evolutionary coevality</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=phyletica&repo=ecoevolity&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. The Configuration File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#event-model-prior">2.1. event_model_prior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-time-prior">2.2. event_time_prior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mcmc-settings">2.3. mcmc_settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operator-settings">2.4. operator_settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#global-comparison-settings">2.5. global_comparison_settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#comparisons">2.6. comparisons</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">3. Acknowledgments</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">1. Installation</a></li>
+      <li>Next: <a href="acknowledgments.html" title="next chapter">3. Acknowledgments</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-configuration-file">
+<span id="configfile"></span><h1>2. The Configuration File<a class="headerlink" href="#the-configuration-file" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="configuration-file-components">
+<p class="topic-title first">Configuration File Components</p>
+<ul class="simple">
+<li><a class="reference internal" href="#event-model-prior" id="id1">event_model_prior</a></li>
+<li><a class="reference internal" href="#event-time-prior" id="id2">event_time_prior</a></li>
+<li><a class="reference internal" href="#mcmc-settings" id="id3">mcmc_settings</a></li>
+<li><a class="reference internal" href="#operator-settings" id="id4">operator_settings</a></li>
+<li><a class="reference internal" href="#global-comparison-settings" id="id5">global_comparison_settings</a><ul>
+<li><a class="reference internal" href="#the-parameters-section" id="id6">The parameters section</a><ul>
+<li><a class="reference internal" href="#general-parameter-syntax" id="id7">General parameter syntax</a></li>
+<li><a class="reference internal" href="#mutation-rate" id="id8">mutation_rate</a></li>
+<li><a class="reference internal" href="#population-size" id="id9">population_size</a></li>
+<li><a class="reference internal" href="#root-relative-population-size" id="id10">root_relative_population_size</a></li>
+<li><a class="reference internal" href="#freq-1" id="id11">freq_1</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-operators-section" id="id12">The operators section</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comparisons" id="id13">comparisons</a></li>
+</ul>
+</div>
+<p>Most of the settings for an <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> analysis you specify in a configuration
+file.
+We use a <a class="reference external" href="http://yaml.org/">YAML</a> configuration file.
+<a class="reference external" href="http://yaml.org/">YAML</a> is an “anti-markup” language and data standard that is much more human
+friendly than alternatives like XML.
+<a class="reference external" href="http://www.yamllint.com/">http://www.yamllint.com/</a> is a nice tool for debugging <a class="reference external" href="http://yaml.org/">YAML</a> syntax.</p>
+<p>The simplest possible configuration file for <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> would look something like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="n">comparisons</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-mindorensis-mindorensis-Lubang-Luzon.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-mindorensis-mindorensis-MaestreDeCampo-Masbate.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex&quot;</span>
+</pre></div>
+</div>
+<p>This specifies the path to the nexus file for each of your population pairs.
+The defaults for all other settings would be used, which I <strong>strongly
+discourage</strong>.</p>
+<p>Now, let’s look at an example that is more thoroughly specified:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="c1"># This is a comment</span>
+<span class="n">event_model_prior</span><span class="p">:</span>
+    <span class="n">dirichlet_process</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">concentration</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span> <span class="mf">7.5</span>
+                <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+
+<span class="n">event_time_prior</span><span class="p">:</span>
+    <span class="n">exponential_distribution</span><span class="p">:</span>
+        <span class="n">rate</span><span class="p">:</span> <span class="mf">100.0</span>
+
+<span class="n">mcmc_settings</span><span class="p">:</span>
+    <span class="n">chain_length</span><span class="p">:</span> <span class="mi">75000</span>
+    <span class="n">sample_frequency</span><span class="p">:</span> <span class="mi">50</span>
+
+<span class="n">operator_settings</span><span class="p">:</span>
+    <span class="n">auto_optimize</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">auto_optimize_delay</span><span class="p">:</span> <span class="mi">1000</span>
+    <span class="n">operators</span><span class="p">:</span>
+        <span class="n">ConcentrationScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.1</span>
+        <span class="n">ModelOperator</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">10.0</span>
+            <span class="n">number_of_auxiliary_categories</span><span class="p">:</span> <span class="mi">4</span>
+        <span class="n">TimeSizeRateMixer</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">5.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+        <span class="n">TimeSizeRateScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">0.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+        <span class="n">EventTimeScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+
+<span class="n">global_comparison_settings</span><span class="p">:</span>
+    <span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">markers_are_dominant</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+    <span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">population_size</span><span class="p">:</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">prior</span><span class="p">:</span>
+                <span class="n">gamma_distribution</span><span class="p">:</span>
+                    <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                    <span class="n">scale</span><span class="p">:</span> <span class="mf">0.001</span>
+        <span class="n">root_relative_population_size</span><span class="p">:</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">prior</span><span class="p">:</span>
+                <span class="n">gamma_distribution</span><span class="p">:</span>
+                    <span class="n">shape</span><span class="p">:</span> <span class="mf">100.0</span>
+                    <span class="n">scale</span><span class="p">:</span> <span class="mf">0.01</span>
+                    <span class="n">offset</span><span class="p">:</span> <span class="mf">0.0</span>
+        <span class="n">freq_1</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+
+        <span class="n">mutation_rate</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">operators</span><span class="p">:</span>
+        <span class="n">RootPopulationSizeScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+        <span class="n">LeafPopulationSizeScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+        <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+
+<span class="n">comparisons</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-mindorensis-mindorensis-Lubang-Luzon.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-mindorensis-mindorensis-MaestreDeCampo-Masbate.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex&quot;</span>
+</pre></div>
+</div>
+<p>Everything is hierarchically nested by the indent spacing.
+For example,
+<code class="docutils literal"><span class="pre">event_model_prior</span></code>, <code class="docutils literal"><span class="pre">event_time_prior</span></code>, <code class="docutils literal"><span class="pre">mcmc_settings</span></code>,
+<code class="docutils literal"><span class="pre">operator_settings</span></code>, <code class="docutils literal"><span class="pre">global_comparison_settings</span></code>, and <code class="docutils literal"><span class="pre">comparison</span></code>
+are all at the highest level of the hierarchy, and have various settings nested
+within them.
+Across a given level of the hierarchy, order does not matter. E.g., the
+top-level groups of settings listed above can be arranged in any order.
+Anything proceeded by a ‘#’ is a comment that is ignored by <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a>.</p>
+<div class="section" id="event-model-prior">
+<h2><a class="toc-backref" href="#id1">2.1. event_model_prior</a><a class="headerlink" href="#event-model-prior" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">event_model_prior</span></code> sets up the prior probabilities for all the different
+ways we can cluster the comparisons together (or not).
+Thus, the term “event model” is being used to refer to each of these
+possibilities.
+Currently, <code class="docutils literal"><span class="pre">dirichlet_process</span></code> (aka “DPP”) is the only option, and it has a
+single setting: the <code class="docutils literal"><span class="pre">concentration</span></code> parameter.</p>
+<p>The settings:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">event_model_prior</span><span class="p">:</span>
+    <span class="n">dirichlet_process</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">concentration</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span> <span class="mf">7.5</span>
+                <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>specify that the concentration parameter of the Dirichlet process should be
+fixed to a value of 7.5.
+Alternatively, you can put a gamma-distributed prior on the concentration
+parameter, for example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">event_model_prior</span><span class="p">:</span>
+    <span class="n">dirichlet_process</span><span class="p">:</span>
+        <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">concentration</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">:</span> <span class="mf">7.5</span>
+                <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+                <span class="n">prior</span><span class="p">:</span>
+                    <span class="n">gamma_distribution</span><span class="p">:</span>
+                        <span class="n">shape</span><span class="p">:</span> <span class="mf">2.0</span>
+                        <span class="n">scale</span><span class="p">:</span> <span class="mf">3.25</span>
+</pre></div>
+</div>
+<p>will allow the concentration parameter to be estimated.
+Generally, if you have a large number of comparisons (say 6 or more), it can be
+helpful to allow the concentration parameter to vary.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The prior on the concentration parameter must be a gamma distribution.</p>
+</div>
+<p>If you’ve installed <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a>, you should have a command line tool called
+<code class="docutils literal"><span class="pre">dpprobs</span></code> that can help you choose a value for the concentration parameter.
+Typing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ dpprobs -h
+</pre></div>
+</div>
+<p>on the command line should provide the help menu, but the basic usage is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ dpprobs -p concentration 7.5 4
+</pre></div>
+</div>
+<p>which requests the prior probabilities for the number of possible divergence
+events when the concentration parameter is 7.5 and there are 4 comparisons.</p>
+<p>I often set the concentration so that 50% of the prior probability is
+on the maximum number of events/categories.
+The idea is that by placing most of the prior probability on the model with no
+shared divergences (or expansions), if my results indicate a shared event, I
+can be more confident that he data are driving that result.
+But, that is just my preference (i.e., there is no fundamental mathematical
+justification it).</p>
+</div>
+<div class="section" id="event-time-prior">
+<h2><a class="toc-backref" href="#id2">2.2. event_time_prior</a><a class="headerlink" href="#event-time-prior" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">event_time_prior</span></code> specifies the prior on the divergence times.
+For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">event_time_prior</span><span class="p">:</span>
+    <span class="n">exponential_distribution</span><span class="p">:</span>
+        <span class="n">rate</span><span class="p">:</span> <span class="mf">100.0</span>
+</pre></div>
+</div>
+<p>specifies an exponential distribution with a rate of 100.0 (thus
+the mean of the exponential prior is 1.0/100.0 = 0.01).
+A gamma or uniform distribution can also be used.</p>
+<p>If the mutation rate of one or more comparison is set to 1.0, then units of
+time are expected number of substitutions per site.
+If actual mutation rates are specified for your comparisons, then the
+units of time will be in whatever unit the rates are in.
+For example, if you give mutation rates in substitutions per site per million
+years, time will be in units of millions of years.</p>
+</div>
+<div class="section" id="mcmc-settings">
+<h2><a class="toc-backref" href="#id3">2.3. mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">mcmc_settings</span></code> simply specify how long to run the MCMC
+chain, and how often to sample. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mcmc_settings</span><span class="p">:</span>
+    <span class="n">chain_length</span><span class="p">:</span> <span class="mi">75000</span>
+    <span class="n">sample_frequency</span><span class="p">:</span> <span class="mi">50</span>
+</pre></div>
+</div>
+<p>tells <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> to run the chain for 75,000 generations, recording a sample every
+50th generation (75000/50 = 1500 total samples).
+This is a good starting point. For most datasets I have analyzed so far,
+this has been sufficient. If the chain is having mixing problems, then you
+can increase.
+I recommend running a several independent chains (analyses) to confirm they are
+converging.</p>
+</div>
+<div class="section" id="operator-settings">
+<h2><a class="toc-backref" href="#id4">2.4. operator_settings</a><a class="headerlink" href="#operator-settings" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">operator_settings</span></code> control the behavior of the “global” MCMC operators
+that update the values of the model’s parameters.
+As opposed to “global,” there are also MCMC operators that only operate on the
+parameters of a specific comparison; these are discussed further below.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operator_settings</span><span class="p">:</span>
+    <span class="n">auto_optimize</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">auto_optimize_delay</span><span class="p">:</span> <span class="mi">1000</span>
+</pre></div>
+</div>
+<p>This specifies that the MCMC operators should automatically adjust their tuning
+parameters to try an optimize mixing. The <code class="docutils literal"><span class="pre">auto_optimize_delay:</span> <span class="pre">1000</span></code> tells
+the operators to wait until they have been used 1000 times before they start
+auto-tuning (this gives them data on their acceptance rate).
+Generally, auto optimization should always be used, and a delay of 1000 seems
+to work well.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operator_settings</span><span class="p">:</span>
+    <span class="n">operators</span><span class="p">:</span>
+        <span class="n">ConcentrationScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.1</span>
+        <span class="n">ModelOperator</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">10.0</span>
+            <span class="n">number_of_auxiliary_categories</span><span class="p">:</span> <span class="mi">4</span>
+        <span class="n">TimeSizeRateMixer</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">5.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+        <span class="n">TimeSizeRateScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">0.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+        <span class="n">EventTimeScaler</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+</pre></div>
+</div>
+<p>These settings control the “global” MCMC operator.  The weights are relative
+and control how often each operator is used.
+For example, an operator with <code class="docutils literal"><span class="pre">weight:</span> <span class="pre">2</span></code> will be used twice as often (on
+average) than an operator with <code class="docutils literal"><span class="pre">weight:</span> <span class="pre">1</span></code>.
+<code class="docutils literal"><span class="pre">Mixer</span></code> and <code class="docutils literal"><span class="pre">Scaler</span></code> operators have a <code class="docutils literal"><span class="pre">scale</span></code> parameter, which
+controls how large of changes it will propose for the value of
+model parameters.
+If auto optimization is turned on, these are starting values, and the values of
+the <code class="docutils literal"><span class="pre">scale</span></code> parameters will be adjusted during the MCMC chain to try to
+optimize mixing.</p>
+<p>The <code class="docutils literal"><span class="pre">ModelOperator</span></code> as a setting for the <code class="docutils literal"><span class="pre">number_of_auxiliary_categories</span></code>.
+This controls how many “extra” event categories the Gibbs sampler has when
+proposing changes to the number of events, and which comparisons are assigned
+to each event.
+More “extra” categories can improve mixing, but slows down the MCMC chain;
+fewer categories will take less time, at the risk of poorer mixing.
+I do not suspect you would ever need more than 4, but you may very well be able
+to use 3 or 2, and still have good mixing.
+The default is 4.</p>
+<p>Generally, the default values for the <code class="docutils literal"><span class="pre">operator_settings</span></code> are sensible
+and will work fine for many datasets.
+I recommend trying the defaults first (i.e., simply do not specify the
+<code class="docutils literal"><span class="pre">operator_settings</span></code> section in the configuration file), and make adjustments
+if your chains do not mix and/or converge well.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you specify a weight for an operator that only updates parameters that
+are fixed (not estimated), <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> will automatically “turn off” the
+operator (i.e., change the weight to zero).</p>
+<p class="last"><strong>BUT</strong>, if you set the weight of an operator to zero for a free parameter,
+<a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> will <strong>not</strong> automatically “turn on” that operator. So, unless there
+is another operator that updates the parameter, it will effectively be
+fixed to the starting value (it will not be updated during the MCMC).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You do not have to specify all settings within a group. For example you can
+use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operator_settings</span><span class="p">:</span>
+    <span class="n">operators</span><span class="p">:</span>
+        <span class="n">ModelOperator</span><span class="p">:</span>
+            <span class="n">number_of_auxiliary_categories</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p class="last">in your config file to change the number of auxiliary categories to 2, but
+leave all other operator settings at their default values.</p>
+</div>
+</div>
+<div class="section" id="global-comparison-settings">
+<h2><a class="toc-backref" href="#id5">2.5. global_comparison_settings</a><a class="headerlink" href="#global-comparison-settings" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">global_comparison_settings</span></code> is an optional section that can
+be useful for specifying settings to be applied to all of your
+comparisons, unless otherwise specified.
+All of the settings within <code class="docutils literal"><span class="pre">global_comparison_settings</span></code> can
+also be specified for each comparison. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">global_comparison_settings</span><span class="p">:</span>
+    <span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">false</span>
+
+<span class="n">comparisons</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;species1.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;species2.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;species3.nex&quot;</span>
+    <span class="n">ploidy</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">true</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;species4.nex&quot;</span>
+</pre></div>
+</div>
+<p>specifies that Species 1, 2, and 4 are diploid organisms for which
+you want to estimate the root (ancestor) and leaf (descendant) effective
+population sizes separately, and Species 3 is haploid and you want to constrain
+the root and leaf populations to be the same size.</p>
+<p>In other words, <code class="docutils literal"><span class="pre">global_comparison_settings</span></code> allow you to specify default
+settings for your comparisons that you can override.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>This is the ploidy of the organisms (i.e., 1 = haploid, 2 = diploid).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>This tells <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> how you have encoded your characters.
+Does each cell of your character matrix represent the state of a diploid
+individual?
+If so, <code class="docutils literal"><span class="pre">genotypes_are_diploid</span></code> should be <code class="docutils literal"><span class="pre">true</span></code>.
+If each cell represents the state of a particular gene copy/genome, then
+<code class="docutils literal"><span class="pre">genotypes_are_diploid</span></code> should be <code class="docutils literal"><span class="pre">false</span></code>.
+If you have a code(s) to represent a heterozygote, then
+<code class="docutils literal"><span class="pre">genotypes_are_diploid</span></code> should definitely be <code class="docutils literal"><span class="pre">true</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">markers_are_dominant</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This specifies whether your markers are dominant.
+If the same code is used to designate the character state of a heterozygote and
+one of the possible homozygotes, then <code class="docutils literal"><span class="pre">markers_are_dominant</span></code> should be
+<code class="docutils literal"><span class="pre">true</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+<span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>For each row (individual or gene copy) of your character matrix, you need to
+tell <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> which population it was sampled from.
+You do this by using prefixes or suffixes for each row label in your nexus
+file, and the prefix or suffix needs to be delimited by a character.
+So, if your matrix looks like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Begin data;
+    Dimensions ntax=20 nchar=40000;
+    Format datatype=standard symbols=&quot;01&quot; missing=? gap=-;
+    Matrix
+&#39;population1-jro-001&#39;  0010...
+&#39;population1-jro-002&#39;  0010...
+&#39;population2-jro-003&#39;  0000...
+&#39;population2-jro-004&#39;  0011...
+.
+.
+.
+</pre></div>
+</div>
+<p>then you should specify:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span>
+<span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>and <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> will know that the data in the first two rows came from
+“population1” and the data in the third and forth rows came from “population2”.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Underscore gotcha!</strong></p>
+<p>The nexus format standard interprets underscores as spaces, unless the
+labels are quoted. So if you have:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Begin data;
+    Dimensions ntax=20 nchar=40000;
+    Format datatype=standard symbols=&quot;01&quot; missing=? gap=-;
+    Matrix
+population1_jro-001  0010...
+population1_jro-002  0010...
+population2_jro-003  0000...
+.
+.
+.
+</pre></div>
+</div>
+<p>you need to specify:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span> <span class="c1"># just a space!</span>
+<span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This tells <a class="reference external" href="https://github.com/phyletica/ecoevolity">Ecoevolity</a> whether or not you have removed all constant
+characters/sites.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal"><span class="pre">true</span></code> the effective sizes of the root and leaf populations are
+constrained be equal (i.e., one population-size parameter for the comparison).
+If <code class="docutils literal"><span class="pre">false</span></code> the effective sizes of the root and leaf populations are estimated
+separately.</p>
+<div class="section" id="the-parameters-section">
+<h3><a class="toc-backref" href="#id6">2.5.1. The parameters section</a><a class="headerlink" href="#the-parameters-section" title="Permalink to this headline">¶</a></h3>
+<p>The following section controls the settings for the parameters for each
+comparison. Again, these can be specified in the <code class="docutils literal"><span class="pre">global_comparison_settings</span></code>
+section and/or for each comparison:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">parameters</span><span class="p">:</span>
+    <span class="n">population_size</span><span class="p">:</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">prior</span><span class="p">:</span>
+            <span class="n">gamma_distribution</span><span class="p">:</span>
+                <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                <span class="n">scale</span><span class="p">:</span> <span class="mf">0.001</span>
+    <span class="n">root_relative_population_size</span><span class="p">:</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+        <span class="n">prior</span><span class="p">:</span>
+            <span class="n">gamma_distribution</span><span class="p">:</span>
+                <span class="n">shape</span><span class="p">:</span> <span class="mf">100.0</span>
+                <span class="n">scale</span><span class="p">:</span> <span class="mf">0.01</span>
+                <span class="n">offset</span><span class="p">:</span> <span class="mf">0.0</span>
+    <span class="n">freq_1</span><span class="p">:</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">mutation_rate</span><span class="p">:</span>
+        <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This allows you to specify whether or not you want estimate each parameter, and
+if so, what prior to use.</p>
+<div class="section" id="general-parameter-syntax">
+<h4><a class="toc-backref" href="#id7">2.5.1.1. General parameter syntax</a><a class="headerlink" href="#general-parameter-syntax" title="Permalink to this headline">¶</a></h4>
+<p>Before we discuss each parameter, let’s look at the general syntax that applies
+to all parameters (including the concentration parameter of the Dirichlet
+process that we saw above).</p>
+<p>The general syntax for a parameter is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">parameter_name</span><span class="p">:</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span> <span class="c1"># or false</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+    <span class="n">prior</span><span class="p">:</span>
+        <span class="n">a_valid_distribution</span><span class="p">:</span>
+            <span class="n">distribution_parameter</span><span class="p">:</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<p>So, you can specify</p>
+<ol class="arabic simple">
+<li>Whether or not the parameter should be fixed or estimated.</li>
+<li>A value for the parameter. This is only the starting value if <code class="docutils literal"><span class="pre">estimate</span></code>
+is <code class="docutils literal"><span class="pre">true</span></code>, or is the fixed value if <code class="docutils literal"><span class="pre">estimate</span></code> is <code class="docutils literal"><span class="pre">false</span></code>.</li>
+<li>The prior probability distribution. This is ignored if <code class="docutils literal"><span class="pre">estimate</span></code> is
+<code class="docutils literal"><span class="pre">false</span></code>.</li>
+</ol>
+</div>
+<div class="section" id="mutation-rate">
+<h4><a class="toc-backref" href="#id8">2.5.1.2. mutation_rate</a><a class="headerlink" href="#mutation-rate" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal"><span class="pre">mutation_rate</span></code> settings are for the mutation rate
+(<img class="math" src="_images/math/1a467569aa35ff5f2a77d526a006e24b6a53a12b.svg" alt="\mutationrate"/>) of the comparison.
+How you scale this is up to you, but you need to make sure you are consistent
+in how you scale time and effective population sizes.
+For example, if you set the mutation rate to 1, then time and effective
+population sizes will be scaled by the mutation rate.
+Specifically, time will be in units of <img class="math" src="_images/math/f5ee75652c9ec3a9946d88d80b3f3071048b15dd.svg" alt="\eventtime\mutationrate"/> (i.e.,
+expected substitutions per site), and effective population size will be measured
+in units of <img class="math" src="_images/math/502db4c581eb539e0af5587731b4fd273f08a9e8.svg" alt="\epopsize\mutationrate"/>.
+Alternatively, if you specify an actual rate of mutation per site per
+generation, then time will be in units of generations,
+and population size will in units of the effective number of diploid
+individuals or gene copies (<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>) if the ploidy is 2 or 1,
+respectively.
+Differences in generation times among pairs can also be accounted for
+via the <code class="docutils literal"><span class="pre">mutation_rate</span></code> parameters, with the appropriate scaling
+of the effective population sizes.
+To help ensure the population sizes are scaled correctly, it can help to
+remember that <img class="math" src="_images/math/45a9ebba77c8ca16433bc5c4f0b2c528616d35bd.svg" alt="\textrm{ploidy} \times 2\epopsize\mutationrate"/> should equal the
+expected differences per base between two randomly selected genomes from a
+population.</p>
+</div>
+<div class="section" id="population-size">
+<h4><a class="toc-backref" href="#id9">2.5.1.3. population_size</a><a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal"><span class="pre">population_size</span></code> settings are for the effective sizes of the leaf
+populations of the pair (i.e., <img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>, but see discussion of
+scaling the mutation rate above).</p>
+</div>
+<div class="section" id="root-relative-population-size">
+<h4><a class="toc-backref" href="#id10">2.5.1.4. root_relative_population_size</a><a class="headerlink" href="#root-relative-population-size" title="Permalink to this headline">¶</a></h4>
+<p>The population size of the root (ancestral) population is parameterized a bit
+differently.
+You specify a prior on the effective population size of the root <em>relative</em> to
+the mean population size of the leaf (descendant) populations.
+For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">root_relative_population_size</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">1.0</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>Constrains the root population to always have an effective population
+size that is equal to the mean size of the leaf populations.
+Thus, it is not an estimated (free) parameter; it is a deterministic function
+of the leaf population sizes.
+Similarly,</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">root_relative_population_size</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">2.0</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>constrains the effective population size of the root to be twice
+the mean effective population size of the leaves.
+Alternatively,</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">root_relative_population_size</span><span class="p">:</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">prior</span><span class="p">:</span>
+        <span class="n">gamma_distribution</span><span class="p">:</span>
+            <span class="n">shape</span><span class="p">:</span> <span class="mf">100.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.01</span>
+</pre></div>
+</div>
+<p>allows the effective population size of the root to be estimated, and centers
+the prior on its relative size on 1 (i.e., centers the prior expectation for
+the actual root effective population size on the mean of the leaf sizes);
+the mean of a gamma distribution is the product of the
+shape and scale parameters: <img class="math" src="_images/math/f3df2a6c89d886f5bfbce2f0abbd95dc05245675.svg" alt="100 \times 0.01 = 1"/>
+Similarly</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">root_relative_population_size</span><span class="p">:</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">prior</span><span class="p">:</span>
+        <span class="n">gamma_distribution</span><span class="p">:</span>
+            <span class="n">shape</span><span class="p">:</span> <span class="mf">100.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+</pre></div>
+</div>
+<p>allows the effective population size of the root to be estimated, and centers
+the prior on its relative size on 2 (i.e., centers the prior expectation for
+the actual root effective population size on twice the mean of the leaf sizes.</p>
+<p>The hope of this parameterization is to allow you to specify a more informative
+prior on the root effective population size.
+There is usually a lot of prior uncertainty in the actual value of the root
+population size, but we might have good reason to expect that it is similar to
+the mean of the leaf sizes.</p>
+</div>
+<div class="section" id="freq-1">
+<h4><a class="toc-backref" href="#id11">2.5.1.5. freq_1</a><a class="headerlink" href="#freq-1" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal"><span class="pre">freq_1</span></code> parameter is the equilibrium frequency of the “1” allele (or 1
+minus the frequency of the “0” allele).
+If you are using nucleotide data, I recommend that you fix the frequencies
+of the “0” and “1” states to be equal:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>This is because there is no natural way to recode the 4 nucleotide states to
+binary.
+Thus, if you try to estimate frequencies of the binary states, your results
+will be sensitive to the vagaries of how you decide to code your nucleotides as
+binary.</p>
+<p>However, if the characters you are using are truly binary, then it might make
+sense to estimate the frequencies of the two states.
+Another option is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">empirical</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<p>which fixes the frequencies of the two states to their empirical frequencies
+(i.e., the frequencies at which they appear in your data).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal"><span class="pre">empirical</span></code> option for the value only works for the <code class="docutils literal"><span class="pre">freq_1</span></code>
+parameter.  You should get an error if you try to use it for any other
+parameters.</p>
+</div>
+</div>
+</div>
+<div class="section" id="the-operators-section">
+<h3><a class="toc-backref" href="#id12">2.5.2. The operators section</a><a class="headerlink" href="#the-operators-section" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">operators</span></code> settings control the behavior of the MCMC operators that act
+upon the parameters of a comparison.
+I.e., each comparison gets its own copy of the specified operators, as opposed
+to the “global” operators discussed above.
+The following operators can only be specified here (listing them in the global
+<code class="docutils literal"><span class="pre">operator_settings</span></code> will result in an error:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operators</span><span class="p">:</span>
+    <span class="n">RootPopulationSizeScaler</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="n">LeafPopulationSizeScaler</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+    <span class="n">FreqMover</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">window</span><span class="p">:</span> <span class="mf">0.1</span>
+    <span class="n">MutationRateScaler</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.3</span>
+</pre></div>
+</div>
+<p>Other operators that can be specified here are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operators</span><span class="p">:</span>
+    <span class="n">TimeSizeRateMixer</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">5.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+    <span class="n">TimeSizeRateScaler</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">0.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+    <span class="n">EventTimeScaler</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+</pre></div>
+</div>
+<p>These three can also be “global” operators that act on all comparisons (see
+<code class="docutils literal"><span class="pre">operator_settings</span></code> section above).
+The only time you might need to apply these operators to <em>each</em> comparison
+is if you are having mixing trouble.
+For example, the “global” <code class="docutils literal"><span class="pre">EventTimeScaler</span></code> might not work well for
+the divergence time of a particular pair.
+Giving that pair its own <code class="docutils literal"><span class="pre">EventTimeScaler</span></code> might help in such a case.</p>
+<p>As with the “global” operators, the default settings will likely work fine.
+I recommend you try the defaults first (simply do not specify operator
+settings), and resort to adjustments if you have poor mixing.</p>
+</div>
+</div>
+<div class="section" id="comparisons">
+<h2><a class="toc-backref" href="#id13">2.6. comparisons</a><a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h2>
+<p>In its simplest form, the <code class="docutils literal"><span class="pre">comparisons</span></code> section simply is a list of
+the paths of the character alignments:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">comparisons</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-mindorensis-mindorensis-Lubang-Luzon.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-mindorensis-mindorensis-MaestreDeCampo-Masbate.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex&quot;</span>
+</pre></div>
+</div>
+<p>However, as noted above, <em>all</em> of the options discussed for the
+<code class="docutils literal"><span class="pre">global_comparison_settings</span></code> section can also be applied to each comparison.
+For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">global_comparison_settings</span><span class="p">:</span>
+    <span class="n">ploidy</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">markers_are_dominant</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+    <span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">equal_population_sizes</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">population_size</span><span class="p">:</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">prior</span><span class="p">:</span>
+                <span class="n">gamma_distribution</span><span class="p">:</span>
+                    <span class="n">shape</span><span class="p">:</span> <span class="mf">4.0</span>
+                    <span class="n">scale</span><span class="p">:</span> <span class="mf">0.001</span>
+    <span class="n">operators</span><span class="p">:</span>
+        <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
+
+<span class="n">comparisons</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-mindorensis-mindorensis-Lubang-Luzon.nex&quot;</span>
+    <span class="n">ploidy</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span>
+    <span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">constant_sites_removed</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">population_size</span><span class="p">:</span>
+            <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
+            <span class="n">value</span><span class="p">:</span> <span class="mf">0.005</span>
+            <span class="n">prior</span><span class="p">:</span>
+                <span class="n">gamma_distribution</span><span class="p">:</span>
+                    <span class="n">shape</span><span class="p">:</span> <span class="mf">2.0</span>
+                    <span class="n">scale</span><span class="p">:</span> <span class="mf">0.0025</span>
+    <span class="n">operators</span><span class="p">:</span>
+        <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">5.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.01</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-mindorensis-mindorensis-MaestreDeCampo-Masbate.nex&quot;</span>
+<span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex&quot;</span>
+</pre></div>
+</div>
+<p>Here, we have overridden many of the “global” settings for the second
+comparison.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2017, Jamie R. Oaks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/yaml-config.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/phyletica/ecoevolity" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
