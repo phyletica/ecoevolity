@@ -286,6 +286,7 @@ class BaseComparisonPopulationTreeCollection {
                 RandomNumberGenerator& rng,
                 unsigned int locus_size = 1,
                 float singleton_sample_probability = 1.0,
+                bool max_one_variable_site_per_locus = false,
                 bool validate = true) const;
 
         bool all_population_sizes_are_fixed() const {

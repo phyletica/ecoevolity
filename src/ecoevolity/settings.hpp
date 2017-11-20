@@ -2690,6 +2690,15 @@ class BaseCollectionSettings {
             return nfree;
         }
 
+        bool all_comparions_have_constant_sites() const {
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
+                if (comparison.constant_sites_removed_) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         const ContinuousDistributionSettings& get_time_prior_settings() const {
             return this->time_prior_settings_;
         }
@@ -2814,6 +2823,12 @@ class BaseCollectionSettings {
         void blanket_set_genotypes_are_diploid(bool b) {
             for (auto & comp : this->comparisons_) {
                 comp.genotypes_are_diploid_ = b;
+            }
+        }
+
+        void blanket_set_constant_sites_removed(bool b) {
+            for (auto & comp : this->comparisons_) {
+                comp.constant_sites_removed_ = b;
             }
         }
 

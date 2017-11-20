@@ -438,6 +438,13 @@ class PopulationTree {
                 float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
+        std::pair<BiallelicData, unsigned int>
+        simulate_data_set_max_one_variable_site_per_locus(
+                RandomNumberGenerator& rng,
+                unsigned int locus_size,
+                float singleton_sample_probability,
+                bool validate = true) const;
+
         std::pair<
                 std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
                 std::shared_ptr<GeneTreeSimNode> >

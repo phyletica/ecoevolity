@@ -3025,6 +3025,81 @@ TEST_CASE("Testing scaling of simulation of loci for singleton",
     }
 }
 
+TEST_CASE("Testing scaling of simulation of one variable site per locus for singleton",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing simulate_data_set_max_one_variable_site_per_locus for fully fixed singleton") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        unsigned int nlineages = 2;
+
+        // Two times the expected gene tree root height
+        double expected_mean = 2.0 * (theta * (1.0 - (1.0 / nlineages)));
+        double epsilon = 0.0001;
+
+        std::string nex_path = "data/dummy-singleton-n2-100k.nex";
+        // Need to keep constant characters
+        ComparisonPopulationTree tree(nex_path, '-', true, false, false, false);
+        REQUIRE(tree.get_leaf_node_count() == 1);
+        tree.estimate_mutation_rate();
+
+        tree.set_root_population_size(Ne * mu);
+        tree.set_child_population_size(0, (Ne * mu));
+
+        tree.set_root_height(0.1);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        /* RandomNumberGenerator rng = RandomNumberGenerator(54321); */
+        RandomNumberGenerator rng = RandomNumberGenerator(12345678);
+
+        SampleSummarizer<double> divergence;
+        unsigned int nsamples = 100;
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            auto data_nloci = tree.simulate_data_set_max_one_variable_site_per_locus(rng, 1000, 1.0, false);
+            REQUIRE(data_nloci.second == 100);
+            REQUIRE(data_nloci.first.get_number_of_sites() <= 100);
+            double x = (double)data_nloci.first.get_number_of_variable_sites() / (data_nloci.first.get_number_of_sites() + data_nloci.first.get_number_of_constant_sites_removed());
+            divergence.add_sample(x);
+        }
+
+        std::cout << "Expected mean divergence: " << expected_mean << "\n";
+        std::cout << "Simulated mean divergence: " << divergence.mean() << "\n";
+        // By stopping the simulation of sites for each locus when we get a
+        // variable site, we are under-sampling sites from loci with older
+        // coalescence times (over-sampling sites from loci with younger
+        // coalescence times), so we should under estimate diversity:
+        REQUIRE(divergence.mean() < (expected_mean - epsilon));
+
+        tree.set_mutation_rate(mu);
+        tree.set_root_population_size(Ne);
+        tree.set_child_population_size(0, Ne);
+        tree.set_root_height(0.1 / mu);
+
+        SampleSummarizer<double> divergence2;
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            auto data_nloci = tree.simulate_data_set_max_one_variable_site_per_locus(rng, 1000, 1.0, false);
+            REQUIRE(data_nloci.second == 100);
+            REQUIRE(data_nloci.first.get_number_of_sites() <= 100);
+            double x = (double)data_nloci.first.get_number_of_variable_sites() / (data_nloci.first.get_number_of_sites() + data_nloci.first.get_number_of_constant_sites_removed());
+            divergence2.add_sample(x);
+        }
+
+        std::cout << "Simulated mean divergence: " << divergence2.mean() << "\n";
+        // By stopping the simulation of sites for each locus when we get a
+        // variable site, we are under-sampling sites from loci with older
+        // coalescence times (over-sampling sites from loci with younger
+        // coalescence times), so we should under estimate diversity:
+        REQUIRE(divergence2.mean() < (expected_mean - epsilon));
+    }
+}
+
 TEST_CASE("Testing draw_from_prior for fully fixed", "[ComparisonPopulationTree]") {
 
     SECTION("Testing draw_from_prior for fully fixed pair") {

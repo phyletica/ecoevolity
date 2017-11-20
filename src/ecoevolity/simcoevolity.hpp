@@ -110,6 +110,17 @@ int simcoevolity_main(int argc, char * argv[]) {
                   "data). When the locus size is 1 (default), the pattern of "
                   "missing data in every simulated aligment will match the "
                   "corresponding empirical alignment");
+    parser.add_option("--max-one-variable-site-per-locus")
+            .action("store_true")
+            .dest("max_one_variable_site_per_locus")
+            .help("When locus size is greater than one, this option forces "
+                  "only one variable site per locus to be retained. "
+                  "This is for simulating datasets that mimic retaining only "
+                  "one SNP per RADseq or sequence-capture locus, for example. "
+                  "NOTE: this only works when the locus size is greater than "
+                  "one, and each comparison specified in the config file has "
+                  "not had constant sites removed (i.e., "
+                  "\'constant_sites_removed: false\').");
     parser.add_option("--parameters-only")
             .action("store_true")
             .dest("parameters_only")
@@ -187,6 +198,14 @@ int simcoevolity_main(int argc, char * argv[]) {
     }
     std::cerr << "Number of sites simulated per locus: " << locus_size << std::endl;
 
+    const bool max_one_variable_site_per_locus = options.get(
+            "max_one_variable_site_per_locus");
+    if (max_one_variable_site_per_locus && (locus_size < 2)) {
+        throw EcoevolityError(
+                "Locus length must be 1 or greater to use "
+                "\'--max-one-variable-site-per-locus\'");
+    }
+
     const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
     const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
@@ -247,6 +266,12 @@ int simcoevolity_main(int argc, char * argv[]) {
 
     std::cerr << "Parsing config file..." << std::endl;
     SettingsType settings = SettingsType(config_path);
+
+    if (max_one_variable_site_per_locus && (! settings.all_comparions_have_constant_sites())) {
+        throw EcoevolityError(
+                "All comparisons must not have constant sites removed when "
+                "using the \'--max-one-variable-site-per-locus\' option.");
+    }
 
     SettingsType prior_settings = SettingsType(prior_config_path);
 
@@ -324,6 +349,7 @@ int simcoevolity_main(int argc, char * argv[]) {
                 sim_alignments = comparisons.simulate_complete_biallelic_data_sets(rng,
                         locus_size,
                         singleton_sample_probability,
+                        max_one_variable_site_per_locus,
                         true);
             }
 
@@ -348,6 +374,9 @@ int simcoevolity_main(int argc, char * argv[]) {
             }
             prior_settings.blanket_set_population_name_is_prefix(true);
             prior_settings.blanket_set_genotypes_are_diploid(false);
+            if (max_one_variable_site_per_locus) {
+                prior_settings.blanket_set_constant_sites_removed(true);
+            }
             std::ofstream analysis_settings_stream;
             analysis_settings_stream.open(analysis_config_path);
             prior_settings.write_settings(analysis_settings_stream);

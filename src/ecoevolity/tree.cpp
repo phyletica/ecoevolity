@@ -930,6 +930,77 @@ PopulationTree::simulate_complete_biallelic_data_set(
     return std::make_pair(sim_data, number_of_loci);
 }
 
+std::pair<BiallelicData, unsigned int>
+PopulationTree::simulate_data_set_max_one_variable_site_per_locus(
+        RandomNumberGenerator& rng,
+        unsigned int locus_size,
+        float singleton_sample_probability,
+        bool validate) const {
+    ECOEVOLITY_ASSERT(locus_size > 0);
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    if (this->constant_sites_removed_) {
+        throw EcoevolityError(
+                "To simulated one variable site per locus, the \"template\" "
+                "dataset must include constant sites");
+    }
+    const bool filtering_constant_sites = true;
+    std::shared_ptr<GeneTreeSimNode> current_gene_tree;
+    auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
+    auto pattern = pattern_tree.first;
+    current_gene_tree = pattern_tree.second;
+    unsigned int number_of_loci = 1;
+    unsigned int locus_site_count = 0;
+    bool site_added = false;
+    for (unsigned int site_idx = 0;
+            site_idx < this->data_.get_number_of_sites();
+            ++site_idx) {
+        if (locus_site_count < locus_size) {
+            pattern = this->simulate_biallelic_site(
+                    current_gene_tree,
+                    rng);
+        }
+        else {
+            pattern_tree = this->simulate_biallelic_site(0, rng, true);
+            pattern = pattern_tree.first;
+            current_gene_tree = pattern_tree.second;
+            locus_site_count = 0;
+            ++number_of_loci;
+        }
+        std::vector<unsigned int> red_allele_counts = pattern.first;
+        std::vector<unsigned int> allele_counts = pattern.second;
+        if (singleton_sample_probability < 1.0) {
+            bool sample_pattern = this->sample_pattern(
+                    rng,
+                    singleton_sample_probability,
+                    red_allele_counts,
+                    allele_counts);
+            if (! sample_pattern) {
+                site_idx -= 1;
+                continue;
+            }
+        }
+        site_added = sim_data.add_site(red_allele_counts,
+                allele_counts,
+                filtering_constant_sites);
+        if (site_added) {
+            // We have a variable site for this locus, so need to skip over
+            // the remaining sites of this locus.
+            // Subtracting 1 for the loop increment.
+            int remaining_locus_sites = locus_size - locus_site_count;
+            site_idx += (remaining_locus_sites - 1);
+            locus_site_count += remaining_locus_sites;
+            continue;
+        }
+        ++locus_site_count;
+    }
+    sim_data.update_max_allele_counts();
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
+    return std::make_pair(sim_data, number_of_loci);
+}
+
 std::pair<
         std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
         std::shared_ptr<GeneTreeSimNode> >

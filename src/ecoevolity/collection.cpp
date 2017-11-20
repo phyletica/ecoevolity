@@ -852,12 +852,22 @@ std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::sim
         RandomNumberGenerator& rng,
         unsigned int locus_size,
         float singleton_sample_probability,
+        bool max_one_variable_site_per_locus,
         bool validate) const {
     std::map<std::string, BiallelicData> alignments;
-    for (auto tree: this->trees_) {
-        auto alignment_nloci = tree->simulate_complete_biallelic_data_set(
-                rng, locus_size, singleton_sample_probability, validate);
-        alignments[tree->get_data().get_path()] = alignment_nloci.first;
+    if (max_one_variable_site_per_locus) {
+        for (auto tree: this->trees_) {
+            auto alignment_nloci = tree->simulate_data_set_max_one_variable_site_per_locus(
+                    rng, locus_size, singleton_sample_probability, validate);
+            alignments[tree->get_data().get_path()] = alignment_nloci.first;
+        }
+    }
+    else {
+        for (auto tree: this->trees_) {
+            auto alignment_nloci = tree->simulate_complete_biallelic_data_set(
+                    rng, locus_size, singleton_sample_probability, validate);
+            alignments[tree->get_data().get_path()] = alignment_nloci.first;
+        }
     }
     return alignments;
 }

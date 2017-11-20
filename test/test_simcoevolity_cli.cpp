@@ -2396,7 +2396,7 @@ TEST_CASE("Testing simcoevolity parameters only setting", "[SimcoevolityCLI]") {
 }
 
 
-TEST_CASE("Testing simcoevolity triallelic sites error", "[xSimcoevolityCLI]") {
+TEST_CASE("Testing simcoevolity triallelic sites error", "[SimcoevolityCLI]") {
 
     SECTION("Testing triallelic sites error") {
         double height_shape = 10.0;
@@ -2571,7 +2571,7 @@ TEST_CASE("Testing simcoevolity triallelic sites error", "[xSimcoevolityCLI]") {
 }
 
 
-TEST_CASE("Testing simcoevolity relax triallelic sites option", "[xSimcoevolityCLI]") {
+TEST_CASE("Testing simcoevolity relax triallelic sites option", "[SimcoevolityCLI]") {
 
     SECTION("Testing relax triallelic sites option") {
         double height_shape = 10.0;
