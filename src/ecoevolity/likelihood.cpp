@@ -274,15 +274,22 @@ double compute_root_likelihood(
         for (unsigned int r = 0; r <= n; ++r) {
             double term = conditionals.at(n).at(r) * root.get_bottom_pattern_probability(n, r);
             sum += term;
-            if (sum < 0.0) {
-                throw EcoevolityError("compute_root_likelihood(): Numerical error");
-            }
+            // if (sum < 0.0) {
+            //     std::ostringstream message;
+            //     message << "compute_root_likelihood(): Numerical error; "
+            //             << "root likelihood is negative: "
+            //             << sum;
+            //     throw EcoevolityError(message.str());
+            // }
         }
     }
 
     // ECOEVOLITY_DEBUG(
     //     std::cerr << "root likelihood: " << sum << std::endl;
     // )
+    if (sum < 0.0) {
+        return 0.0;
+    }
     return sum;
 }
 
@@ -378,7 +385,7 @@ double get_log_likelihood_for_pattern_range(
                 mutation_rate,
                 ploidy,
                 markers_are_dominant);
-        if (pattern_likelihood == 0.0) {
+        if (pattern_likelihood <= 0.0) {
             return -std::numeric_limits<double>::infinity();
         }
         double weight = (double) pattern_weights.at(pattern_idx);
