@@ -195,10 +195,10 @@ int sumcoevolity_main(int argc, char * argv[]) {
               << log_paths.size() << " log files.\n";
 
     std::vector<std::string> keys = posterior_sample.get_keys();
-    std::map<std::string, std::vector<unsigned int> > indices;
+    std::vector<std::vector<unsigned int> > indices;
     for (auto const & k: keys) { 
         if (string_util::startswith(k, "root_height_index_")) {
-            indices[k] = posterior_sample.get<unsigned int>(k);
+            indices.push_back(posterior_sample.get<unsigned int>(k));
         }
     }
     unsigned int number_of_comparisons = indices.size();
@@ -216,8 +216,8 @@ int sumcoevolity_main(int argc, char * argv[]) {
     for (unsigned int i = 0; i < nevents.size(); ++i) {
         std::vector<unsigned int> model;
         model.reserve(number_of_comparisons);
-        for (auto const & kv: indices) {
-            model.push_back(kv.second.at(i));
+        for (unsigned int j = 0; j < number_of_comparisons; ++j) {
+            model.push_back(indices.at(j).at(i));
         }
         if (model_counts.count(model) < 1) {
             model_counts[model] = 1;
