@@ -397,7 +397,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -546,7 +546,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -691,7 +691,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -849,7 +849,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1049,7 +1049,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
                 "ln_prior",
                 "ln_prior_pop1",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1198,7 +1198,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1336,7 +1336,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
                 "root_height_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1474,7 +1474,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
                 "root_height_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1613,7 +1613,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
             "ln_prior",
             "ln_prior_kya",
             "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1745,7 +1745,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
                 "ln_prior",
                 "ln_prior_kya",
                 "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1891,7 +1891,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
                 "ln_prior_kya",
                 "pop_size_kya",
                 "pop_size_fas"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2038,7 +2038,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
                 "ln_prior_kya",
                 "pop_size_kya",
                 "pop_size_fas"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2178,7 +2178,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
                 "pop_size_kya",
                 "pop_size_fas",
                 "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2318,7 +2318,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
                 "pop_size_kya",
                 "pop_size_fas",
                 "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2456,7 +2456,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
                 "ln_prior_kya",
                 "freq_1_kya"
                 };
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2594,7 +2594,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
                 "ln_prior_kya",
                 "freq_1_kya"
                 };
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2732,7 +2732,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
                 "ln_prior_kya",
                 "freq_1_kya"
                 };
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2866,7 +2866,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
                 "ln_prior",
                 "ln_prior_kya",
                 "mutation_rate_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -3000,7 +3000,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
                 "ln_prior",
                 "ln_prior_kya",
                 "mutation_rate_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -3660,7 +3660,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -3834,7 +3834,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -4008,7 +4008,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -4230,7 +4230,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -4452,7 +4452,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -5608,7 +5608,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -5840,7 +5840,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -6075,7 +6075,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -6933,7 +6933,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -7157,7 +7157,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {

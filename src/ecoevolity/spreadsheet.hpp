@@ -32,24 +32,36 @@
 
 namespace spreadsheet {
 
-inline std::vector<std::string> parse_header(
+inline void parse_header(
         std::istream& in_stream,
+        std::vector<std::string>& header,
         char delimiter = '\t') {
     std::string header_line;
     std::getline(in_stream, header_line);
-    std::vector<std::string> header = string_util::split(
+    header = string_util::split(
             header_line, delimiter);
-    return header;
 }
 
 inline void parse(
         std::istream& in_stream,
         std::map<std::string, std::vector<std::string> >& column_data,
+        std::vector<std::string>& header,
         unsigned int offset = 0,
         char delimiter = '\t') {
     std::string line;
     unsigned int line_index = 0;
-    std::vector<std::string> header = parse_header(in_stream);
+    if (header.size() == 0) {
+        parse_header(in_stream, header, delimiter);
+    }
+    else {
+        std::vector<std::string> new_header;
+        parse_header(in_stream, new_header, delimiter);
+        if (new_header != header) {
+            throw EcoevolityParsingError(
+                    "Headers does not match",
+                    line_index + 1);
+        }
+    }
     if (header.size() == 0) {
         throw EcoevolityParsingError(
                 "Could not parse header",
@@ -57,25 +69,8 @@ inline void parse(
     }
     unsigned int number_of_columns = header.size();
     std::vector<std::string> elements;
-    if (column_data.size() > 0) {
-        if (column_data.size() != header.size()) {
-            throw EcoevolityParsingError(
-                    "Columns do not match existing column data map",
-                    line_index + 1);
-        }
-        for (const auto &h: header) {
-            if (column_data.count(h) < 1) {
-                throw EcoevolityParsingError(
-                        "Column header \'" + h +
-                        "\' not found in existing column data map",
-                    line_index + 1);
-            }
-        }
-    }
-    else {
-        for (const auto &h: header) {
-            column_data[h];
-        }
+    for (const auto &h: header) {
+        column_data[h];
     }
     elements.reserve(header.size());
     while (std::getline(in_stream, line)) {
@@ -104,6 +99,7 @@ inline void parse(
 inline void parse(
         const std::string& path,
         std::map<std::string, std::vector<std::string> >& column_data,
+        std::vector<std::string>& header,
         unsigned int offset = 0,
         char delimiter = '\t') {
     std::ifstream in_stream;
@@ -114,7 +110,7 @@ inline void parse(
                 path);
     }
     try {
-        parse(in_stream, column_data, offset, delimiter);
+        parse(in_stream, column_data, header, offset, delimiter);
     }
     catch (...) {
         std::cerr << "ERROR: Problem parsing spreadsheet \'"
@@ -127,24 +123,29 @@ inline void parse(
 inline void parse(
         const std::vector<std::string>& paths,
         std::map<std::string, std::vector<std::string> >& column_data,
+        std::vector<std::string>& header,
         unsigned int offset = 0,
         char delimiter = '\t') {
     for (const auto &p: paths) {
-        parse(p, column_data, offset, delimiter);
+        parse(p, column_data, header, offset, delimiter);
     }
 }
 
 class Spreadsheet {
 
+    protected:
+
+        std::map<std::string, std::vector<std::string> > data_;
+        std::vector<std::string> header_;
+
     public:
-        std::map<std::string, std::vector<std::string> > data;
 
         void update(
                 std::istream& in_stream,
                 unsigned int offset = 0,
                 char delimiter = '\t')
         {
-            parse(in_stream, this->data, offset, delimiter);
+            parse(in_stream, this->data_, this->header_, offset, delimiter);
 
         }
 
@@ -153,7 +154,7 @@ class Spreadsheet {
                 unsigned int offset = 0,
                 char delimiter = '\t')
         {
-            parse(path, this->data, offset, delimiter);
+            parse(path, this->data_, this->header_, offset, delimiter);
 
         }
 
@@ -162,17 +163,15 @@ class Spreadsheet {
                 unsigned int offset = 0,
                 char delimiter = '\t')
         {
-            parse(paths, this->data, offset, delimiter);
+            parse(paths, this->data_, this->header_, offset, delimiter);
 
         }
 
-        std::vector<std::string> get_keys() const {
-            std::vector<std::string> keys;
-            keys.reserve(this->data.size());
-            for (auto const & kv: this->data) {
-                keys.push_back(kv.first);
-            }
-            return keys;
+        const std::vector<std::string>& get_keys() const {
+            return this->header_;
+        }
+        const std::map<std::string, std::vector<std::string> >& get_data() const {
+            return this->data_;
         }
 
         template <typename T>
@@ -181,7 +180,7 @@ class Spreadsheet {
                 std::vector<T>& target) const
         {
             T value;
-            for (const auto &s: this->data.at(column_label)) {
+            for (const auto &s: this->data_.at(column_label)) {
                 std::stringstream converter(s);
                 if (! (converter >> value)) {
                     throw EcoevolitySpreadsheetError("could not convert \'" +
@@ -196,7 +195,7 @@ class Spreadsheet {
                 const std::string& column_label) const
         {
             std::vector<T> r;
-            r.reserve(this->data.at(column_label).size());
+            r.reserve(this->data_.at(column_label).size());
             this->get<T>(column_label, r);
             return r;
         }
@@ -205,7 +204,7 @@ class Spreadsheet {
         SampleSummarizer<T> summarize(const std::string& column_label) const {
             SampleSummarizer<T> summarizer;
             T value;
-            for (const auto &s: this->data.at(column_label)) {
+            for (const auto &s: this->data_.at(column_label)) {
                 std::stringstream converter(s);
                 if (! (converter >> value)) {
                     throw EcoevolitySpreadsheetError("could not convert \'" +
