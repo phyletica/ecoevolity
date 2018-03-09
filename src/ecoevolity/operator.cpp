@@ -2027,10 +2027,10 @@ double TimeSizeMixer::propose_by_height(RandomNumberGenerator& rng,
     comparisons->set_height(height_index, new_height);
 
     int ndimensions = 1; // for height scaled above
+    int number_of_free_parameters_scaled = 0;
+    int number_of_free_parameters_inverse_scaled = 0;
     std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
     for (auto tree_idx : tree_indices) {
-        int number_of_free_parameters_scaled = 0;
-        int number_of_free_parameters_inverse_scaled = 0;
         std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
         if (! tree->population_sizes_are_fixed()) {
             if (tree->population_sizes_are_constrained()) {
@@ -2042,19 +2042,13 @@ double TimeSizeMixer::propose_by_height(RandomNumberGenerator& rng,
                 for (unsigned int i = 0; i < nleaves; ++i) { 
                     tree->set_child_population_size(i, 
                             tree->get_child_population_size(i) * multiplier);
-                    number_of_free_parameters_scaled += nleaves;
                 }
+                number_of_free_parameters_scaled += nleaves;
             }
-        }
-        if ((number_of_free_parameters_inverse_scaled < 1) ||
-                ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-        }
-        else {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
         }
 
     }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
@@ -2082,17 +2076,11 @@ double TimeSizeMixer::propose_by_tree(RandomNumberGenerator& rng,
             for (unsigned int i = 0; i < nleaves; ++i) { 
                 tree->set_child_population_size(i, 
                         tree->get_child_population_size(i) * multiplier);
-                number_of_free_parameters_scaled += nleaves;
             }
+            number_of_free_parameters_scaled += nleaves;
         }
     }
-    if ((number_of_free_parameters_inverse_scaled < 1) ||
-            ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-    }
-    else {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
-    }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
@@ -2491,10 +2479,10 @@ double TimeSizeRateMixer::propose_by_height(RandomNumberGenerator& rng,
     comparisons->set_height(height_index, new_height);
 
     int ndimensions = 1; // for height scaled above
+    int number_of_free_parameters_scaled = 0;
+    int number_of_free_parameters_inverse_scaled = 0;
     std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
     for (auto tree_idx : tree_indices) {
-        int number_of_free_parameters_scaled = 0;
-        int number_of_free_parameters_inverse_scaled = 0;
         std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
         if (! tree->population_sizes_are_fixed()) {
             if (tree->population_sizes_are_constrained()) {
@@ -2516,14 +2504,8 @@ double TimeSizeRateMixer::propose_by_height(RandomNumberGenerator& rng,
             tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
             ++number_of_free_parameters_inverse_scaled;
         }
-        if ((number_of_free_parameters_inverse_scaled < 1) ||
-                ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-        }
-        else {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
-        }
     }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
@@ -2559,13 +2541,7 @@ double TimeSizeRateMixer::propose_by_tree(RandomNumberGenerator& rng,
         tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
         ++number_of_free_parameters_inverse_scaled;
     }
-    if ((number_of_free_parameters_inverse_scaled < 1) ||
-            ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-    }
-    else {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
-    }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
