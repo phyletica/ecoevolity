@@ -2127,7 +2127,17 @@ std::string TimeSizeMixer::to_string(const OperatorSchedule& os) const {
 //////////////////////////////////////////////////////////////////////////////
 
 TimeRootSizeMixer::TimeRootSizeMixer(
+        ) : TimeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+TimeRootSizeMixer::TimeRootSizeMixer(
         unsigned int tree_index) : TimeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+TimeRootSizeMixer::TimeRootSizeMixer(
+        double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
@@ -2135,6 +2145,12 @@ TimeRootSizeMixer::TimeRootSizeMixer(
         unsigned int tree_index,
         double weight) : TimeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
+}
+
+TimeRootSizeMixer::TimeRootSizeMixer(
+        double weight,
+        double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
 }
 
 TimeRootSizeMixer::TimeRootSizeMixer(
@@ -2183,7 +2199,43 @@ double TimeRootSizeMixer::propose(RandomNumberGenerator& rng,
 double TimeRootSizeMixer::propose_by_height(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    return -std::numeric_limits<double>::infinity();
+    /* return -std::numeric_limits<double>::infinity(); */
+    double multiplier = this->op_.get_move_amount(rng);
+
+    double old_height = comparisons->get_height(height_index);
+    double new_height = old_height;
+    std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
+    double delta_height = 0.0;
+    bool delta_determined = false;
+
+    for (auto tree_idx : tree_indices) {
+        std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
+        if (! tree->root_population_size_is_fixed()) {
+            if (! delta_determined) {
+                double old_size = tree->get_root_population_size();
+                double new_size = old_size * multiplier;
+                double delta_Nmu = old_size - new_size;
+                new_height = old_height + (2.0 * delta_Nmu);
+                if (new_height < 0.0) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                delta_height = old_height - new_height;
+                delta_determined = true;
+                tree->set_root_population_size(new_size);
+            } else {
+                double new_size = tree->get_root_population_size() + (0.5 * delta_height);
+                if (new_size < 0.0) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                tree->set_root_population_size(new_size);
+            }
+        }
+    }
+    if (! delta_determined) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->set_height(height_index, new_height);
+    return std::log(multiplier);
 }
 
 double TimeRootSizeMixer::propose_by_tree(RandomNumberGenerator& rng,

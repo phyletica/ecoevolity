@@ -936,8 +936,11 @@ class TimeSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 class TimeRootSizeMixer : public TimeOperatorInterface<ScaleOperator> {
 
     public:
+        TimeRootSizeMixer();
         TimeRootSizeMixer(unsigned int tree_index);
+        TimeRootSizeMixer(double weight);
         TimeRootSizeMixer(unsigned int tree_index, double weight);
+        TimeRootSizeMixer(double weight, double scale);
         TimeRootSizeMixer(unsigned int tree_index, double weight, double scale);
 
         void operate(RandomNumberGenerator& rng,
