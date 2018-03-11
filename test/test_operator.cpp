@@ -70136,7 +70136,7 @@ TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulat
         double size_root;
         double rel_size_root;
         double mutation_rate;
-        unsigned int niterations = 300000;
+        unsigned int niterations = 450000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
@@ -71775,7 +71775,7 @@ TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelati
         double size_root;
         double rel_size_root;
         double mutation_rate;
-        unsigned int niterations = 300000;
+        unsigned int niterations = 450000;
         unsigned int sample_freq = 3;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
