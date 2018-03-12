@@ -194,6 +194,30 @@ OperatorSchedule::OperatorSchedule(
 
     for (unsigned int i = 0; i < collection_settings.get_number_of_comparisons(); ++i) {
         auto comp_settings = collection_settings.get_comparison_setting(i);
+        if (comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeSizeRateMixer>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_size_rate_mixer_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<TimeSizeRateScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_time_size_rate_scaler_settings().get_scale()
+                    ));
+        }
+
+        if (comp_settings.get_operator_settings().get_event_time_scaler_settings().get_weight() > 0.0) {
+            this->add_operator(std::make_shared<EventTimeScaler>(
+                    i,
+                    comp_settings.get_operator_settings().get_event_time_scaler_settings().get_weight(),
+                    comp_settings.get_operator_settings().get_event_time_scaler_settings().get_scale()
+                    ));
+        }
+
         if (comp_settings.get_operator_settings().get_mutation_rate_scaler_settings().get_weight() > 0.0) {
             this->add_operator(std::make_shared<MutationRateScaler>(
                     i,
