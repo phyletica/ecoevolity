@@ -798,7 +798,7 @@ TEST_CASE("Testing config setting constructor", "[ComparisonSettings]") {
         e += "        weight: 0\n";
         e += "        window: 0.1\n";
         e += "    TimeRootSizeMixer:\n";
-        e += "        weight: 3\n";
+        e += "        weight: 0\n";
         e += "        scale: 0.05\n";
         REQUIRE(s == e);
 
@@ -1037,7 +1037,7 @@ TEST_CASE("Testing config setting constructor", "[ComparisonSettings]") {
         e += "        weight: 1\n";
         e += "        window: 0.1\n";
         e += "    TimeRootSizeMixer:\n";
-        e += "        weight: 3\n";
+        e += "        weight: 0\n";
         e += "        scale: 0.05\n";
         REQUIRE(s == e);
 
@@ -1933,7 +1933,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -1954,6 +1954,9 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
@@ -2042,7 +2045,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -2088,7 +2091,7 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -2109,6 +2112,9 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -2196,7 +2202,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -2242,7 +2248,7 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -2263,6 +2269,9 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -2362,7 +2371,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -2408,7 +2417,7 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -2429,6 +2438,9 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -2634,7 +2646,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "            weight: 2\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
@@ -2684,7 +2696,7 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "            weight: 2\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -2705,6 +2717,9 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -2907,6 +2922,9 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -2996,7 +3014,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "            weight: 0.5\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/data1.nex\n";
@@ -3096,7 +3114,7 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "            weight: 0\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -3117,6 +3135,9 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
         e += "        EventTimeScaler:\n";
         e += "            weight: 4\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config.yml");
@@ -3264,7 +3285,7 @@ TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -3310,7 +3331,7 @@ TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -3331,6 +3352,9 @@ TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -3423,7 +3447,7 @@ TEST_CASE("Testing uniform model with split_weight implicitly fixed to 2.4",
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -3469,7 +3493,7 @@ TEST_CASE("Testing uniform model with split_weight implicitly fixed to 2.4",
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -3490,6 +3514,9 @@ TEST_CASE("Testing uniform model with split_weight implicitly fixed to 2.4",
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -3582,7 +3609,7 @@ TEST_CASE("Testing uniform model with split_weight explicitly fixed to 2.4",
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -3628,7 +3655,7 @@ TEST_CASE("Testing uniform model with split_weight explicitly fixed to 2.4",
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -3649,6 +3676,9 @@ TEST_CASE("Testing uniform model with split_weight explicitly fixed to 2.4",
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -3745,7 +3775,7 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, def
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -3791,7 +3821,7 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, def
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -3812,6 +3842,9 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, def
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -3912,7 +3945,7 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, spe
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -3958,7 +3991,7 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, spe
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -3979,6 +4012,9 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, spe
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -4085,6 +4121,9 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config", "[Dirichlet
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
@@ -4332,6 +4371,9 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config with two comp
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -4503,6 +4545,9 @@ TEST_CASE("Testing DirichletCollectionSettings override model prior", "[Dirichle
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -4686,6 +4731,9 @@ TEST_CASE("Testing DirichletCollectionSettings override model prior with DPP", "
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -4984,6 +5032,9 @@ TEST_CASE("Testing DirichletCollectionSettings override with global settings", "
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -5230,6 +5281,9 @@ TEST_CASE("Testing DirichletCollectionSettings global settings with parameters",
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -5465,6 +5519,9 @@ TEST_CASE("Testing DirichletCollectionSettings from full config", "[DirichletCol
         e += "        EventTimeScaler:\n";
         e += "            weight: 4\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config-dir-pop.yml");
@@ -5696,6 +5753,9 @@ TEST_CASE("Testing DirichletCollectionSettings fixed model prior", "[DirichletCo
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -5872,6 +5932,9 @@ TEST_CASE("Testing DirichletCollectionSettings uniform model with split_weight i
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -6048,6 +6111,9 @@ TEST_CASE("Testing DirichletCollectionSettings uniform model with split_weight e
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 0\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -6149,7 +6215,7 @@ TEST_CASE("Testing RelativeRootComparisonSettings operator updating", "[Relative
         e += "        weight: 0\n";
         e += "        window: 0.1\n";
         e += "    TimeRootSizeMixer:\n";
-        e += "        weight: 3\n";
+        e += "        weight: 0\n";
         e += "        scale: 0.05\n";
         REQUIRE(s == e);
 
@@ -6368,7 +6434,7 @@ TEST_CASE("Testing RelativeRootComparisonSettings operator updating", "[Relative
         e += "        weight: 0\n";
         e += "        window: 0.1\n";
         e += "    TimeRootSizeMixer:\n";
-        e += "        weight: 3\n";
+        e += "        weight: 0\n";
         e += "        scale: 0.05\n";
         REQUIRE(s == e);
 
@@ -6704,7 +6770,7 @@ TEST_CASE("Testing RelativeRootComparisonSettings constructor", "[RelativeRootCo
         e += "        weight: 0\n";
         e += "        window: 0.1\n";
         e += "    TimeRootSizeMixer:\n";
-        e += "        weight: 3\n";
+        e += "        weight: 0\n";
         e += "        scale: 0.05\n";
         REQUIRE(s == e);
 
@@ -6953,7 +7019,7 @@ TEST_CASE("Testing RelativeRootComparisonSettings constructor", "[RelativeRootCo
         e += "        weight: 1\n";
         e += "        window: 0.1\n";
         e += "    TimeRootSizeMixer:\n";
-        e += "        weight: 3\n";
+        e += "        weight: 0\n";
         e += "        scale: 0.05\n";
         REQUIRE(s == e);
 
@@ -7066,7 +7132,7 @@ TEST_CASE("Testing relative root collection settings from minimal config", "[Rel
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -7087,6 +7153,9 @@ TEST_CASE("Testing relative root collection settings from minimal config", "[Rel
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
@@ -7181,7 +7250,7 @@ TEST_CASE("Testing relative root collection settings from minimal config with tw
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -7233,7 +7302,7 @@ TEST_CASE("Testing relative root collection settings from minimal config with tw
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -7254,6 +7323,9 @@ TEST_CASE("Testing relative root collection settings from minimal config with tw
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -7347,7 +7419,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior", "[Relat
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -7399,7 +7471,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior", "[Relat
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -7420,6 +7492,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior", "[Relat
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -7525,7 +7600,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior with DPP"
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -7577,7 +7652,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior with DPP"
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -7598,6 +7673,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior with DPP"
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -7834,7 +7912,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings override with global settings"
         e += "            weight: 2\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
@@ -7906,6 +7984,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings override with global settings"
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -8058,7 +8139,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings constrain sizes override of gl
         e += "            weight: 2\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/haploid-standard-missing.nex\n";
@@ -8112,7 +8193,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings constrain sizes override of gl
         e += "            weight: 2\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -8133,6 +8214,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings constrain sizes override of gl
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -8231,7 +8315,7 @@ TEST_CASE("Testing relative root collection settings from full config", "[Relati
         e += "            weight: 0.5\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/data1.nex\n";
@@ -8337,7 +8421,7 @@ TEST_CASE("Testing relative root collection settings from full config", "[Relati
         e += "            weight: 0\n";
         e += "            window: 0.2\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -8358,6 +8442,9 @@ TEST_CASE("Testing relative root collection settings from full config", "[Relati
         e += "        EventTimeScaler:\n";
         e += "            weight: 3\n";
         e += "            scale: 0.3\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config-relative-root.yml");
@@ -8511,7 +8598,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings fixed model prior", "[Relative
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -8563,7 +8650,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings fixed model prior", "[Relative
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -8584,6 +8671,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings fixed model prior", "[Relative
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -8682,7 +8772,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -8734,7 +8824,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -8755,6 +8845,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -8853,7 +8946,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -8905,7 +8998,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -8926,6 +9019,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -9028,7 +9124,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -9080,7 +9176,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -9101,6 +9197,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
@@ -9207,7 +9306,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "- comparison:\n";
         e += "    path: data/diploid-dna.nex\n";
@@ -9259,7 +9358,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 0\n";
         e += "            window: 0.1\n";
         e += "        TimeRootSizeMixer:\n";
-        e += "            weight: 3\n";
+        e += "            weight: 0\n";
         e += "            scale: 0.05\n";
         e += "operator_settings:\n";
         e += "    auto_optimize: true\n";
@@ -9280,6 +9379,9 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "        EventTimeScaler:\n";
         e += "            weight: 1\n";
         e += "            scale: 0.1\n";
+        e += "        TimeRootSizeMixer:\n";
+        e += "            weight: 6\n";
+        e += "            scale: 0.05\n";
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
