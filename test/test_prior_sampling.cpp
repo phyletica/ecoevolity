@@ -53,6 +53,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -300,6 +303,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -449,6 +455,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -598,6 +607,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -743,6 +755,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -903,6 +918,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1101,6 +1119,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1249,6 +1270,9 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1376,6 +1400,9 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -1525,6 +1552,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 0.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1652,6 +1682,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -1784,6 +1817,9 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -1931,6 +1967,9 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2078,6 +2117,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2218,6 +2260,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2361,6 +2406,9 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2499,6 +2547,9 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2637,6 +2688,9 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2772,6 +2826,9 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2906,6 +2963,9 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3048,6 +3108,9 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3210,6 +3273,9 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3372,6 +3438,9 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3531,6 +3600,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -3705,6 +3777,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -3879,6 +3954,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4054,6 +4132,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4276,6 +4357,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4498,6 +4582,9 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4775,6 +4862,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 2\n";
         os << "            weight: 1.0\n";
@@ -5112,6 +5202,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixe
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -5426,6 +5519,9 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -5658,6 +5754,9 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -5890,6 +5989,9 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -6149,6 +6251,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -6492,6 +6597,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -6802,6 +6910,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -6974,6 +7085,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -7198,6 +7312,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -7455,6 +7572,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -7734,6 +7854,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -8072,6 +8195,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -8411,6 +8537,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -8763,6 +8892,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -9094,6 +9226,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -9416,6 +9551,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -9748,6 +9886,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -10079,6 +10220,9 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -10403,6 +10547,9 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -10726,6 +10873,9 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -11050,6 +11200,9 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -13872,6 +14025,9 @@ TEST_CASE("Testing relative root models with with mix of 5 comparisons", "[Sampl
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 100\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 2\n";
         os << "            weight: 1.0\n";
