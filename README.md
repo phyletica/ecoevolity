@@ -1,7 +1,7 @@
 
 ![logo](https://raw.githubusercontent.com/phyletica/ecoevolity/master/docs/_static/ecoevolity-logo.png)
 
-Documentation can be found at <https://phyletica.github.io/ecoevolity>.
+For documentation, please go to <https://phyletica.github.io/ecoevolity>.
 
 
 Table of Contents
@@ -17,7 +17,8 @@ Ecoevolity
 Ecoevolity is software for inferring shared evolutionary events using
 full-likelihood Bayesian inference.
 
-Documentation can be found at <https://phyletica.github.io/ecoevolity>.
+You can find the full documentation at
+<https://phyletica.github.io/ecoevolity>.
 
 Acknowledgments
 ===============
