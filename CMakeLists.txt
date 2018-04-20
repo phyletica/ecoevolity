@@ -13,7 +13,7 @@ include(FinalFile)
 #######################################################################
 # Course versioning
 set(PROJECT_MAJOR_VERSION 0)
-set(PROJECT_MINOR_VERSION 1)
+set(PROJECT_MINOR_VERSION 2)
 set(PROJECT_PATCH_VERSION 0)
 set(PROJECT_VERSION
     ${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION})
