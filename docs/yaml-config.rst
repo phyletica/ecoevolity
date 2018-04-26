@@ -210,7 +210,7 @@ For example::
             rate: 100.0
 
 specifies an exponential distribution with a rate of 100.0 (thus
-the mean of the exponential prior is 1.0/100.0 = 0.01).
+the mean of the exponential prior is 1/rate = 1/100.0 = 0.01).
 A gamma or uniform distribution can also be used.
 
 If the mutation rate of one or more comparison is set to 1.0, then units of
@@ -237,8 +237,9 @@ tells |eco|_ to run the chain for 75,000 generations, recording a sample every
 This is a good starting point. For most datasets I have analyzed so far,
 this has been sufficient. If the chain is having mixing problems, then you
 can increase.
-I recommend running a several independent chains (analyses) to confirm they are
-converging.
+I recommend running several independent chains (analyses) to confirm they are
+converging and, assuming they converge, increasing the number of samples from
+the posterior distribution.
 
 
 *****************
