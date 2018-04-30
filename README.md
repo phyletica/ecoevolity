@@ -23,8 +23,8 @@ You can find the full documentation at
 Acknowledgments
 ===============
 
-This software benefited from funding provided to Jamie Oaks from the National
-Science Foundation (DBI 1308885).
+This work was supported by funding provided to Jamie Oaks from the National
+Science Foundation (grant numbers DBI 1308885 and DEB 1656004).
 
 License
 =======
