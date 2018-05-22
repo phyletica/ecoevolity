@@ -22,6 +22,8 @@ On a fresh install of Ubuntu 16.04 you can simply::
 If you are on a Mac, you can install Xcode command line tools and download and
 install |cmake|_ from https://cmake.org/.
 
+We also strongly recommend using |git|_ to acquire the source code.
+
 
 ************
 Installation
