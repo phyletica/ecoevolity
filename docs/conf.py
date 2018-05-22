@@ -41,8 +41,13 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
+
+# Add Markdown parser; need to insall recommonmark python package
+source_parsers = {
+        '.md': 'recommonmark.parser.CommonMarkParser',
+        }
 
 # The master toctree document.
 master_doc = 'index'
@@ -107,7 +112,7 @@ html_theme_options = {
         'github_user': 'phyletica',
         'github_repo': 'ecoevolity',
         'github_button': True,
-        'github_banner': True,
+        'github_banner': False,
         'description': 'Estimating evolutionary coevality',
         'show_powered_by': True,
         'fixed_sidebar': True,
@@ -116,7 +121,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['_static', '_static/custom.css']
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -227,9 +232,9 @@ rst_epilog = """
 .. |jro| replace:: Jamie Oaks
 .. _jro: http://phyletica.org
 
-.. |eco| replace:: Ecoevolity
+.. |eco| replace:: ecoevolity
 .. _eco: https://github.com/phyletica/ecoevolity
-.. |eco_gh| replace:: Ecoevolity
+.. |eco_gh| replace:: ecoevolity
 .. _eco_gh: https://github.com/phyletica/ecoevolity
 .. |eco_url| replace:: https://github.com/phyletica/ecoevolity
 .. |eco_gh_url| replace:: https://github.com/phyletica/ecoevolity

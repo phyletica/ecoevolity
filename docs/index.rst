@@ -17,6 +17,9 @@ Welcome to Ecoevolity's documentation!
     installation
     yaml-config
     acknowledgments
+    changes
+    license
+    citation
 
 
 
