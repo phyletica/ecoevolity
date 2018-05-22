@@ -4,15 +4,33 @@
    contain the root `toctree` directive.
 
 
-######################################
-Welcome to Ecoevolity's documentation!
-######################################
+..  ######################################
+    Welcome to Ecoevolity's documentation!
+    ######################################
 
+.. .. image:: /_static/ecoevolity-logo.svg
+       :width: 90%
+       :alt: ecoevolity logo
+       :align: left 
+       :target: index.html
+
+#####
+About
+#####
+
+|Eco|_ is a software package for Bayesian inference of shared evolutionary
+events.
+|Pyco|_ is a companion Python package for summarizing the output of |eco|_.
+|Eco|_ and |pyco|_ are developed by the |phyleticalab|_.
+
+##########
+Navigation
+##########
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :numbered:
-    :caption: Contents:
+    :name: hometoc
 
     installation
     yaml-config
@@ -22,11 +40,11 @@ Welcome to Ecoevolity's documentation!
     citation
 
 
-
-##################
-Indices and tables
-##################
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+..
+    ##################
+    Indices and tables
+    ##################
+    
+    * :ref:`genindex`
+    * :ref:`modindex`
+    * :ref:`search`

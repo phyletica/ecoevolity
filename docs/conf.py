@@ -108,12 +108,12 @@ html_sidebars = {
 # documentation.
 #
 html_theme_options = {
-        'logo': 'ecoevolity-logo-short.svg',
+        'logo': 'ecoevolity-logo-compact.svg',
         'github_user': 'phyletica',
         'github_repo': 'ecoevolity',
         'github_button': True,
         'github_banner': False,
-        'description': 'Estimating evolutionary coevality',
+        # 'description': 'Estimating evolutionary coevality',
         'show_powered_by': True,
         'fixed_sidebar': True,
 }
@@ -232,13 +232,23 @@ rst_epilog = """
 .. |jro| replace:: Jamie Oaks
 .. _jro: http://phyletica.org
 
+.. |phyleticalab| replace:: Phyletica Lab 
+.. _phyleticalab: http://phyletica.org
+
 .. |eco| replace:: ecoevolity
 .. _eco: https://github.com/phyletica/ecoevolity
+.. |Eco| replace:: Ecoevolity
+.. _Eco: https://github.com/phyletica/ecoevolity
 .. |eco_gh| replace:: ecoevolity
 .. _eco_gh: https://github.com/phyletica/ecoevolity
-.. |eco_url| replace:: https://github.com/phyletica/ecoevolity
+.. |eco_url| replace:: http://phyletica.org/ecoevolity
 .. |eco_gh_url| replace:: https://github.com/phyletica/ecoevolity
 .. |eco_copyright| replace:: **Copyright 2015-{this_year} Jamie R. Oaks**
+
+.. |pyco| replace:: pycoevolity 
+.. _pyco: https://github.com/phyletica/pycoevolity
+.. |Pyco| replace:: Pycoevolity
+.. _Pyco: https://github.com/phyletica/pycoevolity
 
 .. |git| replace:: Git
 .. _git: http://git-scm.com/

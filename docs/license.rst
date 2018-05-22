@@ -9,7 +9,7 @@ License
 Ecoevolity Software
 *******************
 
-|eco|_ is licensed under
+|Eco|_ is licensed under
 `Version 3 of the GNU General Public License
 <http://www.gnu.org/copyleft/gpl.html>`_,
 and the source code is available on
