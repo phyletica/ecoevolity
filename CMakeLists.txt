@@ -122,6 +122,8 @@ if (PROJECT_GIT_SHA1)
     set(PROJECT_SOURCE_IDENTIFIED 1)
 else()
     set(PROJECT_SOURCE_IDENTIFIED 0)
+    set(PROJECT_DETAILED_VERSION
+        "${PROJECT_VERSION}")
 endif()
 
 # #cmakedefine creates a valid macro with the contents of the variable if
