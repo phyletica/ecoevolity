@@ -1,1 +1,7 @@
-/* This file intentionally left blank. */
+div.footer {
+    width: {{ theme_page_width }};
+    margin: 20px auto 30px auto;
+    font-size: 16px;
+    color: {{ theme_footer_text }};
+    text-align: center;
+}
