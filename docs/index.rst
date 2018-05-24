@@ -23,13 +23,19 @@ events.
 |Pyco|_ is a companion Python package for summarizing the output of |eco|_.
 |Eco|_ and |pyco|_ are developed by the |phyleticalab|_.
 
-##########
-Navigation
-##########
+..  .. image:: /_static/div-cartoon-compressed.png
+        :width: 100%
+        :alt: ecoevolity cartoon
+        :align: center
+        :target: index.html
+
+..  ##########
+    Navigation
+    ##########
 
 .. toctree::
-    :maxdepth: 1
-    :numbered:
+    :maxdepth: 2
+    :hidden:
     :name: hometoc
 
     installation
