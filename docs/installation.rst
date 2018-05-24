@@ -4,6 +4,10 @@
 Installation
 ############
 
+.. contents::
+    :local:
+    :depth: 2
+
 
 .. _prerequisites:
 
@@ -27,10 +31,16 @@ If you use |git|_, the |eco|_ tools will report the version of
 |eco|_ you are using much more precisely, which will make your
 work more reproducible.
 
+While not required, the |pyco|_ Python package can be useful for summarizing
+the output |eco|_.
+This will be used in tutorials.
+:ref:`See below <pycoevolity_install>`
+for how to install |pyco|_
 
-************
-Installation
-************
+
+***********************
+Getting the source code
+***********************
 
 If you have |git|_ installed, clone the repository::
 
@@ -38,38 +48,30 @@ If you have |git|_ installed, clone the repository::
 
 If you prefer not to use |git|_, you can download an archive of the 
 `source code here <https://github.com/phyletica/ecoevolity/archive/master.zip>`_.
+Once downloaded, you'll need to unzip the archive.
 
-Next, move into the downloaded directory::
+
+***********************
+Basic build and install 
+***********************
+
+Next, move into the downloaded directory and run the build script::
 
     $ cd ecoevolity
+    $ ./build.sh
 
-To install globally::
+If the build was successful, the |eco|_ executables should now be in the
+``./build/bin`` directory, and you should be able to run::
 
-    $ sudo ./build.sh --install
+    $ ./build/bin/ecoevolity -h
 
-If you do not have admin privileges, you can install to your home directory
-by::
-
-    $ ./build.sh --install --prefix "$HOME"
-
-This will install the |eco|_ tools to a ``bin`` directory within your home
-directory. If this directory is not in your PATH (you can check via ``echo
-$PATH``), go ahead and add it::
-
-    $ export PATH="${PATH}:${HOME}/bin"
-
-
-If the install was successful, and the install directory is in your PATH, you
-should be able to view the help menu of |eco|_::
-
-    $ ecoevolity -h
-
-You should see output that looks something like::
+and see the |eco| help menu, the beginning of which should looks something
+like::
 
     ======================================================================
                                   Ecoevolity
                       Estimating evolutionary coevality
-          Version 0.1.0 (master 07eab4d: 2017-10-30T16:01:34-05:00)
+            Version 0.2.0 (dev d4a4d48: 2018-05-23T15:22:40-05:00)
     ======================================================================
     
     Usage: ecoevolity [OPTIONS] YAML-CONFIG-FILE
@@ -79,38 +81,64 @@ You should see output that looks something like::
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
-      --seed=SEED           Seed for random number generator. Default: Set from clock.
-      --ignore-data         Ignore data to sample from the prior distribution.
-                            Default: Use data to sample from the posterior distribution
-      --nthreads=NTHREADS   Number of threads to use for likelihood calculations.
-                            Default: 1 (no multithreading). If you are using the
-                            '--ignore-data' option, no likelihood calculations
-                            will be performed, and so no multithreading is used.
-      --prefix=PREFIX       Optional string to prefix all output files.
-      --relax-constant-sites
-                            By default, if you specify 'constant_sites_removed =
-                            true' and constant sites are found, Ecoevolity throws
-                            an error. With this option, Ecoevolity will
-                            automatically ignore the constant sites and only issue
-                            a warning (and correct for constant sites in the
-                            likelihood calculation). Please make sure you
-                            understand what you are doing when you use this option.
-      --relax-missing-sites
-                            By default, if a column is found for which there is no
-                            data for at least one population, Ecoevolity throws an
-                            error. With this option, Ecoevolity will automatically
-                            ignore such sites and only issue a warning.
-      --relax-triallelic-sites
-                            By default, if a DNA site is found for which there is
-                            more than two nucleotide states, Ecoevolity throws an
-                            error. With this option, Ecoevolity will automatically
-                            recode such sites as biallelic and only issue a
-                            warning. These sites are recoded by assigning state 0
-                            to the first nucleotide found and state 1 to all
-                            others. If you do not wish to recode such sites and
-                            prefer to ignore them, please remove all sites with
-                            more than two nucleotide states from your DNA
-                            alignments. NOTE: only alignments of nucleotides are
-                            affected by this option, not alignments of standard
-                            characters (i.e., 0, 1, 2).
-      --dry-run             Do not run analysis; only process and report settings.
+
+The executables in ``./build/bin`` are ready to use, but you'll probably want
+to put them in your PATH (a list of directories that your shell looks in to
+find the commands you type on the command line). You can do this via::
+
+    $ sudo cp ./build/bin/* /usr/local/bin
+
+If this worked, you're good to go; you can try ``ecoeovlity -h`` to be sure.
+
+If it didn't work, you probably don't have admin privileges.
+If so, you can create a bin folder in your home folder and put the tools
+there::
+
+    $ mkdir -p "${HOME}/bin"
+    $ cp ./build/bin/* "${HOME}/bin"
+
+Then, you can add this directory to your PATH (if it's not already there; you
+can check with ``echo $PATH``)::
+
+    $ export PATH="${PATH}:${HOME}/bin"
+
+Note, this update to PATH is only for your current terminal window.  If you
+want this to be permanent (work for all future terminal windows), add ``export
+PATH="${PATH}:${HOME}/bin"`` to your ``.bashrc`` or ``.bash_profile`` file in
+your home directory.
+
+
+********************
+Install during build
+********************
+
+If you want to build and install in one go, you just need to specify where you
+want the installation to go, for example::
+
+    $ sudo ./build.sh --prefix /usr/local
+
+
+*****************************
+Building the threaded version
+*****************************
+
+If you want to install a version of |eco|_ that performs the likelihood
+calculations across multiple threads, you just need to add the ``--threads``
+flag::
+
+    $ ./build.sh --threads
+
+In my opinion, you're usually better off running multiple independent chains
+rather than multithreading, but the option is there.
+
+
+.. _pycoevolity_install:
+
+**********************
+Installing pycoevolity
+**********************
+
+|Pyco|_ is a Python package for summarizing the output of |eco|_.
+It should work with Python 2 or 3, and can be installed via::
+
+    $ pip install git+git://github.com/phyletica/pycoevolity.git

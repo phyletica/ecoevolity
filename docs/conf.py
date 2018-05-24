@@ -114,7 +114,7 @@ html_theme_options = {
         'github_button': True,
         'github_banner': False,
         # 'description': 'Estimating evolutionary coevality',
-        'show_powered_by': True,
+        # 'show_powered_by': True,
         'fixed_sidebar': True,
 }
 
