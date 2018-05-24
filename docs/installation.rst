@@ -23,6 +23,9 @@ If you are on a Mac, you can install Xcode command line tools and download and
 install |cmake|_ from https://cmake.org/.
 
 We also strongly recommend using |git|_ to acquire the source code.
+If you use |git|_, the |eco|_ tools will report the version of
+|eco|_ you are using much more precisely, which will make your
+work more reproducible.
 
 
 ************
@@ -33,6 +36,9 @@ If you have |git|_ installed, clone the repository::
 
     $ git clone https://github.com/phyletica/ecoevolity.git
 
+If you prefer not to use |git|_, you can download an archive of the 
+`source code here <https://github.com/phyletica/ecoevolity/archive/master.zip>`_.
+
 Next, move into the downloaded directory::
 
     $ cd ecoevolity
@@ -41,18 +47,17 @@ To install globally::
 
     $ sudo ./build.sh --install
 
-To install the threaded version globally::
-
-    $ sudo ./build.sh --install --threads
-
-If you do not have admin privileges, you can install the serial version to your
-home directory by::
+If you do not have admin privileges, you can install to your home directory
+by::
 
     $ ./build.sh --install --prefix "$HOME"
 
-or the threaded version to your home directory::
+This will install the |eco|_ tools to a ``bin`` directory within your home
+directory. If this directory is not in your PATH (you can check via ``echo
+$PATH``), go ahead and add it::
 
-    $ ./build.sh --install --threads --prefix "$HOME"
+    $ export PATH="${PATH}:${HOME}/bin"
+
 
 If the install was successful, and the install directory is in your PATH, you
 should be able to view the help menu of |eco|_::
