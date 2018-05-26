@@ -125,18 +125,18 @@ Pycoevolity will be used in tutorials.
 for how to install pycoevolity.</p>
 <div class="section" id="linux">
 <h3>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h3>
-<p>If you are on a Linux machine, use your package manager to update/install g++
-and cmake.
-On a fresh install of Ubuntu 16.04 you can simply use:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ sudo apt-get install cmake g++
+<p>If you are on a Linux machine, use your package manager to update/install g++,
+CMake, and Git.
+On Ubuntu (or other Debian-based Linux distribution) you can simply use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ sudo apt-get install cmake g++ git
 </pre></div>
 </div>
 </div>
 <div class="section" id="mac">
 <h3>Mac<a class="headerlink" href="#mac" title="Permalink to this headline">¶</a></h3>
-<p>If you are on a Mac, you can install Xcode command line tools
-(that’ll get you a C++ compiler and Git)
-and download and install CMake from <a class="reference external" href="https://cmake.org/download/">https://cmake.org/download/</a>.
+<p>If you are on a Mac, you can install Xcode command line tools (that’ll get you
+a C++ compiler and Git) and download and install CMake from
+<a class="reference external" href="https://cmake.org/download/">https://cmake.org/download/</a>.
 Download the <code class="docutils literal"><span class="pre">.dmg</span></code> file for the latest version for Mac.
 Once installed, open CMake, and from the “Tools” menu click
 “How to Install For Command Line Use.” This should pop up a window that has a
@@ -156,17 +156,11 @@ It’s possible to do, but I suspect it will take a fair bit of tweaking of the
 If you have a Windows machine, and you are not experienced with compiling C/C++ code
 in Windows, you have some options:</p>
 <ol class="arabic simple">
+<li>If you have Windows 10,
+<a class="reference external" href="https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0">you can install Ubuntu</a>.
+Once installed, then you can follow the instructions above for Linux.</li>
 <li>Try running our Docker image
 (<a class="reference internal" href="#docker-install"><span class="std std-ref">see below</span></a>).</li>
-<li>Set up a Linux environment on your machine. Some options for doing this
-include:<ol class="arabic">
-<li>If you have Windows 10,
-<a class="reference external" href="https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0">you can install Ubuntu</a>.</li>
-<li>Follow
-<a class="reference external" href="http://installation.software-carpentry.org/">these instructions</a>
-from Software Carpentry for installing a Bash shell.</li>
-</ol>
-</li>
 </ol>
 </div>
 </div>
@@ -265,7 +259,9 @@ installed, you can install Pycoevolity via:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install git+git://github.com/phyletica/pycoevolity.git
 </pre></div>
 </div>
-<p>Also, pycoevolity uses the
+<p>If this isn’t working, try the
+<a class="reference external" href="https://github.com/phyletica/pycoevolity">manual installation instructions here</a>.
+Also, pycoevolity uses the
 <a class="reference external" href="https://www.r-project.org/">R</a>
 packages
 <a class="reference external" href="http://ggplot2.tidyverse.org/">ggplot2</a>
@@ -301,8 +297,8 @@ Once Docker is installed and running pull down our Docker image:</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Depending on your system and how Docker is configured, you may need to use
-<cite>sudo</cite> to run Docker commands. If you received a “permission denied” message
-when you ran the command above, try:</p>
+<code class="docutils literal"><span class="pre">sudo</span></code> to run Docker commands. If you received a “permission denied”
+message when you ran the command above, try:</p>
 <div class="last highlight-default"><div class="highlight"><pre><span></span>$ sudo docker pull phyletica/ecoevolity-docker
 </pre></div>
 </div>
