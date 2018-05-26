@@ -12,7 +12,7 @@ Installation
 
     Want to try ecoevolity without installing it?
     :ref:`Try out our Docker image <docker_install>`.
-    If you run into troubles below building and installing |eco|_, the Docker
+    If you run into troubles below building and installing |eco|, the Docker
     image provides an alternative.
 
 
@@ -22,19 +22,19 @@ Installation
 Prerequisites
 *************
 
-Compiling |eco|_ requires |cmake|_ and a new-ish C++ compiler (one that
+Compiling |eco| requires |cmake|_ and a new-ish C++ compiler (one that
 supports the C++11 standard).
 
 We also strongly recommend using |git|_ to acquire the source code.
-If you use |git|_, the |eco|_ tools will report the version of
-|eco|_ you are using much more precisely, which will make your
+If you use |git|_, the |eco| tools will report the version of
+|eco| you are using much more precisely, which will make your
 work more reproducible.
 
 While not required, the |pyco|_ Python package can be useful for summarizing
-the output of |eco|_.
-|Pyco|_ will be used in tutorials.
+the output of |eco|.
+|Pyco| will be used in tutorials.
 :ref:`See below <pycoevolity_install>`
-for how to install |pyco|_.
+for how to install |pyco|.
 
 Linux
 =====
@@ -77,19 +77,19 @@ in Windows, you have some options:
 #.  Set up a Linux environment on your machine. Some options for doing this
     include:
 
-    #.  If you have Windows 10, `you can install Ubuntu
-            <https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0>`_
+    #.  If you have Windows 10,
+        `you can install Ubuntu <https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0>`_.
 
     #.  Follow
         `these instructions <http://installation.software-carpentry.org/>`_
         from Software Carpentry for installing a Bash shell.
 
 
-***********************
-Getting the source code
-***********************
+*****************************
+Getting the |eco| source code
+*****************************
 
-If you have |git|_ installed, download the repository with the ``clone``
+If you have |git|_ installed, download the |eco| repository with the ``clone``
 command::
 
     $ git clone https://github.com/phyletica/ecoevolity.git
@@ -108,7 +108,7 @@ Next, move into the downloaded directory and run the build script::
     $ cd ecoevolity
     $ ./build.sh
 
-If the build was successful, the |eco|_ executables should now be in the
+If the build was successful, the |eco| executables should now be in the
 ``./build/bin`` directory, and you should be able to run::
 
     $ ./build/bin/ecoevolity -h
@@ -170,7 +170,7 @@ want the installation to go, for example::
 Building the threaded version
 *****************************
 
-If you want to install a version of |eco|_ that performs the likelihood
+If you want to install a version of |eco| that performs the likelihood
 calculations across multiple threads, you just need to add the ``--threads``
 flag::
 
@@ -186,31 +186,31 @@ rather than multithreading, but the option is there.
 Installing pycoevolity
 **********************
 
-|Pyco|_ is a Python package for summarizing the output of |eco|_.
+|Pyco|_ is a Python package for summarizing the output of |eco|.
 It should work with Python 2 or 3.
 If you have
 `Python <https://www.python.org/>`_
 and 
 `pip <https://pypi.org/project/pip/>`_
-installed, you can install |Pyco|_ via::
+installed, you can install |Pyco| via::
 
     $ pip install git+git://github.com/phyletica/pycoevolity.git
 
 Also, |pyco| uses the
-[R](https://www.r-project.org/)
+`R <https://www.r-project.org/>`_
 packages
-[ggplot2](http://ggplot2.tidyverse.org/)
+`ggplot2 <http://ggplot2.tidyverse.org/>`_
 and
-[ggridges](https://github.com/clauswilke/ggridges)
+`ggridges <https://github.com/clauswilke/ggridges>`_
 for creating some plots.
 So, if you want plotting by pycoevolity to be fully functional,
 and you don't already have
-[R](https://www.r-project.org/)
+`R <https://www.r-project.org/>`_
 installed, you'll need to install it.
 Once
-[R](https://www.r-project.org/)
+`R <https://www.r-project.org/>`_
 is in place, you can install the packages from the
-[R](https://www.r-project.org/)
+`R <https://www.r-project.org/>`_
 prompt using:::
 
     install.packages(c("ggplot2", "ggridges"))
@@ -239,7 +239,8 @@ Once Docker is installed and running pull down our Docker image::
     
         $ sudo docker pull phyletica/ecoevolity-docker
 
-Then, run and enter the docker container::
+This download could take several minutes depending on your internet connection.
+After it completes, run and enter the docker container::
 
     $ docker run -it phyletica/ecoevolity-docker bash
 
