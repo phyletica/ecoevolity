@@ -227,6 +227,8 @@ virtual machine.
 We have created a Docker container with |eco| built in.
 To get started, you first need to 
 `install Docker <https://www.docker.com/community-edition>`_.
+If you're on a Mac or Windows machine, might need to sign up for a free Docker
+account to download it.
 Once Docker is installed and running pull down our Docker image::
 
     $ docker pull phyletica/ecoevolity-docker
@@ -262,14 +264,9 @@ Next, ``cd`` into the example data directory::
     $ ls
 
 There you will find an |eco| configuration file and nexus-formatted data files.
-If you're feeling adventurous, analyze these example data::
+Go ahead and run an |eco| analysis::
 
-    $ ecoevolity --relax-missing-sites --relax-triallelic-sites ecoevolity-config.yml
-
-.. note::
-
-    This analysis will take 8 minutes or so, depending on your computer and
-    Docker configuration.
+    $ ecoevolity --relax-missing-sites --relax-triallelic-sites --ignore-data ecoevolity-config.yml
 
 To exit the container, simply type::
 
