@@ -8,6 +8,13 @@ Installation
         :local:
         :depth: 2
 
+.. note::
+
+    Want to try ecoevolity without installing it?
+    :ref:`Try out our Docker image <docker_install>`.
+    If you run into troubles below building and installing |eco|_, the Docker
+    image provides an alternative.
+
 
 .. _prerequisites:
 
@@ -17,14 +24,6 @@ Prerequisites
 
 Compiling |eco|_ requires |cmake|_ and a new-ish C++ compiler (one that
 supports the C++11 standard).
-If you are on a Linux machine, use your package manager to update/install g++
-and cmake.
-On a fresh install of Ubuntu 16.04 you can simply::
-
-    $ sudo apt install cmake g++
-
-If you are on a Mac, you can install Xcode command line tools and download and
-install |cmake|_ from https://cmake.org/.
 
 We also strongly recommend using |git|_ to acquire the source code.
 If you use |git|_, the |eco|_ tools will report the version of
@@ -32,17 +31,66 @@ If you use |git|_, the |eco|_ tools will report the version of
 work more reproducible.
 
 While not required, the |pyco|_ Python package can be useful for summarizing
-the output |eco|_.
-This will be used in tutorials.
+the output of |eco|_.
+|Pyco|_ will be used in tutorials.
 :ref:`See below <pycoevolity_install>`
-for how to install |pyco|_
+for how to install |pyco|_.
+
+Linux
+=====
+
+If you are on a Linux machine, use your package manager to update/install g++
+and cmake.
+On a fresh install of Ubuntu 16.04 you can simply use::
+
+    $ sudo apt-get install cmake g++
+
+Mac
+===
+
+If you are on a Mac, you can install Xcode command line tools
+(that'll get you a C++ compiler and |git|)
+and download and install CMake from https://cmake.org/download/.
+Download the ``.dmg`` file for the latest version for Mac.
+Once installed, open CMake, and from the "Tools" menu click 
+"How to Install For Command Line Use." This should pop up a window that has a
+line like::
+
+    sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install
+
+The line might be slightly different on your Mac.
+Copy that line from the CMake pop up window (not the line above), and
+paste it into the command line (Terminal).
+
+Windows
+=======
+
+We have not compiled |eco| in Windows.
+It's possible to do, but I suspect it will take a fair bit of tweaking of the
+|cmake|_ configuration.
+If you have a Windows machine, and you are not experienced with compiling C/C++ code
+in Windows, you have some options:
+
+#.  Try running our Docker image
+    (:ref:`see below <docker_install>`).
+
+#.  Set up a Linux environment on your machine. Some options for doing this
+    include:
+
+    #.  If you have Windows 10, `you can install Ubuntu
+            <https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0>`_
+
+    #.  Follow
+        `these instructions <http://installation.software-carpentry.org/>`_
+        from Software Carpentry for installing a Bash shell.
 
 
 ***********************
 Getting the source code
 ***********************
 
-If you have |git|_ installed, clone the repository::
+If you have |git|_ installed, download the repository with the ``clone``
+command::
 
     $ git clone https://github.com/phyletica/ecoevolity.git
 
@@ -139,6 +187,110 @@ Installing pycoevolity
 **********************
 
 |Pyco|_ is a Python package for summarizing the output of |eco|_.
-It should work with Python 2 or 3, and can be installed via::
+It should work with Python 2 or 3.
+If you have
+`Python <https://www.python.org/>`_
+and 
+`pip <https://pypi.org/project/pip/>`_
+installed, you can install |Pyco|_ via::
 
     $ pip install git+git://github.com/phyletica/pycoevolity.git
+
+Also, |pyco| uses the
+[R](https://www.r-project.org/)
+packages
+[ggplot2](http://ggplot2.tidyverse.org/)
+and
+[ggridges](https://github.com/clauswilke/ggridges)
+for creating some plots.
+So, if you want plotting by pycoevolity to be fully functional,
+and you don't already have
+[R](https://www.r-project.org/)
+installed, you'll need to install it.
+Once
+[R](https://www.r-project.org/)
+is in place, you can install the packages from the
+[R](https://www.r-project.org/)
+prompt using:::
+
+    install.packages(c("ggplot2", "ggridges"))
+
+
+.. _docker_install:
+
+***********************************
+Using ecoevolity without installing
+***********************************
+
+Docker provides a nice way of sharing lightweight containers that act like a
+virtual machine.
+We have created a Docker container with |eco| built in.
+To get started, you first need to 
+`install Docker <https://www.docker.com/community-edition>`_.
+Once Docker is installed and running pull down our Docker image::
+
+    $ docker pull phyletica/ecoevolity-docker
+
+.. note::
+
+    Depending on your system and how Docker is configured, you may need to use
+    `sudo` to run Docker commands. If you received a "permission denied" message
+    when you ran the command above, try::
+    
+        $ sudo docker pull phyletica/ecoevolity-docker
+
+Then, run and enter the docker container::
+
+    $ docker run -it phyletica/ecoevolity-docker bash
+
+.. note::
+
+    Again, you might need to prefix this command with ``sudo``.
+
+That's it, you are now in a virtual container with 
+a fully functioning |eco| ecosystem
+(|eco| and |pyco| are installed, along with example data).
+Try typing::
+
+    $ ecoevolity -h
+
+This should display the |eco| help menu.
+Next, ``cd`` into the example data directory::
+
+    $ cd ecoevolity-example-data
+    $ ls
+
+There you will find an |eco| configuration file and nexus-formatted data files.
+If you're feeling adventurous, analyze these example data::
+
+    $ ecoevolity --relax-missing-sites --relax-triallelic-sites ecoevolity-config.yml
+
+.. note::
+
+    This analysis will take 8 minutes or so, depending on your computer and
+    Docker configuration.
+
+To exit the container, simply type::
+
+    $ exit
+
+Docker will keep the |eco| image around, so you can always jump
+back in anytime via::
+
+    $ docker run -it phyletica/ecoevolity-docker bash
+
+However, any files you created on your last visit will be gone.
+So, if you want to analyze *your* data and keep the results around, ``cd``
+to the directory where you want to run |eco|, then jump into
+the Docker container using::
+
+    $ docker run -v "$(pwd)":/portal -it phyletica/ecoevolity-docker bash
+
+Then, once inside, type::
+
+    $ cd portal
+    $ ls
+
+You should see the files that were in the directory on *your* computer.
+Now you can run |eco| on data in this directory, and all output files will be
+on your computer when you exit the container (magic!).
