@@ -39,18 +39,18 @@ for how to install |pyco|.
 Linux
 =====
 
-If you are on a Linux machine, use your package manager to update/install g++
-and cmake.
-On a fresh install of Ubuntu 16.04 you can simply use::
+If you are on a Linux machine, use your package manager to update/install g++,
+|cmake|, and |git|.
+On Ubuntu (or other Debian-based Linux distribution) you can simply use::
 
-    $ sudo apt-get install cmake g++
+    $ sudo apt-get install cmake g++ git
 
 Mac
 ===
 
-If you are on a Mac, you can install Xcode command line tools
-(that'll get you a C++ compiler and |git|)
-and download and install CMake from https://cmake.org/download/.
+If you are on a Mac, you can install Xcode command line tools (that'll get you
+a C++ compiler and |git|) and download and install |cmake| from
+https://cmake.org/download/.
 Download the ``.dmg`` file for the latest version for Mac.
 Once installed, open CMake, and from the "Tools" menu click 
 "How to Install For Command Line Use." This should pop up a window that has a
@@ -71,18 +71,12 @@ It's possible to do, but I suspect it will take a fair bit of tweaking of the
 If you have a Windows machine, and you are not experienced with compiling C/C++ code
 in Windows, you have some options:
 
+#.  If you have Windows 10,
+    `you can install Ubuntu <https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0>`_.
+    Once installed, then you can follow the instructions above for Linux.
+
 #.  Try running our Docker image
     (:ref:`see below <docker_install>`).
-
-#.  Set up a Linux environment on your machine. Some options for doing this
-    include:
-
-    #.  If you have Windows 10,
-        `you can install Ubuntu <https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0>`_.
-
-    #.  Follow
-        `these instructions <http://installation.software-carpentry.org/>`_
-        from Software Carpentry for installing a Bash shell.
 
 
 *****************************
@@ -196,6 +190,8 @@ installed, you can install |Pyco| via::
 
     $ pip install git+git://github.com/phyletica/pycoevolity.git
 
+If this isn't working, try the
+`manual installation instructions here <https://github.com/phyletica/pycoevolity>`_.
 Also, |pyco| uses the
 `R <https://www.r-project.org/>`_
 packages
@@ -236,8 +232,8 @@ Once Docker is installed and running pull down our Docker image::
 .. note::
 
     Depending on your system and how Docker is configured, you may need to use
-    `sudo` to run Docker commands. If you received a "permission denied" message
-    when you ran the command above, try::
+    ``sudo`` to run Docker commands. If you received a "permission denied"
+    message when you ran the command above, try::
     
         $ sudo docker pull phyletica/ecoevolity-docker
 

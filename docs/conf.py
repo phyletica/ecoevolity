@@ -236,9 +236,9 @@ rst_epilog = """
 .. _phyleticalab: http://phyletica.org
 
 .. |eco| replace:: ecoevolity
-.. _eco: https://github.com/phyletica/ecoevolity
+.. _eco: http://phyletica.org/ecoevolity
 .. |Eco| replace:: Ecoevolity
-.. _Eco: https://github.com/phyletica/ecoevolity
+.. _Eco: http://phyletica.org/ecoevolity
 .. |eco_gh| replace:: ecoevolity
 .. _eco_gh: https://github.com/phyletica/ecoevolity
 .. |eco_url| replace:: http://phyletica.org/ecoevolity
