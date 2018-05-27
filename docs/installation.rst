@@ -130,7 +130,7 @@ find the commands you type on the command line). You can do this via::
 
     $ sudo cp ./build/bin/* /usr/local/bin
 
-If this worked, you're good to go; you can try ``ecoeovlity -h`` to be sure.
+If this worked, you're good to go; you can try ``ecoevolity -h`` to be sure.
 
 If it didn't work, you probably don't have admin privileges.
 If so, you can create a bin folder in your home folder and put the tools

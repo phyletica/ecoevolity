@@ -10,10 +10,15 @@ The Configuration File
 
 Most of the settings for an |eco|_ analysis you specify in a configuration
 file.
-We use a |yaml|_ configuration file.
+We use a |yaml|_-formatted configuration file.
 |yaml|_ is an "anti-markup" language and data standard that is much more human
 friendly than alternatives like XML.
-|yamllint| is a nice tool for debugging |yaml|_ syntax.
+
+.. note::
+
+    The website |yamllint| is a nice tool for debugging |yaml|_ syntax.
+    You can copy and paste your config file their to check of you're
+    using valid |yaml| syntax.
 
 The simplest possible configuration file for |eco|_ would look something like::
 
@@ -28,9 +33,10 @@ The simplest possible configuration file for |eco|_ would look something like::
     - comparison:
         path: "alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex"
 
-This specifies the path to the nexus file for each of your population pairs.
-The defaults for all other settings would be used, which I **strongly
-discourage**.
+This specifies the path to the nexus file containing the character data for
+each of your population pairs.
+The defaults for all other settings would be used in this case, which we
+**strongly discourage**.
 
 Now, let's look at an example that is more thoroughly specified::
 
@@ -67,6 +73,9 @@ Now, let's look at an example that is more thoroughly specified::
             TimeSizeRateScaler:
                 weight: 0.0
                 scale: 0.02
+            TimeRootSizeMixer:
+                weight: 3.0
+                scale: 0.05
             EventTimeScaler:
                 weight: 1.0
                 scale: 0.02
@@ -107,9 +116,6 @@ Now, let's look at an example that is more thoroughly specified::
             LeafPopulationSizeScaler:
                 weight: 1.0
                 scale: 0.05
-            TimeRootSizeMixer:
-                weight: 3.0
-                scale: 0.05
     
     comparisons:
     - comparison:
@@ -122,7 +128,7 @@ Now, let's look at an example that is more thoroughly specified::
         path: "../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex"
 
 
-Everything is hierarchically nested by the indent spacing.
+All the settings are hierarchically nested by the indent spacing.
 For example,
 ``event_model_prior``, ``event_time_prior``, ``mcmc_settings``,
 ``operator_settings``, ``global_comparison_settings``, and ``comparison``
@@ -186,16 +192,16 @@ on the command line should provide the help menu, but the basic usage is::
 
   $ dpprobs -p concentration 7.5 4
 
-which requests the prior probabilities for the number of possible divergence
+which requests the prior probabilities of all possible numbers of divergence
 events when the concentration parameter is 7.5 and there are 4 comparisons.
 
-I often set the concentration so that 50% of the prior probability is
-on the maximum number of events/categories.
+We often set the concentration so that 50% of the prior probability is
+on the maximum number of events.
 The idea is that by placing most of the prior probability on the model with no
-shared divergences (or expansions), if my results indicate a shared event, I
-can be more confident that he data are driving that result.
-But, that is just my preference (i.e., there is no fundamental mathematical
-justification it).
+shared events, if our results indicate a shared event, we can be more confident
+that the data are driving that result.
+But, that is just an arbitrary preference (i.e., there is no fundamental
+mathematical justification for it).
 
 
 ****************
@@ -213,8 +219,9 @@ specifies an exponential distribution with a rate of 100.0 (thus
 the mean of the exponential prior is 1/rate = 1/100.0 = 0.01).
 A gamma or uniform distribution can also be used.
 
-If the mutation rate of one or more comparison is set to 1.0, then units of
-time are expected number of substitutions per site.
+If the mutation rate of one or more comparison is set to 1.0, then time is in
+units of expected number of substitutions per site, *relative* to the
+comparsion(s) with a mutation rate set to 1.0.
 If actual mutation rates are specified for your comparisons, then the
 units of time will be in whatever unit the rates are in.
 For example, if you give mutation rates in substitutions per site per million
@@ -226,7 +233,7 @@ mcmc_settings
 *************
 
 The ``mcmc_settings`` simply specify how long to run the MCMC
-chain, and how often to sample. For example::
+chain, and how often to record a sample from it. For example::
 
     mcmc_settings:
         chain_length: 75000
@@ -234,12 +241,14 @@ chain, and how often to sample. For example::
 
 tells |eco|_ to run the chain for 75,000 generations, recording a sample every
 50th generation (75000/50 = 1500 total samples).
-This is a good starting point. For most datasets I have analyzed so far,
+This is a good starting point. For most datasets we have analyzed so far,
 this has been sufficient. If the chain is having mixing problems, then you
-can increase.
-I recommend running several independent chains (analyses) to confirm they are
-converging and, assuming they converge, increasing the number of samples from
-the posterior distribution.
+can try increasing these numbers.
+We recommend running several independent chains (analyses) to:
+
+#.  Confirm the chains are converging.
+#.  Increase the number of samples from the posterior distribution (assuming
+    the chains converged).
 
 
 *****************
@@ -248,8 +257,14 @@ operator_settings
 
 The ``operator_settings`` control the behavior of the "global" MCMC operators
 that update the values of the model's parameters.
-As opposed to "global," there are also MCMC operators that only operate on the
-parameters of a specific comparison; these are discussed further below.
+By "global," we mean that these operators affect all the comparisons (we'll
+discuss operators that only operate on a specific comparison further below).
+
+Generally, the default values for the ``operator_settings`` are sensible
+and will work fine for many datasets.
+We recommend trying the defaults first (i.e., simply do not specify the
+``operator_settings`` section in the configuration file), and make adjustments
+if your chains do not mix and/or converge well.
 
 ::
 
@@ -284,8 +299,8 @@ to work well.
                 weight: 1.0
                 scale: 0.02
 
-These settings control the "global" MCMC operator.  The weights are relative
-and control how often each operator is used.
+These settings control the "global" MCMC operators.
+The weights are relative and control how often each operator is used.
 For example, an operator with ``weight: 2`` will be used twice as often (on
 average) than an operator with ``weight: 1``.
 ``Mixer`` and ``Scaler`` operators have a ``scale`` parameter, which
@@ -295,21 +310,15 @@ If auto optimization is turned on, these are starting values, and the values of
 the ``scale`` parameters will be adjusted during the MCMC chain to try to
 optimize mixing.
 
-The ``ModelOperator`` as a setting for the ``number_of_auxiliary_categories``.
-This controls how many "extra" event categories the Gibbs sampler has when
-proposing changes to the number of events, and which comparisons are assigned
+The ``ModelOperator`` has a setting for the ``number_of_auxiliary_categories``.
+This controls how many "extra" event categories the Gibbs sampler uses when
+proposing changes to the number of events and which comparisons are assigned
 to each event.
 More "extra" categories can improve mixing, but slows down the MCMC chain;
 fewer categories will take less time, at the risk of poorer mixing.
-I do not suspect you would ever need more than 4, but you may very well be able
+We do not suspect you would ever need more than 4, but you may very well be able
 to use 3 or 2, and still have good mixing.
 The default is 4.
-
-Generally, the default values for the ``operator_settings`` are sensible
-and will work fine for many datasets.
-I recommend trying the defaults first (i.e., simply do not specify the
-``operator_settings`` section in the configuration file), and make adjustments
-if your chains do not mix and/or converge well.
 
 .. note::
 
@@ -342,7 +351,7 @@ global_comparison_settings
 
 The ``global_comparison_settings`` is an optional section that can
 be useful for specifying settings to be applied to all of your
-comparisons, unless otherwise specified.
+comparisons, unless otherwise overridden.
 All of the settings within ``global_comparison_settings`` can
 also be specified for each comparison. For example::
 
@@ -381,10 +390,10 @@ This is the ploidy of the organisms (i.e., 1 = haploid, 2 = diploid).
         genotypes_are_diploid: true
 
 This tells |eco|_ how you have encoded your characters.
-Does each cell of your character matrix represent the state of a diploid
-individual?
+Does each cell of your character matrix represent the state of both alleles of
+a diploid individual?
 If so, ``genotypes_are_diploid`` should be ``true``.
-If each cell represents the state of a particular gene copy/genome, then
+If each cell represents the state of a particular gene copy, then
 ``genotypes_are_diploid`` should be ``false``.
 If you have a code(s) to represent a heterozygote, then
 ``genotypes_are_diploid`` should definitely be ``true``.
@@ -395,8 +404,10 @@ If you have a code(s) to represent a heterozygote, then
 
 This specifies whether your markers are dominant.
 If the same code is used to designate the character state of a heterozygote and
-one of the possible homozygotes, then ``markers_are_dominant`` should be
+one of the two possible homozygotes, then ``markers_are_dominant`` should be
 ``true``.
+If you can tell the difference among a heterozygote and both homozygotes,
+ then ``markers_are_dominant`` should be ``false``.
 
 ::
 
@@ -413,10 +424,10 @@ So, if your matrix looks like::
         Dimensions ntax=20 nchar=40000;
         Format datatype=standard symbols="01" missing=? gap=-;
         Matrix
-    'population1-jro-001'  0010...
-    'population1-jro-002'  0010...
-    'population2-jro-003'  0000...
-    'population2-jro-004'  0011...
+    'population1-lizard-001'  0010...
+    'population1-lizard-002'  0010...
+    'population2-lizard-003'  0000...
+    'population2-lizard-004'  0011...
     .
     .
     .
@@ -463,9 +474,9 @@ characters/sites.
         equal_population_sizes: false
 
 If ``true`` the effective sizes of the root and leaf populations are
-constrained be equal (i.e., one population-size parameter for the comparison).
+constrained to be equal (but their shared size can still be estimated).
 If ``false`` the effective sizes of the root and leaf populations are estimated
-separately.
+separately (assuming they are not fixed to particular values).
 
 
 The parameters section
@@ -520,6 +531,7 @@ So, you can specify
 #.  Whether or not the parameter should be fixed or estimated.
 #.  A value for the parameter. This is only the starting value if ``estimate``
     is ``true``, or is the fixed value if ``estimate`` is ``false``.
+    If a value is not specified, the starting value is drawn from the prior.
 #.  The prior probability distribution. This is ignored if ``estimate`` is
     ``false``.
 
@@ -537,23 +549,52 @@ expected substitutions per site), and effective population size will be measured
 in units of :math:`\epopsize\mutationrate`.
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then time will be in units of generations,
-and population size will in units of the effective number of diploid
+and population size will be in units of the effective number of diploid
 individuals or gene copies (:math:`\epopsize`) if the ploidy is 2 or 1,
 respectively.
 Differences in generation times among pairs can also be accounted for
 via the ``mutation_rate`` parameters, with the appropriate scaling
 of the effective population sizes.
 To help ensure the population sizes are scaled correctly, it can help to
-remember that :math:`\textrm{ploidy} \times 2\epopsize\mutationrate` should equal the
-expected differences per base between two randomly selected genomes from a
-population.
+remember that :math:`\textrm{ploidy} \times 2\epopsize\mutationrate` should
+equal the expected differences per base between two randomly selected genomes
+from a population.
 
 population_size
 ---------------
 
-The ``population_size`` settings are for the effective sizes of the leaf
-populations of the pair (i.e., :math:`\epopsize`, but see discussion of
-scaling the mutation rate above).
+The ``population_size`` settings are for the effective population sizes of the
+leaf (descendant) population(s) of a comparison.
+If you set the mutation rate to 1, then the effective population sizes
+will be scaled by the mutation rate (:math:`\epopsize\mutationrate`).
+Alternatively, if you specify an actual rate of mutation per site per
+generation, then the population size will be in units of the effective number
+of diploid individuals or gene copies (:math:`\epopsize`), if the ploidy is 2
+or 1, respectively.
+If the mutation rate is in years, or if the mutation rate is scaled to account
+for rate and/or generation time differences from a comparison whose rate is
+1.0, then the population size will be in arbitrary units.
+In such cases, it always helps to remember the following relationship
+to make sure your settings for the population size are on the correct scale:
+
+.. math::
+    :label: ratesizescaling
+
+    \pi = \textrm{ploidy} \times 2\epopsize\mutationrate,
+
+where :math:`\pi` is the expected differences per base between two randomly
+selected genomes from a population.
+So if you have a prior expectation in mind for :math:`pi`, and you've
+set the mutation rate relative to another comparison or in units
+of years, then use
+
+.. math::
+    :label: ratesizescaling
+
+    \epopsize = \frac{\pi}{\textrm{ploidy} \times 2\mutationrate},
+
+to guide your choice of prior on the effective sizes of the descendant
+populations.
 
 root_relative_population_size
 -----------------------------
@@ -618,7 +659,7 @@ freq_1
 
 The ``freq_1`` parameter is the equilibrium frequency of the "1" allele (or 1
 minus the frequency of the "0" allele).
-If you are using nucleotide data, I recommend that you fix the frequencies
+If you are using nucleotide data, we recommend that you fix the frequencies
 of the "0" and "1" states to be equal::
 
             freq_1:
@@ -698,7 +739,7 @@ the divergence time of a particular pair.
 Giving that pair its own ``EventTimeScaler`` might help in such a case.
 
 As with the "global" operators, the default settings will likely work fine.
-I recommend you try the defaults first (simply do not specify operator
+We recommend you try the defaults first (simply do not specify operator
 settings), and resort to adjustments if you have poor mixing.
 
 ***********
