@@ -67,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#building-the-threaded-version">Building the threaded version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-pycoevolity">Installing pycoevolity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-ecoevolity-without-installing">Using ecoevolity without installing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-some-example-data">Getting some example data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="yaml-config.html">The Configuration File</a></li>
@@ -107,7 +108,7 @@
 <p class="first admonition-title">Note</p>
 <p class="last">Want to try ecoevolity without installing it?
 <a class="reference internal" href="#docker-install"><span class="std std-ref">Try out our Docker image</span></a>.
-If you run into troubles below building and installing ecoevolity, the Docker
+If you run into trouble below building and installing ecoevolity, the Docker
 image provides an alternative.</p>
 </div>
 <div class="section" id="prerequisites">
@@ -354,6 +355,25 @@ $ ls
 <p>You should see the files that were in the directory on <em>your</em> computer.
 Now you can run ecoevolity on data in this directory, and all output files will be
 on your computer when you exit the container (magic!).</p>
+</div>
+<div class="section" id="getting-some-example-data">
+<h2>Getting some example data<a class="headerlink" href="#getting-some-example-data" title="Permalink to this headline">¶</a></h2>
+<p>You can get an example of an ecoevolity configuration file and nexus-formatted
+data files from one of our
+<a class="reference external" href="https://github.com/phyletica/ecoevolity-example-data">GitHub repos</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone https://github.com/phyletica/ecoevolity-example-data.git
+</pre></div>
+</div>
+<p>If you prefer not to use <a class="reference external" href="http://git-scm.com/">Git</a>, you can download an archive of the
+<a class="reference external" href="https://github.com/phyletica/ecoevolity-example-data/archive/master.zip">example data here</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are using the
+<a class="reference internal" href="#docker-install"><span class="std std-ref">Docker image</span></a>,
+the example data are included in the container.
+But, for the tutorials, it will be helpful to follow the instructions above
+to get a copy on your computer, outside of the container.</p>
+</div>
 </div>
 </div>
 
