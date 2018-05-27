@@ -12,7 +12,7 @@ Installation
 
     Want to try ecoevolity without installing it?
     :ref:`Try out our Docker image <docker_install>`.
-    If you run into troubles below building and installing |eco|, the Docker
+    If you run into trouble below building and installing |eco|, the Docker
     image provides an alternative.
 
 
@@ -288,3 +288,25 @@ Then, once inside, type::
 You should see the files that were in the directory on *your* computer.
 Now you can run |eco| on data in this directory, and all output files will be
 on your computer when you exit the container (magic!).
+
+
+*************************
+Getting some example data
+*************************
+
+You can get an example of an |eco| configuration file and nexus-formatted
+data files from one of our 
+`GitHub repos <https://github.com/phyletica/ecoevolity-example-data>`_::
+
+    $ git clone https://github.com/phyletica/ecoevolity-example-data.git
+
+If you prefer not to use |git|_, you can download an archive of the 
+`example data here <https://github.com/phyletica/ecoevolity-example-data/archive/master.zip>`_.
+
+.. note::
+
+    If you are using the
+    :ref:`Docker image <docker_install>`,
+    the example data are included in the container.
+    But, for the tutorials, it will be helpful to follow the instructions above
+    to get a copy on your computer, outside of the container.
