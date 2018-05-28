@@ -126,10 +126,15 @@
 </div>
 <p>Most of the settings for an <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> analysis you specify in a configuration
 file.
-We use a <a class="reference external" href="http://yaml.org/">YAML</a> configuration file.
+We use a <a class="reference external" href="http://yaml.org/">YAML</a>-formatted configuration file.
 <a class="reference external" href="http://yaml.org/">YAML</a> is an “anti-markup” language and data standard that is much more human
-friendly than alternatives like XML.
-<a class="reference external" href="http://www.yamllint.com/">http://www.yamllint.com/</a> is a nice tool for debugging <a class="reference external" href="http://yaml.org/">YAML</a> syntax.</p>
+friendly than alternatives like XML.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The website <a class="reference external" href="http://www.yamllint.com/">http://www.yamllint.com/</a> is a nice tool for debugging <a class="reference external" href="http://yaml.org/">YAML</a> syntax.
+You can copy and paste your config file their to check of you’re
+using valid YAML syntax.</p>
+</div>
 <p>The simplest possible configuration file for <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> would look something like:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="n">comparisons</span><span class="p">:</span>
@@ -143,9 +148,10 @@ friendly than alternatives like XML.
     <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex&quot;</span>
 </pre></div>
 </div>
-<p>This specifies the path to the nexus file for each of your population pairs.
-The defaults for all other settings would be used, which I <strong>strongly
-discourage</strong>.</p>
+<p>This specifies the path to the nexus file containing the character data for
+each of your population pairs.
+The defaults for all other settings would be used in this case, which we
+<strong>strongly discourage</strong>.</p>
 <p>Now, let’s look at an example that is more thoroughly specified:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---</span>
 <span class="c1"># This is a comment</span>
@@ -180,6 +186,9 @@ discourage</strong>.</p>
         <span class="n">TimeSizeRateScaler</span><span class="p">:</span>
             <span class="n">weight</span><span class="p">:</span> <span class="mf">0.0</span>
             <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+        <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
         <span class="n">EventTimeScaler</span><span class="p">:</span>
             <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
             <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
@@ -220,9 +229,6 @@ discourage</strong>.</p>
         <span class="n">LeafPopulationSizeScaler</span><span class="p">:</span>
             <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
             <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
-        <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
-            <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
-            <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
 
 <span class="n">comparisons</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
@@ -235,7 +241,7 @@ discourage</strong>.</p>
     <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-sp_a-sp_b-Dalupiri-CamiguinNorte.nex&quot;</span>
 </pre></div>
 </div>
-<p>Everything is hierarchically nested by the indent spacing.
+<p>All the settings are hierarchically nested by the indent spacing.
 For example,
 <code class="docutils literal"><span class="pre">event_model_prior</span></code>, <code class="docutils literal"><span class="pre">event_time_prior</span></code>, <code class="docutils literal"><span class="pre">mcmc_settings</span></code>,
 <code class="docutils literal"><span class="pre">operator_settings</span></code>, <code class="docutils literal"><span class="pre">global_comparison_settings</span></code>, and <code class="docutils literal"><span class="pre">comparison</span></code>
@@ -294,15 +300,15 @@ Typing:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ dpprobs -p concentration 7.5 4
 </pre></div>
 </div>
-<p>which requests the prior probabilities for the number of possible divergence
+<p>which requests the prior probabilities of all possible numbers of divergence
 events when the concentration parameter is 7.5 and there are 4 comparisons.</p>
-<p>I often set the concentration so that 50% of the prior probability is
-on the maximum number of events/categories.
+<p>We often set the concentration so that 50% of the prior probability is
+on the maximum number of events.
 The idea is that by placing most of the prior probability on the model with no
-shared divergences (or expansions), if my results indicate a shared event, I
-can be more confident that he data are driving that result.
-But, that is just my preference (i.e., there is no fundamental mathematical
-justification it).</p>
+shared events, if our results indicate a shared event, we can be more confident
+that the data are driving that result.
+But, that is just an arbitrary preference (i.e., there is no fundamental
+mathematical justification for it).</p>
 </div>
 <div class="section" id="event-time-prior">
 <h2><a class="toc-backref" href="#id4">event_time_prior</a><a class="headerlink" href="#event-time-prior" title="Permalink to this headline">¶</a></h2>
@@ -316,8 +322,9 @@ For example:</p>
 <p>specifies an exponential distribution with a rate of 100.0 (thus
 the mean of the exponential prior is 1/rate = 1/100.0 = 0.01).
 A gamma or uniform distribution can also be used.</p>
-<p>If the mutation rate of one or more comparison is set to 1.0, then units of
-time are expected number of substitutions per site.
+<p>If the mutation rate of one or more comparison is set to 1.0, then time is in
+units of expected number of substitutions per site, <em>relative</em> to the
+comparsion(s) with a mutation rate set to 1.0.
 If actual mutation rates are specified for your comparisons, then the
 units of time will be in whatever unit the rates are in.
 For example, if you give mutation rates in substitutions per site per million
@@ -326,7 +333,7 @@ years, time will be in units of millions of years.</p>
 <div class="section" id="mcmc-settings">
 <h2><a class="toc-backref" href="#id5">mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">mcmc_settings</span></code> simply specify how long to run the MCMC
-chain, and how often to sample. For example:</p>
+chain, and how often to record a sample from it. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mcmc_settings</span><span class="p">:</span>
     <span class="n">chain_length</span><span class="p">:</span> <span class="mi">75000</span>
     <span class="n">sample_frequency</span><span class="p">:</span> <span class="mi">50</span>
@@ -334,19 +341,27 @@ chain, and how often to sample. For example:</p>
 </div>
 <p>tells <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> to run the chain for 75,000 generations, recording a sample every
 50th generation (75000/50 = 1500 total samples).
-This is a good starting point. For most datasets I have analyzed so far,
+This is a good starting point. For most datasets we have analyzed so far,
 this has been sufficient. If the chain is having mixing problems, then you
-can increase.
-I recommend running several independent chains (analyses) to confirm they are
-converging and, assuming they converge, increasing the number of samples from
-the posterior distribution.</p>
+can try increasing these numbers.
+We recommend running several independent chains (analyses) to:</p>
+<ol class="arabic simple">
+<li>Confirm the chains are converging.</li>
+<li>Increase the number of samples from the posterior distribution (assuming
+the chains converged).</li>
+</ol>
 </div>
 <div class="section" id="operator-settings">
 <h2><a class="toc-backref" href="#id6">operator_settings</a><a class="headerlink" href="#operator-settings" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">operator_settings</span></code> control the behavior of the “global” MCMC operators
 that update the values of the model’s parameters.
-As opposed to “global,” there are also MCMC operators that only operate on the
-parameters of a specific comparison; these are discussed further below.</p>
+By “global,” we mean that these operators affect all the comparisons (we’ll
+discuss operators that only operate on a specific comparison further below).</p>
+<p>Generally, the default values for the <code class="docutils literal"><span class="pre">operator_settings</span></code> are sensible
+and will work fine for many datasets.
+We recommend trying the defaults first (i.e., simply do not specify the
+<code class="docutils literal"><span class="pre">operator_settings</span></code> section in the configuration file), and make adjustments
+if your chains do not mix and/or converge well.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operator_settings</span><span class="p">:</span>
     <span class="n">auto_optimize</span><span class="p">:</span> <span class="n">true</span>
     <span class="n">auto_optimize_delay</span><span class="p">:</span> <span class="mi">1000</span>
@@ -377,8 +392,8 @@ to work well.</p>
             <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
 </pre></div>
 </div>
-<p>These settings control the “global” MCMC operator.  The weights are relative
-and control how often each operator is used.
+<p>These settings control the “global” MCMC operators.
+The weights are relative and control how often each operator is used.
 For example, an operator with <code class="docutils literal"><span class="pre">weight:</span> <span class="pre">2</span></code> will be used twice as often (on
 average) than an operator with <code class="docutils literal"><span class="pre">weight:</span> <span class="pre">1</span></code>.
 <code class="docutils literal"><span class="pre">Mixer</span></code> and <code class="docutils literal"><span class="pre">Scaler</span></code> operators have a <code class="docutils literal"><span class="pre">scale</span></code> parameter, which
@@ -387,20 +402,15 @@ model parameters.
 If auto optimization is turned on, these are starting values, and the values of
 the <code class="docutils literal"><span class="pre">scale</span></code> parameters will be adjusted during the MCMC chain to try to
 optimize mixing.</p>
-<p>The <code class="docutils literal"><span class="pre">ModelOperator</span></code> as a setting for the <code class="docutils literal"><span class="pre">number_of_auxiliary_categories</span></code>.
-This controls how many “extra” event categories the Gibbs sampler has when
-proposing changes to the number of events, and which comparisons are assigned
+<p>The <code class="docutils literal"><span class="pre">ModelOperator</span></code> has a setting for the <code class="docutils literal"><span class="pre">number_of_auxiliary_categories</span></code>.
+This controls how many “extra” event categories the Gibbs sampler uses when
+proposing changes to the number of events and which comparisons are assigned
 to each event.
 More “extra” categories can improve mixing, but slows down the MCMC chain;
 fewer categories will take less time, at the risk of poorer mixing.
-I do not suspect you would ever need more than 4, but you may very well be able
+We do not suspect you would ever need more than 4, but you may very well be able
 to use 3 or 2, and still have good mixing.
 The default is 4.</p>
-<p>Generally, the default values for the <code class="docutils literal"><span class="pre">operator_settings</span></code> are sensible
-and will work fine for many datasets.
-I recommend trying the defaults first (i.e., simply do not specify the
-<code class="docutils literal"><span class="pre">operator_settings</span></code> section in the configuration file), and make adjustments
-if your chains do not mix and/or converge well.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>If you specify a weight for an operator that only updates parameters that
@@ -429,7 +439,7 @@ leave all other operator settings at their default values.</p>
 <h2><a class="toc-backref" href="#id7">global_comparison_settings</a><a class="headerlink" href="#global-comparison-settings" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">global_comparison_settings</span></code> is an optional section that can
 be useful for specifying settings to be applied to all of your
-comparisons, unless otherwise specified.
+comparisons, unless otherwise overridden.
 All of the settings within <code class="docutils literal"><span class="pre">global_comparison_settings</span></code> can
 also be specified for each comparison. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">global_comparison_settings</span><span class="p">:</span>
@@ -463,10 +473,10 @@ settings for your comparisons that you can override.</p>
 </pre></div>
 </div>
 <p>This tells <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> how you have encoded your characters.
-Does each cell of your character matrix represent the state of a diploid
-individual?
+Does each cell of your character matrix represent the state of both alleles of
+a diploid individual?
 If so, <code class="docutils literal"><span class="pre">genotypes_are_diploid</span></code> should be <code class="docutils literal"><span class="pre">true</span></code>.
-If each cell represents the state of a particular gene copy/genome, then
+If each cell represents the state of a particular gene copy, then
 <code class="docutils literal"><span class="pre">genotypes_are_diploid</span></code> should be <code class="docutils literal"><span class="pre">false</span></code>.
 If you have a code(s) to represent a heterozygote, then
 <code class="docutils literal"><span class="pre">genotypes_are_diploid</span></code> should definitely be <code class="docutils literal"><span class="pre">true</span></code>.</p>
@@ -475,8 +485,10 @@ If you have a code(s) to represent a heterozygote, then
 </div>
 <p>This specifies whether your markers are dominant.
 If the same code is used to designate the character state of a heterozygote and
-one of the possible homozygotes, then <code class="docutils literal"><span class="pre">markers_are_dominant</span></code> should be
-<code class="docutils literal"><span class="pre">true</span></code>.</p>
+one of the two possible homozygotes, then <code class="docutils literal"><span class="pre">markers_are_dominant</span></code> should be
+<code class="docutils literal"><span class="pre">true</span></code>.
+If you can tell the difference among a heterozygote and both homozygotes, then
+<code class="docutils literal"><span class="pre">markers_are_dominant</span></code> should be <code class="docutils literal"><span class="pre">false</span></code>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">population_name_delimiter</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
 <span class="n">population_name_is_prefix</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
@@ -490,10 +502,10 @@ So, if your matrix looks like:</p>
     Dimensions ntax=20 nchar=40000;
     Format datatype=standard symbols=&quot;01&quot; missing=? gap=-;
     Matrix
-&#39;population1-jro-001&#39;  0010...
-&#39;population1-jro-002&#39;  0010...
-&#39;population2-jro-003&#39;  0000...
-&#39;population2-jro-004&#39;  0011...
+&#39;population1-lizard-001&#39;  0010...
+&#39;population1-lizard-002&#39;  0010...
+&#39;population2-lizard-003&#39;  0000...
+&#39;population2-lizard-004&#39;  0011...
 .
 .
 .
@@ -538,9 +550,9 @@ characters/sites.</p>
 </pre></div>
 </div>
 <p>If <code class="docutils literal"><span class="pre">true</span></code> the effective sizes of the root and leaf populations are
-constrained be equal (i.e., one population-size parameter for the comparison).
+constrained to be equal (but their shared size can still be estimated).
 If <code class="docutils literal"><span class="pre">false</span></code> the effective sizes of the root and leaf populations are estimated
-separately.</p>
+separately (assuming they are not fixed to particular values).</p>
 <div class="section" id="the-parameters-section">
 <h3><a class="toc-backref" href="#id8">The parameters section</a><a class="headerlink" href="#the-parameters-section" title="Permalink to this headline">¶</a></h3>
 <p>The following section controls the settings for the parameters for each
@@ -588,7 +600,8 @@ process that we saw above).</p>
 <ol class="arabic simple">
 <li>Whether or not the parameter should be fixed or estimated.</li>
 <li>A value for the parameter. This is only the starting value if <code class="docutils literal"><span class="pre">estimate</span></code>
-is <code class="docutils literal"><span class="pre">true</span></code>, or is the fixed value if <code class="docutils literal"><span class="pre">estimate</span></code> is <code class="docutils literal"><span class="pre">false</span></code>.</li>
+is <code class="docutils literal"><span class="pre">true</span></code>, or is the fixed value if <code class="docutils literal"><span class="pre">estimate</span></code> is <code class="docutils literal"><span class="pre">false</span></code>.
+If a value is not specified, the starting value is drawn from the prior.</li>
 <li>The prior probability distribution. This is ignored if <code class="docutils literal"><span class="pre">estimate</span></code> is
 <code class="docutils literal"><span class="pre">false</span></code>.</li>
 </ol>
@@ -606,23 +619,60 @@ expected substitutions per site), and effective population size will be measured
 in units of <img class="math" src="_images/math/502db4c581eb539e0af5587731b4fd273f08a9e8.svg" alt="\epopsize\mutationrate"/>.
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then time will be in units of generations,
-and population size will in units of the effective number of diploid
+and population size will be in units of the effective number of diploid
 individuals or gene copies (<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>) if the ploidy is 2 or 1,
 respectively.
 Differences in generation times among pairs can also be accounted for
 via the <code class="docutils literal"><span class="pre">mutation_rate</span></code> parameters, with the appropriate scaling
 of the effective population sizes.
 To help ensure the population sizes are scaled correctly, it can help to
-remember that <img class="math" src="_images/math/45a9ebba77c8ca16433bc5c4f0b2c528616d35bd.svg" alt="\textrm{ploidy} \times 2\epopsize\mutationrate"/> should equal the
-expected differences per base between two randomly selected genomes from a
-population.</p>
+remember that <img class="math" src="_images/math/45a9ebba77c8ca16433bc5c4f0b2c528616d35bd.svg" alt="\textrm{ploidy} \times 2\epopsize\mutationrate"/> should
+equal the expected differences per base between two randomly selected genomes
+from a population.</p>
 </div>
 <div class="section" id="population-size">
 <h4><a class="toc-backref" href="#id11">population_size</a><a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h4>
-<p>The <code class="docutils literal"><span class="pre">population_size</span></code> settings are for the effective sizes of the leaf
-populations of the pair (i.e., <img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>, but see discussion of
-scaling the mutation rate above).</p>
-</div>
+<p>The <code class="docutils literal"><span class="pre">population_size</span></code> settings are for the effective population sizes of the
+leaf (descendant) population(s) of a comparison.
+If you set the mutation rate to 1, then the effective population sizes
+will be scaled by the mutation rate (<img class="math" src="_images/math/502db4c581eb539e0af5587731b4fd273f08a9e8.svg" alt="\epopsize\mutationrate"/>).
+Alternatively, if you specify an actual rate of mutation per site per
+generation, then the population size will be in units of the effective number
+of diploid individuals or gene copies (<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>), if the ploidy is 2
+or 1, respectively.</p>
+<div class="admonition note" id="popsizenote">
+<p class="first admonition-title">Note</p>
+<p><strong>Important</strong>: In ecoevolity, the <code class="docutils literal"><span class="pre">population_size</span></code> is related to, but <strong>not</strong>
+equal to <img class="math" src="_images/math/82e115e8b1d4663545552a2d3c4e65977d742e6a.svg" alt="\theta"/> (<img class="math" src="_images/math/a7a7ca90b390e6974061660977d48ef45c20e153.svg" alt="4\epopsize\mutationrate"/>; the genetic
+diversity, or more precisely, the expected number of differences per base
+between two randomly selected haploid genomes).
+The relationship between <code class="docutils literal"><span class="pre">population_size</span></code> (represented by
+<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>) and <img class="math" src="_images/math/82e115e8b1d4663545552a2d3c4e65977d742e6a.svg" alt="\theta"/> is:</p>
+<div class="math" id="equation-thetarelationship">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-thetarelationship" title="Permalink to this equation">¶</a></span><img src="_images/math/cb1338573f0ddb6474741824f6bab407709d458e.svg" alt="\textrm{ploidy} \times 2\epopsize\mutationrate = \theta \\
+\epopsize = \frac{\theta}{\textrm{ploidy} \times 2\mutationrate}."/></p>
+</div><p>Thus, if you have prior expectation that <img class="math" src="_images/math/65bbe918c1df5fe1019c21b46beb3e5cb166a165.svg" alt="\theta = 0.002"/> and you’ve
+set the <code class="docutils literal"><span class="pre">mutation_rate</span></code> to 1.0 (i.e., <img class="math" src="_images/math/e61c423669c98f5fe007d2392a36ee1cdcfc26c7.svg" alt="\mutationrate = 1"/>) and
+<code class="docutils literal"><span class="pre">ploidy</span></code> to 2, then your prior expectation for <code class="docutils literal"><span class="pre">population_size</span></code> is,</p>
+<div class="last math">
+<p><img src="_images/math/f9e31e3d1c11b715614747c9d9fe72e47fe946f9.svg" alt="\epopsize = \frac{0.002}{2 \times 2(1)} = \frac{0.002}{4} = 0.0005"/></p>
+</div></div>
+<p>The relationship above is also very important to keep in mind if you
+specify a mutation rate in years, or scale the mutation rate to account
+for differences in rate and/or generation time from another comparison.
+For example, let’s assume that for your taxon, you believe 0.004 is a
+reasonable value for the average number of differences per base between two
+randomly selected gene copies, and you’ve told ecoevolity that the <code class="docutils literal"><span class="pre">ploidy</span> <span class="pre">=</span>
+<span class="pre">2</span></code>.
+If you’ve set the mutation rate to 0.5 for one of your comparisons to account
+for differences in mutation rate and/or generation time compared to another
+comparison for which you’ve set the mutation rate to 1.0, then you can
+use Equation <a class="reference internal" href="#equation-thetarelationship">(1)</a> to adjust your prior
+expectation for <code class="docutils literal"><span class="pre">population_size</span></code> accordingly:</p>
+<div class="math">
+<p><img src="_images/math/871104c7c9d28907f7b0bc5af319b8931fddd062.svg" alt="\epopsize &amp;= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate} \\
+          &amp;= \frac{0.002}{2 \times 2(0.5)} = \frac{0.002}{2} = 0.001"/></p>
+</div></div>
 <div class="section" id="root-relative-population-size">
 <h4><a class="toc-backref" href="#id12">root_relative_population_size</a><a class="headerlink" href="#root-relative-population-size" title="Permalink to this headline">¶</a></h4>
 <p>The population size of the root (ancestral) population is parameterized a bit
@@ -672,7 +722,7 @@ Similarly</p>
 </div>
 <p>allows the effective population size of the root to be estimated, and centers
 the prior on its relative size on 2 (i.e., centers the prior expectation for
-the actual root effective population size on twice the mean of the leaf sizes.</p>
+the actual root effective population size on twice the mean of the leaf sizes).</p>
 <p>The hope of this parameterization is to allow you to specify a more informative
 prior on the root effective population size.
 There is usually a lot of prior uncertainty in the actual value of the root
@@ -683,7 +733,7 @@ the mean of the leaf sizes.</p>
 <h4><a class="toc-backref" href="#id13">freq_1</a><a class="headerlink" href="#freq-1" title="Permalink to this headline">¶</a></h4>
 <p>The <code class="docutils literal"><span class="pre">freq_1</span></code> parameter is the equilibrium frequency of the “1” allele (or 1
 minus the frequency of the “0” allele).
-If you are using nucleotide data, I recommend that you fix the frequencies
+If you are using nucleotide data, we recommend that you fix the frequencies
 of the “0” and “1” states to be equal:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
     <span class="n">value</span><span class="p">:</span> <span class="mf">0.5</span>
@@ -691,12 +741,12 @@ of the “0” and “1” states to be equal:</p>
 </pre></div>
 </div>
 <p>This is because there is no natural way to recode the 4 nucleotide states to
-binary.
-Thus, if you try to estimate frequencies of the binary states, your results
-will be sensitive to the vagaries of how you decide to code your nucleotides as
-binary.</p>
-<p>However, if the characters you are using are truly binary, then it might make
-sense to estimate the frequencies of the two states.
+two states.
+Thus, if you try to estimate frequencies of the two states, your results will
+be sensitive to the vagaries related to how you decided to code your
+nucleotides as binary.</p>
+<p>However, if the characters you are using are truly biallelic, then it might
+make sense to estimate the frequencies of the two states.
 Another option is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">freq_1</span><span class="p">:</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">empirical</span>
@@ -719,7 +769,10 @@ parameters.</p>
 upon the parameters of a comparison.
 I.e., each comparison gets its own copy of the specified operators, as opposed
 to the “global” operators discussed above.
-The following operators can only be specified here (listing them in the global
+As with the “global” operators, the default settings will likely work fine.
+We recommend you try the defaults first (simply do not specify operator
+settings), and resort to adjustments if you have poor mixing.</p>
+<p>The following operators can only be specified here (listing them in the global
 <code class="docutils literal"><span class="pre">operator_settings</span></code> will result in an error:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">operators</span><span class="p">:</span>
     <span class="n">RootPopulationSizeScaler</span><span class="p">:</span>
@@ -727,9 +780,6 @@ The following operators can only be specified here (listing them in the global
         <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
     <span class="n">LeafPopulationSizeScaler</span><span class="p">:</span>
         <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
-        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
-    <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
-        <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
         <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
     <span class="n">FreqMover</span><span class="p">:</span>
         <span class="n">weight</span><span class="p">:</span> <span class="mf">1.0</span>
@@ -744,6 +794,9 @@ The following operators can only be specified here (listing them in the global
     <span class="n">TimeSizeRateMixer</span><span class="p">:</span>
         <span class="n">weight</span><span class="p">:</span> <span class="mf">5.0</span>
         <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
+    <span class="n">TimeRootSizeMixer</span><span class="p">:</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="mf">3.0</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="mf">0.05</span>
     <span class="n">TimeSizeRateScaler</span><span class="p">:</span>
         <span class="n">weight</span><span class="p">:</span> <span class="mf">0.0</span>
         <span class="n">scale</span><span class="p">:</span> <span class="mf">0.02</span>
@@ -758,16 +811,14 @@ The only time you might need to apply these operators to <em>each</em> compariso
 is if you are having mixing trouble.
 For example, the “global” <code class="docutils literal"><span class="pre">EventTimeScaler</span></code> might not work well for
 the divergence time of a particular pair.
-Giving that pair its own <code class="docutils literal"><span class="pre">EventTimeScaler</span></code> might help in such a case.</p>
-<p>As with the “global” operators, the default settings will likely work fine.
-I recommend you try the defaults first (simply do not specify operator
-settings), and resort to adjustments if you have poor mixing.</p>
+Giving that pair its own <code class="docutils literal"><span class="pre">EventTimeScaler</span></code> might improve mixing in such a
+case.</p>
 </div>
 </div>
 <div class="section" id="comparisons">
 <h2><a class="toc-backref" href="#id15">comparisons</a><a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h2>
-<p>In its simplest form, the <code class="docutils literal"><span class="pre">comparisons</span></code> section simply is a list of
-the paths of the character alignments:</p>
+<p>In its simplest form, the <code class="docutils literal"><span class="pre">comparisons</span></code> section simply is a list of the paths
+to the nexus-formatted files containting the character alignments:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">comparisons</span><span class="p">:</span>
 <span class="o">-</span> <span class="n">comparison</span><span class="p">:</span>
     <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;../alignments/G-crombota-rossi-BabuyanClaro-Calayan.nex&quot;</span>
