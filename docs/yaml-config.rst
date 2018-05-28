@@ -571,30 +571,49 @@ Alternatively, if you specify an actual rate of mutation per site per
 generation, then the population size will be in units of the effective number
 of diploid individuals or gene copies (:math:`\epopsize`), if the ploidy is 2
 or 1, respectively.
-If the mutation rate is in years, or if the mutation rate is scaled to account
-for rate and/or generation time differences from a comparison whose rate is
-1.0, then the population size will be in arbitrary units.
-In such cases, it always helps to remember the following relationship
-to make sure your settings for the population size are on the correct scale:
+
+.. note::
+    :label: popsizenote
+
+    **Important**: In |eco|, the ``population_size`` is related to, but **not**
+    equal to :math:`\theta` (:math:`4\epopsize\mutationrate`, the genetic
+    diversity, or more precisely, the expected number of differences per base
+    between two randomly selected haploid genomes).
+    The relationship between ``population_size`` (represented by
+    :math:`\epopsize`) and :math:`\theta` is:
+
+    .. math::
+        :label: thetarelationship
+    
+        \textrm{ploidy} \times 2\epopsize\mutationrate &= \theta \\
+        \epopsize &= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate}.
+
+    Thus, if you have prior expectation that :math:`\theta = 0.002` and you've
+    set the ``mutation_rate`` to 1.0 (i.e., :math:`\mutationrate = 1`) and
+    ``ploidy`` to 2, then your prior expectation for ``population_size`` is,
+
+    .. math::
+    
+        \epopsize = \frac{0.002}{2 \times 2(1)} = \frac{0.002}{4} = 0.0005
+
+The relationship above is also very important to keep in mind if you
+specify a mutation rate in years, or scale the mutation rate to account
+for differences in rate and/or generation time from another comparison.
+For example, let's assume that for your taxon, you believe 0.004 is a
+reasonable value for the average number of differences per base between two
+randomly selected gene copies, and you've told |ecoevolity| that the `ploidy =
+2`.
+If you've set the mutation rate to 0.5 for one of your comparisons to account
+for differences in mutation rate and/or generation time compared to another
+comparison for which you've set the mutation rate to 1.0, then you can
+use :ref:`the equation above <thetarelationship>` to adjust your prior
+expectation for ``population_size`` accordingly:
 
 .. math::
     :label: ratesizescaling
 
-    \pi = \textrm{ploidy} \times 2\epopsize\mutationrate,
-
-where :math:`\pi` is the expected differences per base between two randomly
-selected genomes from a population.
-So if you have a prior expectation in mind for :math:`pi`, and you've
-set the mutation rate relative to another comparison or in units
-of years, then use
-
-.. math::
-    :label: ratesizescaling
-
-    \epopsize = \frac{\pi}{\textrm{ploidy} \times 2\mutationrate},
-
-to guide your choice of prior on the effective sizes of the descendant
-populations.
+    \epopsize &= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate} \\
+              &= \frac{0.002}{2 \times 2(0.5)} = \frac{0.002}{2} = 0.001
 
 root_relative_population_size
 -----------------------------
@@ -646,7 +665,7 @@ Similarly ::
 
 allows the effective population size of the root to be estimated, and centers
 the prior on its relative size on 2 (i.e., centers the prior expectation for
-the actual root effective population size on twice the mean of the leaf sizes.
+the actual root effective population size on twice the mean of the leaf sizes).
 
 The hope of this parameterization is to allow you to specify a more informative
 prior on the root effective population size.
@@ -667,13 +686,13 @@ of the "0" and "1" states to be equal::
                 estimate: false
 
 This is because there is no natural way to recode the 4 nucleotide states to
-binary.
-Thus, if you try to estimate frequencies of the binary states, your results
-will be sensitive to the vagaries of how you decide to code your nucleotides as
-binary.
+two states.
+Thus, if you try to estimate frequencies of the two states, your results will
+be sensitive to the vagaries related to how you decided to code your
+nucleotides as binary.
 
-However, if the characters you are using are truly binary, then it might make
-sense to estimate the frequencies of the two states.
+However, if the characters you are using are truly biallelic, then it might
+make sense to estimate the frequencies of the two states.
 Another option is::
 
             freq_1:
@@ -697,6 +716,10 @@ The ``operators`` settings control the behavior of the MCMC operators that act
 upon the parameters of a comparison.
 I.e., each comparison gets its own copy of the specified operators, as opposed
 to the "global" operators discussed above.
+As with the "global" operators, the default settings will likely work fine.
+We recommend you try the defaults first (simply do not specify operator
+settings), and resort to adjustments if you have poor mixing.
+
 The following operators can only be specified here (listing them in the global
 ``operator_settings`` will result in an error::
 
@@ -706,9 +729,6 @@ The following operators can only be specified here (listing them in the global
                 scale: 0.05
             LeafPopulationSizeScaler:
                 weight: 1.0
-                scale: 0.05
-            TimeRootSizeMixer:
-                weight: 3.0
                 scale: 0.05
             FreqMover:
                 weight: 1.0
@@ -723,6 +743,9 @@ Other operators that can be specified here are::
             TimeSizeRateMixer:
                 weight: 5.0
                 scale: 0.02
+            TimeRootSizeMixer:
+                weight: 3.0
+                scale: 0.05
             TimeSizeRateScaler:
                 weight: 0.0
                 scale: 0.02
@@ -736,18 +759,15 @@ The only time you might need to apply these operators to *each* comparison
 is if you are having mixing trouble.
 For example, the "global" ``EventTimeScaler`` might not work well for
 the divergence time of a particular pair.
-Giving that pair its own ``EventTimeScaler`` might help in such a case.
-
-As with the "global" operators, the default settings will likely work fine.
-We recommend you try the defaults first (simply do not specify operator
-settings), and resort to adjustments if you have poor mixing.
+Giving that pair its own ``EventTimeScaler`` might improve mixing in such a
+case.
 
 ***********
 comparisons
 ***********
 
-In its simplest form, the ``comparisons`` section simply is a list of
-the paths of the character alignments::
+In its simplest form, the ``comparisons`` section simply is a list of the paths
+to the nexus-formatted files containting the character alignments::
 
     comparisons:
     - comparison:
