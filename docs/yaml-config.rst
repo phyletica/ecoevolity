@@ -406,8 +406,8 @@ This specifies whether your markers are dominant.
 If the same code is used to designate the character state of a heterozygote and
 one of the two possible homozygotes, then ``markers_are_dominant`` should be
 ``true``.
-If you can tell the difference among a heterozygote and both homozygotes,
- then ``markers_are_dominant`` should be ``false``.
+If you can tell the difference among a heterozygote and both homozygotes, then
+``markers_are_dominant`` should be ``false``.
 
 ::
 
@@ -572,11 +572,12 @@ generation, then the population size will be in units of the effective number
 of diploid individuals or gene copies (:math:`\epopsize`), if the ploidy is 2
 or 1, respectively.
 
+.. _popsizenote:
+
 .. note::
-    :label: popsizenote
 
     **Important**: In |eco|, the ``population_size`` is related to, but **not**
-    equal to :math:`\theta` (:math:`4\epopsize\mutationrate`, the genetic
+    equal to :math:`\theta` (:math:`4\epopsize\mutationrate`; the genetic
     diversity, or more precisely, the expected number of differences per base
     between two randomly selected haploid genomes).
     The relationship between ``population_size`` (represented by
@@ -585,8 +586,8 @@ or 1, respectively.
     .. math::
         :label: thetarelationship
     
-        \textrm{ploidy} \times 2\epopsize\mutationrate &= \theta \\
-        \epopsize &= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate}.
+        \textrm{ploidy} \times 2\epopsize\mutationrate = \theta \\
+        \epopsize = \frac{\theta}{\textrm{ploidy} \times 2\mutationrate}.
 
     Thus, if you have prior expectation that :math:`\theta = 0.002` and you've
     set the ``mutation_rate`` to 1.0 (i.e., :math:`\mutationrate = 1`) and
@@ -601,16 +602,15 @@ specify a mutation rate in years, or scale the mutation rate to account
 for differences in rate and/or generation time from another comparison.
 For example, let's assume that for your taxon, you believe 0.004 is a
 reasonable value for the average number of differences per base between two
-randomly selected gene copies, and you've told |ecoevolity| that the `ploidy =
-2`.
+randomly selected gene copies, and you've told |eco| that the ``ploidy =
+2``.
 If you've set the mutation rate to 0.5 for one of your comparisons to account
 for differences in mutation rate and/or generation time compared to another
 comparison for which you've set the mutation rate to 1.0, then you can
-use :ref:`the equation above <thetarelationship>` to adjust your prior
+use Equation :eq:`thetarelationship` to adjust your prior
 expectation for ``population_size`` accordingly:
 
 .. math::
-    :label: ratesizescaling
 
     \epopsize &= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate} \\
               &= \frac{0.002}{2 \times 2(0.5)} = \frac{0.002}{2} = 0.001
