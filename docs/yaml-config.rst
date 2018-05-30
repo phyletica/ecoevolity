@@ -385,6 +385,7 @@ settings for your comparisons that you can override.
 
 This is the ploidy of the organisms (i.e., 1 = haploid, 2 = diploid).
 
+.. _genotypesarediploid:
 ::
 
         genotypes_are_diploid: true
@@ -440,6 +441,7 @@ then you should specify::
 and |eco|_ will know that the data in the first two rows came from
 "population1" and the data in the third and forth rows came from "population2".
 
+.. _underscoregotcha:
 .. note:: **Underscore gotcha!**
 
     The nexus format standard interprets underscores as spaces, unless the
@@ -539,14 +541,14 @@ mutation_rate
 -------------
 
 The ``mutation_rate`` settings are for the mutation rate
-(:math:`\mutationrate`) of the comparison.
+(:math:`\murate`) of the comparison.
 How you scale this is up to you, but you need to make sure you are consistent
 in how you scale time and effective population sizes.
 For example, if you set the mutation rate to 1, then time and effective
 population sizes will be scaled by the mutation rate.
-Specifically, time will be in units of :math:`\eventtime\mutationrate` (i.e.,
+Specifically, time will be in units of :math:`\divtime\murate` (i.e.,
 expected substitutions per site), and effective population size will be measured
-in units of :math:`\epopsize\mutationrate`.
+in units of :math:`\epopsize\murate`.
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then time will be in units of generations,
 and population size will be in units of the effective number of diploid
@@ -556,7 +558,7 @@ Differences in generation times among pairs can also be accounted for
 via the ``mutation_rate`` parameters, with the appropriate scaling
 of the effective population sizes.
 To help ensure the population sizes are scaled correctly, it can help to
-remember that :math:`\textrm{ploidy} \times 2\epopsize\mutationrate` should
+remember that :math:`\textrm{ploidy} \times 2\epopsize\murate` should
 equal the expected differences per base between two randomly selected genomes
 from a population.
 
@@ -566,7 +568,7 @@ population_size
 The ``population_size`` settings are for the effective population sizes of the
 leaf (descendant) population(s) of a comparison.
 If you set the mutation rate to 1, then the effective population sizes
-will be scaled by the mutation rate (:math:`\epopsize\mutationrate`).
+will be scaled by the mutation rate (:math:`\epopsize\murate`).
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then the population size will be in units of the effective number
 of diploid individuals or gene copies (:math:`\epopsize`), if the ploidy is 2
@@ -577,7 +579,7 @@ or 1, respectively.
 .. note::
 
     **Important**: In |eco|, the ``population_size`` is related to, but **not**
-    equal to :math:`\theta` (:math:`4\epopsize\mutationrate`; the genetic
+    equal to :math:`\theta` (:math:`4\epopsize\murate`; the genetic
     diversity, or more precisely, the expected number of differences per base
     between two randomly selected haploid genomes).
     The relationship between ``population_size`` (represented by
@@ -586,11 +588,11 @@ or 1, respectively.
     .. math::
         :label: thetarelationship
     
-        \textrm{ploidy} \times 2\epopsize\mutationrate = \theta \\
-        \epopsize = \frac{\theta}{\textrm{ploidy} \times 2\mutationrate}.
+        \textrm{ploidy} \times 2\epopsize\murate = \theta \\
+        \epopsize = \frac{\theta}{\textrm{ploidy} \times 2\murate}.
 
     Thus, if you have prior expectation that :math:`\theta = 0.002` and you've
-    set the ``mutation_rate`` to 1.0 (i.e., :math:`\mutationrate = 1`) and
+    set the ``mutation_rate`` to 1.0 (i.e., :math:`\murate = 1`) and
     ``ploidy`` to 2, then your prior expectation for ``population_size`` is,
 
     .. math::
@@ -612,7 +614,7 @@ expectation for ``population_size`` accordingly:
 
 .. math::
 
-    \epopsize &= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate} \\
+    \epopsize &= \frac{\theta}{\textrm{ploidy} \times 2\murate} \\
               &= \frac{0.002}{2 \times 2(0.5)} = \frac{0.002}{2} = 0.001
 
 root_relative_population_size
@@ -673,6 +675,7 @@ There is usually a lot of prior uncertainty in the actual value of the root
 population size, but we might have good reason to expect that it is similar to
 the mean of the leaf sizes.
 
+.. _freq_1:
 freq_1
 ------
 

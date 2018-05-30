@@ -19,9 +19,9 @@ If you use |eco|_, please
 :doc:`cite it </citation>`.
 
 
-*********************************
-Ecoevolity Website and Tutorials 
-*********************************
+******************
+Ecoevolity Website 
+******************
 
 Unless otherwise noted, all of the content on this site is licensed
 under a

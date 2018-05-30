@@ -33,6 +33,7 @@ import time
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.imgmath',
+    'sphinxcontrib.bibtex',
     'sphinx.ext.githubpages']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -151,14 +152,50 @@ latex_elements = {
     "preamble": r"""
 \usepackage{xspace}
 \newcommand{\given}{\ensuremath{\,|\,}\xspace}
+\newcommand{\pr}{\ensuremath{p}}
 \newcommand{\data}{\ensuremath{D}\xspace}
 \newcommand{\model}[1][]{\ensuremath{M_{#1}}\xspace}
-\newcommand{\parameters}[1][]{\ensuremath{\theta_{#1}}\xspace}
+\newcommand{\parameters}[1][]{\ensuremath{\Theta_{#1}}\xspace}
+\newcommand{\parameter}[1][]{\ensuremath{\theta_{#1}}\xspace}
 \newcommand{\diff}[1]{\ensuremath{\mathrm{d}#1}}
-\newcommand{\epopsize}[1][]{\ensuremath{N_e{#1}}\xspace}
-\newcommand{\mutationrate}[1][]{\ensuremath{\mu{#1}}\xspace}
-\newcommand{\eventtime}[1][]{\ensuremath{t{#1}}\xspace}
-\newcommand{\ploidy}[1][]{\ensuremath{\rho{#1}}\xspace}
+\newcommand{\ncomparisons}{\ensuremath{\mathcal{N}\xspace}}
+\newcommand{\nevents}[1][]{\ensuremath{k_{#1}\xspace}}
+\newcommand{\nloci}[1][]{\ensuremath{m_{#1}\xspace}}
+\newcommand{\allelecount}[1][]{\ensuremath{\nodeallelecount{#1}{}}\xspace}
+\newcommand{\redallelecount}[1][]{\ensuremath{\noderedallelecount{#1}{}}\xspace}
+\newcommand{\leafallelecounts}[1][]{\ensuremath{\mathbf{n}_{#1}}\xspace}
+\newcommand{\leafredallelecounts}[1][]{\ensuremath{\mathbf{r}_{#1}}\xspace}
+\newcommand{\comparisondata}[1][]{\ensuremath{D_{#1}}\xspace}
+\newcommand{\alldata}[1][]{\ensuremath{\mathbf{D}}\xspace}
+\newcommand{\rgmurate}{\ensuremath{u}\xspace}
+\newcommand{\grmurate}{\ensuremath{v}\xspace}
+\newcommand{\murate}[1][]{\ensuremath{\mu_{#1}}\xspace}
+\newcommand{\murates}[1][]{\ensuremath{\boldsymbol{\mu}_{#1}}\xspace}
+\newcommand{\gfreq}[1][]{\ensuremath{\pi_{#1}}\xspace}
+\newcommand{\gfreqs}[1][]{\ensuremath{\boldsymbol{\pi}_{#1}}\xspace}
+\newcommand{\comparisondivtime}[1][]{\ensuremath{t_{#1}}\xspace}
+\newcommand{\comparisondivtimes}[1][]{\ensuremath{\mathbf{t}_{#1}}\xspace}
+\newcommand{\divtime}[1][]{\ensuremath{\tau_{#1}}\xspace}
+\newcommand{\divtimes}[1][]{\ensuremath{\boldsymbol{\tau}_{#1}}\xspace}
+\newcommand{\divtimemodel}[1][]{\ensuremath{T_{#1}}\xspace}
+\newcommand{\divtimesets}{\ensuremath{\mathcal{T}}\xspace}
+\newcommand{\comparisoneventtime}[1][]{\ensuremath{t_{#1}}\xspace}
+\newcommand{\comparisoneventtimes}[1][]{\ensuremath{\mathbf{t}_{#1}}\xspace}
+\newcommand{\eventtime}[1][]{\ensuremath{\tau_{#1}}\xspace}
+\newcommand{\eventtimes}[1][]{\ensuremath{\boldsymbol{\tau}_{#1}}\xspace}
+\newcommand{\eventtimemodel}[1][]{\ensuremath{T_{#1}}\xspace}
+\newcommand{\eventtimesets}{\ensuremath{\mathcal{T}}\xspace}
+\newcommand{\genetree}[1][]{\ensuremath{g_{#1}}\xspace}
+\newcommand{\sptree}[1][]{\ensuremath{S_{#1}}\xspace}
+\newcommand{\sptrees}[1][]{\ensuremath{\mathbf{S}_{#1}}\xspace}
+\newcommand{\descendantpopindex}[1]{\ensuremath{D{#1}}}
+\newcommand{\rootpopindex}[1][]{\ensuremath{R{#1}}\xspace}
+\newcommand{\epopsize}[1][]{\ensuremath{N_{e}^{#1}}\xspace}
+\newcommand{\comparisonpopsizes}[1][]{\ensuremath{\mathbb{N}_{e}{#1}}\xspace}
+\newcommand{\collectionpopsizes}[1][]{\ensuremath{\mathbf{N_{e}}_{#1}}\xspace}
+\newcommand{\rootrelativepopsize}{\ensuremath{R_{\epopsize[\rootpopindex]}}\xspace}
+\newcommand{\concentration}{\ensuremath{\alpha}\xspace}
+\newcommand{\basedistribution}{\ensuremath{H}\xspace}
 """,
 }
 
@@ -215,18 +252,7 @@ epub_copyright = copyright
 epub_exclude_files = ['search.html']
 
 imgmath_image_format = "svg"
-imgmath_latex_preamble = r"""
-\usepackage{xspace}
-\newcommand{\given}{\ensuremath{\,|\,}\xspace}
-\newcommand{\data}{\ensuremath{D}\xspace}
-\newcommand{\model}[1][]{\ensuremath{M_{#1}}\xspace}
-\newcommand{\parameters}[1][]{\ensuremath{\theta_{#1}}\xspace}
-\newcommand{\diff}[1]{\ensuremath{\mathrm{d}#1}}
-\newcommand{\epopsize}[1][]{\ensuremath{N_e{#1}}\xspace}
-\newcommand{\mutationrate}[1][]{\ensuremath{\mu{#1}}\xspace}
-\newcommand{\eventtime}[1][]{\ensuremath{t{#1}}\xspace}
-\newcommand{\ploidy}[1][]{\ensuremath{\rho{#1}}\xspace}
-"""
+imgmath_latex_preamble = latex_elements["preamble"]
 
 rst_epilog = """
 .. |jro| replace:: Jamie Oaks
