@@ -4,11 +4,93 @@
 Background
 ##########
 
-.. _comparative_divergence_models:
+How do community-scale processes affect diversification?
+Environmental processes that drive speciation across whole communities of
+species predict divergence times across taxa that are temporally clustered.
+Our goal with |eco|_ is to provide a tool for testing such predictions
+in a full-likelihood Bayesian model choice framework.
+:ref:`The cartoon below <div_island_cartoon>` shows an example where two
+species of lizards co-diverge when their island is fragmented by rising sea
+levels.
 
-*****************************
-Comparative divergence models
-*****************************
+.. _div_island_cartoon:
+
+.. figure:: /_static/div-island-cartoon-event-labels.png
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: divergence model cartoon
+   
+   A cartoon showing three pairs of insular lizard species, two of which
+   co-diverged when the island was fragmented.
+
+If we collect genetic data from all six populations, and we want to
+evaluate whether the scenario above is a good explanation for the patterns
+in our data, there are other possible scenarios (models) that we need
+to consider.
+For example, perhaps all three pairs of populations diverged at the
+same time:
+
+.. _divmodel_111:
+
+.. figure:: /_static/div-model-111-labels.svg
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: divergence model 111
+
+   All three lizard lineages diverged when the island fragmented.
+
+As in the :ref:`first scenario <div_island_cartoon>` above perhaps there
+were two divergences.
+There are three possible ways our three species pairs could have
+diverged at two different times:
+
+.. _divmodel_211:
+
+.. figure:: /_static/div-model-311-labels.svg
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: divergence model 311
+
+.. figure:: /_static/div-model-131-labels.svg
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: divergence model 131
+
+.. figure:: /_static/div-model-113-labels.svg
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: divergence model 113
+
+   Three possible ways our three pairs of gecko species diverged at two
+   different times.
+
+Lastly, it's also possible that all three pairs diverged independently:
+
+.. _divmodel_123:
+
+.. figure:: /_static/div-model-213-labels.svg
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: divergence model 123
+
+   Three independent divergences.
+
+If we want to test for shared (non-independent) divergences, this last scenario
+of independent divergences seems like a sensible null model.
+To compare the likelihood of these models...
+
+If researchers are interested in comparing the divergence times among a number
+of pairs of populations,
+we can approach this as a problem of model choice:
+How many divergence events, and what assignment of taxa to those events, best
+explain the genetic variation within and between the diverged populations of
+each pair (Figure~\ref{fig:divCartoon})?
 
 Biogeographers are often interested in understanding how large-scale processes
 affect diversification and community assembly.
@@ -28,15 +110,6 @@ If the historical event caused divergence, we would expect that each of the
 three pairs of lizard populations (or some subset of them) diverged around the
 same time, as shown in :ref:`the figure below<divergence_model_111>`.
 
-.. _divergence_model_cartoon:
-.. figure:: /_static/div-cartoon-no-pop-size-labels.svg
-   :align: center
-   :width: 600 px
-   :figwidth: 60 %
-   :alt: divergence model cartoon
-   
-   A cartoon showing three pairs of lizard populations that co-diverge due to
-   an event 260,000 years ago.
 
 We can think of this as a particular *divergence model* where all three pairs
 of populations share the same divergence-time parameter.
@@ -52,26 +125,11 @@ We can assign population-pair 1 to a second divergence-time parameter to get
 divergence model :math:`\divtimesets{2} = 211`, as shown in
 :ref:`the figure below <divergence_model_211>`.
 
-.. _divergence_model_111:
-.. figure:: /_static/div-model-111-labels.svg
-   :align: center
-   :width: 600 px
-   :figwidth: 60 %
-   :alt: divergence model 111
-   
-   A cartoon showing population-pair 1 assigned to divergence-time parameter 2,
-   and population-pairs 2 and 3 assigned to divergence-time parameter 1.
 
 We can also assign population-pair 2 to divergence-time parameter 2 to get
 divergence model :math:`\divtimesets{3} = 121`, as :ref:`shown
 below<divergence_model_121>`.
 
-.. _divergence_model_211:
-.. figure:: /_static/div-model-311-labels.svg
-   :align: center
-   :width: 600 px
-   :figwidth: 60 %
-   :alt: divergence model 311
    
    A cartoon showing population-pair 1 assigned to divergence-time parameter 2,
    and population-pairs 2 and 3 assigned to divergence-time parameter 1.
@@ -82,10 +140,11 @@ model :math:`\divtimesets{4} = 112`, as shown in :ref:`the figure
 below<divergence_model_112>`.
 
 .. _divergence_model_121:
+
 .. figure:: /_static/div-model-131-labels.svg
    :align: center
    :width: 600 px
-   :figwidth: 60 %
+   :figwidth: 90 %
    :alt: divergence model 131
    
    A cartoon showing population-pair 2 assigned to divergence-time parameter 2,
@@ -102,10 +161,11 @@ as a "divergence event" during which one or more pairs of populations
 can diverge.
 
 .. _divergence_model_112:
+
 .. figure:: /_static/div-model-113-labels.svg
    :align: center
    :width: 600 px
-   :figwidth: 60 %
+   :figwidth: 90 %
    :alt: divergence model 113
    
    A cartoon showing population-pair 3 assigned to divergence-time parameter 2,
@@ -122,14 +182,39 @@ We can modify our cartoon of model :math:`\divtimesets{5} = 123` to better repre
 as I try to do in .
 
 .. _divergence_model_213:
+
 .. figure:: /_static/div-model-213-labels.svg
    :align: center
    :width: 600 px
-   :figwidth: 60 %
+   :figwidth: 90 %
    :alt: divergence model 213
    
    A cartoon showing the most general model of divergence where all three
    pairs of lizard populations diverge at unique times.
+
+
+.. _demog_model_cartoon:
+
+.. figure:: /_static/demog-island-cartoon-event-labels.png
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: demographic model cartoon
+   
+   A cartoon showing three pairs of lizard populations that co-diverge due to
+   an event 260,000 years ago.
+
+.. _mixed_model_cartoon:
+
+.. figure:: /_static/mixed-island-cartoon-event-labels.png
+   :align: center
+   :width: 600 px
+   :figwidth: 90 %
+   :alt: demographic model cartoon
+   
+   A cartoon showing three pairs of lizard populations that co-diverge due to
+   an event 260,000 years ago.
+
 
 Before we go any further, let's clarify some terminology that will be
 used throughout the |eco|_ documentation:

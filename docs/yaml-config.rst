@@ -386,6 +386,7 @@ settings for your comparisons that you can override.
 This is the ploidy of the organisms (i.e., 1 = haploid, 2 = diploid).
 
 .. _genotypesarediploid:
+
 ::
 
         genotypes_are_diploid: true
@@ -676,6 +677,7 @@ population size, but we might have good reason to expect that it is similar to
 the mean of the leaf sizes.
 
 .. _freq_1:
+
 freq_1
 ------
 
