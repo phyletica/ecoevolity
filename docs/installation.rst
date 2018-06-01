@@ -88,7 +88,7 @@ Getting the |eco| source code
 If you have |git|_ installed, download the |eco| repository with the ``clone``
 command::
 
-    $ git clone https://github.com/phyletica/ecoevolity.git
+    git clone https://github.com/phyletica/ecoevolity.git
 
 If you prefer not to use |git|_, you can download an archive of the 
 `source code here <https://github.com/phyletica/ecoevolity/archive/master.zip>`_.
@@ -101,13 +101,13 @@ Basic build and install
 
 Next, move into the downloaded directory and run the build script::
 
-    $ cd ecoevolity
-    $ ./build.sh
+    cd ecoevolity
+    ./build.sh
 
 If the build was successful, the |eco| executables should now be in the
 ``./build/bin`` directory, and you should be able to run::
 
-    $ ./build/bin/ecoevolity -h
+    ./build/bin/ecoevolity -h
 
 and see the |eco| help menu, the beginning of which should looks something
 like::
@@ -130,7 +130,7 @@ The executables in ``./build/bin`` are ready to use, but you'll probably want
 to put them in your PATH (a list of directories that your shell looks in to
 find the commands you type on the command line). You can do this via::
 
-    $ sudo cp ./build/bin/* /usr/local/bin
+    sudo cp ./build/bin/* /usr/local/bin
 
 If this worked, you're good to go; you can try ``ecoevolity -h`` to be sure.
 
@@ -138,13 +138,13 @@ If it didn't work, you probably don't have admin privileges.
 If so, you can create a bin folder in your home folder and put the tools
 there::
 
-    $ mkdir -p "${HOME}/bin"
-    $ cp ./build/bin/* "${HOME}/bin"
+    mkdir -p "${HOME}/bin"
+    cp ./build/bin/* "${HOME}/bin"
 
 Then, you can add this directory to your PATH (if it's not already there; you
 can check with ``echo $PATH``)::
 
-    $ export PATH="${PATH}:${HOME}/bin"
+    export PATH="${PATH}:${HOME}/bin"
 
 Note, this update to PATH is only for your current terminal window.  If you
 want this to be permanent (work for all future terminal windows), add ``export
@@ -159,7 +159,7 @@ Install during build
 If you want to build and install in one go, you just need to specify where you
 want the installation to go, for example::
 
-    $ sudo ./build.sh --prefix /usr/local
+    sudo ./build.sh --prefix /usr/local
 
 
 *****************************
@@ -170,7 +170,7 @@ If you want to install a version of |eco| that performs the likelihood
 calculations across multiple threads, you just need to add the ``--threads``
 flag::
 
-    $ ./build.sh --threads
+    ./build.sh --threads
 
 In my opinion, you're usually better off running multiple independent chains
 rather than multithreading, but the option is there.
@@ -190,7 +190,7 @@ and
 `pip <https://pypi.org/project/pip/>`_
 installed, you can install |Pyco| via::
 
-    $ pip install git+git://github.com/phyletica/pycoevolity.git
+    pip install git+git://github.com/phyletica/pycoevolity.git
 
 If this isn't working, try the
 `manual installation instructions here <https://github.com/phyletica/pycoevolity>`_.
@@ -229,7 +229,7 @@ If you're on a Mac or Windows machine, might need to sign up for a free Docker
 account to download it.
 Once Docker is installed and running pull down our Docker image::
 
-    $ docker pull phyletica/ecoevolity-docker
+    docker pull phyletica/ecoevolity-docker
 
 .. note::
 
@@ -237,12 +237,12 @@ Once Docker is installed and running pull down our Docker image::
     ``sudo`` to run Docker commands. If you received a "permission denied"
     message when you ran the command above, try::
     
-        $ sudo docker pull phyletica/ecoevolity-docker
+        sudo docker pull phyletica/ecoevolity-docker
 
 This download could take several minutes depending on your internet connection.
 After it completes, run and enter the docker container::
 
-    $ docker run -it phyletica/ecoevolity-docker bash
+    docker run -it phyletica/ecoevolity-docker bash
 
 .. note::
 
@@ -253,39 +253,39 @@ a fully functioning |eco| ecosystem
 (|eco| and |pyco| are installed, along with example data).
 Try typing::
 
-    $ ecoevolity -h
+    ecoevolity -h
 
 This should display the |eco| help menu.
 Next, ``cd`` into the example data directory::
 
-    $ cd ecoevolity-example-data
-    $ ls
+    cd ecoevolity-example-data
+    ls
 
 There you will find an |eco| configuration file and nexus-formatted data files.
 Go ahead and run an |eco| analysis::
 
-    $ ecoevolity --relax-missing-sites --relax-triallelic-sites --ignore-data ecoevolity-config.yml
+    ecoevolity --relax-missing-sites --relax-triallelic-sites --ignore-data ecoevolity-config.yml
 
 To exit the container, simply type::
 
-    $ exit
+    exit
 
 Docker will keep the |eco| image around, so you can always jump
 back in anytime via::
 
-    $ docker run -it phyletica/ecoevolity-docker bash
+    docker run -it phyletica/ecoevolity-docker bash
 
 However, any files you created on your last visit will be gone.
 So, if you want to analyze *your* data and keep the results around, ``cd``
 to the directory where you want to run |eco|, then jump into
 the Docker container using::
 
-    $ docker run -v "$(pwd)":/portal -it phyletica/ecoevolity-docker bash
+    docker run -v "$(pwd)":/portal -it phyletica/ecoevolity-docker bash
 
 Then, once inside, type::
 
-    $ cd portal
-    $ ls
+    cd portal
+    ls
 
 You should see the files that were in the directory on *your* computer.
 Now you can run |eco| on data in this directory, and all output files will be
@@ -300,7 +300,7 @@ You can get an example of an |eco| configuration file and nexus-formatted
 data files from one of our 
 `GitHub repos <https://github.com/phyletica/ecoevolity-example-data>`_::
 
-    $ git clone https://github.com/phyletica/ecoevolity-example-data.git
+    git clone https://github.com/phyletica/ecoevolity-example-data.git
 
 If you prefer not to use |git|_, you can download an archive of the 
 `example data here <https://github.com/phyletica/ecoevolity-example-data/archive/master.zip>`_.
