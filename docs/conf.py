@@ -78,8 +78,9 @@ language = None
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store',
-        'tutorials/*.rst',
-        'snippets/*.rst']
+        # 'tutorials/*.rst',
+        'snippets/*.rst',
+        ]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -277,6 +278,9 @@ rst_epilog = """
 .. _pyco: https://github.com/phyletica/pycoevolity
 .. |Pyco| replace:: Pycoevolity
 .. _Pyco: https://github.com/phyletica/pycoevolity
+
+.. |Tracer| replace:: Tracer
+.. _Tracer: http://tree.bio.ed.ac.uk/software/tracer/
 
 .. |git| replace:: Git
 .. _git: http://git-scm.com/

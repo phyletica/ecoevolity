@@ -42,11 +42,12 @@ events.
     background
     biallelic-character-data
     yaml-config
-    tutorials
+    tutorials/index
     changes
     license
     citation
     acknowledgments
+    glossary
     zbib/references
 
 
