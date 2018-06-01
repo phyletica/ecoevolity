@@ -41,9 +41,11 @@ Linux
 
 If you are on a Linux machine, use your package manager to update/install g++,
 |cmake|, and |git|.
-On Ubuntu (or other Debian-based Linux distribution) you can simply use::
+On Ubuntu (or other Debian-based Linux distribution) you can simply use:
 
-    $ sudo apt-get install cmake g++ git
+.. code-block:: console
+
+    sudo apt-get install cmake g++ git
 
 Mac
 ===
