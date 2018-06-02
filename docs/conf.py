@@ -279,6 +279,8 @@ rst_epilog = """
 .. |Pyco| replace:: Pycoevolity
 .. _Pyco: https://github.com/phyletica/pycoevolity
 
+.. |dpprobs| replace:: DPprobs
+
 .. |Tracer| replace:: Tracer
 .. _Tracer: http://tree.bio.ed.ac.uk/software/tracer/
 
