@@ -25,9 +25,13 @@ Software Used in this Activity
 For this activity, we will be using |eco| and |pyco|.
 If you haven't already done so, please follow the
 :ref:`instructions for installing these packages <installation>`.
+Either installing |eco| and |pyco| directly or using the Docker image will work
+for this tutorial.
 
 While not required, you may want to install the program
-|Tracer|_ (http://tree.bio.ed.ac.uk/software/tracer/).
+|Tracer|_ (http://tree.bio.ed.ac.uk/software/tracer/);
+it's a nice tool for visualizing the mixing and convergence behavior of Markov
+chain Monte Carlo (MCMC) analyses.
 
 The Data
 ========
@@ -83,9 +87,14 @@ command line::
         
             sudo docker run -v "$(pwd)":/portal -it phyletica/ecoevolity-docker bash
     
-    Then, once inside the docker container, type::
+    Then, once inside the Docker container, type::
     
         cd portal
+
+    For the remainder of the tutorial, enter (or copy and paste) any command
+    line instructions at the command line of the Docker container.
+    However, you can view and edit the input and output files on your computer
+    (outside the container) with your plain text editor of choice.
 
 Inside the example data directory, you should find a configuration file
 ``ecoevolity-config.yml`` and a ``nexus-files`` directory containing the
@@ -93,10 +102,10 @@ nexus-formatted RADseq data for each of our three pairs of gecko populations.
 For detailed information about how to format nexus files for |eco|,
 :ref:`click here <data>`.
 
-|Eco| assumes all of your characters have at most two states (biallelic), so
-you might be wondering why the nexus files contain nucleotide characters
-(i.e., four states).
-Very astute of you.
+Biallelic characters
+--------------------
+
+|Eco| assumes all of your characters have at most two states (biallelic).
 If we provide |eco| with nucleotide data, it will automatically recode the data
 as biallelic by considering the first character it finds in each column as
 state ``0``, and if it finds a second state it considers it state ``1``.
@@ -105,10 +114,14 @@ quit.
 For characters (columns) with more than two states, you have two options:
 
 #.  remove these columns from your matrix, or
-#.  recode them as biallelic (more on this in a bit).
+#.  recode them as biallelic.
 
-|Eco| also assumes all your characters are unlinked, but the gecko data sets
-consist of 200 loci each comprising about 90 linked sites.
+|Eco| will do the latter for you (more on this in a bit).
+
+Linked characters
+-----------------
+
+|Eco| also assumes all your characters are unlinked.
 Based on simulations of loci of 100, 500, and 1000 linked characters
 :cite:`Oaks2018ecoevolity`, we strongly recommend that you analyze all of your
 characters (including the constant ones) and violate the assumption of unlinked
@@ -116,11 +129,21 @@ characters.
 In short, |Eco| performs better when you use all of the sites (especially the
 constant ones) compared to reducing the data to only one variable character per
 locus.
+The example gecko data sets consist of 200 loci each comprising about 90 linked
+sites.
 
-Within each pair, we assume each column represents an orthologous character
+Orthology
+---------
+
+Within each pair, |eco| assumes each column represents an orthologous character
 across your samples from both populations.
-However, your characters do not need to be orthologous among your different
+However, the characters do not need to be orthologous among your different
 pairs.
+In other words, you can sample different loci from different pairs of
+populations.
+Thus, if you are assembling your loci from raw sequence reads, it might be
+worth assembling each population pair separately to maximize the number of loci
+you get for each pair.
 
 Running |eco|
 =============
@@ -128,8 +151,8 @@ Running |eco|
 Setting up the configuration file
 ---------------------------------
 
-Once we have our nexus files ready, the next step in an |eco| analysis
-is setting up the configuration file.
+Once we have our nexus files ready, the next step in an |eco| analysis is
+setting up the configuration file.
 |Eco| requires a |yaml|_-formatted configuration file.
 |yaml|_ is a human-friendly data standard that allows you to provide |eco| the
 information it needs in a format that is easy for you to read and edit.
@@ -137,11 +160,12 @@ information it needs in a format that is easy for you to read and edit.
 .. note::
 
     The website |yamllint| is a nice tool for debugging |yaml|_ syntax.
-    You can copy and paste your config file their to check of you're
-    using valid |yaml| syntax.
+    You can copy and paste your config file there to check if you're using
+    valid |yaml| syntax.
 
 
-For all the details about |eco| config files,
+For detailed information about all the settings that can be included in an
+|eco| config file,
 :ref:<`click here <configfile>`.
 For the purposes of this tutorial, we'll edit a few elements of the example
 configuration file we downloaded.
@@ -164,6 +188,11 @@ This tells |eco| that for the prior on :term:`event models`, we want to use a
 Dirichlet process with its concentration parameter fixed to 1.414216.
 The concentration parameter allows us to control how much sharing of divergence
 times we expect *a priori*.
+For an introduction to the Dirichlet process, check out
+:ref:`this section of the background page <prior_on_divergence_models>`
+or
+`this blog post <http://phyletica.org/dirichlet-process/>`_.
+
 One of the |eco| tools, called |dpprobs|, was designed to help you get a feel
 for the Dirichlet process and choose a prior on the concentration parameter.
 
@@ -178,9 +207,9 @@ concentration parameter of 1.414216::
 
     dpprobs -p concentration 1.414216 3
 
-This command tells the program that the parameter (``-p``) we are providing is
-the concentration parameter, the value of that parameter is 1.414216, and there
-are three comparisons.
+This command tells the program that (1) the parameter (``-p``) we are providing
+is the concentration parameter, (2) the value of that parameter is 1.414216,
+and (3) there are three comparisons.
 You should get output that looks like::
 
     ======================================================================
@@ -249,7 +278,7 @@ Our output now looks like::
 
 This tells us a concentration parameter of about 4.37 corresponds with a prior
 expectation of 2.5 divergence time events (when there are 3 comparisons).
-The output also shows that prior probability of the model with three
+The output also shows us that the prior probability of the model with three
 divergences is almost 56\%.
 
 If, instead of fixing the concentration parameter, we prefer to place a
@@ -284,14 +313,22 @@ Output::
     
     Runtime: 0 seconds.
 
+There is no "correct" or "best" value or prior to use for the concentration
+parameter.
+It depends on your system and prior expectations.
+Often, when testing for shared diveregences, I like to choose a value or prior
+for the concentration parameter that puts 50% of the prior probability on the
+maximum number of divergence events (i.e., the divergence model with no shared
+divergences).
+That way, if the results support shared divergences, I can be more confident
+that the data are driving the result (however, there's no guarantee; lack of
+information and a prior on divergence times that puts a lot of density in
+regions with low likelihood can also drive such a result).
+But, that is just a personal preference (i.e., there is no fundamental
+mathematical justification for it).
 
-So, with three pairs of populations, if we want to use gamma prior on the
-concentration parameter with a shape of 2.0 such that the prior expectation is
-2.5 divergence events, we need to specify a gamma prior with a scale of
-2.18615.
-Let's go ahead and run with this prior.
-To do so, edit the ``event_model_prior`` section of your config file using a
-plain text editor.
+Okay, let's increase teh concentration parameter to favor more divergence
+events *a priori*.
 Change::
 
     event_model_prior:
@@ -307,29 +344,25 @@ To::
         dirichlet_process:
             parameters:
                 concentration:
-                    estimate: True
-                    prior:
-                        gamma_distribution:
-                            shape: 2.0
-                            scale: 2.18615
+                    value:      3.564
+                    estimate:   false
 
-We've changed ``estimate`` to ``True``, and added our gamma prior information.
-We also removed the ``value``, so |eco| will draw a random value from the
-specified gamma distribution to get a starting value for the analysis.
-If we did specify a value, it would only be used as a starting value since we
-are now going to estimate this parameter during the MCMC chain.
+Under this new setting, what is the prior expectation for the number
+of divergence event, and what is the prior probability for the model
+with 3 divergence events?
+Use |dpprobs| to find out!
 
 .. note::
 
     We recommend that you analyze your data under multiple settings for the
-    concentration parameter, so that you can assess how sensitive your results
+    concentration parameter, so that you can assess how sensitive the results
     are to your prior assumptions.
 
 
 Choosing a prior on divergence times
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Nex, let's change the prior on the divergence times.
+Next, let's change the prior on the divergence times.
 Currently, the config file specifies an exponential distribution with a rate of
 10::
 
@@ -367,6 +400,18 @@ This corresponds with a prior mean time of divergence of
 substitutions per site, and variance of 
 :math:`\textrm{shape} \times \textrm{scale}^2 = 2(0.005^2) = 0.00005`.
 
+.. note::
+
+    We strongly recommend that you analyze your data under multiple different
+    priors on the divergence times, so that you can assess how sensitive the
+    results are to your prior assumptions.
+    The prior on the divergence times can have a large affect on the marginal
+    likelihoods of the divergence models, and thus the model posterior
+    probabilities
+    :cite:`Oaks2012,Oaks2014reply,Oaks2018marginal`.
+    While |eco| is much less sensitive to this than the ABC methods, it is
+    still good to examine the affect of the divergence time prior.
+
 
 Running the analysis
 --------------------
@@ -395,17 +440,17 @@ The latter, |eco| will do for us if we specify the ``--relax-triallelic-sites``
 option in our command.
 When we use this option, |eco| will consider the first state in a column as
 ``0``, and any other state found in that column as ``1``.
-In all the data sets I've analyzed so far, there has been no discernible
+In all the data sets we've analyzed so far, there has been no discernible
 difference in the results between removing or recoding the triallelic sites.
 However, if you have such sites in your data, we recommend trying both options
-to see how sensitive your results are.
+to see if it affects the results.
 Ok, let's go ahead and let |eco| recode our characters with more than two
 states as binary::
 
 
     ecoevolity --relax-triallelic-sites ecoevolity-config.yml
 
-Man, another error!::
+Shoot, another error!::
 
     #######################################################################
     ###############################  ERROR  ###############################
@@ -414,10 +459,20 @@ Man, another error!::
     have no data for at least one population.
     #######################################################################
 
-This error message is telling us that for some of our characters, we have
-no data for at least one population.
+This error message is informing us that for some of our characters, we have no
+data for at least one of the two populations.
+Such sites can be common in RADseq loci, because most assemblers seem to
+enforce thresholds on missing data at the locus level.
+Rather than removing these sites ourselves, we can tell |eco| to ignore them::
 
     ecoevolity --relax-triallelic-sites --relax-missing-sites ecoevolity-config.yml
+
+Now, you should be running!
+
+While the analysis is running, let's scroll up in our console and look at the
+information |eco| reported before the MCMC chain started sampling.
+This output goes by very quickly, but it's **very** important to read it
+over to make sure that |eco| is doing what you think it's doing.
 
 The output
 ==========
