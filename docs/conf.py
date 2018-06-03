@@ -280,6 +280,9 @@ rst_epilog = """
 .. _Pyco: https://github.com/phyletica/pycoevolity
 
 .. |dpprobs| replace:: DPprobs
+.. |cdpprobs| replace:: ``dpprobs``
+.. |ceco| replace:: ``ecoevolity``
+.. |pyco-sumchains| replace:: ``pyco-sumchains``
 
 .. |Tracer| replace:: Tracer
 .. _Tracer: http://tree.bio.ed.ac.uk/software/tracer/

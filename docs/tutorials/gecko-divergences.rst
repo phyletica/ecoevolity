@@ -447,7 +447,6 @@ to see if it affects the results.
 Ok, let's go ahead and let |eco| recode our characters with more than two
 states as binary::
 
-
     ecoevolity --relax-triallelic-sites ecoevolity-config.yml
 
 Shoot, another error!::
@@ -469,30 +468,164 @@ Rather than removing these sites ourselves, we can tell |eco| to ignore them::
 
 Now, you should be running!
 
+Checking the pre-MCMC screen output
+-----------------------------------
+
 While the analysis is running, let's scroll up in our console and look at the
 information |eco| reported before the MCMC chain started sampling.
 This output goes by very quickly, but it's **very** important to read it
 over to make sure that |eco| is doing what you think it's doing.
+At the very top, you will see something like::
 
-The output
-==========
+    ======================================================================
+                                  Ecoevolity
+                      Estimating evolutionary coevality
+          Version 0.2.0 (master c59888c: 2018-05-27T13:26:11-05:00)
+    ======================================================================
+    
+    Seed: 713687808
+    Using data in order to sample from the posterior distribution...
+    Config path: ecoevolity-config.yml
 
-Assess stationarity with pyco-sumchains and |Tracer|
+This gives us detailed information of the version of |eco| we are using (right
+down to the specific commit SHA).
+It also provided the seed for the random number generator that we would need to
+provide |eco| in order to reproduce our results.
+The output is also telling us that |eco| is using the data to sample from the
+posterior, as opposed to ignoring the data to sample from the prior.
 
-Usually run lots of chains to assess convergence
+Next, you |eco| should report a fully specified configuration file to the
+screen.
+It's always good to look this over to make sure |eco| is configured as you
+expect.
+After the config output, you should see series of warning messages that alert
+you to the fact that |eco| is recoding some polyallelic sites to biallelic, and
+also ignoring some sites that lack data from at least one population.
+Without using the ``--relax-triallelic-sites --relax-missing-sites`` options
+these warnings would have been errors that stopped |eco| from running.
+Always look over these warnings to make sure that |eco| is not removing or
+recoding anything that you didn't expect.
+
+Next, you will see a summary of the data from your comparisons::
+
+    ----------------------------------------------------------------------
+    Summary of data from 3 comparisons:
+        Summary of data from 'nexus-files/BabuyanClaro-Calayan.nex':
+            Genotypes: diploid
+            Markers are dominant? false
+            Number of populations: 2
+            Number of sites: 27340
+            Number of variable sites: 102
+            Number of patterns: 71
+            Patterns folded? true
+            Population label (max # of alleles sampled):
+                BabuyanClaro0 (10)
+                Calayan0 (10)
+        Summary of data from 'nexus-files/MaestreDeCampo-Masbate.nex':
+            Genotypes: diploid
+            Markers are dominant? false
+            Number of populations: 2
+            Number of sites: 27311
+            Number of variable sites: 257
+            Number of patterns: 51
+            Patterns folded? true
+            Population label (max # of alleles sampled):
+                MaestreDeCampo1 (6)
+                Masbate1 (6)
+        Summary of data from 'nexus-files/Dalupiri-CamiguinNorte.nex':
+            Genotypes: diploid
+            Markers are dominant? false
+            Number of populations: 2
+            Number of sites: 27285
+            Number of variable sites: 112
+            Number of patterns: 76
+            Patterns folded? true
+            Population label (max # of alleles sampled):
+                CamiguinNorte2 (10)
+                Dalupiri2 (10)
+    ----------------------------------------------------------------------
+
+It is **very important** to look over this summary to make sure that |eco|
+"sees" your data the way you expect it should.
+Make sure the number of sites, the number of populations, and the number of
+alleles per population match your expectations!
+
+Next, |eco| reports a summary of the state of the MCMC chain to the screen for
+every 10th sample it's logging to an output file.
+After the chain finishes, |eco| also reports stats associated with all of the
+MCMC operators; this information is also logged to a file.
+
+
+The Output Files
+================
+
+After the analysis finishes, type ``ls`` at the command line::
+
+    ls
+
+You should see two log files that were created by |eco|:
+
+#1. ``ecoevolity-config-operator-run-1.log``
+#2. ``ecoevolity-config-state-run-1.log``
+
+If you open the ``operator`` log with a plain text editor, you'll see that this
+file contains information about the MCMC operators.
+If you have convergence or mixing issues, this information can be useful for
+troubleshooting.
+
+If you open the ``state`` file, you'll see it contains the MCMC samples.
+
+Summarizing and Plotting the Results
+====================================
+
+Before we start summarizing the results, let's run a second chain so that
+we can assess convergence and boost our samples sizes of parameters::
+
+    ecoevolity --relax-triallelic-sites --relax-missing-sites ecoevolity-config.yml
+
+Now's a good time to go grab a coffee, while we wait for the second chain to
+finish running.
+After the chain finishes, if you use ``ls`` you should see another ``operator``
+and ``state`` log file.
+
+Assessing mixing and convergence
+--------------------------------
+
+Now, let's use the |pyco-sumchains| tool of the |pyco| packages to help assess
+the convergence of our chains and choose what number of samples we want to remove
+as "burn in"::
+
+    pyco-sumchains -s 100 ecoevolity-config-state-run-1.log ecoevolity-config-state-run-2.log
+
+What |pyco-sumchains| will do is try removing an increasing number of samples
+from the beginning of the chains (i.e., burn in) and report the effective
+sample size (ESS) and potential scale reduction factor (PSRF) for every
+continuous parameter and log likelihood score.
+The ``-s 100`` option tells |pyco-sumchains| to take step sizes of 100 samples.
+If you want the ESS and PSRF table in a text file that you can open with Excel,
+simply use ``>`` to redirect the standard output::
+
+    pyco-sumchains -s 100 ecoevolity-config-state-run-1.log ecoevolity-config-state-run-2.log > pyco-sumchains-table.txt
+
+Once |pyco-sumchains| finishes you can open teh ``pyco-sumchains-table.txt``
+file with Excel to see how the ESS and PSRF of each parameter changes as the
+burn in increases.
+
+If you have |Tracer|_ installed, you can use to look at the convergence and
+mixing behavior of the chains.
+
+Summarizing divergence model posterior probabilities
+----------------------------------------------------
 
 Run sumcoevolity (needs config)
 
-Run pyco-sumtimes
+Plotting posterior probabilities of the number of events
+--------------------------------------------------------
 
 Run pyco-sumevents (uses output of sumcoevolity)
 
+Plotting marginal divergence times
+----------------------------------
 
-
-
-
-
-
-Plotting the results
-====================
+Run pyco-sumtimes
 
