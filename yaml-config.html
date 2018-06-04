@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Acknowledgments" href="acknowledgments.html" />
-    <link rel="prev" title="Installation" href="installation.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
+    <link rel="prev" title="The Data" href="biallelic-character-data.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -60,6 +60,8 @@
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The Configuration File</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#event-model-prior">event_model_prior</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-time-prior">event_time_prior</a></li>
@@ -69,18 +71,21 @@
 <li class="toctree-l2"><a class="reference internal" href="#comparisons">comparisons</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Change History</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zbib/references.html">Literature Cited</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
-      <li>Next: <a href="acknowledgments.html" title="next chapter">Acknowledgments</a></li>
+      <li>Previous: <a href="biallelic-character-data.html" title="previous chapter">The Data</a></li>
+      <li>Next: <a href="tutorials/index.html" title="next chapter">Tutorials</a></li>
   </ul></li>
 </ul>
 </div>
@@ -105,23 +110,23 @@
 <div class="contents local topic" id="configuration-file-components">
 <p class="topic-title first">Configuration File Components</p>
 <ul class="simple">
-<li><a class="reference internal" href="#event-model-prior" id="id3">event_model_prior</a></li>
-<li><a class="reference internal" href="#event-time-prior" id="id4">event_time_prior</a></li>
-<li><a class="reference internal" href="#mcmc-settings" id="id5">mcmc_settings</a></li>
-<li><a class="reference internal" href="#operator-settings" id="id6">operator_settings</a></li>
-<li><a class="reference internal" href="#global-comparison-settings" id="id7">global_comparison_settings</a><ul>
-<li><a class="reference internal" href="#the-parameters-section" id="id8">The parameters section</a><ul>
-<li><a class="reference internal" href="#general-parameter-syntax" id="id9">General parameter syntax</a></li>
-<li><a class="reference internal" href="#mutation-rate" id="id10">mutation_rate</a></li>
-<li><a class="reference internal" href="#population-size" id="id11">population_size</a></li>
-<li><a class="reference internal" href="#root-relative-population-size" id="id12">root_relative_population_size</a></li>
-<li><a class="reference internal" href="#freq-1" id="id13">freq_1</a></li>
+<li><a class="reference internal" href="#event-model-prior" id="id4">event_model_prior</a></li>
+<li><a class="reference internal" href="#event-time-prior" id="id5">event_time_prior</a></li>
+<li><a class="reference internal" href="#mcmc-settings" id="id6">mcmc_settings</a></li>
+<li><a class="reference internal" href="#operator-settings" id="id7">operator_settings</a></li>
+<li><a class="reference internal" href="#global-comparison-settings" id="id8">global_comparison_settings</a><ul>
+<li><a class="reference internal" href="#the-parameters-section" id="id9">The parameters section</a><ul>
+<li><a class="reference internal" href="#general-parameter-syntax" id="id10">General parameter syntax</a></li>
+<li><a class="reference internal" href="#mutation-rate" id="id11">mutation_rate</a></li>
+<li><a class="reference internal" href="#population-size" id="id12">population_size</a></li>
+<li><a class="reference internal" href="#root-relative-population-size" id="id13">root_relative_population_size</a></li>
+<li><a class="reference internal" href="#freq-1" id="id14">freq_1</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#the-operators-section" id="id14">The operators section</a></li>
+<li><a class="reference internal" href="#the-operators-section" id="id15">The operators section</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#comparisons" id="id15">comparisons</a></li>
+<li><a class="reference internal" href="#comparisons" id="id16">comparisons</a></li>
 </ul>
 </div>
 <p>Most of the settings for an <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> analysis you specify in a configuration
@@ -251,7 +256,7 @@ Across a given level of the hierarchy, order does not matter. E.g., the
 top-level groups of settings listed above can be arranged in any order.
 Anything proceeded by a ‘#’ is a comment that is ignored by <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a>.</p>
 <div class="section" id="event-model-prior">
-<h2><a class="toc-backref" href="#id3">event_model_prior</a><a class="headerlink" href="#event-model-prior" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">event_model_prior</a><a class="headerlink" href="#event-model-prior" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">event_model_prior</span></code> sets up the prior probabilities for all the different
 ways we can cluster the comparisons together (or not).
 Thus, the term “event model” is being used to refer to each of these
@@ -311,7 +316,7 @@ But, that is just an arbitrary preference (i.e., there is no fundamental
 mathematical justification for it).</p>
 </div>
 <div class="section" id="event-time-prior">
-<h2><a class="toc-backref" href="#id4">event_time_prior</a><a class="headerlink" href="#event-time-prior" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">event_time_prior</a><a class="headerlink" href="#event-time-prior" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">event_time_prior</span></code> specifies the prior on the divergence times.
 For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">event_time_prior</span><span class="p">:</span>
@@ -331,7 +336,7 @@ For example, if you give mutation rates in substitutions per site per million
 years, time will be in units of millions of years.</p>
 </div>
 <div class="section" id="mcmc-settings">
-<h2><a class="toc-backref" href="#id5">mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">mcmc_settings</a><a class="headerlink" href="#mcmc-settings" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">mcmc_settings</span></code> simply specify how long to run the MCMC
 chain, and how often to record a sample from it. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mcmc_settings</span><span class="p">:</span>
@@ -352,7 +357,7 @@ the chains converged).</li>
 </ol>
 </div>
 <div class="section" id="operator-settings">
-<h2><a class="toc-backref" href="#id6">operator_settings</a><a class="headerlink" href="#operator-settings" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">operator_settings</a><a class="headerlink" href="#operator-settings" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">operator_settings</span></code> control the behavior of the “global” MCMC operators
 that update the values of the model’s parameters.
 By “global,” we mean that these operators affect all the comparisons (we’ll
@@ -436,7 +441,7 @@ leave all other operator settings at their default values.</p>
 </div>
 </div>
 <div class="section" id="global-comparison-settings">
-<h2><a class="toc-backref" href="#id7">global_comparison_settings</a><a class="headerlink" href="#global-comparison-settings" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">global_comparison_settings</a><a class="headerlink" href="#global-comparison-settings" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">global_comparison_settings</span></code> is an optional section that can
 be useful for specifying settings to be applied to all of your
 comparisons, unless otherwise overridden.
@@ -469,7 +474,7 @@ settings for your comparisons that you can override.</p>
 </pre></div>
 </div>
 <p>This is the ploidy of the organisms (i.e., 1 = haploid, 2 = diploid).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
+<div class="highlight-default" id="genotypesarediploid"><div class="highlight"><pre><span></span><span class="n">genotypes_are_diploid</span><span class="p">:</span> <span class="n">true</span>
 </pre></div>
 </div>
 <p>This tells <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> how you have encoded your characters.
@@ -518,7 +523,7 @@ So, if your matrix looks like:</p>
 </div>
 <p>and <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> will know that the data in the first two rows came from
 “population1” and the data in the third and forth rows came from “population2”.</p>
-<div class="admonition note">
+<div class="admonition note" id="underscoregotcha">
 <p class="first admonition-title">Note</p>
 <p><strong>Underscore gotcha!</strong></p>
 <p>The nexus format standard interprets underscores as spaces, unless the
@@ -554,7 +559,7 @@ constrained to be equal (but their shared size can still be estimated).
 If <code class="docutils literal"><span class="pre">false</span></code> the effective sizes of the root and leaf populations are estimated
 separately (assuming they are not fixed to particular values).</p>
 <div class="section" id="the-parameters-section">
-<h3><a class="toc-backref" href="#id8">The parameters section</a><a class="headerlink" href="#the-parameters-section" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">The parameters section</a><a class="headerlink" href="#the-parameters-section" title="Permalink to this headline">¶</a></h3>
 <p>The following section controls the settings for the parameters for each
 comparison. Again, these can be specified in the <code class="docutils literal"><span class="pre">global_comparison_settings</span></code>
 section and/or for each comparison:</p>
@@ -583,7 +588,7 @@ section and/or for each comparison:</p>
 <p>This allows you to specify whether or not you want estimate each parameter, and
 if so, what prior to use.</p>
 <div class="section" id="general-parameter-syntax">
-<h4><a class="toc-backref" href="#id9">General parameter syntax</a><a class="headerlink" href="#general-parameter-syntax" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id10">General parameter syntax</a><a class="headerlink" href="#general-parameter-syntax" title="Permalink to this headline">¶</a></h4>
 <p>Before we discuss each parameter, let’s look at the general syntax that applies
 to all parameters (including the concentration parameter of the Dirichlet
 process that we saw above).</p>
@@ -607,55 +612,55 @@ If a value is not specified, the starting value is drawn from the prior.</li>
 </ol>
 </div>
 <div class="section" id="mutation-rate">
-<h4><a class="toc-backref" href="#id10">mutation_rate</a><a class="headerlink" href="#mutation-rate" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id11">mutation_rate</a><a class="headerlink" href="#mutation-rate" title="Permalink to this headline">¶</a></h4>
 <p>The <code class="docutils literal"><span class="pre">mutation_rate</span></code> settings are for the mutation rate
-(<img class="math" src="_images/math/1a467569aa35ff5f2a77d526a006e24b6a53a12b.svg" alt="\mutationrate"/>) of the comparison.
+(<img class="math" src="_images/math/d98089cb5da0e0952474f936dc5d55b0d29a151d.svg" alt="\murate"/>) of the comparison.
 How you scale this is up to you, but you need to make sure you are consistent
 in how you scale time and effective population sizes.
 For example, if you set the mutation rate to 1, then time and effective
 population sizes will be scaled by the mutation rate.
-Specifically, time will be in units of <img class="math" src="_images/math/f5ee75652c9ec3a9946d88d80b3f3071048b15dd.svg" alt="\eventtime\mutationrate"/> (i.e.,
+Specifically, time will be in units of <img class="math" src="_images/math/c43f726653e26cafc02e5d3ba29908e5cb468154.svg" alt="\divtime\murate"/> (i.e.,
 expected substitutions per site), and effective population size will be measured
-in units of <img class="math" src="_images/math/502db4c581eb539e0af5587731b4fd273f08a9e8.svg" alt="\epopsize\mutationrate"/>.
+in units of <img class="math" src="_images/math/e38816262895a59f7e92fcff491c6f5a9992e8b2.svg" alt="\epopsize\murate"/>.
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then time will be in units of generations,
 and population size will be in units of the effective number of diploid
-individuals or gene copies (<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>) if the ploidy is 2 or 1,
+individuals or gene copies (<img class="math" src="_images/math/4d309e4494edb3b1d2b83df741324b051fa6197a.svg" alt="\epopsize"/>) if the ploidy is 2 or 1,
 respectively.
 Differences in generation times among pairs can also be accounted for
 via the <code class="docutils literal"><span class="pre">mutation_rate</span></code> parameters, with the appropriate scaling
 of the effective population sizes.
 To help ensure the population sizes are scaled correctly, it can help to
-remember that <img class="math" src="_images/math/45a9ebba77c8ca16433bc5c4f0b2c528616d35bd.svg" alt="\textrm{ploidy} \times 2\epopsize\mutationrate"/> should
+remember that <img class="math" src="_images/math/add048314608a83e2d0db2f8836a994b5c7da99f.svg" alt="\textrm{ploidy} \times 2\epopsize\murate"/> should
 equal the expected differences per base between two randomly selected genomes
 from a population.</p>
 </div>
 <div class="section" id="population-size">
-<h4><a class="toc-backref" href="#id11">population_size</a><a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id12">population_size</a><a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h4>
 <p>The <code class="docutils literal"><span class="pre">population_size</span></code> settings are for the effective population sizes of the
 leaf (descendant) population(s) of a comparison.
 If you set the mutation rate to 1, then the effective population sizes
-will be scaled by the mutation rate (<img class="math" src="_images/math/502db4c581eb539e0af5587731b4fd273f08a9e8.svg" alt="\epopsize\mutationrate"/>).
+will be scaled by the mutation rate (<img class="math" src="_images/math/e38816262895a59f7e92fcff491c6f5a9992e8b2.svg" alt="\epopsize\murate"/>).
 Alternatively, if you specify an actual rate of mutation per site per
 generation, then the population size will be in units of the effective number
-of diploid individuals or gene copies (<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>), if the ploidy is 2
+of diploid individuals or gene copies (<img class="math" src="_images/math/4d309e4494edb3b1d2b83df741324b051fa6197a.svg" alt="\epopsize"/>), if the ploidy is 2
 or 1, respectively.</p>
 <div class="admonition note" id="popsizenote">
 <p class="first admonition-title">Note</p>
 <p><strong>Important</strong>: In ecoevolity, the <code class="docutils literal"><span class="pre">population_size</span></code> is related to, but <strong>not</strong>
-equal to <img class="math" src="_images/math/82e115e8b1d4663545552a2d3c4e65977d742e6a.svg" alt="\theta"/> (<img class="math" src="_images/math/a7a7ca90b390e6974061660977d48ef45c20e153.svg" alt="4\epopsize\mutationrate"/>; the genetic
+equal to <img class="math" src="_images/math/0b48f3164aa1c8c1f828323c6385660d74720cd5.svg" alt="\theta"/> (<img class="math" src="_images/math/9713b224d439c16af6c7b391b29f0ffdeb35bf67.svg" alt="4\epopsize\murate"/>; the genetic
 diversity, or more precisely, the expected number of differences per base
 between two randomly selected haploid genomes).
 The relationship between <code class="docutils literal"><span class="pre">population_size</span></code> (represented by
-<img class="math" src="_images/math/49370670ea406d06414137b33452baaad0255209.svg" alt="\epopsize"/>) and <img class="math" src="_images/math/82e115e8b1d4663545552a2d3c4e65977d742e6a.svg" alt="\theta"/> is:</p>
+<img class="math" src="_images/math/4d309e4494edb3b1d2b83df741324b051fa6197a.svg" alt="\epopsize"/>) and <img class="math" src="_images/math/0b48f3164aa1c8c1f828323c6385660d74720cd5.svg" alt="\theta"/> is:</p>
 <div class="math" id="equation-thetarelationship">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-thetarelationship" title="Permalink to this equation">¶</a></span><img src="_images/math/cb1338573f0ddb6474741824f6bab407709d458e.svg" alt="\textrm{ploidy} \times 2\epopsize\mutationrate = \theta \\
-\epopsize = \frac{\theta}{\textrm{ploidy} \times 2\mutationrate}."/></p>
-</div><p>Thus, if you have prior expectation that <img class="math" src="_images/math/65bbe918c1df5fe1019c21b46beb3e5cb166a165.svg" alt="\theta = 0.002"/> and you’ve
-set the <code class="docutils literal"><span class="pre">mutation_rate</span></code> to 1.0 (i.e., <img class="math" src="_images/math/e61c423669c98f5fe007d2392a36ee1cdcfc26c7.svg" alt="\mutationrate = 1"/>) and
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-thetarelationship" title="Permalink to this equation">¶</a></span><img src="_images/math/7b080470d7c15333a3ce8cf65fbe40d1bcc5a069.svg" alt="\textrm{ploidy} \times 2\epopsize\murate = \theta \\
+\epopsize = \frac{\theta}{\textrm{ploidy} \times 2\murate}."/></p>
+</div><p>Thus, if you have prior expectation that <img class="math" src="_images/math/7bcce79b6d1e9c3d1443e546f0e2fb3fb0c737e0.svg" alt="\theta = 0.002"/> and you’ve
+set the <code class="docutils literal"><span class="pre">mutation_rate</span></code> to 1.0 (i.e., <img class="math" src="_images/math/a70ef6dc18ff608d49798f2fdf2ae0a4a2169962.svg" alt="\murate = 1"/>) and
 <code class="docutils literal"><span class="pre">ploidy</span></code> to 2, then your prior expectation for <code class="docutils literal"><span class="pre">population_size</span></code> is,</p>
 <div class="last math">
-<p><img src="_images/math/f9e31e3d1c11b715614747c9d9fe72e47fe946f9.svg" alt="\epopsize = \frac{0.002}{2 \times 2(1)} = \frac{0.002}{4} = 0.0005"/></p>
+<p><img src="_images/math/3cac526431625684ad11081dccef79617fde572b.svg" alt="\epopsize = \frac{0.002}{2 \times 2(1)} = \frac{0.002}{4} = 0.0005"/></p>
 </div></div>
 <p>The relationship above is also very important to keep in mind if you
 specify a mutation rate in years, or scale the mutation rate to account
@@ -670,11 +675,11 @@ comparison for which you’ve set the mutation rate to 1.0, then you can
 use Equation <a class="reference internal" href="#equation-thetarelationship">(1)</a> to adjust your prior
 expectation for <code class="docutils literal"><span class="pre">population_size</span></code> accordingly:</p>
 <div class="math">
-<p><img src="_images/math/871104c7c9d28907f7b0bc5af319b8931fddd062.svg" alt="\epopsize &amp;= \frac{\theta}{\textrm{ploidy} \times 2\mutationrate} \\
+<p><img src="_images/math/bc547512d744b81e84ac1daf092c9f9455e8ace7.svg" alt="\epopsize &amp;= \frac{\theta}{\textrm{ploidy} \times 2\murate} \\
           &amp;= \frac{0.002}{2 \times 2(0.5)} = \frac{0.002}{2} = 0.001"/></p>
 </div></div>
 <div class="section" id="root-relative-population-size">
-<h4><a class="toc-backref" href="#id12">root_relative_population_size</a><a class="headerlink" href="#root-relative-population-size" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id13">root_relative_population_size</a><a class="headerlink" href="#root-relative-population-size" title="Permalink to this headline">¶</a></h4>
 <p>The population size of the root (ancestral) population is parameterized a bit
 differently.
 You specify a prior on the effective population size of the root <em>relative</em> to
@@ -710,7 +715,7 @@ Alternatively,</p>
 the prior on its relative size on 1 (i.e., centers the prior expectation for
 the actual root effective population size on the mean of the leaf sizes);
 the mean of a gamma distribution is the product of the
-shape and scale parameters: <img class="math" src="_images/math/f3df2a6c89d886f5bfbce2f0abbd95dc05245675.svg" alt="100 \times 0.01 = 1"/>
+shape and scale parameters: <img class="math" src="_images/math/3a4075a69ee855ade7891e822332b297ae62a498.svg" alt="100 \times 0.01 = 1"/>
 Similarly</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">root_relative_population_size</span><span class="p">:</span>
     <span class="n">estimate</span><span class="p">:</span> <span class="n">true</span>
@@ -730,7 +735,7 @@ population size, but we might have good reason to expect that it is similar to
 the mean of the leaf sizes.</p>
 </div>
 <div class="section" id="freq-1">
-<h4><a class="toc-backref" href="#id13">freq_1</a><a class="headerlink" href="#freq-1" title="Permalink to this headline">¶</a></h4>
+<span id="id1"></span><h4><a class="toc-backref" href="#id14">freq_1</a><a class="headerlink" href="#freq-1" title="Permalink to this headline">¶</a></h4>
 <p>The <code class="docutils literal"><span class="pre">freq_1</span></code> parameter is the equilibrium frequency of the “1” allele (or 1
 minus the frequency of the “0” allele).
 If you are using nucleotide data, we recommend that you fix the frequencies
@@ -764,7 +769,7 @@ parameters.</p>
 </div>
 </div>
 <div class="section" id="the-operators-section">
-<h3><a class="toc-backref" href="#id14">The operators section</a><a class="headerlink" href="#the-operators-section" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">The operators section</a><a class="headerlink" href="#the-operators-section" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal"><span class="pre">operators</span></code> settings control the behavior of the MCMC operators that act
 upon the parameters of a comparison.
 I.e., each comparison gets its own copy of the specified operators, as opposed
@@ -816,7 +821,7 @@ case.</p>
 </div>
 </div>
 <div class="section" id="comparisons">
-<h2><a class="toc-backref" href="#id15">comparisons</a><a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">comparisons</a><a class="headerlink" href="#comparisons" title="Permalink to this headline">¶</a></h2>
 <p>In its simplest form, the <code class="docutils literal"><span class="pre">comparisons</span></code> section simply is a list of the paths
 to the nexus-formatted files containting the character alignments:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">comparisons</span><span class="p">:</span>

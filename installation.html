@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="The Configuration File" href="yaml-config.html" />
+    <link rel="next" title="Background" href="background.html" />
     <link rel="prev" title="About" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -70,11 +70,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#getting-some-example-data">Getting some example data</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="yaml-config.html">The Configuration File</a></li>
-<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Change History</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zbib/references.html">Literature Cited</a></li>
 </ul>
 
 <div class="relations">
@@ -82,7 +87,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">About</a></li>
-      <li>Next: <a href="yaml-config.html" title="next chapter">The Configuration File</a></li>
+      <li>Next: <a href="background.html" title="next chapter">Background</a></li>
   </ul></li>
 </ul>
 </div>
@@ -129,7 +134,7 @@ for how to install pycoevolity.</p>
 <p>If you are on a Linux machine, use your package manager to update/install g++,
 CMake, and Git.
 On Ubuntu (or other Debian-based Linux distribution) you can simply use:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ sudo apt-get install cmake g++ git
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">sudo apt-get install cmake g++ git</span>
 </pre></div>
 </div>
 </div>
@@ -169,7 +174,7 @@ Once installed, then you can follow the instructions above for Linux.</li>
 <h2>Getting the ecoevolity source code<a class="headerlink" href="#getting-the-eco-source-code" title="Permalink to this headline">¶</a></h2>
 <p>If you have <a class="reference external" href="http://git-scm.com/">Git</a> installed, download the ecoevolity repository with the <code class="docutils literal"><span class="pre">clone</span></code>
 command:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone https://github.com/phyletica/ecoevolity.git
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <p>If you prefer not to use <a class="reference external" href="http://git-scm.com/">Git</a>, you can download an archive of the
@@ -179,13 +184,13 @@ Once downloaded, you’ll need to unzip the archive.</p>
 <div class="section" id="basic-build-and-install">
 <h2>Basic build and install<a class="headerlink" href="#basic-build-and-install" title="Permalink to this headline">¶</a></h2>
 <p>Next, move into the downloaded directory and run the build script:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ cd ecoevolity
-$ ./build.sh
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ecoevolity</span>
+<span class="o">./</span><span class="n">build</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
 <p>If the build was successful, the ecoevolity executables should now be in the
 <code class="docutils literal"><span class="pre">./build/bin</span></code> directory, and you should be able to run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ./build/bin/ecoevolity -h
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">build</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">ecoevolity</span> <span class="o">-</span><span class="n">h</span>
 </pre></div>
 </div>
 <p>and see the ecoevolity help menu, the beginning of which should looks something
@@ -208,20 +213,20 @@ like:</p>
 <p>The executables in <code class="docutils literal"><span class="pre">./build/bin</span></code> are ready to use, but you’ll probably want
 to put them in your PATH (a list of directories that your shell looks in to
 find the commands you type on the command line). You can do this via:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ sudo cp ./build/bin/* /usr/local/bin
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">cp</span> <span class="o">./</span><span class="n">build</span><span class="o">/</span><span class="nb">bin</span><span class="o">/*</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="nb">bin</span>
 </pre></div>
 </div>
 <p>If this worked, you’re good to go; you can try <code class="docutils literal"><span class="pre">ecoevolity</span> <span class="pre">-h</span></code> to be sure.</p>
 <p>If it didn’t work, you probably don’t have admin privileges.
 If so, you can create a bin folder in your home folder and put the tools
 there:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ mkdir -p &quot;${HOME}/bin&quot;
-$ cp ./build/bin/* &quot;${HOME}/bin&quot;
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="s2">&quot;$</span><span class="si">{HOME}</span><span class="s2">/bin&quot;</span>
+<span class="n">cp</span> <span class="o">./</span><span class="n">build</span><span class="o">/</span><span class="nb">bin</span><span class="o">/*</span> <span class="s2">&quot;$</span><span class="si">{HOME}</span><span class="s2">/bin&quot;</span>
 </pre></div>
 </div>
 <p>Then, you can add this directory to your PATH (if it’s not already there; you
 can check with <code class="docutils literal"><span class="pre">echo</span> <span class="pre">$PATH</span></code>):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ export PATH=&quot;${PATH}:${HOME}/bin&quot;
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{PATH}</span><span class="s2">:$</span><span class="si">{HOME}</span><span class="s2">/bin&quot;</span>
 </pre></div>
 </div>
 <p>Note, this update to PATH is only for your current terminal window.  If you
@@ -233,7 +238,7 @@ your home directory.</p>
 <h2>Install during build<a class="headerlink" href="#install-during-build" title="Permalink to this headline">¶</a></h2>
 <p>If you want to build and install in one go, you just need to specify where you
 want the installation to go, for example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ sudo ./build.sh --prefix /usr/local
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="o">./</span><span class="n">build</span><span class="o">.</span><span class="n">sh</span> <span class="o">--</span><span class="n">prefix</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span>
 </pre></div>
 </div>
 </div>
@@ -242,7 +247,7 @@ want the installation to go, for example:</p>
 <p>If you want to install a version of ecoevolity that performs the likelihood
 calculations across multiple threads, you just need to add the <code class="docutils literal"><span class="pre">--threads</span></code>
 flag:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ./build.sh --threads
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">build</span><span class="o">.</span><span class="n">sh</span> <span class="o">--</span><span class="n">threads</span>
 </pre></div>
 </div>
 <p>In my opinion, you’re usually better off running multiple independent chains
@@ -257,7 +262,7 @@ If you have
 and
 <a class="reference external" href="https://pypi.org/project/pip/">pip</a>
 installed, you can install Pycoevolity via:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install git+git://github.com/phyletica/pycoevolity.git
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">phyletica</span><span class="o">/</span><span class="n">pycoevolity</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <p>If this isn’t working, try the
@@ -292,7 +297,7 @@ To get started, you first need to
 If you’re on a Mac or Windows machine, might need to sign up for a free Docker
 account to download it.
 Once Docker is installed and running pull down our Docker image:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker pull phyletica/ecoevolity-docker
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -300,13 +305,13 @@ Once Docker is installed and running pull down our Docker image:</p>
 <p>Depending on your system and how Docker is configured, you may need to use
 <code class="docutils literal"><span class="pre">sudo</span></code> to run Docker commands. If you received a “permission denied”
 message when you ran the command above, try:</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span>$ sudo docker pull phyletica/ecoevolity-docker
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">docker</span> <span class="n">pull</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span>
 </pre></div>
 </div>
 </div>
 <p>This download could take several minutes depending on your internet connection.
 After it completes, run and enter the docker container:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker run -it phyletica/ecoevolity-docker bash
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span> <span class="n">bash</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -317,39 +322,39 @@ After it completes, run and enter the docker container:</p>
 a fully functioning ecoevolity ecosystem
 (ecoevolity and pycoevolity are installed, along with example data).
 Try typing:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ecoevolity -h
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">-</span><span class="n">h</span>
 </pre></div>
 </div>
 <p>This should display the ecoevolity help menu.
 Next, <code class="docutils literal"><span class="pre">cd</span></code> into the example data directory:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ cd ecoevolity-example-data
-$ ls
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="n">data</span>
+<span class="n">ls</span>
 </pre></div>
 </div>
 <p>There you will find an ecoevolity configuration file and nexus-formatted data files.
 Go ahead and run an ecoevolity analysis:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ecoevolity --relax-missing-sites --relax-triallelic-sites --ignore-data ecoevolity-config.yml
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ecoevolity</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">missing</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">relax</span><span class="o">-</span><span class="n">triallelic</span><span class="o">-</span><span class="n">sites</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">data</span> <span class="n">ecoevolity</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
 <p>To exit the container, simply type:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ exit
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">exit</span>
 </pre></div>
 </div>
 <p>Docker will keep the ecoevolity image around, so you can always jump
 back in anytime via:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker run -it phyletica/ecoevolity-docker bash
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span> <span class="n">bash</span>
 </pre></div>
 </div>
 <p>However, any files you created on your last visit will be gone.
 So, if you want to analyze <em>your</em> data and keep the results around, <code class="docutils literal"><span class="pre">cd</span></code>
 to the directory where you want to run ecoevolity, then jump into
 the Docker container using:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker run -v &quot;$(pwd)&quot;:/portal -it phyletica/ecoevolity-docker bash
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">v</span> <span class="s2">&quot;$(pwd)&quot;</span><span class="p">:</span><span class="o">/</span><span class="n">portal</span> <span class="o">-</span><span class="n">it</span> <span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">docker</span> <span class="n">bash</span>
 </pre></div>
 </div>
 <p>Then, once inside, type:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ cd portal
-$ ls
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">portal</span>
+<span class="n">ls</span>
 </pre></div>
 </div>
 <p>You should see the files that were in the directory on <em>your</em> computer.
@@ -361,7 +366,7 @@ on your computer when you exit the container (magic!).</p>
 <p>You can get an example of an ecoevolity configuration file and nexus-formatted
 data files from one of our
 <a class="reference external" href="https://github.com/phyletica/ecoevolity-example-data">GitHub repos</a>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone https://github.com/phyletica/ecoevolity-example-data.git
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">phyletica</span><span class="o">/</span><span class="n">ecoevolity</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <p>If you prefer not to use <a class="reference external" href="http://git-scm.com/">Git</a>, you can download an archive of the

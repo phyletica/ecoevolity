@@ -39,11 +39,16 @@ events.
     :name: hometoc
 
     installation
+    background
+    biallelic-character-data
     yaml-config
-    acknowledgments
+    tutorials/index
     changes
     license
     citation
+    acknowledgments
+    glossary
+    zbib/references
 
 
 ..

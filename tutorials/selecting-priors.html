@@ -1,0 +1,181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Selecting Priors &#8212; Ecoevolity 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/ecoevolity-logo-compact.svg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=phyletica&repo=ecoevolity&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biallelic-character-data.html">The Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml-config.html">The Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../zbib/references.html">Literature Cited</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="selecting-priors">
+<span id="id1"></span><h1>Selecting Priors<a class="headerlink" href="#selecting-priors" title="Permalink to this headline">¶</a></h1>
+<p>blah</p>
+<div class="section" id="an-introduction-to-the-gamma-probability-distribution">
+<span id="gamma-intro"></span><h2>An introduction to the gamma probability distribution<a class="headerlink" href="#an-introduction-to-the-gamma-probability-distribution" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-r"><div class="highlight"><pre><span></span><span class="o">&gt;</span> x.max <span class="o">=</span> qgamma<span class="p">(</span><span class="m">0.999</span><span class="p">,</span> shape<span class="o">=</span><span class="m">1.0</span><span class="p">,</span> scale<span class="o">=</span><span class="m">10.0</span><span class="p">)</span>
+<span class="o">&gt;</span> x <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span>from<span class="o">=</span><span class="m">0</span><span class="p">,</span> to<span class="o">=</span>x.max<span class="p">,</span> by<span class="o">=</span>x.max<span class="o">/</span><span class="m">1000</span><span class="p">)</span>
+<span class="o">&gt;</span> dens <span class="o">=</span> dgamma<span class="p">(</span>x<span class="p">,</span> shape<span class="o">=</span><span class="m">1.0</span><span class="p">,</span> scale<span class="o">=</span><span class="m">10.0</span><span class="p">)</span>
+<span class="o">&gt;</span> plot<span class="p">(</span>x<span class="p">,</span> dens<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="important-priors-for-the-eco-model">
+<h2>Important priors for the <a class="reference external" href="http://phyletica.org/ecoevolity">ecoevolity</a> model<a class="headerlink" href="#important-priors-for-the-eco-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="concentration-parameter-of-the-dirichlet-process">
+<span id="concentration-parameter"></span><h3>Concentration parameter of the Dirichlet process<a class="headerlink" href="#concentration-parameter-of-the-dirichlet-process" title="Permalink to this headline">¶</a></h3>
+<p>We have to choose a gamma-distributed prior for the concentration parameter
+(<img class="math" src="../_images/math/f7980576eed8504534d05f987298164017e14888.svg" alt="\alpha"/>) of the Dirichlet process that controls the assignment of taxa
+to divergence events.</p>
+<div class="section" id="an-important-point-about-the-concentration-parameter">
+<h4>An important point about the concentration parameter<a class="headerlink" href="#an-important-point-about-the-concentration-parameter" title="Permalink to this headline">¶</a></h4>
+<p>It is important to note that values of the DPP concentration parameter are
+always specific to the number taxa.
+For example, above we saw that for 10 taxa, a concentration parameter
+of 3.3 corresponded to a prior mean of 5 divergence events.
+However, when the number of taxa is 20, a concentration parameter of
+3.3 does <strong>NOT</strong> correspond to a prior mean of 5</p>
+<p>It actually corresponds to a prior mean of about 6.9.
+So, you cannot simply choose your “favorite” prior for the concentration
+parameter and apply it blindly for all datasets.
+When you are analyzing a dataset with a different number of taxa, you need to
+reassess your prior on the concentration parameter.</p>
+</div>
+</div>
+<div class="section" id="population-size">
+<span id="id2"></span><h3>Population size<a class="headerlink" href="#population-size" title="Permalink to this headline">¶</a></h3>
+<p>Another important parameter for which we need to choose a prior is the
+effective population size of the ancestral and descendant populations
+in the model.</p>
+<p>Let’s see how much of our prior probability will fall on values greater
+than 0.004 if we use an exponential with a mean of 0.002.
+Because the shape parameter is 1, this means the scale parameter is simply
+0.002 (remember, the mean is simply the product of the shape and scale):</p>
+<div class="highlight-r"><div class="highlight"><pre><span></span><span class="o">&gt;</span> pgamma<span class="p">(</span><span class="m">0.004</span><span class="p">,</span> shape<span class="o">=</span><span class="m">1.0</span><span class="p">,</span> scale<span class="o">=</span><span class="m">0.002</span><span class="p">,</span> lower.tail<span class="o">=</span><span class="bp">F</span><span class="p">)</span>
+<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">0.1353353</span>
+</pre></div>
+</div>
+<p>Perhaps this seems like too much prior probability greater than 0.004; let’s
+try a scale parameter of 0.001:</p>
+<div class="highlight-r"><div class="highlight"><pre><span></span><span class="o">&gt;</span> pgamma<span class="p">(</span><span class="m">0.004</span><span class="p">,</span> shape<span class="o">=</span><span class="m">1.0</span><span class="p">,</span> scale<span class="o">=</span><span class="m">0.001</span><span class="p">,</span> lower.tail<span class="o">=</span><span class="bp">F</span><span class="p">)</span>
+<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">0.01831564</span>
+</pre></div>
+</div>
+<p>If this seems to fit our prior expectations, we can take a look at this prior:</p>
+<div class="highlight-r"><div class="highlight"><pre><span></span>x.max <span class="o">=</span> qgamma<span class="p">(</span><span class="m">0.999</span><span class="p">,</span> shape<span class="o">=</span><span class="m">1.0</span><span class="p">,</span> scale<span class="o">=</span><span class="m">0.001</span><span class="p">)</span>
+x <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span>from<span class="o">=</span><span class="m">0</span><span class="p">,</span> to<span class="o">=</span>x.max<span class="p">,</span> by<span class="o">=</span>x.max<span class="o">/</span><span class="m">1000</span><span class="p">)</span>
+dens <span class="o">=</span> dgamma<span class="p">(</span>x<span class="p">,</span> shape<span class="o">=</span><span class="m">1.0</span><span class="p">,</span> scale<span class="o">=</span><span class="m">0.001</span><span class="p">)</span>
+plot<span class="p">(</span>x<span class="p">,</span> dens<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which will give us something like:</p>
+<p>If you feel you have more prior knowledge than is represented by this
+exponential (for example, perhaps you expect the effective population size to
+be greater than 0.0005), then you can increase the shape parameter accordingly,
+until you end up with a distribution that fits your prior uncertainty.</p>
+</div>
+<div class="section" id="divergence-time">
+<span id="id3"></span><h3>Divergence time<a class="headerlink" href="#divergence-time" title="Permalink to this headline">¶</a></h3>
+<p>We also need to choose a gamma-distributed prior for the divergence
+times of the pairs of populations.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+<div class="footer" role="contentinfo" align="center">
+    <a href="https://github.com/phyletica/ecoevolity">GitHub</a> &nbsp; | &nbsp; <a href="../license.html">License</a> &nbsp; | &nbsp; <a href="../citation.html">Citation</a> &nbsp; | &nbsp; <a href="https://groups.google.com/forum/#!forum/ecoevolity-users">Users Forum</a>
+</div>
+
+  </body>
+</html>

@@ -1,0 +1,163 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Glossary &#8212; Ecoevolity 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Literature Cited" href="zbib/references.html" />
+    <link rel="prev" title="Acknowledgments" href="acknowledgments.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/ecoevolity-logo-compact.svg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=phyletica&repo=ecoevolity&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biallelic-character-data.html">The Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yaml-config.html">The Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Change History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zbib/references.html">Literature Cited</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="acknowledgments.html" title="previous chapter">Acknowledgments</a></li>
+      <li>Next: <a href="zbib/references.html" title="next chapter">Literature Cited</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="glossary">
+<span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+<dl class="glossary docutils">
+<dt id="term-comparison-taxon">Comparison/taxon</dt>
+<dd><p class="first">A taxon we are analyzing.
+This can comprise two populations/species, in which case we are interested
+in the time that they diverged.
+This can also comprise a single population/species, in which case we are
+interested in the time that it underwent a change in effective population
+size.</p>
+<p>Our goal is to compare the times the times of divergence or demographic
+changes across comparisons.</p>
+<p>If we are only analyzing pairs of populations for which we want to compare
+their divergence times, we will often use “<strong>population pair</strong>” or just
+“<strong>pair</strong>” in place of “comparison.”</p>
+<p class="last">We will use <img class="math" src="_images/math/6aa88d21572f6503c303b3def7459efd736d86f6.svg" alt="\ncomparisons{}"/> to denote the number of comparisons.</p>
+</dd>
+<dt id="term-demographic-change-comparison">Demographic-change comparison</dt>
+<dd><p class="first">A comparison comprising one population/species.
+The mode we will assume for such a comparison is a population undergoing an
+instantaneous increase or decrease in effective population size at some
+time in the past.</p>
+<a class="last reference internal image-reference" href="_images/demog-model-singleton.svg" id="demog-comparison-cartoon"><div align="center" class="align-center"><img alt="divergence comparison cartoon" id="demog-comparison-cartoon" src="_images/demog-model-singleton.svg" width="50%" /></div>
+</a>
+</dd>
+<dt id="term-divergence-comparison">Divergence comparison</dt>
+<dd><p class="first">A comparison comprising two populations/species.
+The model we will assume for such a comparison is an ancestral population
+diverging into two descendant populations at some time in the past.</p>
+<a class="last reference internal image-reference" href="_images/div-model-singleton.svg" id="divergence-comparison-cartoon"><div align="center" class="align-center"><img alt="divergence comparison cartoon" id="divergence-comparison-cartoon" src="_images/div-model-singleton.svg" width="50%" /></div>
+</a>
+</dd>
+<dt id="term-event-model">Event model</dt>
+<dd>(<img class="math" src="_images/math/c6aa542a881e2bc8bea5d102f1542adf989bf73b.svg" alt="\eventtimemodel"/>) The number of events, their times, and the
+partitioning of the comparisons to those events.</dd>
+<dt id="term-event-subsets">Event subsets</dt>
+<dd>(<img class="math" src="_images/math/21f0e556894484a5098830a4b5e4106521014f80.svg" alt="\eventtimesets"/>) The partitioning of the comparisons into subsets,
+each of which share an event.
+This can range from all comparisons being lumped together (<img class="math" src="_images/math/5ea0002312bd1e90438739da333fcdf9640e1dee.svg" alt="nevents{}
+= 1"/>) to all comparisons being split up (<img class="math" src="_images/math/ef38e059b8d305be131823bbff0b2c7d40067c65.svg" alt="nevents{} =
+\ncomparisons{}"/>).</dd>
+<dt id="term-event-times">Event times</dt>
+<dd><p class="first">(<img class="math" src="_images/math/91101a6568579572d256cea0f99efa44f0bafb12.svg" alt="\eventtimes"/>) The time at which one or more comparisons underwent
+a divergence and/or demographic change.
+If we are only analyzing pairs of populations, we will often use
+“<strong>divergence event</strong>.”</p>
+<p class="last">We will use <img class="math" src="_images/math/7532c0e92c5f149224bd477b6569f64d454ea42a.svg" alt="\nevents{}"/> to denote the number of events, which can
+range from one to the number of comparisons.</p>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+<div class="footer" role="contentinfo" align="center">
+    <a href="https://github.com/phyletica/ecoevolity">GitHub</a> &nbsp; | &nbsp; <a href="license.html">License</a> &nbsp; | &nbsp; <a href="citation.html">Citation</a> &nbsp; | &nbsp; <a href="https://groups.google.com/forum/#!forum/ecoevolity-users">Users Forum</a>
+</div>
+
+  </body>
+</html>
