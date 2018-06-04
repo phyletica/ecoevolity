@@ -279,10 +279,13 @@ rst_epilog = """
 .. |Pyco| replace:: Pycoevolity
 .. _Pyco: https://github.com/phyletica/pycoevolity
 
+.. |sumco| replace:: ``sumcoevolity``
 .. |dpprobs| replace:: DPprobs
 .. |cdpprobs| replace:: ``dpprobs``
 .. |ceco| replace:: ``ecoevolity``
 .. |pyco-sumchains| replace:: ``pyco-sumchains``
+.. |pyco-sumtimes| replace:: ``pyco-sumtimes``
+.. |pyco-sumevents| replace:: ``pyco-sumtimes``
 
 .. |Tracer| replace:: Tracer
 .. _Tracer: http://tree.bio.ed.ac.uk/software/tracer/

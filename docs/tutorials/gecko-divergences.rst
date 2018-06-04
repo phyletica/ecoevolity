@@ -49,7 +49,7 @@ each of these pairs diverged very recently.
 However, because these islands were never connected, each pair's distribution
 across both islands must have been due to over-water dispersal.
 Such rare dispersal events were likely idiosyncratic to each pair of island
-populations, and thus we do *not* expect that any of these pairs co-diverged.
+populations, and thus we do *not* expect any of these pairs co-diverged.
 For each pair of populations, the data comprise 200 RADseq loci randomly
 sub-sampled from the loci analyzed by
 Oaks :cite:`Oaks2018ecoevolity`.
@@ -184,7 +184,7 @@ Near the top, you will see a section that looks like::
                     value:      1.414216
                     estimate:   false
 
-This tells |eco| that, for the prior on :term:`event models`, we want to use a
+This tells |eco| that, for the prior on :term:`event models<Event model>`, we want to use a
 Dirichlet process with its concentration parameter fixed to 1.414216.
 The concentration parameter allows us to control how much sharing of divergence
 times we expect *a priori*.
@@ -206,7 +206,7 @@ Let's explore the current setting in the configuration file::
 
     dpprobs -p concentration 1.414216 3
 
-This command tells the program that (1) the parameter (``-p``) we are providing
+This command tells the program (1) the parameter (``-p``) we are providing
 is the concentration parameter, (2) the value of that parameter is 1.414216,
 and (3) there are three comparisons.
 You should get output that looks similar to::
@@ -323,10 +323,10 @@ for the concentration parameter that puts 50% of the prior probability on the
 maximum number of divergence events (i.e., the divergence model with no shared
 divergences).
 That way, if the results support shared divergences, I can be more confident
-that the data are driving the result (however, there's no guarantee; lack of
+the data are driving the result (however, there's no guarantee; lack of
 information and a prior on divergence times that puts a lot of density in
 regions with low likelihood can also drive such a result).
-But, that is just a personal preference (i.e., there is no fundamental
+But, this is just a personal preference (i.e., there is no fundamental
 mathematical justification for it).
 
 Okay, let's edit our config to increase the concentration parameter to favor
@@ -352,12 +352,12 @@ To::
 Under this new setting, what is the prior expectation for the number of
 divergence events, and what is the prior probability for the model with 3
 divergence events?
-Use |dpprobs| to find out!
+Use |cdpprobs| to find out!
 
 .. note::
 
     We recommend that you analyze your data under multiple settings for the
-    concentration parameter, so that you can assess how sensitive the results
+    concentration parameter, so you can assess how sensitive the results
     are to your prior assumptions.
 
 
@@ -382,13 +382,13 @@ If we look in the ``global_comparison_settings`` section, we see::
                 estimate: false
 
 Given that this global comparison setting is not overridden within any of the
-``comparison`` settings, this tells us that we are fixing the mutation rate to
+``comparison`` settings, this tells us we are fixing the mutation rate to
 1.0 for all three pairs of gecko populations.
 As a result, our time units are expected substitutions per site.
 
-Let's assume that, based on prior information, we are quite confident that
-these geckos have experienced fewer than 1 substitution per every 10 characters
-since the populations diverged.
+Let's assume that, based on prior information, we are quite confident these
+geckos have experienced fewer than 1 substitution per every 10 characters since
+the populations diverged.
 Let's change the prior to a gamma distribution with a shape of 2.0 and a
 scale of 0.005.
 Change::
@@ -413,7 +413,7 @@ substitutions per site, and variance of
 .. note::
 
     We strongly recommend that you analyze your data under multiple different
-    priors on the divergence times, so that you can assess how sensitive the
+    priors on the divergence times, so you can assess how sensitive the
     results are to your prior assumptions.
     The prior on the divergence times can have a large affect on the marginal
     likelihoods of the divergence models, and thus the model posterior
@@ -444,12 +444,12 @@ This error message is telling us that we have a site (column) in one of our
 character matrices where there are more than two states represented across our
 samples.
 As discussed above, at this point, we have 2 options: (1) remove any
-characters that have more than two states, or (2) recode these sites
+characters with more than two states, or (2) recode these sites
 as biallelic.
 The latter, |eco| will do for us if we specify the ``--relax-triallelic-sites``
 option in our command.
 When we use this option, |eco| will consider the first state in a column as
-``0``, and any other state found in that column as ``1``.
+``0``, and any other state found in the column as ``1``.
 In all the data sets we've analyzed so far, there has been no discernible
 difference in the results between removing or recoding the triallelic sites.
 However, if you have such sites in your data, we recommend trying both options
@@ -484,7 +484,7 @@ Checking the pre-MCMC screen output
 While the analysis is running, let's scroll up in our console and look at the
 information |eco| reported before the MCMC chain started sampling.
 This output goes by very quickly, but it's **very** important to read it
-over to make sure that |eco| is doing what you think it's doing.
+over to make sure |eco| is doing what you think it's doing.
 At the very top, you will see something like::
 
     ======================================================================
@@ -507,13 +507,13 @@ posterior, as opposed to ignoring the data to sample from the prior.
 Next, |eco| reports a fully specified configuration file to the screen.
 It's always good to look this over to make sure |eco| is configured as you
 expect.
-After the config output, you should see a series of warning messages that alert
+After the config output, you should see a series of warning message alerting
 you to the fact that |eco| is recoding some polyallelic sites to biallelic, and
 also ignoring some sites that lack data from at least one population.
 Without using the ``--relax-triallelic-sites --relax-missing-sites`` options
 these warnings would have been errors that stopped |eco| from running.
-Always look over these warnings to make sure that |eco| is not removing or
-recoding anything that you didn't expect.
+Always look over these warnings to make sure |eco| is not removing or
+recoding anything you didn't expect.
 
 Next, you will see a summary of the data from your comparisons::
 
@@ -554,7 +554,7 @@ Next, you will see a summary of the data from your comparisons::
                 Dalupiri2 (10)
     ----------------------------------------------------------------------
 
-It is **very important** to look over this summary to make sure that |eco|
+It is **very important** to look over this summary to make sure |eco|
 "sees" your data the way you expect it should.
 Make sure the number of sites, the number of populations, and the number of
 alleles per population match your expectations!
@@ -577,8 +577,8 @@ You should see two log files that were created by |eco|:
 #1. ``ecoevolity-config-operator-run-1.log``
 #2. ``ecoevolity-config-state-run-1.log``
 
-If you open the ``operator`` log with a plain text editor, you'll see that this
-file contains information about the MCMC operators.
+If you open the ``operator`` log with a plain text editor, you'll see this file
+contains information about the MCMC operators.
 If you have convergence or mixing issues, this information can be useful for
 troubleshooting.
 
@@ -587,8 +587,8 @@ If you open the ``state`` file, you'll see it contains the MCMC samples.
 Summarizing and Plotting the Results
 ====================================
 
-Before we start summarizing the results, let's run a second chain so that
-we can assess convergence and boost our posterior sample size::
+Before we start summarizing the results, let's run a second chain so we can
+assess convergence and boost our posterior sample size::
 
     ecoevolity --relax-triallelic-sites --relax-missing-sites ecoevolity-config.yml
 
@@ -621,9 +621,9 @@ be useful::
     Burnin value that maximized ESS of pop_size_Dalupiri2: 100 samples (ESS = 544.00)
 
 This tells us which parameter had the lowest mean ESS value
-across all the burn-in values that were evaluated.
-It also tells us what burn-in value was associated with the highest ESS of this
-parameter.
+across all the burn-in values.
+It also tells us what burn-in value was associated with the highest ESS for
+this parameter.
 
 If you want the ESS and PSRF table in a text file that you can open with Excel,
 simply use ``>`` to redirect the standard output::
@@ -637,7 +637,12 @@ burn in increases.
 If you have |Tracer|_ installed, you can use it to look at the convergence and
 mixing behavior of the chains.
 
-Summarizing divergence model posterior probabilities
+From my |pyco-sumchains| output and inspecting the chains in |Tracer|_,
+ignoring the fist 101 samples as burn-in seems conservative.
+That's the burn-in value I will use below when summarizing and plotting the
+results.
+
+Summarizing divergence-model posterior probabilities
 ----------------------------------------------------
 
 Next, let's use the |sumco| tool to calculate the posterior probabilities and
@@ -656,7 +661,7 @@ Let's break down what these arguments mean:
 *   ``-n 1000000`` tells |sumco| to use 1 million simulations under the
     Dirichlet process to approximate the prior probabilities
 
-|Sumco| will produce two files:
+|sumco| will produce two files:
 
 #.  ``sumcoevolity-results-model.txt``
 #.  ``sumcoevolity-results-nevents.txt``
@@ -673,8 +678,8 @@ In my case, there was only a single model sampled: ``0,1,2``.
 The notation is a list of divergence-event indices for each of our population pairs.
 In my case, all three pairs have a unique index, and so all three diverged at
 their own event (the 3-divergence model).
-The output also includes the cumulative posterior probability so that you can
-easily evaluate credible sets.
+The output also includes the cumulative posterior probability so you can easily
+evaluate credible sets.
 It also shows the prior probability and Bayes factor (``bf``).
 The Bayes factor is the factor by which the posterior odds of the model has
 changed from our prior odds.
@@ -699,7 +704,7 @@ probability, and Bayes factor is given for each number of divergence events.
 Plotting posterior probabilities of the number of events
 --------------------------------------------------------
 
-Now, we can use the ``pyco-sumevents`` tool of the |pyco| package to plot the
+Now, we can use the |pyco-sumevents| tool of the |pyco| package to plot the
 information in the ``sumcoevolity-results-nevents.txt`` file::
 
     pyco-sumevents sumcoevolity-results-nevents.txt
@@ -716,8 +721,8 @@ like the following.
 This is just a bar plot representation of the information in the
 ``sumcoevolity-results-nevents.txt``.
 If you checkout the help menu using ``pyco-sumevents -h``,
-you'll see that there are several options to customize your plot.
-Also, ``pyco-sumevents`` spits out the R script that it used to create the
+you'll see there are several options to customize your plot.
+Also, |pyco-sumevents| spits out the R script it used to create the
 plot, if you want to customize it further.
 
 
@@ -739,11 +744,61 @@ like the following.
    :alt: Pycoevolity time plot
 
 Again, ``pyco-sumtimes -h`` will show you options for customizing your plot,
-and ``pyco-sumtimes`` also outputs the R script that generates the plot.
+and |pyco-sumtimes| also outputs the R script that generated the plot.
+
+Sampling the prior distribution
+-------------------------------
+
+With |eco|, it is very easy to run analyses that ignore the data, and
+thus sample from the joint prior distribution.
+All we need to do is add the ``--ignore-data`` option to our command from
+above.
+We'll also use the ``--prefix`` option, which will add a prefix to all the
+output files, allowing us to keep track of the output from sampling the prior::
+
+    ecoevolity --ignore-data --prefix "prior-" --relax-triallelic-sites --relax-missing-sites ecoevolity-config.yml
+
+This should output two files:
+
+*   prior-ecoevolity-config-operator-run-1.log
+*   prior-ecoevolity-config-state-run-1.log
+
+It should also *really* fast, making it very quick and easy to thoroughly
+sample from the joint prior via MCMC.
+This is a great way to "sanity check" your analyses;
+quickly generate samples from the prior and make sure they match your
+assumptions.
+Go ahead and run the above command again to run another independent chain to
+sample the prior::
+
+    ecoevolity --ignore-data --prefix "prior-" --relax-triallelic-sites --relax-missing-sites ecoevolity-config.yml
+
+Now, you can use |pyco-sumchains| and |Tracer|_ to make sure both MCMC chains
+that sampled from the prior converged and mixed well, and to determine an
+appropriate number of samples to remove as burn-in::
+
+    pyco-sumchains -s 100 prior-ecoevolity-config-state-run-?.log
+
+For my output, a burn-in of 101 seemed more than sufficient.
+Now, to summarize the prior samples run::
+
+    sumcoevolity -b 101 --prefix "prior-" -c ecoevolity-config.yml -f prior-ecoevolity-config-state-run-?.log
+
+This should create 2 files:
+
+*   ``prior-sumcoevolity-results-nevents.txt``
+*   ``prior-sumcoevolity-results-model.txt``
+
+Open these up and check to see if the "posterior" probabilities are similar to
+the prior probabilities.
+I put "posterior" in quotes, because the numbers in these columns are actually
+the prior probabilities approximated by the MCMC chains that ignored the data.
 
 
 Comparison with ABC
 ===================
+
+Here are my results from |eco| after running 5 independent MCMC chains:
 
 .. figure:: /_static/pycoevolity-nevents-pretty.svg
    :align: center
@@ -756,6 +811,14 @@ Comparison with ABC
    :width: 600 px
    :figwidth: 90 %
    :alt: Pycoevolity time plot from 5 chains
+
+The average runtime for the chains was 7.6 minutes, so about :math:`7.6 \times
+5 = 38` minutes of total computing time.
+For comparison, below are results I obtained from analyzing the same data with
+the ABC method ``dpp-msbayes`` using almost identical priors and simulating
+500,000 samples from the prior.
+This analysis took 6 days to run with simulations spread across 8 processors,
+so about :math:`6 \times 8 = 48` days of computing time.
 
 .. figure:: /_static/dppmsbayes-nevents.svg
    :align: center

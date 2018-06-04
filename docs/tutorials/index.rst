@@ -6,5 +6,3 @@ Tutorials
     :maxdepth: 1
 
     gecko-divergences.rst
-    simulation-analysis.rst
-
