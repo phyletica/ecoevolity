@@ -166,7 +166,7 @@ information it needs in a format that is easy for you to read and edit.
 
 For detailed information about all the settings that can be included in an
 |eco| config file,
-:ref:<`click here <configfile>`.
+:ref:`click here <configfile>`.
 For the purposes of this tutorial, we'll edit a few elements of the example
 configuration file we downloaded.
 
@@ -276,7 +276,7 @@ Our output now looks something like::
 
 
 This tells us a concentration parameter of about 4.37 corresponds with a prior
-expectation of 2.5 divergence time events (when there are 3 comparisons).
+expectation of 2.5 divergence events (when there are 3 comparisons).
 The output also shows us that the prior probability of the model with three
 divergences is almost 56\%.
 
@@ -323,11 +323,8 @@ for the concentration parameter that puts 50% of the prior probability on the
 maximum number of divergence events (i.e., the divergence model with no shared
 divergences).
 That way, if the results support shared divergences, I can be more confident
-the data are driving the result (however, there's no guarantee; lack of
-information and a prior on divergence times that puts a lot of density in
-regions with low likelihood can also drive such a result).
-But, this is just a personal preference (i.e., there is no fundamental
-mathematical justification for it).
+the data are driving the result.
+But, this is just my personal preference.
 
 Okay, let's edit our config to increase the concentration parameter to favor
 more divergence events *a priori*.
@@ -446,7 +443,7 @@ samples.
 As discussed above, at this point, we have 2 options: (1) remove any
 characters with more than two states, or (2) recode these sites
 as biallelic.
-The latter, |eco| will do for us if we specify the ``--relax-triallelic-sites``
+The latter |eco| will do for us if we specify the ``--relax-triallelic-sites``
 option in our command.
 When we use this option, |eco| will consider the first state in a column as
 ``0``, and any other state found in the column as ``1``.
@@ -507,11 +504,11 @@ posterior, as opposed to ignoring the data to sample from the prior.
 Next, |eco| reports a fully specified configuration file to the screen.
 It's always good to look this over to make sure |eco| is configured as you
 expect.
-After the config output, you should see a series of warning message alerting
+After the config output, you should see a series of warning messages alerting
 you to the fact that |eco| is recoding some polyallelic sites to biallelic, and
 also ignoring some sites that lack data from at least one population.
-Without using the ``--relax-triallelic-sites --relax-missing-sites`` options
-these warnings would have been errors that stopped |eco| from running.
+Without using the ``--relax-triallelic-sites`` and  ``--relax-missing-sites``
+options these warnings would have been errors that stopped |eco| from running.
 Always look over these warnings to make sure |eco| is not removing or
 recoding anything you didn't expect.
 
@@ -574,8 +571,8 @@ After the analysis finishes, type ``ls`` at the command line::
 
 You should see two log files that were created by |eco|:
 
-#1. ``ecoevolity-config-operator-run-1.log``
-#2. ``ecoevolity-config-state-run-1.log``
+#. ``ecoevolity-config-operator-run-1.log``
+#. ``ecoevolity-config-state-run-1.log``
 
 If you open the ``operator`` log with a plain text editor, you'll see this file
 contains information about the MCMC operators.
@@ -597,8 +594,8 @@ finish running.
 After the chain finishes, if you use ``ls`` you should see another ``operator``
 and ``state`` log file:
 
-#1. ``ecoevolity-config-operator-run-2.log``
-#2. ``ecoevolity-config-state-run-2.log``
+#. ``ecoevolity-config-operator-run-2.log``
+#. ``ecoevolity-config-state-run-2.log``
 
 Assessing mixing and convergence
 --------------------------------
@@ -763,7 +760,7 @@ This should output two files:
 *   prior-ecoevolity-config-operator-run-1.log
 *   prior-ecoevolity-config-state-run-1.log
 
-It should also *really* fast, making it very quick and easy to thoroughly
+It should be *really* fast, making it very quick and easy to thoroughly
 sample from the joint prior via MCMC.
 This is a great way to "sanity check" your analyses;
 quickly generate samples from the prior and make sure they match your

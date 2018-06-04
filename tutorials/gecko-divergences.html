@@ -257,7 +257,7 @@ valid YAML syntax.</p>
 </div>
 <p>For detailed information about all the settings that can be included in an
 ecoevolity config file,
-:ref:&lt;<cite>click here &lt;configfile&gt;</cite>.
+<a class="reference internal" href="../yaml-config.html#configfile"><span class="std std-ref">click here</span></a>.
 For the purposes of this tutorial, we’ll edit a few elements of the example
 configuration file we downloaded.</p>
 <div class="section" id="choosing-a-prior-on-the-divergence-models">
@@ -361,7 +361,7 @@ numbers of divergence events:</p>
 </pre></div>
 </div>
 <p>This tells us a concentration parameter of about 4.37 corresponds with a prior
-expectation of 2.5 divergence time events (when there are 3 comparisons).
+expectation of 2.5 divergence events (when there are 3 comparisons).
 The output also shows us that the prior probability of the model with three
 divergences is almost 56%.</p>
 <p>If, instead of fixing the concentration parameter, we prefer to place a
@@ -407,11 +407,8 @@ for the concentration parameter that puts 50% of the prior probability on the
 maximum number of divergence events (i.e., the divergence model with no shared
 divergences).
 That way, if the results support shared divergences, I can be more confident
-the data are driving the result (however, there’s no guarantee; lack of
-information and a prior on divergence times that puts a lot of density in
-regions with low likelihood can also drive such a result).
-But, this is just a personal preference (i.e., there is no fundamental
-mathematical justification for it).</p>
+the data are driving the result.
+But, this is just my personal preference.</p>
 <p>Okay, let’s edit our config to increase the concentration parameter to favor
 more divergence events <em>a priori</em>.
 Change:</p>
@@ -524,7 +521,7 @@ samples.
 As discussed above, at this point, we have 2 options: (1) remove any
 characters with more than two states, or (2) recode these sites
 as biallelic.
-The latter, ecoevolity will do for us if we specify the <code class="docutils literal"><span class="pre">--relax-triallelic-sites</span></code>
+The latter ecoevolity will do for us if we specify the <code class="docutils literal"><span class="pre">--relax-triallelic-sites</span></code>
 option in our command.
 When we use this option, ecoevolity will consider the first state in a column as
 <code class="docutils literal"><span class="pre">0</span></code>, and any other state found in the column as <code class="docutils literal"><span class="pre">1</span></code>.
@@ -583,11 +580,11 @@ posterior, as opposed to ignoring the data to sample from the prior.</p>
 <p>Next, ecoevolity reports a fully specified configuration file to the screen.
 It’s always good to look this over to make sure ecoevolity is configured as you
 expect.
-After the config output, you should see a series of warning message alerting
+After the config output, you should see a series of warning messages alerting
 you to the fact that ecoevolity is recoding some polyallelic sites to biallelic, and
 also ignoring some sites that lack data from at least one population.
-Without using the <code class="docutils literal"><span class="pre">--relax-triallelic-sites</span> <span class="pre">--relax-missing-sites</span></code> options
-these warnings would have been errors that stopped ecoevolity from running.
+Without using the <code class="docutils literal"><span class="pre">--relax-triallelic-sites</span></code> and  <code class="docutils literal"><span class="pre">--relax-missing-sites</span></code>
+options these warnings would have been errors that stopped ecoevolity from running.
 Always look over these warnings to make sure ecoevolity is not removing or
 recoding anything you didn’t expect.</p>
 <p>Next, you will see a summary of the data from your comparisons:</p>
@@ -646,8 +643,10 @@ MCMC operators; this information is also logged to a file.</p>
 </pre></div>
 </div>
 <p>You should see two log files that were created by ecoevolity:</p>
-<p>#1. <code class="docutils literal"><span class="pre">ecoevolity-config-operator-run-1.log</span></code>
-#2. <code class="docutils literal"><span class="pre">ecoevolity-config-state-run-1.log</span></code></p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">ecoevolity-config-operator-run-1.log</span></code></li>
+<li><code class="docutils literal"><span class="pre">ecoevolity-config-state-run-1.log</span></code></li>
+</ol>
 <p>If you open the <code class="docutils literal"><span class="pre">operator</span></code> log with a plain text editor, you’ll see this file
 contains information about the MCMC operators.
 If you have convergence or mixing issues, this information can be useful for
@@ -665,8 +664,10 @@ assess convergence and boost our posterior sample size:</p>
 finish running.
 After the chain finishes, if you use <code class="docutils literal"><span class="pre">ls</span></code> you should see another <code class="docutils literal"><span class="pre">operator</span></code>
 and <code class="docutils literal"><span class="pre">state</span></code> log file:</p>
-<p>#1. <code class="docutils literal"><span class="pre">ecoevolity-config-operator-run-2.log</span></code>
-#2. <code class="docutils literal"><span class="pre">ecoevolity-config-state-run-2.log</span></code></p>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">ecoevolity-config-operator-run-2.log</span></code></li>
+<li><code class="docutils literal"><span class="pre">ecoevolity-config-state-run-2.log</span></code></li>
+</ol>
 <div class="section" id="assessing-mixing-and-convergence">
 <h3>Assessing mixing and convergence<a class="headerlink" href="#assessing-mixing-and-convergence" title="Permalink to this headline">¶</a></h3>
 <p>Now, let’s use the <code class="docutils literal"><span class="pre">pyco-sumchains</span></code> tool of the pycoevolity packages to help assess
@@ -813,7 +814,7 @@ output files, allowing us to keep track of the output from sampling the prior:</
 <li>prior-ecoevolity-config-operator-run-1.log</li>
 <li>prior-ecoevolity-config-state-run-1.log</li>
 </ul>
-<p>It should also <em>really</em> fast, making it very quick and easy to thoroughly
+<p>It should be <em>really</em> fast, making it very quick and easy to thoroughly
 sample from the joint prior via MCMC.
 This is a great way to “sanity check” your analyses;
 quickly generate samples from the prior and make sure they match your
