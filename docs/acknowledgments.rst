@@ -19,7 +19,7 @@ Code
 <http://ncl.sourceforge.net/>`_
 Version 2.1.18 (Copyright Paul O. Lewis and Mark T. Holder; licensed under a
 BSD License).
-NCL is used for parsing the nexus input filesa.
+NCL is used for parsing the nexus input files.
 
 |Eco| also comes bundled with
 `yaml-cpp <https://github.com/jbeder/yaml-cpp>`_
