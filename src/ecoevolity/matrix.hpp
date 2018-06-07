@@ -938,6 +938,9 @@ class MatrixExponentiator {
                 } };
  
     public:
+        // Default constructor
+        MatrixExponentiator() { }
+
         std::vector<double> cf_expmvCOMPLEX(
                 double time,
                 AbstractMatrix& A,
