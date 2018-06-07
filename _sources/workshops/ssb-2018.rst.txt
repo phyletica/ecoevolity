@@ -1,0 +1,15 @@
+********
+SSB 2018
+********
+
+For the 2018 Meeting of the Society of Systematic Biologists at The Ohio State
+University in Columbus, Ohio, we held a Comparative Phylogeography Workshop.
+For the workshop, we worked through an
+:ref:`exercise about using ecoevolity <gecko_div_tutorial>`.
+The introductory slides for the workshop can be
+:download:`downloaded here </_static/slides-ssb-2018-workshop.pdf>`
+or viewed below:
+
+.. raw:: html
+
+    <iframe src="//www.slideshare.net/slideshow/embed_code/key/4HDy2wRglfIZCd" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="//www.slideshare.net/jamieoaks7/ssb-2018-comparative-phylogeography-workshop" title="SSB 2018 Comparative Phylogeography Workshop" target="_blank">SSB 2018 Comparative Phylogeography Workshop</a> </strong> from <strong><a href="https://www.slideshare.net/jamieoaks7" target="_blank">Jamie Oaks</a></strong> </div>

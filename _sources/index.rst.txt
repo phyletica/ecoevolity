@@ -43,6 +43,7 @@ events.
     biallelic-character-data
     yaml-config
     tutorials/index
+    workshops/index
     changes
     license
     citation
