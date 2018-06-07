@@ -74,6 +74,8 @@ command line::
 
     If you are using the Docker container to run |eco|, follow these two extra
     steps to be able to analyze the example files you just downloaded.
+    First, make sure you are **NOT** inside the Docker container before
+    proceeding; you want to be at your computer's command-line console.
     After you've used ``cd`` to navigate into the example data directory,
     execute the following command to enter the Docker container::
     
