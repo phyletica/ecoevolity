@@ -1,3 +1,16 @@
+Version 0.2.1
+=============
+
+Changes
+-------
+
+-   Adding default constructor for MatrixExponentiator to appease Clang.  This
+    change does not affect behavior; it simply allows older versions of Clang
+    to compile the code.
+
+-   Adding more documentation.
+
+
 Version 0.2.0
 =============
 
