@@ -235,6 +235,30 @@ double BaseComparisonPopulationTreeCollection::get_nearest_smaller_height(
     return nearest_smaller_height;
 }
 
+double BaseComparisonPopulationTreeCollection::get_nearest_larger_height(
+        unsigned int height_index) const {
+    double nearest_larger_height = std::numeric_limits<double>::infinity();
+    double ref_height = this->get_height(height_index);
+    bool found = false;
+    for (unsigned int h_idx = 0; h_idx < this->node_heights_.size(); ++h_idx) {
+        if (h_idx == height_index) {
+            continue;
+        }
+        double candidate_height = this->get_height(h_idx);
+        if (candidate_height < ref_height) {
+            continue;
+        }
+        if ((candidate_height - ref_height) < (nearest_larger_height - ref_height)) {
+            nearest_larger_height = candidate_height;
+            found = true;
+        }
+    }
+    if (! found) {
+        return ref_height;
+    }
+    return nearest_larger_height;
+}
+
 unsigned int BaseComparisonPopulationTreeCollection::get_nearest_smaller_height_index(
         unsigned int height_index,
         bool allow_smallest_index) const {

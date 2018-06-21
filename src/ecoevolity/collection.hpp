@@ -204,6 +204,8 @@ class BaseComparisonPopulationTreeCollection {
 
         double get_nearest_smaller_height(
                 unsigned int height_index) const;
+        double get_nearest_larger_height(
+                unsigned int height_index) const;
         unsigned int get_nearest_smaller_height_index(
                 unsigned int height_index,
                 bool allow_smallest_index = false) const;
