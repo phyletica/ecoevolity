@@ -1,5 +1,8 @@
 
-![logo](https://raw.githubusercontent.com/phyletica/ecoevolity/master/doc/_static/ecoevolity-logo.png)
+![logo](https://raw.githubusercontent.com/phyletica/ecoevolity/master/docs/_static/ecoevolity-logo.png)
+
+For documentation, please go to <https://phyletica.github.io/ecoevolity>.
+
 
 Table of Contents
 =================
@@ -11,15 +14,17 @@ Table of Contents
 Ecoevolity
 ==========
 
-Inferring shared evolutionary events using full-likelihood Bayesian inference.
+Ecoevolity is software for inferring shared evolutionary events using
+full-likelihood Bayesian inference.
 
-This is a work in progess...
+You can find the full documentation at
+<https://phyletica.github.io/ecoevolity>.
 
 Acknowledgments
-================
+===============
 
-This software benefited from funding provided to Jamie Oaks from the National
-Science Foundation (DBI 1308885).
+This work was supported by funding provided to Jamie Oaks from the National
+Science Foundation (grant numbers DBI 1308885 and DEB 1656004).
 
 License
 =======

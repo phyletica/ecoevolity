@@ -2027,10 +2027,10 @@ double TimeSizeMixer::propose_by_height(RandomNumberGenerator& rng,
     comparisons->set_height(height_index, new_height);
 
     int ndimensions = 1; // for height scaled above
+    int number_of_free_parameters_scaled = 0;
+    int number_of_free_parameters_inverse_scaled = 0;
     std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
     for (auto tree_idx : tree_indices) {
-        int number_of_free_parameters_scaled = 0;
-        int number_of_free_parameters_inverse_scaled = 0;
         std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
         if (! tree->population_sizes_are_fixed()) {
             if (tree->population_sizes_are_constrained()) {
@@ -2042,19 +2042,13 @@ double TimeSizeMixer::propose_by_height(RandomNumberGenerator& rng,
                 for (unsigned int i = 0; i < nleaves; ++i) { 
                     tree->set_child_population_size(i, 
                             tree->get_child_population_size(i) * multiplier);
-                    number_of_free_parameters_scaled += nleaves;
                 }
+                number_of_free_parameters_scaled += nleaves;
             }
-        }
-        if ((number_of_free_parameters_inverse_scaled < 1) ||
-                ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-        }
-        else {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
         }
 
     }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
@@ -2082,17 +2076,11 @@ double TimeSizeMixer::propose_by_tree(RandomNumberGenerator& rng,
             for (unsigned int i = 0; i < nleaves; ++i) { 
                 tree->set_child_population_size(i, 
                         tree->get_child_population_size(i) * multiplier);
-                number_of_free_parameters_scaled += nleaves;
             }
+            number_of_free_parameters_scaled += nleaves;
         }
     }
-    if ((number_of_free_parameters_inverse_scaled < 1) ||
-            ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-    }
-    else {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
-    }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
@@ -2139,7 +2127,17 @@ std::string TimeSizeMixer::to_string(const OperatorSchedule& os) const {
 //////////////////////////////////////////////////////////////////////////////
 
 TimeRootSizeMixer::TimeRootSizeMixer(
+        ) : TimeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+TimeRootSizeMixer::TimeRootSizeMixer(
         unsigned int tree_index) : TimeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+TimeRootSizeMixer::TimeRootSizeMixer(
+        double weight) : TimeOperatorInterface<ScaleOperator>(weight) {
     this->op_ = ScaleOperator();
 }
 
@@ -2147,6 +2145,12 @@ TimeRootSizeMixer::TimeRootSizeMixer(
         unsigned int tree_index,
         double weight) : TimeOperatorInterface<ScaleOperator>(tree_index, weight) {
     this->op_ = ScaleOperator();
+}
+
+TimeRootSizeMixer::TimeRootSizeMixer(
+        double weight,
+        double scale) : TimeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
 }
 
 TimeRootSizeMixer::TimeRootSizeMixer(
@@ -2195,7 +2199,43 @@ double TimeRootSizeMixer::propose(RandomNumberGenerator& rng,
 double TimeRootSizeMixer::propose_by_height(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int height_index) {
-    return -std::numeric_limits<double>::infinity();
+    /* return -std::numeric_limits<double>::infinity(); */
+    double multiplier = this->op_.get_move_amount(rng);
+
+    double old_height = comparisons->get_height(height_index);
+    double new_height = old_height;
+    std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
+    double delta_height = 0.0;
+    bool delta_determined = false;
+
+    for (auto tree_idx : tree_indices) {
+        std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
+        if (! tree->root_population_size_is_fixed()) {
+            if (! delta_determined) {
+                double old_size = tree->get_root_population_size();
+                double new_size = old_size * multiplier;
+                double delta_Nmu = old_size - new_size;
+                new_height = old_height + (2.0 * delta_Nmu);
+                if (new_height < 0.0) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                delta_height = old_height - new_height;
+                delta_determined = true;
+                tree->set_root_population_size(new_size);
+            } else {
+                double new_size = tree->get_root_population_size() + (0.5 * delta_height);
+                if (new_size < 0.0) {
+                    return -std::numeric_limits<double>::infinity();
+                }
+                tree->set_root_population_size(new_size);
+            }
+        }
+    }
+    if (! delta_determined) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->set_height(height_index, new_height);
+    return std::log(multiplier);
 }
 
 double TimeRootSizeMixer::propose_by_tree(RandomNumberGenerator& rng,
@@ -2491,10 +2531,10 @@ double TimeSizeRateMixer::propose_by_height(RandomNumberGenerator& rng,
     comparisons->set_height(height_index, new_height);
 
     int ndimensions = 1; // for height scaled above
+    int number_of_free_parameters_scaled = 0;
+    int number_of_free_parameters_inverse_scaled = 0;
     std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(height_index);
     for (auto tree_idx : tree_indices) {
-        int number_of_free_parameters_scaled = 0;
-        int number_of_free_parameters_inverse_scaled = 0;
         std::shared_ptr<PopulationTree> tree = comparisons->get_tree(tree_idx);
         if (! tree->population_sizes_are_fixed()) {
             if (tree->population_sizes_are_constrained()) {
@@ -2516,14 +2556,8 @@ double TimeSizeRateMixer::propose_by_height(RandomNumberGenerator& rng,
             tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
             ++number_of_free_parameters_inverse_scaled;
         }
-        if ((number_of_free_parameters_inverse_scaled < 1) ||
-                ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-        }
-        else {
-            ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
-        }
     }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 
@@ -2559,13 +2593,7 @@ double TimeSizeRateMixer::propose_by_tree(RandomNumberGenerator& rng,
         tree->set_mutation_rate(tree->get_mutation_rate() * (1.0/multiplier));
         ++number_of_free_parameters_inverse_scaled;
     }
-    if ((number_of_free_parameters_inverse_scaled < 1) ||
-            ((number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled) < 2)) {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
-    }
-    else {
-        ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled - 2);
-    }
+    ndimensions += (number_of_free_parameters_scaled - number_of_free_parameters_inverse_scaled);
     return std::log(multiplier) * ndimensions;
 }
 

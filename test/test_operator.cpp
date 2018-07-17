@@ -21,8 +21,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-t44.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-t44-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -173,8 +173,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-t45.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-t45-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -310,8 +310,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with fixed sizes",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-t46.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-t46-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -431,8 +431,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-t47.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-t47-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -575,8 +575,8 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-t48.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-t48-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -805,8 +805,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-t49.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-t49-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -960,8 +960,8 @@ TEST_CASE("Testing TimeSizeScaler with mix of pairs and singletons and shared ev
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-t50.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-t50-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -1172,8 +1172,8 @@ TEST_CASE("Testing TimeSizeScaler with 4 pairs with constrained sizes and shared
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-t51.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-t51-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -1317,8 +1317,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-t52.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-t52-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1469,8 +1469,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs with constrained si
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-t53.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test2-" + tag + "-t53-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1607,8 +1607,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs with fixed sizes",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-t54.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test3-" + tag + "-t54-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1730,8 +1730,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-t55.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test4-" + tag + "-t55-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1875,8 +1875,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with mix of pairs and singletons
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-t56.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test5-" + tag + "-t56-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2106,8 +2106,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-t57.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test6-" + tag + "-t57-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -2262,8 +2262,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with mix of pairs and singletons
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-t58.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test7-" + tag + "-t58-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -2475,8 +2475,8 @@ TEST_CASE("Testing tree-specific TimeSizeScaler with 4 pairs with constrained si
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-t59.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test8-" + tag + "-t59-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -2621,8 +2621,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t60.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t60-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2773,8 +2773,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-t61.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-t61-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2911,8 +2911,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with fixed sizes",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-t62.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-t62-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3032,8 +3032,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-t63.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-t63-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3176,8 +3176,8 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-t64.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-t64-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3406,8 +3406,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t65.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t65-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3561,8 +3561,8 @@ TEST_CASE("Testing TimeSizeMixer with mix of pairs and singletons and shared eve
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-t66.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-t66-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3773,8 +3773,8 @@ TEST_CASE("Testing TimeSizeMixer with 4 pairs with constrained sizes and shared 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-t67.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-t67-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -3918,8 +3918,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t68.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t68-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4070,8 +4070,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 pairs with constrained siz
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-t69.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-t69-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4209,8 +4209,8 @@ TEST_CASE("Testing time-specific TimeSizeMixer with 4 pairs with fixed sizes",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-t70.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test3-" + tag + "-t70-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4332,8 +4332,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-t71.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-t71-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4477,8 +4477,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with mix of pairs and singletons"
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-t72.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test5-" + tag + "-t72-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4708,8 +4708,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 pairs and shared event",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t73.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t73-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -4864,8 +4864,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with mix of pairs and singletons 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-t74.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test7-" + tag + "-t74-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -5077,8 +5077,8 @@ TEST_CASE("Testing tree-specific TimeSizeMixer with 4 pairs with constrained siz
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-t75.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-t75-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -5225,8 +5225,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-t76.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-t76-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5412,8 +5412,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-t77.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-t77-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5585,8 +5585,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-t78.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-t78-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5744,8 +5744,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-t79.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-t79-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5923,8 +5923,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-t80.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-t80-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6214,8 +6214,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-t81.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-t81-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -6404,8 +6404,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-t82.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-t82-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -6677,8 +6677,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and sh
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-t83.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-t83-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -6853,8 +6853,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-t84.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-t84-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7012,8 +7012,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and fi
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-t85.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-t85-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7158,8 +7158,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with fixed sizes and rates",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-t86.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-t86-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7287,8 +7287,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-t87.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-t87-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7438,8 +7438,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and fixed
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-t88.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-t88-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7690,8 +7690,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs and shared event and fixed ra
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-t89.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-t89-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -7852,8 +7852,8 @@ TEST_CASE("Testing TimeSizeRateScaler with mix of pairs and singletons and share
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-t90.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-t90-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -8086,8 +8086,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 4 pairs with constrained sizes and sh
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-t91.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-t91-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -8239,8 +8239,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-t92.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test1-" + tag + "-t92-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8427,8 +8427,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs with constraine
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-t93.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test2-" + tag + "-t93-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8601,8 +8601,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs with fixed size
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-t94.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test3-" + tag + "-t94-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8761,8 +8761,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-t95.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test4-" + tag + "-t95-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8941,8 +8941,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-t96.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test5-" + tag + "-t96-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9233,8 +9233,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and shared even
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-t97.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test6-" + tag + "-t97-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -9424,8 +9424,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-t98.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test7-" + tag + "-t98-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -9698,8 +9698,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs with constraine
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-t99.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test8-" + tag + "-t99-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -9875,8 +9875,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and fixed rates
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-t100.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test9-" + tag + "-t100-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10035,8 +10035,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs with constraine
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-t101.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test10-" + tag + "-t101-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10185,8 +10185,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs with fixed size
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-t102.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test11-" + tag + "-t102-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10316,8 +10316,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 singletons and fixed 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-t103.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test12-" + tag + "-t103-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10468,8 +10468,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-t104.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test13-" + tag + "-t104-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10721,8 +10721,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs and shared even
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-t105.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test14-" + tag + "-t105-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -10884,8 +10884,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with mix of pairs and single
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-t106.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test15-" + tag + "-t106-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -11119,8 +11119,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 4 pairs with constraine
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-t107.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratescaler-test16-" + tag + "-t107-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -11273,8 +11273,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-t108.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-t108-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11460,8 +11460,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-t109.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-t109-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11633,8 +11633,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-t110.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-t110-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11792,8 +11792,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-t111.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-t111-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11971,8 +11971,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-t112.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-t112-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12262,8 +12262,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-t113.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-t113-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12452,8 +12452,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-t114.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-t114-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12725,8 +12725,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and sha
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-t115.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-t115-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -12901,8 +12901,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-t116.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-t116-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13060,8 +13060,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and fix
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-t117.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-t117-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13207,8 +13207,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with fixed sizes and rates",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-t118.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-t118-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13336,8 +13336,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-t119.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-t119-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13487,8 +13487,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and fixed 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-t120.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-t120-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13739,8 +13739,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs and shared event and fixed rat
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-t121.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-t121-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -13901,8 +13901,8 @@ TEST_CASE("Testing TimeSizeRateMixer with mix of pairs and singletons and shared
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-t122.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-t122-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -14135,8 +14135,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 4 pairs with constrained sizes and sha
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-t123.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-t123-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -14287,8 +14287,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-t124.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test1-" + tag + "-t124-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14475,8 +14475,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs with constrained
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-t125.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test2-" + tag + "-t125-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14649,8 +14649,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs with fixed sizes
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-t126.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test3-" + tag + "-t126-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14809,8 +14809,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-t127.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test4-" + tag + "-t127-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -14989,8 +14989,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-t128.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test5-" + tag + "-t128-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -15281,8 +15281,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs and shared event
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-t129.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test6-" + tag + "-t129-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15472,8 +15472,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-t130.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test7-" + tag + "-t130-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15746,8 +15746,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs with constrained
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-t131.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test8-" + tag + "-t131-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -15923,8 +15923,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs and fixed rates"
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-t132.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test9-" + tag + "-t132-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16083,8 +16083,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs with constrained
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-t133.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test10-" + tag + "-t133-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16231,8 +16231,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs with fixed sizes
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-t134.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test11-" + tag + "-t134-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16362,8 +16362,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 singletons and fixed r
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-t135.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test12-" + tag + "-t135-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16514,8 +16514,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-t136.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test13-" + tag + "-t136-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -16767,8 +16767,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs and shared event
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-t137.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test14-" + tag + "-t137-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -16930,8 +16930,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with mix of pairs and singlet
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-t138.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test15-" + tag + "-t138-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -17165,8 +17165,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 4 pairs with constrained
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-t139.cfg";
+        std::string log_path = "data/tmp-config-comptimesizeratemixer-test16-" + tag + "-t139-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -17313,8 +17313,8 @@ TEST_CASE("Testing EventTimeScaler", "[EventTimeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t140.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t140-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -17392,8 +17392,8 @@ TEST_CASE("Testing EventTimeScaler", "[EventTimeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t141.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t141-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -17475,8 +17475,8 @@ TEST_CASE("Testing EventTimeMover", "[EventTimeMover]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t142.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t142-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -17554,8 +17554,8 @@ TEST_CASE("Testing EventTimeMover", "[EventTimeMover]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t143.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t143-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -17639,8 +17639,8 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t144.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t144-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -17728,8 +17728,8 @@ TEST_CASE("Testing RootPopulationSizeScaler", "[RootPopulationSizeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t145.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t145-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -17820,8 +17820,8 @@ TEST_CASE("Testing LeafPopulationSizeScaler", "[LeafPopulationSizeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t146.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t146-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -17908,8 +17908,8 @@ TEST_CASE("Testing LeafPopulationSizeScaler", "[LeafPopulationSizeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t147.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t147-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -17999,8 +17999,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t148.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t148-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18089,8 +18089,8 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t149.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t149-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18182,8 +18182,8 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double alpha = 1.0;
         double beta = 1.0;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t150.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t150-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18271,8 +18271,8 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double alpha = 1.0;
         double beta = 1.0;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t151.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t151-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18360,8 +18360,8 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double alpha = 5.0;
         double beta = 1.0;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t152.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t152-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18448,8 +18448,8 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double alpha = 5.0;
         double beta = 1.0;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t153.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t153-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18536,8 +18536,8 @@ TEST_CASE("Testing FreqMover", "[FreqMover]") {
         double alpha = 1.0;
         double beta = 5.0;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t154.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t154-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -18629,8 +18629,8 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 3 pairs and concentration 1
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-dpgibbssamper-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-dpgibbssampler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-dpgibbssamper-test1-" + tag + "-t155.cfg";
+        std::string log_path = "data/tmp-config-dpgibbssampler-test1-" + tag + "-t155-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -18773,8 +18773,8 @@ TEST_CASE("Testing DirichletProcessGibbsSampler with 6 pairs and concentration 1
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-dpgibbssamper-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-dpgibbssampler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-dpgibbssamper-test2-" + tag + "-t156.cfg";
+        std::string log_path = "data/tmp-config-dpgibbssampler-test2-" + tag + "-t156-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -18922,8 +18922,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 1.0",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-rjsampler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-rjsampler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-rjsampler-test1-" + tag + "-t157.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test1-" + tag + "-t157-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -19070,8 +19070,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-rjsampler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-rjsampler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-rjsampler-test2-" + tag + "-t158.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test2-" + tag + "-t158-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -19220,8 +19220,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-rjsampler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-rjsampler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-rjsampler-test3-" + tag + "-t159.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test3-" + tag + "-t159-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -19370,8 +19370,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-rjsampler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-rjsampler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-rjsampler-test4-" + tag + "-t160.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test4-" + tag + "-t160-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -19535,8 +19535,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-rjsampler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-rjsampler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-rjsampler-test5-" + tag + "-t161.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test5-" + tag + "-t161-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -19698,8 +19698,8 @@ TEST_CASE("Testing EventTimeScaler for dirichlet trees", "[EventTimeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t162.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t162-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -19779,8 +19779,8 @@ TEST_CASE("Testing EventTimeScaler for dirichlet trees", "[EventTimeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t163.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t163-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -19864,8 +19864,8 @@ TEST_CASE("Testing MeanPopulationSizeScaler for dirichlet trees", "[MeanPopulati
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t164.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t164-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -19944,8 +19944,8 @@ TEST_CASE("Testing MeanPopulationSizeScaler for dirichlet trees", "[MeanPopulati
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t165.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t165-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20027,8 +20027,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[Relati
     SECTION("Testing dir(1, 1, 1) prior and no optimizing") {
         std::vector<double> alphas = {1.0, 1.0, 1.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t166.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t166-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20133,8 +20133,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(1, 1, 1)", "[Relati
     SECTION("Testing dir(1, 1, 1) prior with optimizing") {
         std::vector<double> alphas = {1.0, 1.0, 1.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t167.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t167-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20244,8 +20244,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[Relati
     SECTION("Testing dir(3, 3, 3) prior and no optimizing") {
         std::vector<double> alphas = {3.0, 3.0, 3.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t168.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t168-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20350,8 +20350,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(3, 3, 3)", "[Relati
     SECTION("Testing dir(3, 3, 3) prior with optimizing") {
         std::vector<double> alphas = {3.0, 3.0, 3.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t169.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t169-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20460,8 +20460,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[Rel
     SECTION("Testing dir(10, 10, 10) prior and no optimizing") {
         std::vector<double> alphas = {10.0, 10.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t170.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t170-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20566,8 +20566,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(10, 10, 10)", "[Rel
     SECTION("Testing dir(10, 10, 10) prior with optimizing") {
         std::vector<double> alphas = {10.0, 10.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t171.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t171-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20676,8 +20676,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[Rela
     SECTION("Testing dir(15, 5, 20) prior and no optimizing") {
         std::vector<double> alphas = {15.0, 5.0, 20.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t172.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t172-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20782,8 +20782,8 @@ TEST_CASE("Testing RelativePopulationSizeMixer for dirichlet(15, 5, 20)", "[Rela
     SECTION("Testing dir(15, 5, 20) prior with optimizing") {
         std::vector<double> alphas = {15.0, 5.0, 20.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t173.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t173-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -20898,8 +20898,8 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler for dirichlet trees",
         double rate_shape = 4.0;
         double rate_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t174.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t174-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -20999,8 +20999,8 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with height only",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t175.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t175-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21093,8 +21093,8 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no size",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t176.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t176-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21191,8 +21191,8 @@ TEST_CASE("Testing UnivariateTimeMeanSizeRateScaler with no rate",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t177.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t177-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21290,8 +21290,8 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler for dirichlet trees
         double rate_shape = 4.0;
         double rate_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t178.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t178-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21391,8 +21391,8 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with height only",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t179.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t179-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21485,8 +21485,8 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no size",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t180.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t180-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21583,8 +21583,8 @@ TEST_CASE("Testing UnivariateCompositeTimeMeanSizeRateScaler with no rate",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t181.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t181-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21683,8 +21683,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer for dirichlet trees",
         double rate_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t182.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t182-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21812,8 +21812,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with height only",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t183.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t183-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -21906,8 +21906,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with no size",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t184.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t184-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -22009,8 +22009,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with no mean size",
         double rate_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t185.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t185-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -22135,8 +22135,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with no rate",
         double rate_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t186.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t186-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -22266,8 +22266,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t187.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t187-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22455,8 +22455,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-t188.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-t188-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22597,8 +22597,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed multipliers",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t189.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t189-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22782,8 +22782,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed mean sizes",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t190.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t190-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -22953,8 +22953,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 singletons",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-t191.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-t191-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -23141,8 +23141,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons",
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t192.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t192-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -23473,8 +23473,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and shared event",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t193.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t193-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -23668,8 +23668,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and sh
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t194.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t194-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -24000,8 +24000,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs with fixed sizes and share
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-t195.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-t195-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -24153,8 +24153,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed multipliers and 
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t196.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t196-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -24340,8 +24340,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with 4 pairs and fixed mean sizes and s
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t197.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t197-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -24509,8 +24509,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-t198.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-t198-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24673,8 +24673,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and fi
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t199.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t199-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -24974,8 +24974,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and fi
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t200.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t200-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -25267,8 +25267,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and fi
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t201.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t201-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -25529,8 +25529,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t202.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t202-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -25791,8 +25791,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons and sh
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t203.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t203-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -26094,8 +26094,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t204.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t204-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -26391,8 +26391,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t205.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t205-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -26659,8 +26659,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-t206.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-t206-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -26878,8 +26878,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-t207.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-t207-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -27099,8 +27099,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-t208.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-t208-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -27286,8 +27286,8 @@ TEST_CASE("Testing TimeMeanSizeRateMixer with mix of pairs and singletons with f
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-t209.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-t209-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -27474,8 +27474,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer for dirichlet trees",
         double rate_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t210.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t210-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -27604,8 +27604,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with height only",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t211.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t211-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -27700,8 +27700,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with no size",
         double rate_shape = 4.0;
         double rate_scale = 0.5;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t212.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t212-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -27804,8 +27804,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with no mean size",
         double rate_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t213.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t213-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -27931,8 +27931,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with no rate",
         double rate_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t214.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t214-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_time_prior:\n";
@@ -28063,8 +28063,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t215.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t215-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28253,8 +28253,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed si
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-t216.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test2-" + tag + "-t216-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28396,8 +28396,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed mu
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t217.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t217-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28582,8 +28582,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed me
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t218.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test1-" + tag + "-t218-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28754,8 +28754,8 @@ TEST_CASE("Testing tree-specfic TimeMeanSizeRateMixer with 4 singletons",
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-t219.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test3-" + tag + "-t219-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -28943,8 +28943,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t220.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t220-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -29276,8 +29276,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and shared e
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t221.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t221-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -29472,8 +29472,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t222.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t222-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -29805,8 +29805,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs with fixed s
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-t223.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test7-" + tag + "-t223-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -29959,8 +29959,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed mu
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t224.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t224-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -30147,8 +30147,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with 4 pairs and fixed me
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t225.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test5-" + tag + "-t225-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -30317,8 +30317,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0, 7.5};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05, 0.1};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-t226.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test8-" + tag + "-t226-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -30482,8 +30482,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t227.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t227-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -30784,8 +30784,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t228.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t228-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -31078,8 +31078,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t229.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test4-" + tag + "-t229-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -31341,8 +31341,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t230.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t230-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -31604,8 +31604,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t231.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t231-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -31908,8 +31908,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t232.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t232-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -32206,8 +32206,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::vector<double> alphas2 = {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t233.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test6-" + tag + "-t233-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -32475,8 +32475,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-t234.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test10-" + tag + "-t234-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -32695,8 +32695,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-t235.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test11-" + tag + "-t235-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -32917,8 +32917,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-t236.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test12-" + tag + "-t236-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -33105,8 +33105,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateMixer with mix of pairs and sin
         std::vector<double> alphas {5.0, 10.0, 15.0};
         std::vector<double> alphas2 {5.0, 10.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-t237.cfg";
+        std::string log_path = "data/tmp-config-timemeansizeratemixer-test13-" + tag + "-t237-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -33294,8 +33294,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-t238.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-t238-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -33458,8 +33458,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-t239.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-t239-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -33599,8 +33599,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-t240.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-t240-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -33765,8 +33765,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-t241.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-t241-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -34011,8 +34011,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-t242.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-t242-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -34180,8 +34180,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-t243.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-t243-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -34406,8 +34406,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-t244.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-t244-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -34549,8 +34549,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-t245.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-t245-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -34685,8 +34685,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-t246.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-t246-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -34793,8 +34793,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 singletons and fixed rates",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-t247.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-t247-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -34931,8 +34931,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and f
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-t248.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-t248-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -35138,8 +35138,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs and shared event and fixe
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-t249.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-t249-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -35279,8 +35279,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with mix of pairs and singletons and s
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-t250.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-t250-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -35466,8 +35466,8 @@ TEST_CASE("Testing TimeMeanSizeRateScaler with 4 pairs with fixed mean sizes and
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-t251.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-t251-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -35579,8 +35579,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-t252.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test1-" + tag + "-t252-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -35744,8 +35744,8 @@ TEST_CASE("Testing tree-specfic TimeMeanSizeRateScaler with 4 pairs with fixed m
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-t253.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test2-" + tag + "-t253-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -35886,8 +35886,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 singletons",
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-t254.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test4-" + tag + "-t254-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -36053,8 +36053,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with mix of pairs and si
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-t255.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test5-" + tag + "-t255-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -36300,8 +36300,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs and shared 
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-t256.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test6-" + tag + "-t256-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -36470,8 +36470,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with mix of pairs and si
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-t257.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test7-" + tag + "-t257-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -36697,8 +36697,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs with fixed 
         std::vector<double> mu_shapes {5.0, 3.0, 4.0, 10.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-t258.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test8-" + tag + "-t258-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -36841,8 +36841,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs and fixed r
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-t259.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test9-" + tag + "-t259-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -36978,8 +36978,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs with fixed 
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-t260.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test10-" + tag + "-t260-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -37088,8 +37088,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 singletons and fi
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-t261.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test12-" + tag + "-t261-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -37227,8 +37227,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with mix of pairs and si
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-t262.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test13-" + tag + "-t262-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -37435,8 +37435,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs and shared 
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-t263.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test14-" + tag + "-t263-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -37577,8 +37577,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with mix of pairs and si
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-t264.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test15-" + tag + "-t264-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -37765,8 +37765,8 @@ TEST_CASE("Testing tree-specific TimeMeanSizeRateScaler with 4 pairs with fixed 
         double height_shape = 5.0;
         double height_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-t265.cfg";
+        std::string log_path = "data/tmp-config-compositetimemeansizeratescaler-test16-" + tag + "-t265-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -37873,8 +37873,8 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1)", "[Relat
     SECTION("Testing dir(1, 1, 1) prior with optimizing") {
         std::vector<double> alphas = {1.0, 1.0, 1.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t266.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t266-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -37987,8 +37987,8 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(1, 1, 1) and gamma
         double scale = 0.1;
         std::vector<double> alphas = {1.0, 1.0, 1.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t267.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t267-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -38108,8 +38108,8 @@ TEST_CASE("Testing RelativePopulationSizeMovers for dirichlet(10, 15, 5) and gam
         double scale = 0.1;
         std::vector<double> alphas = {10.0, 15.0, 5.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t268.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t268-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -38228,8 +38228,8 @@ TEST_CASE("Testing RelativePopulationSizeMovers for singleton with dirichlet(10,
         double scale = 0.1;
         std::vector<double> alphas = {10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t269.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t269-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -38341,8 +38341,8 @@ TEST_CASE("Testing tree-specific FreqMover with 3 pairs",
         std::vector<double> freq_alphas {1.0, 1.0, 3.0};
         std::vector<double> freq_betas  {1.0, 3.0, 1.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t270.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t270-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -38465,8 +38465,8 @@ TEST_CASE("Testing tree-specific RelativePopulationSizeMixer with 3 pairs",
         double height_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t271.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t271-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -38625,8 +38625,8 @@ TEST_CASE("Testing tree-specific MeanPopulationSizeScaler with 3 pairs",
         std::vector<double> size_shapes {10.0, 5.0, 5.0};
         std::vector<double> size_scales {0.1, 0.1, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t272.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t272-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -38755,8 +38755,8 @@ TEST_CASE("Testing tree-specific RelativePopulationSizeMovers with 3 pairs",
         double height_scale = 0.1;
         std::vector<double> alphas = {5.0, 10.0, 15.0};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t273.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t273-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -38921,8 +38921,8 @@ TEST_CASE("Testing tree-specific PopulationSizeScalers with 3 pairs",
         std::vector<double> size_shapes {10.0, 5.0, 8.0};
         std::vector<double> size_scales {0.1, 0.1, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t274.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t274-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -39080,8 +39080,8 @@ TEST_CASE("Testing tree-specific MutationRateScaler with 3 pairs",
         std::vector<double> rate_shapes {10.0, 5.0, 5.0};
         std::vector<double> rate_scales {0.1, 0.1, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t275.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t275-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -39304,8 +39304,8 @@ TEST_CASE("Testing tree-specific EventTimeScaler", "[EventTimeScaler]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t276.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t276-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_model_prior:\n";
@@ -39392,8 +39392,8 @@ TEST_CASE("Testing tree-specific EventTimeMover", "[EventTimeMover]") {
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t277.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t277-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "event_model_prior:\n";
@@ -39484,8 +39484,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 pairs",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t278.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t278-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -39636,8 +39636,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 pairs with constrained
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-t279.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test2-" + tag + "-t279-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -39777,8 +39777,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 singletons",
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-t280.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test4-" + tag + "-t280-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -39922,8 +39922,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 pairs and shared event
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t281.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t281-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -40078,8 +40078,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 pairs with constrained
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-t282.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test8-" + tag + "-t282-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -40223,8 +40223,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 pairs and recent diver
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t283.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test1-" + tag + "-t283-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -40375,8 +40375,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 4 pairs and shared event
         std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t284.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-test6-" + tag + "-t284-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -40530,8 +40530,8 @@ TEST_CASE("Testing RootPopulationSizeScaler for relative root size", "[RootPopul
         double shape = 10.0;
         double scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t285.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t285-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -40629,8 +40629,8 @@ TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTre
         double rel_shape = 20.0;
         double rel_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t286.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t286-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -40744,8 +40744,8 @@ TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTre
         double rel_shape = 20.0;
         double rel_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t287.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t287-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -40854,8 +40854,8 @@ TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTre
         double rel_shape = 20.0;
         double rel_scale = 0.1;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t288.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t288-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -40960,8 +40960,8 @@ TEST_CASE("Testing PopulationSizeScalers for ComparisonRelativeRootPopulationTre
         double shape = 10.0;
         double scale = 0.01;
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t289.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t289-state-run-1.log";
         std::ofstream out;
         out.open(test_path);
         out << "global_comparison_settings:\n";
@@ -41073,8 +41073,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test1-" + tag + "-t290.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test1-" + tag + "-t290-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -41270,8 +41270,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test2-" + tag + "-t291.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test2-" + tag + "-t291-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -41457,8 +41457,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test3-" + tag + "-t292.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test3-" + tag + "-t292-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -41609,8 +41609,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test4-" + tag + "-t293.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test4-" + tag + "-t293-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -41784,8 +41784,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test5-" + tag + "-t294.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test5-" + tag + "-t294-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -41960,8 +41960,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test6-" + tag + "-t295.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test6-" + tag + "-t295-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -42120,8 +42120,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test7-" + tag + "-t296.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test7-" + tag + "-t296-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -42293,8 +42293,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test8-" + tag + "-t297.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test8-" + tag + "-t297-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -42447,8 +42447,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test9-" + tag + "-t298.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test9-" + tag + "-t298-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -42604,8 +42604,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test10-" + tag + "-t299.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test10-" + tag + "-t299-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -42790,8 +42790,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test11-" + tag + "-t300.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test11-" + tag + "-t300-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -42956,8 +42956,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test12-" + tag + "-t301.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test12-" + tag + "-t301-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -43123,8 +43123,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test13-" + tag + "-t302.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test13-" + tag + "-t302-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -43274,8 +43274,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test14-" + tag + "-t303.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test14-" + tag + "-t303-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -43438,8 +43438,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test15-" + tag + "-t304.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test15-" + tag + "-t304-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -43583,8 +43583,8 @@ TEST_CASE("Testing TimeSizeRateScaler with 3 ComparisonRelativeRootPopulationTre
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test16-" + tag + "-t305.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test16-" + tag + "-t305-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -43731,8 +43731,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test17-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test17-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test17-" + tag + "-t306.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test17-" + tag + "-t306-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -43930,8 +43930,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test18-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test18-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test18-" + tag + "-t307.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test18-" + tag + "-t307-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -44119,8 +44119,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test19-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test19-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test19-" + tag + "-t308.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test19-" + tag + "-t308-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -44273,8 +44273,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test20-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test20-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test20-" + tag + "-t309.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test20-" + tag + "-t309-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -44450,8 +44450,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test21-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test21-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test21-" + tag + "-t310.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test21-" + tag + "-t310-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -44628,8 +44628,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test22-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test22-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test22-" + tag + "-t311.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test22-" + tag + "-t311-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -44790,8 +44790,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test23-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test23-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test23-" + tag + "-t312.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test23-" + tag + "-t312-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -44965,8 +44965,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test24-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test24-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test24-" + tag + "-t313.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test24-" + tag + "-t313-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -45121,8 +45121,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test25-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test25-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test25-" + tag + "-t314.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test25-" + tag + "-t314-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -45280,8 +45280,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test26-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test26-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test26-" + tag + "-t315.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test26-" + tag + "-t315-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -45468,8 +45468,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test27-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test27-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test27-" + tag + "-t316.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test27-" + tag + "-t316-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -45636,8 +45636,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test28-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test28-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test28-" + tag + "-t317.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test28-" + tag + "-t317-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -45805,8 +45805,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test29-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test29-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test29-" + tag + "-t318.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test29-" + tag + "-t318-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -45958,8 +45958,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test30-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test30-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test30-" + tag + "-t319.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test30-" + tag + "-t319-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -46124,8 +46124,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test31-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test31-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test31-" + tag + "-t320.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test31-" + tag + "-t320-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -46271,8 +46271,8 @@ TEST_CASE("Testing TimeSizeRateScaler with fixed model, 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test32-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test32-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test32-" + tag + "-t321.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test32-" + tag + "-t321-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -46422,8 +46422,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test33-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test33-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test33-" + tag + "-t322.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test33-" + tag + "-t322-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -46620,8 +46620,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test34-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test34-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test34-" + tag + "-t323.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test34-" + tag + "-t323-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -46808,8 +46808,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test35-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test35-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test35-" + tag + "-t324.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test35-" + tag + "-t324-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -46961,8 +46961,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test36-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test36-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test36-" + tag + "-t325.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test36-" + tag + "-t325-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -47137,8 +47137,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test37-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test37-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test37-" + tag + "-t326.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test37-" + tag + "-t326-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -47314,8 +47314,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test38-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test38-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test38-" + tag + "-t327.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test38-" + tag + "-t327-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -47475,8 +47475,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test39-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test39-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test39-" + tag + "-t328.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test39-" + tag + "-t328-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -47649,8 +47649,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test40-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test40-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test40-" + tag + "-t329.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test40-" + tag + "-t329-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -47804,8 +47804,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test41-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test41-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test41-" + tag + "-t330.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test41-" + tag + "-t330-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -47962,8 +47962,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test42-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test42-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test42-" + tag + "-t331.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test42-" + tag + "-t331-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -48149,8 +48149,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test43-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test43-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test43-" + tag + "-t332.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test43-" + tag + "-t332-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -48316,8 +48316,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test44-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test44-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test44-" + tag + "-t333.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test44-" + tag + "-t333-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -48484,8 +48484,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test45-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test45-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test45-" + tag + "-t334.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test45-" + tag + "-t334-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -48636,8 +48636,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test46-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test46-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test46-" + tag + "-t335.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test46-" + tag + "-t335-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -48801,8 +48801,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test47-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test47-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test47-" + tag + "-t336.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test47-" + tag + "-t336-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -48947,8 +48947,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with 3 ComparisonRelativeRoo
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test48-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test48-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test48-" + tag + "-t337.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test48-" + tag + "-t337-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -49096,8 +49096,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test49-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test49-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test49-" + tag + "-t338.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test49-" + tag + "-t338-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -49296,8 +49296,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test50-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test50-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test50-" + tag + "-t339.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test50-" + tag + "-t339-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -49486,8 +49486,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test51-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test51-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test51-" + tag + "-t340.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test51-" + tag + "-t340-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -49641,8 +49641,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test52-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test52-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test52-" + tag + "-t341.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test52-" + tag + "-t341-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -49819,8 +49819,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test53-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test53-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test53-" + tag + "-t342.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test53-" + tag + "-t342-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -49998,8 +49998,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test54-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test54-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test54-" + tag + "-t343.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test54-" + tag + "-t343-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -50161,8 +50161,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test55-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test55-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test55-" + tag + "-t344.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test55-" + tag + "-t344-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -50337,8 +50337,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test56-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test56-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test56-" + tag + "-t345.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test56-" + tag + "-t345-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -50494,8 +50494,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test57-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test57-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test57-" + tag + "-t346.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test57-" + tag + "-t346-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -50654,8 +50654,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test58-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test58-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test58-" + tag + "-t347.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test58-" + tag + "-t347-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -50843,8 +50843,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test59-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test59-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test59-" + tag + "-t348.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test59-" + tag + "-t348-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -51012,8 +51012,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test60-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test60-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test60-" + tag + "-t349.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test60-" + tag + "-t349-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -51182,8 +51182,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test61-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test61-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test61-" + tag + "-t350.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test61-" + tag + "-t350-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -51336,8 +51336,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test62-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test62-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test62-" + tag + "-t351.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test62-" + tag + "-t351-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -51503,8 +51503,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test63-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test63-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test63-" + tag + "-t352.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test63-" + tag + "-t352-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -51651,8 +51651,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateScaler with fixed model, 3 Comparis
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test64-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test64-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateScaler-test64-" + tag + "-t353.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateScaler-test64-" + tag + "-t353-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -51803,8 +51803,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test1-" + tag + "-t354.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test1-" + tag + "-t354-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -52000,8 +52000,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test2-" + tag + "-t355.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test2-" + tag + "-t355-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -52187,8 +52187,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test3-" + tag + "-t356.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test3-" + tag + "-t356-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -52339,8 +52339,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test4-" + tag + "-t357.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test4-" + tag + "-t357-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -52514,8 +52514,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test5-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test5-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test5-" + tag + "-t358.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test5-" + tag + "-t358-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -52690,8 +52690,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test6-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test6-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test6-" + tag + "-t359.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test6-" + tag + "-t359-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -52850,8 +52850,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test7-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test7-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test7-" + tag + "-t360.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test7-" + tag + "-t360-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53023,8 +53023,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test8-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test8-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test8-" + tag + "-t361.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test8-" + tag + "-t361-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53177,8 +53177,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test9-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test9-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test9-" + tag + "-t362.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test9-" + tag + "-t362-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53334,8 +53334,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test10-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test10-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test10-" + tag + "-t363.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test10-" + tag + "-t363-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53520,8 +53520,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test11-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test11-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test11-" + tag + "-t364.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test11-" + tag + "-t364-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53686,8 +53686,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test12-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test12-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test12-" + tag + "-t365.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test12-" + tag + "-t365-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53853,8 +53853,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test13-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test13-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test13-" + tag + "-t366.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test13-" + tag + "-t366-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -54004,8 +54004,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test14-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test14-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test14-" + tag + "-t367.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test14-" + tag + "-t367-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -54168,8 +54168,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test15-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test15-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test15-" + tag + "-t368.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test15-" + tag + "-t368-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -54313,8 +54313,8 @@ TEST_CASE("Testing TimeSizeRateMixer with 3 ComparisonRelativeRootPopulationTree
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test16-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test16-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test16-" + tag + "-t369.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test16-" + tag + "-t369-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -54461,8 +54461,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test17-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test17-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test17-" + tag + "-t370.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test17-" + tag + "-t370-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -54660,8 +54660,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test18-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test18-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test18-" + tag + "-t371.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test18-" + tag + "-t371-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -54849,8 +54849,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test19-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test19-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test19-" + tag + "-t372.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test19-" + tag + "-t372-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -55003,8 +55003,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test20-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test20-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test20-" + tag + "-t373.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test20-" + tag + "-t373-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -55180,8 +55180,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test21-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test21-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test21-" + tag + "-t374.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test21-" + tag + "-t374-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -55358,8 +55358,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test22-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test22-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test22-" + tag + "-t375.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test22-" + tag + "-t375-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -55520,8 +55520,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test23-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test23-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test23-" + tag + "-t376.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test23-" + tag + "-t376-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -55695,8 +55695,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test24-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test24-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test24-" + tag + "-t377.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test24-" + tag + "-t377-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -55851,8 +55851,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test25-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test25-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test25-" + tag + "-t378.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test25-" + tag + "-t378-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -56010,8 +56010,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test26-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test26-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test26-" + tag + "-t379.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test26-" + tag + "-t379-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -56198,8 +56198,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test27-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test27-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test27-" + tag + "-t380.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test27-" + tag + "-t380-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -56366,8 +56366,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test28-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test28-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test28-" + tag + "-t381.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test28-" + tag + "-t381-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -56535,8 +56535,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test29-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test29-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test29-" + tag + "-t382.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test29-" + tag + "-t382-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -56688,8 +56688,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test30-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test30-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test30-" + tag + "-t383.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test30-" + tag + "-t383-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -56854,8 +56854,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test31-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test31-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test31-" + tag + "-t384.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test31-" + tag + "-t384-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -57001,8 +57001,8 @@ TEST_CASE("Testing TimeSizeRateMixer with fixed model, 3 ComparisonRelativeRootP
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test32-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test32-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test32-" + tag + "-t385.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test32-" + tag + "-t385-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -57152,8 +57152,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test33-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test33-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test33-" + tag + "-t386.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test33-" + tag + "-t386-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -57350,8 +57350,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test34-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test34-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test34-" + tag + "-t387.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test34-" + tag + "-t387-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -57538,8 +57538,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test35-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test35-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test35-" + tag + "-t388.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test35-" + tag + "-t388-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -57691,8 +57691,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test36-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test36-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test36-" + tag + "-t389.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test36-" + tag + "-t389-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -57867,8 +57867,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test37-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test37-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test37-" + tag + "-t390.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test37-" + tag + "-t390-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -58044,8 +58044,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test38-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test38-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test38-" + tag + "-t391.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test38-" + tag + "-t391-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -58205,8 +58205,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test39-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test39-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test39-" + tag + "-t392.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test39-" + tag + "-t392-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -58379,8 +58379,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test40-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test40-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test40-" + tag + "-t393.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test40-" + tag + "-t393-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -58534,8 +58534,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test41-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test41-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test41-" + tag + "-t394.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test41-" + tag + "-t394-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -58692,8 +58692,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test42-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test42-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test42-" + tag + "-t395.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test42-" + tag + "-t395-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -58879,8 +58879,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test43-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test43-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test43-" + tag + "-t396.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test43-" + tag + "-t396-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -59046,8 +59046,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test44-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test44-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test44-" + tag + "-t397.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test44-" + tag + "-t397-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -59214,8 +59214,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test45-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test45-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test45-" + tag + "-t398.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test45-" + tag + "-t398-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -59366,8 +59366,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test46-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test46-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test46-" + tag + "-t399.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test46-" + tag + "-t399-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -59531,8 +59531,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test47-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test47-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test47-" + tag + "-t400.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test47-" + tag + "-t400-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -59677,8 +59677,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test48-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test48-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test48-" + tag + "-t401.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test48-" + tag + "-t401-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -59826,8 +59826,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test49-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test49-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test49-" + tag + "-t402.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test49-" + tag + "-t402-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -60026,8 +60026,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test50-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test50-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test50-" + tag + "-t403.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test50-" + tag + "-t403-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -60216,8 +60216,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test51-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test51-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test51-" + tag + "-t404.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test51-" + tag + "-t404-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -60371,8 +60371,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test52-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test52-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test52-" + tag + "-t405.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test52-" + tag + "-t405-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -60549,8 +60549,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test53-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test53-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test53-" + tag + "-t406.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test53-" + tag + "-t406-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -60728,8 +60728,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test54-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test54-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test54-" + tag + "-t407.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test54-" + tag + "-t407-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -60891,8 +60891,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test55-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test55-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test55-" + tag + "-t408.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test55-" + tag + "-t408-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -61067,8 +61067,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test56-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test56-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test56-" + tag + "-t409.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test56-" + tag + "-t409-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -61224,8 +61224,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test57-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test57-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test57-" + tag + "-t410.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test57-" + tag + "-t410-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -61384,8 +61384,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test58-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test58-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test58-" + tag + "-t411.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test58-" + tag + "-t411-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -61573,8 +61573,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test59-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test59-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test59-" + tag + "-t412.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test59-" + tag + "-t412-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -61742,8 +61742,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test60-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test60-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test60-" + tag + "-t413.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test60-" + tag + "-t413-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -61912,8 +61912,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test61-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test61-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test61-" + tag + "-t414.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test61-" + tag + "-t414-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -62066,8 +62066,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test62-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test62-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test62-" + tag + "-t415.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test62-" + tag + "-t415-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -62233,8 +62233,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test63-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test63-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test63-" + tag + "-t416.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test63-" + tag + "-t416-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -62381,8 +62381,8 @@ TEST_CASE("Testing tree-specific TimeSizeRateMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test64-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test64-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeSizeRateMixer-test64-" + tag + "-t417.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeSizeRateMixer-test64-" + tag + "-t417-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -62533,8 +62533,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test33-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test33-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test33-" + tag + "-t418.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test33-" + tag + "-t418-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -62731,8 +62731,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test34-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test34-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test34-" + tag + "-t419.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test34-" + tag + "-t419-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -62919,8 +62919,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test35-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test35-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test35-" + tag + "-t420.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test35-" + tag + "-t420-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -63072,8 +63072,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test36-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test36-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test36-" + tag + "-t421.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test36-" + tag + "-t421-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -63248,8 +63248,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test37-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test37-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test37-" + tag + "-t422.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test37-" + tag + "-t422-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -63425,8 +63425,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test38-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test38-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test38-" + tag + "-t423.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test38-" + tag + "-t423-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -63586,8 +63586,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test39-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test39-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test39-" + tag + "-t424.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test39-" + tag + "-t424-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -63760,8 +63760,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test40-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test40-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test40-" + tag + "-t425.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test40-" + tag + "-t425-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -63915,8 +63915,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test41-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test41-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test41-" + tag + "-t426.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test41-" + tag + "-t426-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -64073,8 +64073,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test42-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test42-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test42-" + tag + "-t427.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test42-" + tag + "-t427-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -64260,8 +64260,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test43-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test43-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test43-" + tag + "-t428.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test43-" + tag + "-t428-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -64427,8 +64427,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test44-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test44-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test44-" + tag + "-t429.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test44-" + tag + "-t429-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -64595,8 +64595,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test45-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test45-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test45-" + tag + "-t430.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test45-" + tag + "-t430-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -64747,8 +64747,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test46-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test46-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test46-" + tag + "-t431.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test46-" + tag + "-t431-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -64912,8 +64912,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test47-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test47-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test47-" + tag + "-t432.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test47-" + tag + "-t432-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -65058,8 +65058,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with 3 ComparisonRelativeRoot
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test48-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test48-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test48-" + tag + "-t433.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test48-" + tag + "-t433-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -65207,8 +65207,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test49-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test49-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test49-" + tag + "-t434.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test49-" + tag + "-t434-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -65407,8 +65407,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test50-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test50-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test50-" + tag + "-t435.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test50-" + tag + "-t435-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -65597,8 +65597,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test51-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test51-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test51-" + tag + "-t436.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test51-" + tag + "-t436-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -65752,8 +65752,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test52-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test52-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test52-" + tag + "-t437.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test52-" + tag + "-t437-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -65930,8 +65930,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test53-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test53-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test53-" + tag + "-t438.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test53-" + tag + "-t438-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -66109,8 +66109,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test54-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test54-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test54-" + tag + "-t439.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test54-" + tag + "-t439-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -66272,8 +66272,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test55-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test55-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test55-" + tag + "-t440.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test55-" + tag + "-t440-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -66448,8 +66448,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test56-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test56-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test56-" + tag + "-t441.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test56-" + tag + "-t441-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -66605,8 +66605,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test57-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test57-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test57-" + tag + "-t442.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test57-" + tag + "-t442-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -66765,8 +66765,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test58-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test58-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test58-" + tag + "-t443.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test58-" + tag + "-t443-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -66954,8 +66954,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test59-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test59-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test59-" + tag + "-t444.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test59-" + tag + "-t444-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -67123,8 +67123,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test60-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test60-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test60-" + tag + "-t445.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test60-" + tag + "-t445-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -67293,8 +67293,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
         std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test61-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test61-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test61-" + tag + "-t446.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test61-" + tag + "-t446-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -67447,8 +67447,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test62-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test62-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test62-" + tag + "-t447.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test62-" + tag + "-t447-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -67614,8 +67614,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> size_shapes {10.0, 2.0, 5.0};
         std::vector<double> size_scales {0.1, 0.2, 0.2};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test63-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test63-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test63-" + tag + "-t448.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test63-" + tag + "-t448-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -67762,8 +67762,8 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         std::vector<double> mu_shapes {5.0, 3.0, 4.0};
         std::vector<double> mu_scales {0.15, 0.2, 0.25};
         std::string tag = _TEST_OPERATOR_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test64-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test64-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-test64-" + tag + "-t449.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-test64-" + tag + "-t449-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -67836,6 +67836,6450 @@ TEST_CASE("Testing tree-specific TimeRootSizeMixer with fixed model, 3 Compariso
         op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
         for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 pairs",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest1-" + tag + "-t278.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest1-" + tag + "-t278-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 pairs with constrained sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 pairs with constrained sizes and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest2-" + tag + "-t279.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest2-" + tag + "-t279-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 == size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 singletons",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 singletons with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest4-" + tag + "-t280.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest4-" + tag + "-t280-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        unsigned int niterations = 800000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(tree->get_leaf_node_count() == 1);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 pairs and shared event",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 pairs with shared event and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest6-" + tag + "-t281.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest6-" + tag + "-t281-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 pairs with constrained sizes and shared event",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 pairs with constrained sizes and shared event and optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest8-" + tag + "-t282.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest8-" + tag + "-t282-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 2;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 == size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 pairs and recent divergences",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double height_shape = 2.0;
+        double height_scale = 0.001;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest1-" + tag + "-t283.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest1-" + tag + "-t283-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 4 pairs and shared event and recent divergences",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 4 pairs with shared event and optimizing") {
+        double height_shape = 2.0;
+        double height_scale = 0.001;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0, 4.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2, 0.5};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizemixer-globaltest6-" + tag + "-t284.cfg";
+        std::string log_path = "data/tmp-config-comptimesizemixer-globaltest6-" + tag + "-t284-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(3) << "\n";
+        os << "                    scale: " << size_scales.at(3) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.01));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<EventTimeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        SampleSummarizer<double> height_summary;
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            
+            if ((i + 1) % sample_freq == 0) {
+                height_summary.add_sample(comparisons.get_tree(0)->get_root_height());
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    REQUIRE(comparisons.get_number_of_events() == 1);
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(size_root);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        REQUIRE(height_summary.sample_size() == nsamples);
+        REQUIRE(height_summary.mean() == Approx(height_shape * height_scale).epsilon(0.005));
+        REQUIRE(height_summary.variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+        }
+    }
+}
+
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest33-" + tag + "-t418.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest33-" + tag + "-t418-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.005));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with constrained sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest34-" + tag + "-t419.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest34-" + tag + "-t419-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 == size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with constrained sizes and fixed rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest35-" + tag + "-t420.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest35-" + tag + "-t420-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 == size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with fixed mutation rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest36-" + tag + "-t421.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest36-" + tag + "-t421-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with fixed leaf sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest37-" + tag + "-t422.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest37-" + tag + "-t422-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(1)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with fixed leaf sizes and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest38-" + tag + "-t423.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest38-" + tag + "-t423-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(1)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with fixed relative root size",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest39-" + tag + "-t424.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest39-" + tag + "-t424-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 450000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with fixed relative root size and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest40-" + tag + "-t425.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest40-" + tag + "-t425-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree pairs with fixed sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest41-" + tag + "-t426.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest41-" + tag + "-t426-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest42-" + tag + "-t427.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest42-" + tag + "-t427-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.005));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles with fixed mutation rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest43-" + tag + "-t428.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest43-" + tag + "-t428-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles with fixed leaf sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest44-" + tag + "-t429.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest44-" + tag + "-t429-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles with fixed leaf sizes and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest45-" + tag + "-t430.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest45-" + tag + "-t430-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles with fixed relative root size",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest46-" + tag + "-t431.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest46-" + tag + "-t431-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles with fixed relative root size and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 sinlges with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest47-" + tag + "-t432.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest47-" + tag + "-t432-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with 3 ComparisonRelativeRootPopulationTree singles with fixed sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest48-" + tag + "-t433.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest48-" + tag + "-t433-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == ntrees);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest49-" + tag + "-t434.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest49-" + tag + "-t434-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 450000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.005));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with constrained sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest50-" + tag + "-t435.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest50-" + tag + "-t435-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 == size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with constrained sizes and fixed rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest51-" + tag + "-t436.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest51-" + tag + "-t436-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 == size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with fixed mutation rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest52-" + tag + "-t437.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest52-" + tag + "-t437-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with fixed leaf sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest53-" + tag + "-t438.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest53-" + tag + "-t438-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(1)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with fixed leaf sizes and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest54-" + tag + "-t439.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest54-" + tag + "-t439-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(1)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with fixed relative root size",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest55-" + tag + "-t440.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest55-" + tag + "-t440-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with fixed relative root size and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest56-" + tag + "-t441.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest56-" + tag + "-t441-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                        REQUIRE(size_leaf2 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree pairs with fixed sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest57-" + tag + "-t442.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest57-" + tag + "-t442-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf2_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_leaf2;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_leaf2 = tree->get_child_population_size(1);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 == size_leaf2);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_leaf2_summaries.at(tree_idx).add_sample(size_leaf2);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf2_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf2_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest58-" + tag + "-t443.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest58-" + tag + "-t443-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.005));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.005));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles with fixed mutation rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest59-" + tag + "-t444.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest59-" + tag + "-t444-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double rel_size_sh;
+        double rel_size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles with fixed leaf sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest60-" + tag + "-t445.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest60-" + tag + "-t445-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles with fixed leaf sizes and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> rel_size_shapes {20.0, 50.0, 10.0};
+        std::vector<double> rel_size_scales {0.1, 0.02, 0.05};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest61-" + tag + "-t446.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest61-" + tag + "-t446-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(0) << "\n";
+        os << "                    scale: " << rel_size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(1) << "\n";
+        os << "                    scale: " << rel_size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        root_relative_population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << rel_size_shapes.at(2) << "\n";
+        os << "                    scale: " << rel_size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        REQUIRE(comparisons.get_tree(0)->get_child_population_size_parameter(0)->is_fixed());
+        REQUIRE(! comparisons.get_tree(0)->get_root_population_size_parameter()->is_fixed());
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<RootPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double rel_size_sh;
+        double rel_size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            rel_size_sh = rel_size_shapes.at(tree_idx);
+            rel_size_sc = rel_size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(0.0));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(rel_size_sh * rel_size_sc).epsilon(0.005));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(rel_size_sh * rel_size_sc * rel_size_sc).epsilon(0.01));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles with fixed relative root size",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest62-" + tag + "-t447.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest62-" + tag + "-t447-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+            op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        double mu_sh;
+        double mu_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+            mu_sh = mu_shapes.at(tree_idx);
+            mu_sc = mu_scales.at(tree_idx);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(mu_sh * mu_sc).epsilon(0.005));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(mu_sh * mu_sc * mu_sc).epsilon(0.01));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles with fixed relative root size and rates",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 sinlges with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> size_shapes {10.0, 2.0, 5.0};
+        std::vector<double> size_scales {0.1, 0.2, 0.2};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest63-" + tag + "-t448.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest63-" + tag + "-t448-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(0) << "\n";
+        os << "                    scale: " << size_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(1) << "\n";
+        os << "                    scale: " << size_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size_shapes.at(2) << "\n";
+        os << "                    scale: " << size_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
+            op_schedule.add_operator(std::make_shared<LeafPopulationSizeScaler>(i, 1.0, 0.5));
+        }
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == 1);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_leaf1_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > size_root_summaries(ntrees);
+        std::vector< SampleSummarizer<double> > mutation_rate_summaries(ntrees);
+
+        comparisons.set_operator_schedule(op_schedule);
+        double size_leaf1;
+        double size_root;
+        double rel_size_root;
+        double mutation_rate;
+        unsigned int niterations = 300000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            for (std::shared_ptr<OperatorInterface> op : comparisons.get_multivariate_time_operators()) {
+                op->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                    size_leaf1 = tree->get_child_population_size(0);
+                    size_root = tree->get_root_population_size();
+                    rel_size_root = tree->get_relative_root_population_size();
+                    mutation_rate = tree->get_mutation_rate();
+                    if (i > (niterations - (sample_freq * 5))) {
+                        REQUIRE(comparisons.get_number_of_events() == 1);
+                        REQUIRE(size_leaf1 != size_root);
+                    }
+                    size_leaf1_summaries.at(tree_idx).add_sample(size_leaf1);
+                    size_root_summaries.at(tree_idx).add_sample(rel_size_root);
+                    mutation_rate_summaries.at(tree_idx).add_sample(mutation_rate);
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+            size_sh = size_shapes.at(tree_idx);
+            size_sc = size_scales.at(tree_idx);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_leaf1_summaries.at(tree_idx).mean() == Approx(size_sh * size_sc).epsilon(0.005));
+            REQUIRE(size_leaf1_summaries.at(tree_idx).variance() == Approx(size_sh * size_sc * size_sc).epsilon(0.01));
+            REQUIRE(size_root_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(size_root_summaries.at(tree_idx).mean() == Approx(2.0));
+            REQUIRE(size_root_summaries.at(tree_idx).variance() == Approx(0.0));
+
+            REQUIRE(mutation_rate_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(mutation_rate_summaries.at(tree_idx).mean() == Approx(1.0));
+            REQUIRE(mutation_rate_summaries.at(tree_idx).variance() == Approx(0.0));
+        }
+    }
+}
+
+TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelativeRootPopulationTree singles with fixed sizes",
+        "[TimeRootSizeMixer]") {
+
+    SECTION("Testing 3 singles with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> mu_shapes {5.0, 3.0, 4.0};
+        std::vector<double> mu_scales {0.15, 0.2, 0.25};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest64-" + tag + "-t449.cfg";
+        std::string log_path = "data/tmp-config-relroot-TimeRootSizeMixer-globaltest64-" + tag + "-t449-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    fixed: [0, 0, 0]\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        root_relative_population_size:\n";
+        os << "            value: 2.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(0) << "\n";
+        os << "                    scale: " << mu_scales.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(1) << "\n";
+        os << "                    scale: " << mu_scales.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2-singleton.nex\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mu_shapes.at(2) << "\n";
+        os << "                    scale: " << mu_scales.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        RelativeRootCollectionSettings settings = RelativeRootCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        ComparisonRelativeRootPopulationTreeCollection comparisons = ComparisonRelativeRootPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        op_schedule.add_operator(std::make_shared<TimeRootSizeMixer>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        for (unsigned int i = 0; i < comparisons.get_number_of_trees(); ++i) {
             op_schedule.add_operator(std::make_shared<MutationRateScaler>(i, 1.0, 0.5));
         }
 

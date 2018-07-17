@@ -274,15 +274,22 @@ double compute_root_likelihood(
         for (unsigned int r = 0; r <= n; ++r) {
             double term = conditionals.at(n).at(r) * root.get_bottom_pattern_probability(n, r);
             sum += term;
-            if (sum < 0.0) {
-                throw EcoevolityError("compute_root_likelihood(): Numerical error");
-            }
+            // if (sum < 0.0) {
+            //     std::ostringstream message;
+            //     message << "compute_root_likelihood(): Numerical error; "
+            //             << "root likelihood is negative: "
+            //             << sum;
+            //     throw EcoevolityError(message.str());
+            // }
         }
     }
 
     // ECOEVOLITY_DEBUG(
     //     std::cerr << "root likelihood: " << sum << std::endl;
     // )
+    if (sum < 0.0) {
+        return 0.0;
+    }
     return sum;
 }
 
@@ -307,38 +314,48 @@ double compute_pattern_likelihood(
     return compute_root_likelihood(root, u, v, mutation_rate, ploidy);
 }
 
-void compute_constant_pattern_likelihoods(
+void compute_constant_pattern_log_likelihood_correction(
         PopulationNode& root,
-        const std::vector<unsigned int>& max_allele_counts,
+        const std::vector< std::vector<unsigned int> > & unique_allele_counts,
+        const std::vector<unsigned int> & unique_allele_count_weights,
         const double u,
         const double v,
         const double mutation_rate,
         const double ploidy,
         const bool markers_are_dominant,
         const bool state_frequencies_are_constrained,
-        double& all_red_pattern_likelihood,
-        double& all_green_pattern_likelihood
+        double& constant_log_likelihood_correction 
         ) {
-    std::vector<unsigned int> red_allele_counts (max_allele_counts.size(), 0); 
-    all_green_pattern_likelihood = compute_pattern_likelihood(root,
-            red_allele_counts,
-            max_allele_counts,
-            u,
-            v,
-            mutation_rate,
-            ploidy,
-            markers_are_dominant);
-    all_red_pattern_likelihood = all_green_pattern_likelihood;
-    if (! state_frequencies_are_constrained) {
-        all_red_pattern_likelihood = compute_pattern_likelihood(root,
-                max_allele_counts,
-                max_allele_counts,
+    double lnl_correction = 0.0;
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < unique_allele_count_weights.size();
+            ++pattern_idx) {
+        std::vector<unsigned int> red_allele_counts (
+                unique_allele_counts.at(pattern_idx).size(),
+                0); 
+        double all_green_likelihood = compute_pattern_likelihood(root,
+                red_allele_counts,
+                unique_allele_counts.at(pattern_idx),
                 u,
                 v,
                 mutation_rate,
                 ploidy,
                 markers_are_dominant);
+        double all_red_likelihood = all_green_likelihood;
+        if (! state_frequencies_are_constrained) {
+            all_red_likelihood = compute_pattern_likelihood(root,
+                    unique_allele_counts.at(pattern_idx),
+                    unique_allele_counts.at(pattern_idx),
+                    u,
+                    v,
+                    mutation_rate,
+                    ploidy,
+                    markers_are_dominant);
+        }
+        lnl_correction += (unique_allele_count_weights.at(pattern_idx) *
+                std::log(1.0 - all_green_likelihood - all_red_likelihood));
     }
+    constant_log_likelihood_correction = lnl_correction;
 }
 
 double get_log_likelihood_for_pattern_range(
@@ -368,7 +385,7 @@ double get_log_likelihood_for_pattern_range(
                 mutation_rate,
                 ploidy,
                 markers_are_dominant);
-        if (pattern_likelihood == 0.0) {
+        if (pattern_likelihood <= 0.0) {
             return -std::numeric_limits<double>::infinity();
         }
         double weight = (double) pattern_weights.at(pattern_idx);
@@ -382,7 +399,8 @@ double get_log_likelihood(
         const std::vector< std::vector<unsigned int> >& red_allele_count_matrix,
         const std::vector< std::vector<unsigned int> >& allele_count_matrix,
         const std::vector<unsigned int>& pattern_weights,
-        const std::vector<unsigned int>& max_allele_counts,
+        const std::vector< std::vector<unsigned int> > & unique_allele_counts,
+        const std::vector<unsigned int> & unique_allele_count_weights,
         const double u,
         const double v,
         const double mutation_rate,
@@ -390,23 +408,24 @@ double get_log_likelihood(
         const bool markers_are_dominant,
         const bool state_frequencies_are_constrained,
         const bool constant_sites_removed,
-        double& all_red_pattern_likelihood,
-        double& all_green_pattern_likelihood,
+        double& constant_log_likelihood_correction,
         unsigned int nthreads
         ) {
+#ifdef BUILD_WITH_THREADS
     if (nthreads < 2) {
+#endif
         if (constant_sites_removed) {
-            compute_constant_pattern_likelihoods(
+            compute_constant_pattern_log_likelihood_correction(
                     root,
-                    max_allele_counts,
+                    unique_allele_counts,
+                    unique_allele_count_weights,
                     u,
                     v,
                     mutation_rate,
                     ploidy,
                     markers_are_dominant,
                     state_frequencies_are_constrained,
-                    all_red_pattern_likelihood,
-                    all_green_pattern_likelihood);
+                    constant_log_likelihood_correction);
         }
         return get_log_likelihood_for_pattern_range(
                 root,
@@ -420,6 +439,7 @@ double get_log_likelihood(
                 mutation_rate,
                 ploidy,
                 markers_are_dominant);
+#ifdef BUILD_WITH_THREADS
     }
     double log_likelihood = 0.0;
     const unsigned int npatterns = pattern_weights.size();
@@ -454,17 +474,17 @@ double get_log_likelihood(
 
     // Use the main thread as the last thread
     if (constant_sites_removed) {
-        compute_constant_pattern_likelihoods(
+        compute_constant_pattern_log_likelihood_correction(
                 root,
-                max_allele_counts,
+                unique_allele_counts,
+                unique_allele_count_weights,
                 u,
                 v,
                 mutation_rate,
                 ploidy,
                 markers_are_dominant,
                 state_frequencies_are_constrained,
-                all_red_pattern_likelihood,
-                all_green_pattern_likelihood);
+                constant_log_likelihood_correction);
     }
     log_likelihood += get_log_likelihood_for_pattern_range(
             root,
@@ -484,4 +504,5 @@ double get_log_likelihood(
         log_likelihood += t.get();
     }
     return log_likelihood;
+#endif
 }

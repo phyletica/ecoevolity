@@ -29,6 +29,7 @@ PopulationTree::PopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -39,6 +40,7 @@ PopulationTree::PopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
 }
 
@@ -52,6 +54,7 @@ void PopulationTree::init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     if (genotypes_are_diploid && (ploidy != 2.0)) {
         throw EcoevolityBiallelicDataError(
@@ -70,6 +73,33 @@ void PopulationTree::init(
         throw EcoevolityError("PopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
+    if (this->data_.has_recoded_triallelic_sites()) {
+        if (strict_on_triallelic_sites) {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "###############################  ERROR  ###############################\n"
+                    << this->data_.get_number_of_triallelic_sites_recoded()
+                    << " sites from the alignment in:\n    \'"
+                    << path << "\'\n"
+                    << "have more than two character states.\n"
+                    << "#######################################################################\n";
+            throw EcoevolityTriallelicDataError(message.str(), path);
+        }
+        else {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "##############################  WARNING  ##############################\n"
+                    << this->data_.get_number_of_triallelic_sites_recoded()
+                    << " sites had more than two nucleotide states from the alignment in:\n    \'"
+                    << path << "\'.\n"
+                    << "These sites have been recoded as biallelic, by treating the first\n"
+                    << "nucleotide as 0 and all others as 1. If you would prefer to ignore\n"
+                    << "these sites, please remove all sites with more than two nucleotide\n"
+                    << "states from your DNA alignments and re-run the analysis.\n"
+                    << "#######################################################################\n";
+            std::cerr << message.str() << std::endl;
+        }
+    }
     if (number_of_missing_patterns_removed > 0) {
         if (strict_on_missing_sites) {
             std::ostringstream message;
@@ -138,6 +168,17 @@ void PopulationTree::init(
     this->init_tree();
 
     this->root_->resize_all();
+
+    // Store unique allele counts and weights for calculating the likelihood
+    // correction term for constant sites.
+    // At this point, no data manipulation should happen that would require
+    // these to be updated (only pattern folding, which will not change the
+    // unique allele counts or weights).
+    std::map<std::vector<unsigned int>, unsigned int> unique_allele_count_map = this->data_.get_unique_allele_counts();
+    for (auto const & kv: unique_allele_count_map) {
+        this->unique_allele_counts_.push_back(kv.first);
+        this->unique_allele_count_weights_.push_back(kv.second);
+    }
 }
 
 void PopulationTree::init_tree() {
@@ -233,12 +274,12 @@ double PopulationTree::calculate_log_binomial(
     return f;
 }
 
-bool PopulationTree::constant_site_counts_were_provided() {
-    if ((this->provided_number_of_constant_green_sites_ > -1) && (this->provided_number_of_constant_red_sites_ > -1)) {
-        return true;
-    }
-    return false;
-}
+// bool PopulationTree::constant_site_counts_were_provided() {
+//     if ((this->provided_number_of_constant_green_sites_ > -1) && (this->provided_number_of_constant_red_sites_ > -1)) {
+//         return true;
+//     }
+//     return false;
+// }
 
 double PopulationTree::get_log_likelihood_value() const {
     return this->log_likelihood_.get_value();
@@ -486,8 +527,6 @@ void PopulationTree::store_state() {
 }
 void PopulationTree::store_likelihood() {
     this->log_likelihood_.store();
-    this->all_green_pattern_likelihood_.store();
-    this->all_red_pattern_likelihood_.store();
 }
 void PopulationTree::store_prior_density() {
     this->log_prior_density_.store();
@@ -512,8 +551,6 @@ void PopulationTree::restore_state() {
 }
 void PopulationTree::restore_likelihood() {
     this->log_likelihood_.restore();
-    this->all_green_pattern_likelihood_.restore();
-    this->all_red_pattern_likelihood_.restore();
 }
 void PopulationTree::restore_prior_density() {
     this->log_prior_density_.restore();
@@ -594,16 +631,16 @@ void PopulationTree::make_clean() {
     this->root_->make_all_clean();
 }
 
-void PopulationTree::provide_number_of_constant_sites(
-                unsigned int number_all_red,
-                unsigned int number_all_green) {
-    if (! this->constant_sites_removed_) {
-        throw EcoevolityError(
-                "Trying to provide number of constant sites, but they haven't been removed");
-    }
-    this->provided_number_of_constant_red_sites_ = number_all_red;
-    this->provided_number_of_constant_green_sites_ = number_all_green;
-}
+// void PopulationTree::provide_number_of_constant_sites(
+//                 unsigned int number_all_red,
+//                 unsigned int number_all_green) {
+//     if (! this->constant_sites_removed_) {
+//         throw EcoevolityError(
+//                 "Trying to provide number of constant sites, but they haven't been removed");
+//     }
+//     this->provided_number_of_constant_red_sites_ = number_all_red;
+//     this->provided_number_of_constant_green_sites_ = number_all_green;
+// }
 
 void PopulationTree::simulate_gene_tree(
         const std::shared_ptr<PopulationNode> node,
@@ -753,8 +790,40 @@ double PopulationTree::coalesce_in_branch(
     return current_height;
 }
 
+bool PopulationTree::sample_pattern(
+        RandomNumberGenerator& rng,
+        const float singleton_sample_probability,
+        const std::vector<unsigned int>& red_allele_counts,
+        const std::vector<unsigned int>& allele_counts) const {
+    ECOEVOLITY_ASSERT(red_allele_counts.size() == allele_counts.size());
+    if (singleton_sample_probability >= 1.0) {
+        return true;
+    }
+    unsigned int number_of_reds = 0;
+    unsigned int number_of_alleles = 0;
+    for (unsigned int count_idx = 0;
+            count_idx < allele_counts.size();
+            ++count_idx) {
+        number_of_reds += red_allele_counts.at(count_idx);
+        number_of_alleles += allele_counts.at(count_idx);
+    }
+    if (number_of_alleles < 4) {
+        throw EcoevolityBiallelicDataError(
+                "Singleton filtering requires 4 or more sampled alleles for each site",
+                this->data_.get_path());
+    }
+    if ((number_of_reds == 1) || (number_of_reds == (number_of_alleles - 1))) {
+        double u = rng.uniform_real();
+        if (u > singleton_sample_probability) {
+            return false;
+        }
+    }
+    return true;
+}
+
 BiallelicData PopulationTree::simulate_biallelic_data_set(
         RandomNumberGenerator& rng,
+        float singleton_sample_probability,
         bool validate) const {
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
@@ -776,6 +845,16 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
                 auto pattern = pattern_tree.first;
                 std::vector<unsigned int> red_allele_counts = pattern.first;
                 std::vector<unsigned int> allele_counts = pattern.second;
+                if (singleton_sample_probability < 1.0) {
+                    bool sample_pattern = this->sample_pattern(
+                            rng,
+                            singleton_sample_probability,
+                            red_allele_counts,
+                            allele_counts);
+                    if (! sample_pattern) {
+                        continue;
+                    }
+                }
                 std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
                 site_added = sim_data.add_site(red_allele_counts,
                         allele_counts,
@@ -797,6 +876,7 @@ std::pair<BiallelicData, unsigned int>
 PopulationTree::simulate_complete_biallelic_data_set(
         RandomNumberGenerator& rng,
         unsigned int locus_size,
+        float singleton_sample_probability,
         bool validate) const {
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
@@ -826,11 +906,92 @@ PopulationTree::simulate_complete_biallelic_data_set(
             }
             std::vector<unsigned int> red_allele_counts = pattern.first;
             std::vector<unsigned int> allele_counts = pattern.second;
+            if (singleton_sample_probability < 1.0) {
+                bool sample_pattern = this->sample_pattern(
+                        rng,
+                        singleton_sample_probability,
+                        red_allele_counts,
+                        allele_counts);
+                if (! sample_pattern) {
+                    continue;
+                }
+            }
             site_added = sim_data.add_site(red_allele_counts,
                     allele_counts,
                     filtering_constant_sites);
             ++locus_site_count;
         }
+    }
+    sim_data.update_max_allele_counts();
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
+    return std::make_pair(sim_data, number_of_loci);
+}
+
+std::pair<BiallelicData, unsigned int>
+PopulationTree::simulate_data_set_max_one_variable_site_per_locus(
+        RandomNumberGenerator& rng,
+        unsigned int locus_size,
+        float singleton_sample_probability,
+        bool validate) const {
+    ECOEVOLITY_ASSERT(locus_size > 0);
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    if (this->constant_sites_removed_) {
+        throw EcoevolityError(
+                "To simulated one variable site per locus, the \"template\" "
+                "dataset must include constant sites");
+    }
+    const bool filtering_constant_sites = true;
+    std::shared_ptr<GeneTreeSimNode> current_gene_tree;
+    auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
+    auto pattern = pattern_tree.first;
+    current_gene_tree = pattern_tree.second;
+    unsigned int number_of_loci = 1;
+    unsigned int locus_site_count = 0;
+    bool site_added = false;
+    for (unsigned int site_idx = 0;
+            site_idx < this->data_.get_number_of_sites();
+            ++site_idx) {
+        if (locus_site_count < locus_size) {
+            pattern = this->simulate_biallelic_site(
+                    current_gene_tree,
+                    rng);
+        }
+        else {
+            pattern_tree = this->simulate_biallelic_site(0, rng, true);
+            pattern = pattern_tree.first;
+            current_gene_tree = pattern_tree.second;
+            locus_site_count = 0;
+            ++number_of_loci;
+        }
+        std::vector<unsigned int> red_allele_counts = pattern.first;
+        std::vector<unsigned int> allele_counts = pattern.second;
+        if (singleton_sample_probability < 1.0) {
+            bool sample_pattern = this->sample_pattern(
+                    rng,
+                    singleton_sample_probability,
+                    red_allele_counts,
+                    allele_counts);
+            if (! sample_pattern) {
+                site_idx -= 1;
+                continue;
+            }
+        }
+        site_added = sim_data.add_site(red_allele_counts,
+                allele_counts,
+                filtering_constant_sites);
+        if (site_added) {
+            // We have a variable site for this locus, so need to skip over
+            // the remaining sites of this locus.
+            // Subtracting 1 for the loop increment.
+            int remaining_locus_sites = locus_size - locus_site_count;
+            site_idx += (remaining_locus_sites - 1);
+            locus_site_count += remaining_locus_sites;
+            continue;
+        }
+        ++locus_site_count;
     }
     sim_data.update_max_allele_counts();
     sim_data.update_pattern_booleans();
@@ -923,6 +1084,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->comparison_init(path,
                population_name_delimiter,
@@ -933,6 +1095,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
 }
 void ComparisonPopulationTree::comparison_init(
@@ -945,6 +1108,7 @@ void ComparisonPopulationTree::comparison_init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -955,6 +1119,7 @@ void ComparisonPopulationTree::comparison_init(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
@@ -967,7 +1132,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         const ComparisonSettings& settings,
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites, 
+        bool strict_on_triallelic_sites) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -977,6 +1143,7 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                settings.get_ploidy());
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
@@ -1145,14 +1312,14 @@ double PopulationTree::compute_log_likelihood(
         this->log_likelihood_.set_value(0.0);
         return 0.0;
     }
-    double all_red_pattern_prob = 0.0;
-    double all_green_pattern_prob = 0.0;
+    double constant_pattern_lnl_correction = 0.0;
     double log_likelihood = get_log_likelihood(
             this->get_mutable_root(),
             this->data_.get_red_allele_count_matrix(),
             this->data_.get_allele_count_matrix(),
             this->data_.get_pattern_weights(),
-            this->data_.get_max_allele_counts(),
+            this->unique_allele_counts_,
+            this->unique_allele_count_weights_,
             this->get_u(),
             this->get_v(),
             this->get_mutation_rate(),
@@ -1160,25 +1327,21 @@ double PopulationTree::compute_log_likelihood(
             this->data_.markers_are_dominant(),
             this->state_frequencies_are_constrained(),
             this->constant_sites_removed(),
-            all_red_pattern_prob,
-            all_green_pattern_prob,
+            constant_pattern_lnl_correction,
             nthreads);
 
-    this->all_red_pattern_likelihood_.set_value(all_red_pattern_prob);
-    this->all_green_pattern_likelihood_.set_value(all_green_pattern_prob);
-
     if (this->constant_sites_removed()) {
-        if (this->constant_site_counts_were_provided()) {
-            double constant_log_likelihood =
-                    ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
-                    ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
-            log_likelihood += constant_log_likelihood;
-        }
         //////////////////////////////////////////////////////////////////////
         // No reason to use removed site counts. Simply leave constant sites in
         // and calc likelihood without correction. This is better, because it
         // doesn't treat all constant site patterns equally (i.e., it accounts
         // for constant patterns with missing data).
+        // if (this->constant_site_counts_were_provided()) {
+        //     double constant_log_likelihood =
+        //             ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
+        //             ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
+        //     log_likelihood += constant_log_likelihood;
+        // }
         // else if (this->use_removed_constant_site_counts_){
         //     double constant_log_likelihood =
         //             ((double)this->data_.get_number_of_constant_green_sites_removed() *
@@ -1188,13 +1351,10 @@ double PopulationTree::compute_log_likelihood(
         //     log_likelihood += constant_log_likelihood;
         // }
         //////////////////////////////////////////////////////////////////////
-        else {
-            log_likelihood -= ((double)this->data_.get_number_of_sites() * 
-                    std::log(1.0 - all_green_pattern_prob -
-                            all_red_pattern_prob));
-        }
+        // else {
+        log_likelihood -= constant_pattern_lnl_correction;
+        // }
     }
-
 
     log_likelihood += this->get_likelihood_correction();
 
@@ -1218,6 +1378,7 @@ DirichletPopulationTree::DirichletPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -1228,6 +1389,7 @@ DirichletPopulationTree::DirichletPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
@@ -1261,6 +1423,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->comparison_init(path,
                population_name_delimiter,
@@ -1271,6 +1434,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
@@ -1286,6 +1450,7 @@ void ComparisonDirichletPopulationTree::comparison_init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -1296,6 +1461,7 @@ void ComparisonDirichletPopulationTree::comparison_init(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
@@ -1309,7 +1475,8 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
         const DirichletComparisonSettings& settings,
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1319,6 +1486,7 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                settings.get_ploidy());
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
@@ -1638,6 +1806,7 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->comparison_init(path,
                population_name_delimiter,
@@ -1648,6 +1817,7 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
 }
 void ComparisonRelativeRootPopulationTree::comparison_init(
@@ -1660,6 +1830,7 @@ void ComparisonRelativeRootPopulationTree::comparison_init(
         bool validate,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites,
         double ploidy) {
     this->init(path,
                population_name_delimiter,
@@ -1670,6 +1841,7 @@ void ComparisonRelativeRootPopulationTree::comparison_init(
                validate,
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                ploidy);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
@@ -1683,7 +1855,8 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
         const RelativeRootComparisonSettings& settings,
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
-        bool strict_on_missing_sites) {
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1693,6 +1866,7 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
                true, // validate
                strict_on_constant_sites,
                strict_on_missing_sites,
+               strict_on_triallelic_sites,
                settings.get_ploidy());
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();

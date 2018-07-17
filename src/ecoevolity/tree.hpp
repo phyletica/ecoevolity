@@ -47,11 +47,9 @@ class PopulationTree {
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         bool likelihood_correction_was_calculated_ = false;
-        ProbabilityDensity all_green_pattern_likelihood_ = ProbabilityDensity(0.0);
-        ProbabilityDensity all_red_pattern_likelihood_ = ProbabilityDensity(0.0);
         bool constant_sites_removed_ = true;
-        int provided_number_of_constant_red_sites_ = -1;
-        int provided_number_of_constant_green_sites_ = -1;
+        // int provided_number_of_constant_red_sites_ = -1;
+        // int provided_number_of_constant_green_sites_ = -1;
         // bool use_removed_constant_site_counts_ = false;
         bool population_sizes_are_constrained_ = false;
         bool population_size_multipliers_are_fixed_ = false;
@@ -61,9 +59,18 @@ class PopulationTree {
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
+        // Vectors for storing unique allele counts and associated weights.
+        // These are used for calculating the likelihood correction term for
+        // constant site patterns. It is a bit weird to store data here, but
+        // it's cheaper than calling 'this->data_.get_unique_allele_counts()'
+        // every time the likelihood needs to be calculated.
+        // These vectors are populated in 'init' method.
+        std::vector< std::vector<unsigned int> > unique_allele_counts_;
+        std::vector<unsigned int> unique_allele_count_weights_;
+
         // methods
         void init_tree();
-        bool constant_site_counts_were_provided();
+        // bool constant_site_counts_were_provided();
         void calculate_likelihood_correction();
 
         double calculate_log_binomial(
@@ -93,6 +100,7 @@ class PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -106,6 +114,7 @@ class PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -128,12 +137,12 @@ class PopulationTree {
             return this->constant_sites_removed_;
         }
 
-        int get_provided_number_of_constant_red_sites() const {
-            return this->provided_number_of_constant_red_sites_;
-        }
-        int get_provided_number_of_constant_green_sites() const {
-            return this->provided_number_of_constant_green_sites_;
-        }
+        // int get_provided_number_of_constant_red_sites() const {
+        //     return this->provided_number_of_constant_red_sites_;
+        // }
+        // int get_provided_number_of_constant_green_sites() const {
+        //     return this->provided_number_of_constant_green_sites_;
+        // }
 
         bool initialized() const {return (bool)this->root_;}
         const PopulationNode& get_root() const {return *this->root_;}
@@ -204,9 +213,9 @@ class PopulationTree {
             return this->ignore_data_;
         }
 
-        void provide_number_of_constant_sites(
-                unsigned int number_all_red,
-                unsigned int number_all_green);
+        // void provide_number_of_constant_sites(
+        //         unsigned int number_all_red,
+        //         unsigned int number_all_green);
 
         std::shared_ptr<PositiveRealParameter> get_freq_1_parameter() const;
 
@@ -411,14 +420,29 @@ class PopulationTree {
                 double top_of_branch_height = std::numeric_limits<double>::infinity()
                 );
 
+        bool sample_pattern(
+                RandomNumberGenerator& rng,
+                const float singleton_sample_probability,
+                const std::vector<unsigned int>& red_allele_counts,
+                const std::vector<unsigned int>& allele_counts) const;
+
         BiallelicData simulate_biallelic_data_set(
                 RandomNumberGenerator& rng,
+                float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
         std::pair<BiallelicData, unsigned int>
         simulate_complete_biallelic_data_set(
                 RandomNumberGenerator& rng,
                 unsigned int locus_size = 1,
+                float singleton_sample_probability = 1.0,
+                bool validate = true) const;
+
+        std::pair<BiallelicData, unsigned int>
+        simulate_data_set_max_one_variable_site_per_locus(
+                RandomNumberGenerator& rng,
+                unsigned int locus_size,
+                float singleton_sample_probability,
                 bool validate = true) const;
 
         std::pair<
@@ -507,6 +531,7 @@ class RelativeRootPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 ) : PopulationTree(
                     path,
@@ -518,6 +543,7 @@ class RelativeRootPopulationTree: public PopulationTree {
                     validate,
                     strict_on_constant_sites,
                     strict_on_missing_sites,
+                    strict_on_triallelic_sites,
                     ploidy) { }
 
         bool using_relative_root_population_size() const {
@@ -591,6 +617,7 @@ class DirichletPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -623,13 +650,15 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
         ComparisonPopulationTree(
                 const ComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true
                 );
         void comparison_init(
                 std::string path, 
@@ -641,6 +670,7 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -687,13 +717,15 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
         ComparisonRelativeRootPopulationTree(
                 const RelativeRootComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true
                 );
         void comparison_init(
                 std::string path, 
@@ -705,6 +737,7 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 
@@ -751,13 +784,15 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
         ComparisonDirichletPopulationTree(
                 const DirichletComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
-                bool strict_on_missing_sites = false
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true
                 );
         void comparison_init(
                 std::string path, 
@@ -769,6 +804,7 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 bool validate = true,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true,
                 double ploidy = 2.0
                 );
 

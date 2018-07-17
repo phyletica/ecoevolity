@@ -26,8 +26,8 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         double size6_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + "-t450.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test1-" + tag + "-t450-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -53,6 +53,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with 6 pairs", "[S
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -270,11 +273,11 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
         double time_shape = 10.0;
         double time_scale = 0.1;
         double size_shape = 5.0;
-        double size_scale = 0.5;
+        double size_scale = 0.2;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test1-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test1-" + tag + "-t451.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test1-" + tag + "-t451-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -300,6 +303,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -397,7 +403,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer no opt", "[Samplin
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -419,11 +425,11 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
         double time_shape = 10.0;
         double time_scale = 0.1;
         double size_shape = 5.0;
-        double size_scale = 0.5;
+        double size_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test2-" + tag + "-t452.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test2-" + tag + "-t452-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -449,6 +455,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -546,7 +555,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with opt", "[Sampl
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -571,8 +580,8 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
         double size_scale = 0.5;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test2-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test2-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test2-" + tag + "-t453.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test2-" + tag + "-t453-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -598,6 +607,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -691,7 +703,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer for singleton with
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -716,8 +728,8 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
         double size_scale = 0.5;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + "-t454.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-t454-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -743,6 +755,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -849,7 +864,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with constrained p
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -871,11 +886,11 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
         double time_shape = 10.0;
         double time_scale = 0.1;
         double size_shape = 5.0;
-        double size_scale = 0.5;
+        double size_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test3-" + tag + "-t455.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test3-" + tag + "-t455-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_model_prior:\n";
@@ -903,6 +918,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1049,7 +1067,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with fixed pop siz
                 "ln_prior",
                 "ln_prior_pop1",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1074,8 +1092,8 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
         double size_scale = 0.5;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-collection-scaler-test4-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-collection-scaler-test4-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-collection-scaler-test4-" + tag + "-t456.cfg";
+        std::string log_path = "data/tmp-config-collection-scaler-test4-" + tag + "-t456-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1101,6 +1119,9 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1198,7 +1219,7 @@ TEST_CASE("Testing sampling from prior with TimeSizeRateMixer with more gamma pr
                 "pop_size_root_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1222,8 +1243,8 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t457.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t457-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1249,6 +1270,9 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
         os << "            weight: 1.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
         os << "        TimeRootSizeMixer:\n";
@@ -1336,7 +1360,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler", "[SamplingPrior]")
                 "root_height_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1361,8 +1385,8 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-comp-height-scaler-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-comp-height-scaler-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-comp-height-scaler-" + tag + "-t458.cfg";
+        std::string log_path = "data/tmp-config-comp-height-scaler-" + tag + "-t458-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1376,6 +1400,9 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -1474,7 +1501,7 @@ TEST_CASE("Testing sampling from prior with EventTimeScaler with optimizing",
                 "root_height_kya",
                 "ln_prior",
                 "ln_prior_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1498,8 +1525,8 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t459.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t459-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1524,6 +1551,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
         os << "            weight: 0.0\n";
         os << "        EventTimeScaler:\n";
         os << "            scale: 0.3\n";
+        os << "            weight: 0.0\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
         os << "            weight: 0.0\n";
         os << "global_comparison_settings:\n";
         os << "    operators:\n";
@@ -1613,7 +1643,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler", "[Samplin
             "ln_prior",
             "ln_prior_kya",
             "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1637,8 +1667,8 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         double scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-root-pop-size-scaler-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-root-pop-size-scaler-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-root-pop-size-scaler-" + tag + "-t460.cfg";
+        std::string log_path = "data/tmp-config-root-pop-size-scaler-" + tag + "-t460-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1652,6 +1682,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -1745,7 +1778,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler with optimi
                 "ln_prior",
                 "ln_prior_kya",
                 "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1769,8 +1802,8 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t461.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t461-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1784,6 +1817,9 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -1891,7 +1927,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler", "[Samplin
                 "ln_prior_kya",
                 "pop_size_kya",
                 "pop_size_fas"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -1916,8 +1952,8 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
         double scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t462.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t462-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -1931,6 +1967,9 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2038,7 +2077,7 @@ TEST_CASE("Testing sampling from prior with LeafPopulationSizeScaler with optimi
                 "ln_prior_kya",
                 "pop_size_kya",
                 "pop_size_fas"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2063,8 +2102,8 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t463.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t463-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2078,6 +2117,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2178,7 +2220,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
                 "pop_size_kya",
                 "pop_size_fas",
                 "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2203,8 +2245,8 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         double scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t464.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t464-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2218,6 +2260,9 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2318,7 +2363,7 @@ TEST_CASE("Testing sampling from prior with RootPopulationSizeScaler and LeafPop
                 "pop_size_kya",
                 "pop_size_fas",
                 "pop_size_root_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2346,8 +2391,8 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
 
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t465.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t465-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2361,6 +2406,9 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2456,7 +2504,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover",
                 "ln_prior_kya",
                 "freq_1_kya"
                 };
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2484,8 +2532,8 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
 
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t466.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t466-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2499,6 +2547,9 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2594,7 +2645,7 @@ TEST_CASE("Testing sampling from beta(1.5, 2.5) prior with FreqMover and optimiz
                 "ln_prior_kya",
                 "freq_1_kya"
                 };
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2622,8 +2673,8 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
 
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t467.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t467-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2637,6 +2688,9 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2732,7 +2786,7 @@ TEST_CASE("Testing sampling from beta(2.5, 1.5) prior with FreqMover and optimiz
                 "ln_prior_kya",
                 "freq_1_kya"
                 };
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2757,8 +2811,8 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         double scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t468.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t468-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2772,6 +2826,9 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -2866,7 +2923,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler",
                 "ln_prior",
                 "ln_prior_kya",
                 "mutation_rate_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -2891,8 +2948,8 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         double scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t469.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t469-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -2906,6 +2963,9 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3000,7 +3060,7 @@ TEST_CASE("Testing sampling from prior with MutationRateScaler with optimizing",
                 "ln_prior",
                 "ln_prior_kya",
                 "mutation_rate_kya"};
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -3033,8 +3093,8 @@ TEST_CASE("Testing fully parameterized model for one pair",
         double mult_scale = 0.1;
         std::string auto_optimize = "false";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t470.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t470-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3048,6 +3108,9 @@ TEST_CASE("Testing fully parameterized model for one pair",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3195,8 +3258,8 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         double mult_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t471.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t471-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3210,6 +3273,9 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3357,8 +3423,8 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         double mult_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t472.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t472-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3372,6 +3438,9 @@ TEST_CASE("Testing fully parameterized model for one pair with optimization and 
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 0.0\n";
@@ -3510,8 +3579,8 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t473.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t473-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3531,6 +3600,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -3660,7 +3732,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 1.0", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -3684,8 +3756,8 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t474.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t474-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3705,6 +3777,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -3834,7 +3909,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 2.0", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -3858,8 +3933,8 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t475.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t475-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -3879,6 +3954,9 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4008,7 +4086,7 @@ TEST_CASE("Testing DPP with 2 pairs and alpha 0.5", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -4033,8 +4111,8 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         double concentration = 1.0;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t476.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t476-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4054,6 +4132,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4230,7 +4311,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 1.0", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -4255,8 +4336,8 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         double concentration = 4.0;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t477.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t477-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4276,6 +4357,9 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4452,7 +4536,7 @@ TEST_CASE("Testing DPP with 3 pairs and alpha 4.0", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -4477,8 +4561,8 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         double concentration = 1.7;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t478.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t478-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4498,6 +4582,9 @@ TEST_CASE("Testing DPP with 6 pairs and alpha 1.7", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -4751,8 +4838,8 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t479.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t479-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -4775,6 +4862,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized", "[SamplingPrior]")
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 2\n";
         os << "            weight: 1.0\n";
@@ -5088,8 +5178,8 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixe
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t480.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t480-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5112,6 +5202,9 @@ TEST_CASE("Testing DPP with 3 pairs and fully parameterized and TimeSizeRateMixe
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -5402,8 +5495,8 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         double concentration_scale = 0.01;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t481.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t481-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5426,6 +5519,9 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -5608,7 +5704,7 @@ TEST_CASE("Testing sampling of small concentration", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -5634,8 +5730,8 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         double concentration_scale = 2.0;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t482.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t482-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5658,6 +5754,9 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -5840,7 +5939,7 @@ TEST_CASE("Testing sampling of large concentration", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -5866,8 +5965,8 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         double concentration_scale = 1.0;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t483.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t483-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -5890,6 +5989,9 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -6075,7 +6177,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -6092,6 +6194,7 @@ TEST_CASE("Testing sampling of diffuse concentration", "[SamplingPrior]") {
     }
 }
 
+#ifdef BUILD_WITH_THREADS
 TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         "[SamplingPrior]") {
 
@@ -6124,8 +6227,8 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t484.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t484-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6148,6 +6251,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -6432,7 +6538,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 3 threads",
         delete[] cfg_path;
     }
 }
+#endif
 
+#ifdef BUILD_WITH_THREADS
 TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         "[SamplingPrior]") {
 
@@ -6465,8 +6573,8 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t485.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t485-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6489,6 +6597,9 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -6773,6 +6884,7 @@ TEST_CASE("Testing DPP with 3 pairs, fully parameterized, and 2 threads",
         delete[] cfg_path;
     }
 }
+#endif
 
 TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
 
@@ -6781,8 +6893,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t486.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t486-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6798,6 +6910,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -6929,7 +7044,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs", "[SamplingPrior]") {
                 "root_height_index_pop1"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -6953,8 +7068,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t487.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t487-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -6970,6 +7085,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -7153,7 +7271,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs", "[SamplingPrior]") {
                 "root_height_index_pop1b"
         };
         SampleSummarizer<double> summary;
-        for (auto const &kv: prior_sample.data) {
+        for (auto const &kv: prior_sample.get_data()) {
             bool test = true;
             for (auto const &p: columns_to_ignore) {
                 if (kv.first == p) {
@@ -7177,8 +7295,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t488.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t488-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7194,6 +7312,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -7434,8 +7555,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         double height_scale = 0.1;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t489.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t489-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7451,6 +7572,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 6 pairs and diffuse gamma", "[Samp
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -7713,8 +7837,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t490.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t490-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -7730,6 +7854,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized", 
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -8051,8 +8178,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t491.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t491-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8068,6 +8195,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -8359,6 +8489,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and fully parameterized an
     }
 }
 
+#ifdef BUILD_WITH_THREADS
 TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 2 threads",
         "[SamplingPrior]") {
 
@@ -8389,8 +8520,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t492.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t492-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8406,6 +8537,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -8700,6 +8834,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs, fully parameterized, and 
         delete[] cfg_path;
     }
 }
+#endif
 
 TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         "[SamplingPrior]") {
@@ -8733,8 +8868,8 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t493.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t493-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -8757,6 +8892,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -9064,8 +9202,8 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t494.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t494-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9088,6 +9226,9 @@ TEST_CASE("Testing DPP with 2 singletons and 1 pair, fully parameterized, and Ti
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 5\n";
         os << "            weight: 1.0\n";
@@ -9393,8 +9534,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t495.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t495-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9410,6 +9551,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -9725,8 +9869,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t496.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t496-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -9742,6 +9886,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, TimeSizeRate
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -10056,8 +10203,8 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t497.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t497-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10073,6 +10220,9 @@ TEST_CASE("Testing fixed 012 and fully parameterized", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -10380,8 +10530,8 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t498.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t498-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10397,6 +10547,9 @@ TEST_CASE("Testing fixed 012 and fully parameterized and TimeSizeRateMixer",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -10703,8 +10856,8 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t499.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t499-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -10720,6 +10873,9 @@ TEST_CASE("Testing fixed 000 and fully parameterized", "[SamplingPrior]") {
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -11027,8 +11183,8 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t500.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t500-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11044,6 +11200,9 @@ TEST_CASE("Testing fixed 000 and fully parameterized and TimeSizeRateMixer",
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 10000\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
@@ -11355,8 +11514,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized", "[Sampli
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t501.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t501-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -11781,8 +11940,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized without Ti
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t502.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t502-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12207,8 +12366,8 @@ TEST_CASE("Testing DPP with 3 dirichlet pairs and fully parameterized with only 
         double concentration_scale = 0.2;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t503.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t503-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -12618,8 +12777,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t504.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t504-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13026,8 +13185,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t505.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t505-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13434,8 +13593,8 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         double mult3_scale = 0.02;
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t506.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t506-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13845,8 +14004,8 @@ TEST_CASE("Testing relative root models with with mix of 5 comparisons", "[Sampl
 
         std::string auto_optimize = "true";
         std::string tag = _PRIOR_SAMPLING_RNG.random_string(10);
-        std::string test_path = "data/tmp-config-" + tag + ".cfg";
-        std::string log_path = "data/tmp-config-" + tag + "-state-run-1.log";
+        std::string test_path = "data/tmp-config-" + tag + "-t507.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t507-state-run-1.log";
         std::ofstream os;
         os.open(test_path);
         os << "event_time_prior:\n";
@@ -13866,6 +14025,9 @@ TEST_CASE("Testing relative root models with with mix of 5 comparisons", "[Sampl
         os << "    auto_optimize: " << auto_optimize << "\n";
         os << "    auto_optimize_delay: 100\n";
         os << "    operators:\n";
+        os << "        TimeRootSizeMixer:\n";
+        os << "            scale: 0.2\n";
+        os << "            weight: 0.0\n";
         os << "        ModelOperator:\n";
         os << "            number_of_auxiliary_categories: 2\n";
         os << "            weight: 1.0\n";

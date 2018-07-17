@@ -72,6 +72,7 @@ int ecoevolity_main(int argc, char * argv[]) {
             .dest("ignore_data")
             .help("Ignore data to sample from the prior distribution. Default: "
                   "Use data to sample from the posterior distribution");
+#ifdef BUILD_WITH_THREADS
     parser.add_option("--nthreads")
             .action("store")
             .type("unsigned int")
@@ -81,6 +82,7 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "Default: 1 (no multithreading). If you are using "
                   "the \'--ignore-data\' option, no likelihood calculations "
                   "will be performed, and so no multithreading is used.");
+#endif
     parser.add_option("--prefix")
             .action("store")
             .dest("prefix")
@@ -103,6 +105,21 @@ int ecoevolity_main(int argc, char * argv[]) {
                   "for at least one population, Ecoevolity throws an error. "
                   "With this option, Ecoevolity will automatically ignore such "
                   "sites and only issue a warning."
+                );
+    parser.add_option("--relax-triallelic-sites")
+            .action("store_true")
+            .dest("relax_triallelic_sites")
+            .help("By default, if a DNA site is found for which there is more "
+                  "than two nucleotide states, Ecoevolity throws an error. "
+                  "With this option, Ecoevolity will automatically recode such "
+                  "sites as biallelic and only issue a warning. These sites "
+                  "are recoded by assigning state 0 to the first nucleotide "
+                  "found and state 1 to all others. If you do not wish to "
+                  "recode such sites and prefer to ignore them, please remove "
+                  "all sites with more than two nucleotide states from your "
+                  "DNA alignments. NOTE: only alignments of nucleotides are "
+                  "affected by this option, not alignments of standard "
+                  "characters (i.e., 0, 1, 2)."
                 );
     parser.add_option("--dry-run")
             .action("store_true")
@@ -136,8 +153,13 @@ int ecoevolity_main(int argc, char * argv[]) {
 
     const bool strict_on_constant_sites = (! options.get("relax_constant_sites"));
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
+    const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
 
+#ifdef BUILD_WITH_THREADS 
     unsigned int nthreads = options.get("nthreads");
+#else
+    unsigned int nthreads = 1;
+#endif
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
@@ -168,7 +190,8 @@ int ecoevolity_main(int argc, char * argv[]) {
             settings,
             rng,
             strict_on_constant_sites,
-            strict_on_missing_sites);
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
 
     if (ignore_data) {
         comparisons.ignore_data();
@@ -178,7 +201,7 @@ int ecoevolity_main(int argc, char * argv[]) {
     }
 
     if (options.is_set_by_user("prefix")) {
-        std::string output_prefix = options.get("prefix").get_str() + "-";
+        std::string output_prefix = options.get("prefix").get_str();
         comparisons.add_log_prefix(output_prefix);
     }
 

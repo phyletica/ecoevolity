@@ -111,6 +111,15 @@ inline std::string strip(
     return lstrip(rstrip(s, delimiters), delimiters);
 }
 
+inline bool startswith(
+        const std::string& s,
+        const std::string& match) {
+    return ((s.size() >= match.size()) && std::equal(
+                match.begin(),
+                match.end(),
+                s.begin()));
+}
+
 } // namespace string_util
 
 #endif

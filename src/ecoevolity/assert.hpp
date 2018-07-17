@@ -78,10 +78,10 @@ inline void ecoevolity_assert_approx_eq_failed(char const * x,
 #   define ECOEVOLITY_ASSERT_APPROX_EQUAL(x, y)
 #else
 #   define ECOEVOLITY_ASSERT(expr)  if (!(expr)) ecoevolity_assertion_failed((const char *)#expr, (const char *)__FUNCTION__, __FILE__, __LINE__)
-#   define ECOEVOLITY_ASSERT_APPROX_EQUAL(x, y)  if (fabs(((x)-(y))/(x)) > 1.0e-6) std::cerr << std::fixed << std::setprecision(20) << (x) << ' ' << std::fixed << std::setprecision(20) << (y) << '\n'; if (fabs(((x)-(y))/(x)) > 1.0e-6) ecoevolity_assert_approx_eq_failed((const char *)#x, x, (const char *)#y, y, (const char *)__FUNCTION__, __FILE__, __LINE__)
+#   define ECOEVOLITY_ASSERT_APPROX_EQUAL(x, y)  if (std::fabs(((x)-(y))/(x)) > 1.0e-6) std::cerr << std::fixed << std::setprecision(20) << (x) << ' ' << std::fixed << std::setprecision(20) << (y) << '\n'; if (std::fabs(((x)-(y))/(x)) > 1.0e-6) ecoevolity_assert_approx_eq_failed((const char *)#x, x, (const char *)#y, y, (const char *)__FUNCTION__, __FILE__, __LINE__)
 #endif
 
 #define ECOEVOLITY_NDEBUG_ASSERT(expr)  if (!(expr)) ecoevolity_assertion_failed((const char *)#expr, (const char *)__FUNCTION__, __FILE__, __LINE__)
-#define ECOEVOLITY_NDEBUG_ASSERT_APPROX_EQUAL(x, y)  if (fabs(((x)-(y))/(x)) > 1.0e-6) std::cerr << std::fixed << std::setprecision(20) << (x) << ' ' << std::fixed << std::setprecision(20) << (y) << '\n'; if (fabs(((x)-(y))/(x)) > 1.0e-6) ecoevolity_assert_approx_eq_failed((const char *)#x, x, (const char *)#y, y, (const char *)__FUNCTION__, __FILE__, __LINE__)
+#define ECOEVOLITY_NDEBUG_ASSERT_APPROX_EQUAL(x, y)  if (std::fabs(((x)-(y))/(x)) > 1.0e-6) std::cerr << std::fixed << std::setprecision(20) << (x) << ' ' << std::fixed << std::setprecision(20) << (y) << '\n'; if (std::fabs(((x)-(y))/(x)) > 1.0e-6) ecoevolity_assert_approx_eq_failed((const char *)#x, x, (const char *)#y, y, (const char *)__FUNCTION__, __FILE__, __LINE__)
 
 #endif

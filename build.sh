@@ -2,11 +2,11 @@
 
 usage () {
     echo ""
-    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-s|--static] [-i|--install]"
+    echo "usage: $0 [-h|--help] [-p|--prefix <INSTALL-PREFIX>] [-b|--build-type <BUILD-TYPE>] [-s|--static] [-t|--threads]"
     echo "  -h|--help        Show help message and exit."
     echo "  -s|--static      Build statically linked binaries. Default: dynamic."
-    echo "  -i|--install     Install the executables."
-    echo "  -p|--prefix      Install path. Default: '/usr/local'."
+    echo "  -t|--threads     Compile with multithreading. Default: No multithreading."
+    echo "  -p|--prefix      Install path. Default: './build'."
     echo "  -b|--build-type  Build type. Options: debug, release, relwithdebinfo."
     echo "                   Default: relwithdebinfo."
     echo ""
@@ -44,11 +44,8 @@ build_ecoevolity () {
     echo "Building..."
     make clean || exit 1
     make -j $COMPILETHREADS || exit 1
-    if [ -n "$ECOEVOLITY_RUN_INSTALL" ]
-    then
-        echo "Installing..."
-        make install || exit 1
-    fi
+    echo "Installing..."
+    make install || exit 1
     cd "$base_dir"
     echo "Done!"
 }
@@ -73,8 +70,8 @@ export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
 # process args
 extra_args=""
 static=""
-install_prefix=""
-ECOEVOLITY_RUN_INSTALL=""
+threads=""
+install_prefix="$ECOEVOLITY_BUILD_DIR"
 universal_mac_build=""
 linux_dist_build=""
 mbit=64
@@ -83,8 +80,8 @@ COMPILETHREADS="4"
 
 if [ "$(echo "$@" | grep -c "=")" -gt 0 ]
 then
-    echo "ERROR: Do not use '=' for arugments. For example, use"
-    echo "'--nthreads 2' instead of '--nthreads=2'."
+    echo "ERROR: Do not use '=' for arguments. For example, use"
+    echo "'--prefix /usr/local' instead of '--prefix=/usr/local'."
     exit 1
 fi
 
@@ -106,13 +103,12 @@ do
         -s| --static)
             static=1
             ;;
-        -n| --nthreads)
+        -t| --threads)
+            threads=1
+            ;;
+        -j)
             shift
             COMPILETHREADS="$1"
-            ;;
-        -i| --install)
-            ECOEVOLITY_RUN_INSTALL=1
-            export ECOEVOLITY_RUN_INSTALL
             ;;
         -m)
             shift
@@ -132,14 +128,14 @@ do
     shift
 done
 export COMPILETHREADS
-args="-DCMAKE_BUILD_TYPE=${build_type} -DFORCE_BUNDLED_NCL=yes -DFORCE_BUNDLED_YAML_CPP=yes"
-if [ -n "$install_prefix" ]
-then
-    args="${args} -DCMAKE_INSTALL_PREFIX=${install_prefix}"
-fi
+args="-DCMAKE_BUILD_TYPE=${build_type} -DFORCE_BUNDLED_NCL=yes -DFORCE_BUNDLED_YAML_CPP=yes -DCMAKE_INSTALL_PREFIX=${install_prefix}"
 if [ -n "$static" ]
 then
     args="${args} -DSTATIC_LINKING=yes"
+fi
+if [ -n "$threads" ]
+then
+    args="${args} -DBUILD_WITH_THREADS=yes"
 fi
 if [ -n "$extra_args" ]
 then

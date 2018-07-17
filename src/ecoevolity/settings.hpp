@@ -971,18 +971,20 @@ class OperatorScheduleSettings {
 
     private:
         bool auto_optimize_ = true;
-        unsigned int auto_optimize_delay_ = 10000;
+        unsigned int auto_optimize_delay_ = 1000;
         bool using_population_size_multipliers_ = false;
         ModelOperatorSettings model_operator_settings_ = ModelOperatorSettings(
-                3.0, 4);
+                10.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                3.0, 1.0);
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                6.0, 0.1);
+        ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
+                6.0, 0.05);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                1.0, 0.1);
 
     public:
         OperatorScheduleSettings() { }
@@ -993,6 +995,7 @@ class OperatorScheduleSettings {
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
             this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
+            this->time_root_size_mixer_settings_ = other.time_root_size_mixer_settings_;
             this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
             this->event_time_scaler_settings_ = other.event_time_scaler_settings_;
             return * this;
@@ -1004,6 +1007,7 @@ class OperatorScheduleSettings {
 
         void turn_on_population_size_multipliers() {
             this->using_population_size_multipliers_ = true;
+            this->time_root_size_mixer_settings_.set_weight(0.0);
         }
 
         bool auto_optimizing() const {
@@ -1020,6 +1024,9 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_time_size_rate_mixer_settings() const {
             return this->time_size_rate_mixer_settings_;
+        }
+        const ScaleOperatorSettings& get_time_root_size_mixer_settings() const {
+            return this->time_root_size_mixer_settings_;
         }
         const ScaleOperatorSettings& get_time_size_rate_scaler_settings() const {
             return this->time_size_rate_scaler_settings_;
@@ -1114,6 +1121,16 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
+                else if (op->first.as<std::string>() == "TimeRootSizeMixer") {
+                    try {
+                        this->time_root_size_mixer_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing TimeRootSizeMixer settings\n";
+                        throw;
+                    }
+                }
                 else if (op->first.as<std::string>() == "TimeSizeRateScaler") {
                     try {
                         this->time_size_rate_scaler_settings_.update_from_config(op->second);
@@ -1162,6 +1179,8 @@ class OperatorScheduleSettings {
             ss << this->time_size_rate_scaler_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "EventTimeScaler:\n";
             ss << this->event_time_scaler_settings_.to_string(indent_level + 3);
+            ss << margin << indent << indent << "TimeRootSizeMixer:\n";
+            ss << this->time_root_size_mixer_settings_.to_string(indent_level + 3);
             return ss.str();
         }
 };
@@ -1175,21 +1194,21 @@ class TreeSpecificOperatorScheduleSettings {
 
     protected:
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings time_size_rate_scaler_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                0.0, 0.05);
         ScaleOperatorSettings event_time_scaler_settings_ = ScaleOperatorSettings(
-                0.0, 0.5);
+                0.0, 0.1);
         ScaleOperatorSettings mutation_rate_scaler_settings_ = ScaleOperatorSettings(
                 1.0, 0.3);
         WindowOperatorSettings freq_mover_settings_ = WindowOperatorSettings(
                 1.0, 0.1);
         ScaleOperatorSettings root_population_size_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                1.0, 0.1);
         ScaleOperatorSettings leaf_population_size_scaler_settings_ = ScaleOperatorSettings(
-                1.0, 0.5);
+                1.0, 0.1);
 
     public:
         TreeSpecificOperatorScheduleSettings() { }
@@ -2670,6 +2689,31 @@ class BaseCollectionSettings {
             return nfree;
         }
 
+        unsigned int get_number_of_comparisons_with_free_root_population_size() const {
+            unsigned int nfree = 0;
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
+                if (
+                        (
+                            (! comparison.using_relative_root_population_size()) &&
+                            (! comparison.population_size_settings_.is_fixed())
+                        ) ||
+                        (
+                            comparison.using_relative_root_population_size() &&
+                            (
+                                (! comparison.relative_root_population_size_is_fixed()) ||
+                                (
+                                    comparison.constrain_population_sizes() &&
+                                    (! comparison.population_size_settings_.is_fixed())
+                                )
+                            )
+                        )
+                ) {
+                    ++nfree;
+                }
+            }
+            return nfree;
+        }
+
         unsigned int get_number_of_comparisons_with_free_population_size_multipliers() const {
             unsigned int nfree = 0;
             for (const ComparisonSettingsType& comparison : this->comparisons_) {
@@ -2688,6 +2732,15 @@ class BaseCollectionSettings {
                 }
             }
             return nfree;
+        }
+
+        bool all_comparions_have_constant_sites() const {
+            for (const ComparisonSettingsType& comparison : this->comparisons_) {
+                if (comparison.constant_sites_removed_) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         const ContinuousDistributionSettings& get_time_prior_settings() const {
@@ -2806,8 +2859,20 @@ class BaseCollectionSettings {
         }
 
         void blanket_set_population_name_is_prefix(bool b) {
-            for (auto comp : this->comparisons_) {
+            for (auto & comp : this->comparisons_) {
                 comp.population_name_is_prefix_ = b;
+            }
+        }
+
+        void blanket_set_genotypes_are_diploid(bool b) {
+            for (auto & comp : this->comparisons_) {
+                comp.genotypes_are_diploid_ = b;
+            }
+        }
+
+        void blanket_set_constant_sites_removed(bool b) {
+            for (auto & comp : this->comparisons_) {
+                comp.constant_sites_removed_ = b;
             }
         }
 
@@ -2960,7 +3025,7 @@ class BaseCollectionSettings {
                         default_shape);
             }
             else {
-                this->use_dpp_ = false;
+                this->use_dpp_ = true;
                 this->concentration_settings_.value_ = 1.0;
                 this->concentration_settings_.is_fixed_ = true;
             }
@@ -3054,6 +3119,9 @@ class BaseCollectionSettings {
                     (this->get_number_of_comparisons_with_free_population_size() < 1)) {
                     this->operator_schedule_settings_.time_size_rate_mixer_settings_.set_weight(0.0);
                     this->operator_schedule_settings_.time_size_rate_scaler_settings_.set_weight(0.0);
+                }
+                if (this->get_number_of_comparisons_with_free_root_population_size() < 1) {
+                    this->operator_schedule_settings_.time_root_size_mixer_settings_.set_weight(0.0);
                 }
             }
         }

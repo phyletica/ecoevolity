@@ -17,7 +17,7 @@ TEST_CASE("Testing parse_header on empty file", "[spreadsheet]") {
         std::ifstream in_stream;
         in_stream.open(test_path);
         std::vector<std::string> header;
-        header = spreadsheet::parse_header(in_stream);
+        spreadsheet::parse_header(in_stream, header);
         in_stream.close();
         REQUIRE(header.size() == 0);
     }
@@ -28,7 +28,7 @@ TEST_CASE("Testing parse_header on empty stream", "[spreadsheet]") {
         std::stringstream stream;
 
         std::vector<std::string> header;
-        header = spreadsheet::parse_header(stream);
+        spreadsheet::parse_header(stream, header);
         REQUIRE(header.size() == 0);
     }
 }
@@ -40,7 +40,7 @@ TEST_CASE("Testing parse_header on simple header with three columns", "[spreadsh
         std::vector<std::string> expected = {"col1", "col2", "col3"};
 
         std::vector<std::string> header;
-        header = spreadsheet::parse_header(stream);
+        spreadsheet::parse_header(stream, header);
         REQUIRE(header == expected);
     }
 
@@ -51,7 +51,7 @@ TEST_CASE("Testing parse_header on simple header with three columns", "[spreadsh
         std::vector<std::string> expected = {"col1", "col2", "col3"};
 
         std::vector<std::string> header;
-        header = spreadsheet::parse_header(stream);
+        spreadsheet::parse_header(stream, header);
         REQUIRE(header == expected);
     }
 }
@@ -68,14 +68,16 @@ TEST_CASE("Testing parse on empty file", "[spreadsheet]") {
         in_stream.open(test_path);
 
         std::map<std::string, std::vector<std::string> > data;
-        REQUIRE_THROWS_AS(spreadsheet::parse(in_stream, data),
+        std::vector<std::string> header;
+        REQUIRE_THROWS_AS(spreadsheet::parse(in_stream, data, header),
                 EcoevolityParsingError);
         in_stream.close();
     }
 
     SECTION("Testing path of empty file") {
         std::map<std::string, std::vector<std::string> > data;
-        REQUIRE_THROWS_AS(spreadsheet::parse(test_path, data),
+        std::vector<std::string> header;
+        REQUIRE_THROWS_AS(spreadsheet::parse(test_path, data, header),
                 EcoevolityParsingError);
     }
 }
@@ -85,7 +87,8 @@ TEST_CASE("Testing parse on empty stream", "[spreadsheet]") {
         std::stringstream stream;
 
         std::map<std::string, std::vector<std::string> > data;
-        REQUIRE_THROWS_AS(spreadsheet::parse(stream, data),
+        std::vector<std::string> header;
+        REQUIRE_THROWS_AS(spreadsheet::parse(stream, data, header),
                 EcoevolityParsingError);
     }
 }
@@ -94,10 +97,13 @@ TEST_CASE("Testing parse on simple header with three columns", "[spreadsheet]") 
     SECTION("Testing simple header only") {
         std::stringstream stream;
         stream << "col1\tcol2\tcol3\n";
+        std::vector<std::string> expected_header = {"col1", "col2", "col3"};
 
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(stream, data);
+        std::vector<std::string> header;
+        spreadsheet::parse(stream, data, header);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 0);
         REQUIRE(data.at("col2").size() == 0);
@@ -108,10 +114,13 @@ TEST_CASE("Testing parse on simple header with three columns", "[spreadsheet]") 
         std::stringstream stream;
         stream << "col1\tcol2\tcol3\n";
         stream << "1.0\t2.0\t3.0\n";
+        std::vector<std::string> expected_header = {"col1", "col2", "col3"};
 
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(stream, data);
+        std::vector<std::string> header;
+        spreadsheet::parse(stream, data, header);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 1);
         REQUIRE(data.at("col2").size() == 1);
@@ -139,11 +148,14 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
     os << "101.0\t102.0\t103.0\n";
     os.close();
     REQUIRE(path::exists(test_path));
+    std::vector<std::string> expected_header = {"col1", "col2", "col3"};
 
     SECTION("Testing zero offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(test_path, data, 0);
+        std::vector<std::string> header;
+        spreadsheet::parse(test_path, data, header, 0);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 10);
         REQUIRE(data.at("col2").size() == 10);
@@ -164,8 +176,10 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
 
     SECTION("Testing one offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(test_path, data, 1);
+        std::vector<std::string> header;
+        spreadsheet::parse(test_path, data, header, 1);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 9);
         REQUIRE(data.at("col2").size() == 9);
@@ -186,8 +200,10 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
 
     SECTION("Testing five offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(test_path, data, 5);
+        std::vector<std::string> header;
+        spreadsheet::parse(test_path, data, header, 5);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 5);
         REQUIRE(data.at("col2").size() == 5);
@@ -205,8 +221,10 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
 
     SECTION("Testing nine offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(test_path, data, 9);
+        std::vector<std::string> header;
+        spreadsheet::parse(test_path, data, header, 9);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 1);
         REQUIRE(data.at("col2").size() == 1);
@@ -224,8 +242,10 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
 
     SECTION("Testing offset equals number of data lines") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(test_path, data, 10);
+        std::vector<std::string> header;
+        spreadsheet::parse(test_path, data, header, 10);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 0);
         REQUIRE(data.at("col2").size() == 0);
@@ -234,8 +254,10 @@ TEST_CASE("Testing parse offset", "[spreadsheet]") {
 
     SECTION("Testing offset exceeds number of data lines") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(test_path, data, 20);
+        std::vector<std::string> header;
+        spreadsheet::parse(test_path, data, header, 20);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 0);
         REQUIRE(data.at("col2").size() == 0);
@@ -291,11 +313,14 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
     REQUIRE(path::exists(test_path2));
     REQUIRE(path::exists(test_path3));
     std::vector<std::string> paths = {test_path1, test_path2, test_path3};
+    std::vector<std::string> expected_header = {"col1", "col2", "col3"};
 
     SECTION("Testing zero offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(paths, data, 0);
+        std::vector<std::string> header;
+        spreadsheet::parse(paths, data, header, 0);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 30);
         REQUIRE(data.at("col2").size() == 30);
@@ -331,8 +356,10 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
 
     SECTION("Testing two offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(paths, data, 2);
+        std::vector<std::string> header;
+        spreadsheet::parse(paths, data, header, 2);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 24);
         REQUIRE(data.at("col2").size() == 24);
@@ -368,8 +395,10 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
 
     SECTION("Testing seven offset") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(paths, data, 7);
+        std::vector<std::string> header;
+        spreadsheet::parse(paths, data, header, 7);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 9);
         REQUIRE(data.at("col2").size() == 9);
@@ -396,8 +425,10 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
 
     SECTION("Testing offset equals number of lines per file") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(paths, data, 10);
+        std::vector<std::string> header;
+        spreadsheet::parse(paths, data, header, 10);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 0);
         REQUIRE(data.at("col2").size() == 0);
@@ -406,8 +437,10 @@ TEST_CASE("Testing parse multiple files", "[spreadsheet]") {
 
     SECTION("Testing offset exceeds number of lines per file") {
         std::map<std::string, std::vector<std::string> > data;
-        spreadsheet::parse(paths, data, 11);
+        std::vector<std::string> header;
+        spreadsheet::parse(paths, data, header, 11);
 
+        REQUIRE(header == expected_header);
         REQUIRE(data.size() == 3);
         REQUIRE(data.at("col1").size() == 0);
         REQUIRE(data.at("col2").size() == 0);
@@ -458,10 +491,10 @@ TEST_CASE("Testing Spreadsheet.update on simple header with three columns",
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(stream);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 0);
-        REQUIRE(ss.data.at("col2").size() == 0);
-        REQUIRE(ss.data.at("col3").size() == 0);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 0);
+        REQUIRE(ss.get_data().at("col2").size() == 0);
+        REQUIRE(ss.get_data().at("col3").size() == 0);
 
         std::vector<double> col1 = ss.get<double>("col1");
         REQUIRE(col1.size() == 0);
@@ -475,13 +508,13 @@ TEST_CASE("Testing Spreadsheet.update on simple header with three columns",
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(stream);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 1);
-        REQUIRE(ss.data.at("col2").size() == 1);
-        REQUIRE(ss.data.at("col3").size() == 1);
-        REQUIRE(ss.data.at("col1").at(0) == "1.0");
-        REQUIRE(ss.data.at("col2").at(0) == "2.0");
-        REQUIRE(ss.data.at("col3").at(0) == "3.0");
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 1);
+        REQUIRE(ss.get_data().at("col2").size() == 1);
+        REQUIRE(ss.get_data().at("col3").size() == 1);
+        REQUIRE(ss.get_data().at("col1").at(0) == "1.0");
+        REQUIRE(ss.get_data().at("col2").at(0) == "2.0");
+        REQUIRE(ss.get_data().at("col3").at(0) == "3.0");
 
         std::vector<double> expected_double_col1 = {1.0};
         REQUIRE(ss.get<double>("col1") == expected_double_col1);
@@ -513,13 +546,13 @@ TEST_CASE("Testing Spreadsheet.update on simple header with three columns",
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(stream);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 2);
-        REQUIRE(ss.data.at("col2").size() == 2);
-        REQUIRE(ss.data.at("col3").size() == 2);
-        REQUIRE(ss.data.at("col1").at(0) == "1.0");
-        REQUIRE(ss.data.at("col2").at(0) == "2.0");
-        REQUIRE(ss.data.at("col3").at(0) == "3.0");
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 2);
+        REQUIRE(ss.get_data().at("col2").size() == 2);
+        REQUIRE(ss.get_data().at("col3").size() == 2);
+        REQUIRE(ss.get_data().at("col1").at(0) == "1.0");
+        REQUIRE(ss.get_data().at("col2").at(0) == "2.0");
+        REQUIRE(ss.get_data().at("col3").at(0) == "3.0");
 
         std::vector<double> expected_double_col1 = {1.0, 11.0};
         REQUIRE(ss.get<double>("col1") == expected_double_col1);
@@ -565,10 +598,10 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path, 0);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 10);
-        REQUIRE(ss.data.at("col2").size() == 10);
-        REQUIRE(ss.data.at("col3").size() == 10);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 10);
+        REQUIRE(ss.get_data().at("col2").size() == 10);
+        REQUIRE(ss.get_data().at("col3").size() == 10);
         std::vector<std::string> c1 = {
             "11.0", "21.0", "31.0", "41.0", "51.0",
             "61.0", "71.0", "81.0", "91.0", "101.0"};
@@ -578,9 +611,9 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         std::vector<std::string> c3 = {
             "13.0", "23.0", "33.0", "43.0", "53.0",
             "63.0", "73.0", "83.0", "93.0", "103.0"};
-        REQUIRE(ss.data.at("col1") == c1);
-        REQUIRE(ss.data.at("col2") == c2);
-        REQUIRE(ss.data.at("col3") == c3);
+        REQUIRE(ss.get_data().at("col1") == c1);
+        REQUIRE(ss.get_data().at("col2") == c2);
+        REQUIRE(ss.get_data().at("col3") == c3);
 
         std::vector<double> expected_double_c1 {
             11.0, 21.0, 31.0, 41.0, 51.0,
@@ -615,10 +648,10 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path, 1);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 9);
-        REQUIRE(ss.data.at("col2").size() == 9);
-        REQUIRE(ss.data.at("col3").size() == 9);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 9);
+        REQUIRE(ss.get_data().at("col2").size() == 9);
+        REQUIRE(ss.get_data().at("col3").size() == 9);
         std::vector<std::string> c1 = {
             "21.0", "31.0", "41.0", "51.0",
             "61.0", "71.0", "81.0", "91.0", "101.0"};
@@ -628,9 +661,9 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         std::vector<std::string> c3 = {
              "23.0", "33.0", "43.0", "53.0",
             "63.0", "73.0", "83.0", "93.0", "103.0"};
-        REQUIRE(ss.data.at("col1") == c1);
-        REQUIRE(ss.data.at("col2") == c2);
-        REQUIRE(ss.data.at("col3") == c3);
+        REQUIRE(ss.get_data().at("col1") == c1);
+        REQUIRE(ss.get_data().at("col2") == c2);
+        REQUIRE(ss.get_data().at("col3") == c3);
 
         std::vector<double> expected_double_c1 {
             21.0, 31.0, 41.0, 51.0,
@@ -665,19 +698,19 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path, 5);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 5);
-        REQUIRE(ss.data.at("col2").size() == 5);
-        REQUIRE(ss.data.at("col3").size() == 5);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 5);
+        REQUIRE(ss.get_data().at("col2").size() == 5);
+        REQUIRE(ss.get_data().at("col3").size() == 5);
         std::vector<std::string> c1 = {
             "61.0", "71.0", "81.0", "91.0", "101.0"};
         std::vector<std::string> c2 = {
             "62.0", "72.0", "82.0", "92.0", "102.0"};
         std::vector<std::string> c3 = {
             "63.0", "73.0", "83.0", "93.0", "103.0"};
-        REQUIRE(ss.data.at("col1") == c1);
-        REQUIRE(ss.data.at("col2") == c2);
-        REQUIRE(ss.data.at("col3") == c3);
+        REQUIRE(ss.get_data().at("col1") == c1);
+        REQUIRE(ss.get_data().at("col2") == c2);
+        REQUIRE(ss.get_data().at("col3") == c3);
 
         std::vector<double> expected_double_c1 {
             61.0, 71.0, 81.0, 91.0, 101.0};
@@ -706,19 +739,19 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path, 9);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 1);
-        REQUIRE(ss.data.at("col2").size() == 1);
-        REQUIRE(ss.data.at("col3").size() == 1);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 1);
+        REQUIRE(ss.get_data().at("col2").size() == 1);
+        REQUIRE(ss.get_data().at("col3").size() == 1);
         std::vector<std::string> c1 = {
             "101.0"};
         std::vector<std::string> c2 = {
             "102.0"};
         std::vector<std::string> c3 = {
             "103.0"};
-        REQUIRE(ss.data.at("col1") == c1);
-        REQUIRE(ss.data.at("col2") == c2);
-        REQUIRE(ss.data.at("col3") == c3);
+        REQUIRE(ss.get_data().at("col1") == c1);
+        REQUIRE(ss.get_data().at("col2") == c2);
+        REQUIRE(ss.get_data().at("col3") == c3);
 
         std::vector<double> expected_double_c1 {
             101.0};
@@ -747,10 +780,10 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path, 10);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 0);
-        REQUIRE(ss.data.at("col2").size() == 0);
-        REQUIRE(ss.data.at("col3").size() == 0);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 0);
+        REQUIRE(ss.get_data().at("col2").size() == 0);
+        REQUIRE(ss.get_data().at("col3").size() == 0);
 
         std::vector<double> expected_double_c1 {};
         std::vector<double> expected_double_c2 = {};
@@ -773,10 +806,10 @@ TEST_CASE("Testing spreadsheet.update offset", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path, 20);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 0);
-        REQUIRE(ss.data.at("col2").size() == 0);
-        REQUIRE(ss.data.at("col3").size() == 0);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 0);
+        REQUIRE(ss.get_data().at("col2").size() == 0);
+        REQUIRE(ss.get_data().at("col3").size() == 0);
 
         std::vector<double> expected_double_c1 {};
         std::vector<double> expected_double_c2 = {};
@@ -820,10 +853,10 @@ TEST_CASE("Testing spreadsheet.summarize", "[spreadsheet]") {
         spreadsheet::Spreadsheet ss = spreadsheet::Spreadsheet();
         ss.update(test_path);
 
-        REQUIRE(ss.data.size() == 3);
-        REQUIRE(ss.data.at("col1").size() == 12);
-        REQUIRE(ss.data.at("col2").size() == 12);
-        REQUIRE(ss.data.at("col3").size() == 12);
+        REQUIRE(ss.get_data().size() == 3);
+        REQUIRE(ss.get_data().at("col1").size() == 12);
+        REQUIRE(ss.get_data().at("col2").size() == 12);
+        REQUIRE(ss.get_data().at("col3").size() == 12);
 
         SampleSummarizer<int> summarizer1 = ss.summarize<int>("col1");
         REQUIRE(summarizer1.sample_size() == 12);

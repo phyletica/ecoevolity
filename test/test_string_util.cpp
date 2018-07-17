@@ -174,3 +174,15 @@ TEST_CASE("Testing join on singleton vector", "[string_util]") {
     std::string s = string_util::join(strings, "---");
     REQUIRE(s == "1");
 }
+
+TEST_CASE("Testing startswith", "[string_util]") {
+    SECTION("Testing startswith") {
+        REQUIRE(string_util::startswith("amalie", "amalie") == true);
+        REQUIRE(string_util::startswith("amalie", "amali") == true);
+        REQUIRE(string_util::startswith("amalie", "a") == true);
+        REQUIRE(string_util::startswith("amaliee", "amalie") == true);
+        REQUIRE(string_util::startswith("amalie", "amaliee") == false);
+        REQUIRE(string_util::startswith("amalie", "A") == false);
+        REQUIRE(string_util::startswith("amalie", "eden") == false);
+    }
+}
