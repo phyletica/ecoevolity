@@ -105,6 +105,17 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bo
         lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
     }
     if (! this->concentration_is_fixed()) {
+        // TODO: Compute the prior prob of model even when the concentration is
+        // fixed.
+        // Currently, this works, because none of the moves that update the
+        // model (e.g., DirichletProcessGibbsSampler) handle the prior ratio
+        // internally. As a result, skipping this when not estimating the
+        // concentration parameter saves a bit of computation. However, any new
+        // moves that update the model that assume the prior is being taken
+        // care of here would not work correcty, but would still sample from
+        // the joint prior as if they were working!  It's not worth the risk of
+        // forgetting to change this if we ever add a model move that depends
+        // on it.
         if (this->using_dpp()) {
             lnp += get_dpp_log_prior_probability<unsigned int>(
                     this->node_height_indices_,
