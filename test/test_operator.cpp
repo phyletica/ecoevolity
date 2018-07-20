@@ -74343,3 +74343,122 @@ TEST_CASE("Testing global TimeRootSizeMixer with fixed model, 3 ComparisonRelati
         }
     }
 }
+
+
+TEST_CASE("Testing ConcentrationScaler with 4 pairs",
+        "[ConcentrationScaler]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double conc_shape = 5.0;
+        double conc_scale = 0.1;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-t450.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test1-" + tag + "-t450-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: 0.5\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     gamma_distribution:\n";
+        os << "                         shape: " << conc_shape << "\n";
+        os << "                         scale: " << conc_scale << "\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ConcentrationScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<DirichletProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> conc_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            if ((i + 1) % 2 == 0) {
+                op->operate(rng, &comparisons, 1);
+            } else {
+                op2->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                conc_summary.add_sample(comparisons.get_concentration());
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        double size_sh;
+        double size_sc;
+        REQUIRE(conc_summary.sample_size() == nsamples);
+        REQUIRE(conc_summary.mean() == Approx(conc_shape * conc_scale).epsilon(0.001));
+        REQUIRE(conc_summary.variance() == Approx(conc_shape * conc_scale * conc_scale).epsilon(0.001));
+    }
+}
