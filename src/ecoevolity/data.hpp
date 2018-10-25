@@ -26,6 +26,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <ncl/nxsmultiformat.h>
 
 #include "string_util.hpp"
@@ -46,13 +47,15 @@ class BiallelicData {
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
-                bool validate = true);
+                bool validate = true,
+                bool store_seq_loci_info = false);
         void init(const std::string path,
                 char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
                 bool genotypes_are_diploid = true,
                 bool markers_are_dominant = false,
-                bool validate = true);
+                bool validate = true,
+                bool store_seq_loci_info = false);
 
         // Destructor
         // ~BiallelicData();
@@ -152,6 +155,15 @@ class BiallelicData {
         const std::vector<unsigned int>& get_pattern_weights() const {
             return this->pattern_weights_;
         }
+        const std::vector<unsigned int>& get_contiguous_pattern_indices() const {
+            return this->contiguous_pattern_indices_;
+        }
+        const std::vector<unsigned int>& get_locus_end_indices() const {
+            return this->locus_end_indices_;
+        }
+        bool has_seq_loci_info() const {
+            return this->storing_seq_loci_info_;
+        }
 
         /**
          * Get the unique allele counts.
@@ -191,6 +203,10 @@ class BiallelicData {
         std::vector< std::vector<std::string> > sequence_labels_;
         std::unordered_map<std::string, std::string> seq_label_to_pop_label_map_;
         std::unordered_map<std::string, unsigned int> pop_label_to_index_map_;
+
+        bool storing_seq_loci_info_ = false;
+        std::vector<unsigned int> locus_end_indices_;
+        std::vector<unsigned int> contiguous_pattern_indices_;
 
         //Methods
         void remove_pattern(unsigned int pattern_index);

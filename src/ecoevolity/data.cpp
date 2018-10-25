@@ -25,13 +25,15 @@ BiallelicData::BiallelicData(
         bool population_name_is_prefix,
         bool genotypes_are_diploid,
         bool markers_are_dominant,
-        bool validate) {
+        bool validate,
+        bool store_seq_loci_info) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
                genotypes_are_diploid,
                markers_are_dominant,
-               validate);
+               validate,
+               store_seq_loci_info);
 }
 
 void BiallelicData::init(
@@ -40,7 +42,8 @@ void BiallelicData::init(
         bool population_name_is_prefix,
         bool genotypes_are_diploid,
         bool markers_are_dominant,
-        bool validate) {
+        bool validate,
+        bool store_seq_loci_info) {
     char pop_name_delimiter = population_name_delimiter;
     // if (population_name_delimiter == '_') {
     //     pop_name_delimiter = ' ';
@@ -57,7 +60,7 @@ void BiallelicData::init(
 
     MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
     nexus_reader.ReadFilepath(this->path_.c_str(), MultiFormatReader::NEXUS_FORMAT);
-    
+
     unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
     if (num_taxa_blocks < 1) {
         throw EcoevolityParsingError("No taxa block found", this->path_, 0);
@@ -88,6 +91,67 @@ void BiallelicData::init(
     // std::cerr << "Char block " << char_block_title << " has data type: " <<
     //         (int)data_type << std::endl;
     // )
+    //
+
+    // Store charset info if available
+    if (store_seq_loci_info) {
+        unsigned int num_assumptions_blocks = nexus_reader.GetNumAssumptionsBlocks(char_block);
+        if (num_assumptions_blocks > 1) {
+            throw EcoevolityParsingError("More than one assumptions block found", this->path_, 0);
+        }
+        // If no sets block, do nothing (no error)
+        if (num_assumptions_blocks > 0) {
+            NxsAssumptionsBlock * assumptions_block = nexus_reader.GetAssumptionsBlock(char_block, 0);
+            unsigned int num_charsets = assumptions_block->GetNumCharSets();
+            // If there's a sets block but no charsets, let's throw an error
+            if (num_charsets < 1) {
+                throw EcoevolityParsingError("No charsets found", this->path_, 0);
+            }
+            // std::vector<NxsString> charset_names (num_charsets);
+            NxsStringVector charset_names (num_charsets);
+            assumptions_block->GetCharSetNames(charset_names);
+            for (unsigned int cs_idx = 0; cs_idx < num_charsets; ++cs_idx) {
+                const NxsUnsignedSet * charset = assumptions_block->GetCharSet(charset_names.at(cs_idx));
+                auto mnmx = std::minmax_element(charset->begin(), charset->end());
+                // Vet charset to make sure it's a contiguous set of sites
+                for (unsigned int site_idx_to_check = *mnmx.first + 1;
+                        site_idx_to_check < *mnmx.second;
+                        ++site_idx_to_check) {
+                    if (charset->count(site_idx_to_check) < 1) {
+                        std::ostringstream message;
+                        message << "Did not find site "
+                                << site_idx_to_check
+                                << " in charset \'"
+                                << charset_names.at(cs_idx)
+                                << "\'\n";
+                        throw EcoevolityParsingError(message.str(), this->path_, 0);
+                    }
+                    if (charset->count(site_idx_to_check) > 1) {
+                        std::ostringstream message;
+                        message << "Found site "
+                                << site_idx_to_check
+                                << " multiple times in charset \'"
+                                << charset_names.at(cs_idx)
+                                << "\'\n";
+                        throw EcoevolityParsingError(message.str(), this->path_, 0);
+                    }
+                }
+                this->locus_end_indices_.push_back(*mnmx.second);
+            }
+            std::sort(this->locus_end_indices_.begin(), this->locus_end_indices_.end());
+            if (this->locus_end_indices_.back() != (num_chars - 1)) {
+                std::ostringstream message;
+                message << "Charset error; last locus position is "
+                        << this->locus_end_indices_.back() + 1
+                        << " but there are "
+                        << num_chars
+                        << " sites in the alignment\n";
+                throw EcoevolityParsingError(message.str(), this->path_, 0);
+            }
+            this->storing_seq_loci_info_ = true;
+        }
+    }
+
 
     for (unsigned int taxon_idx = 0; taxon_idx < num_taxa; ++taxon_idx) {
         NxsString seq_label = char_block->GetTaxonLabel(taxon_idx);
@@ -194,11 +258,17 @@ void BiallelicData::init(
                     allele_cts);
             if (pattern_was_found) {
                 this->pattern_weights_[found_pattern_idx] += 1;
+                if (this->storing_seq_loci_info_) {
+                    this->contiguous_pattern_indices_.push_back(found_pattern_idx);
+                }
             }
             else {
                 this->red_allele_counts_.push_back(red_allele_cts);
                 this->allele_counts_.push_back(allele_cts);
                 this->pattern_weights_.push_back(1);
+                if (this->storing_seq_loci_info_) {
+                    this->contiguous_pattern_indices_.push_back(this->pattern_weights_.size() - 1);
+                }
             }
         }
     }
@@ -289,11 +359,17 @@ void BiallelicData::init(
                     allele_cts);
             if (pattern_was_found) {
                 ++this->pattern_weights_[found_pattern_idx];
+                if (this->storing_seq_loci_info_) {
+                    this->contiguous_pattern_indices_.push_back(found_pattern_idx);
+                }
             }
             else {
                 this->red_allele_counts_.push_back(red_allele_cts);
                 this->allele_counts_.push_back(allele_cts);
                 this->pattern_weights_.push_back(1);
+                if (this->storing_seq_loci_info_) {
+                    this->contiguous_pattern_indices_.push_back(this->pattern_weights_.size() - 1);
+                }
             }
         }
     }
@@ -321,6 +397,9 @@ BiallelicData BiallelicData::get_empty_copy() const {
     copy.seq_label_to_pop_label_map_ = this->seq_label_to_pop_label_map_;
     copy.pop_label_to_index_map_ = this->pop_label_to_index_map_;
     copy.appendable_ = true;
+    copy.storing_seq_loci_info_ = this->storing_seq_loci_info_;
+    copy.contiguous_pattern_indices_ = this->contiguous_pattern_indices_;
+    copy.locus_end_indices_ = this->locus_end_indices_;
     return copy;
 }
 
@@ -615,6 +694,15 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
                 "Ran out of data while removing patterns",
                 this->path_);
     }
+    if (this->storing_seq_loci_info_) {
+        this->contiguous_pattern_indices_.erase(
+                std::remove(
+                        this->contiguous_pattern_indices_.begin(),
+                        this->contiguous_pattern_indices_.end(),
+                        pattern_index),
+                this->contiguous_pattern_indices_.end());
+        // ECOEVOLITY_ASSERT(this->contiguous_pattern_indices_.size() == this->get_number_of_sites())
+    }
     return;
 }
 
@@ -692,6 +780,15 @@ void BiallelicData::fold_first_mirrored_pattern(
         }
         ECOEVOLITY_ASSERT(mirrored_idx > pattern_idx);
         this->pattern_weights_.at(pattern_idx) += this->pattern_weights_.at(mirrored_idx);
+        if (this->storing_seq_loci_info_) {
+            for (unsigned int site_idx = 0;
+                    site_idx < this->contiguous_pattern_indices_.size();
+                    ++site_idx) {
+                if (this->contiguous_pattern_indices_.at(site_idx) == mirrored_idx) {
+                    this->contiguous_pattern_indices_.at(site_idx) = pattern_idx;
+                }
+            }
+        }
         this->remove_pattern(mirrored_idx);
         folded_index = mirrored_idx;
         was_folded = true;
@@ -872,6 +969,13 @@ void BiallelicData::validate() const {
         throw EcoevolityBiallelicDataError(
                 "missing data pattern boolean is incorrect",
                 this->path_);
+    }
+    if (this->storing_seq_loci_info_) {
+        if (this->contiguous_pattern_indices_.size() != this->get_number_of_sites()) {
+            throw EcoevolityBiallelicDataError(
+                    "The number of contiguous pattern indices does not match the number of sites",
+                    this->path_);
+        }
     }
     return;
 }
