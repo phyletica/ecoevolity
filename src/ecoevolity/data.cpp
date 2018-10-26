@@ -107,6 +107,7 @@ void BiallelicData::init(
             if (num_charsets < 1) {
                 throw EcoevolityParsingError("No charsets found", this->path_, 0);
             }
+            std::vector<unsigned int> site_indices_found (num_chars, 0);
             // std::vector<NxsString> charset_names (num_charsets);
             NxsStringVector charset_names (num_charsets);
             assumptions_block->GetCharSetNames(charset_names);
@@ -114,13 +115,13 @@ void BiallelicData::init(
                 const NxsUnsignedSet * charset = assumptions_block->GetCharSet(charset_names.at(cs_idx));
                 auto mnmx = std::minmax_element(charset->begin(), charset->end());
                 // Vet charset to make sure it's a contiguous set of sites
-                for (unsigned int site_idx_to_check = *mnmx.first + 1;
-                        site_idx_to_check < *mnmx.second;
+                for (unsigned int site_idx_to_check = *mnmx.first;
+                        site_idx_to_check < *mnmx.second + 1;
                         ++site_idx_to_check) {
                     if (charset->count(site_idx_to_check) < 1) {
                         std::ostringstream message;
                         message << "Did not find site "
-                                << site_idx_to_check
+                                << site_idx_to_check + 1
                                 << " in charset \'"
                                 << charset_names.at(cs_idx)
                                 << "\'\n";
@@ -129,12 +130,22 @@ void BiallelicData::init(
                     if (charset->count(site_idx_to_check) > 1) {
                         std::ostringstream message;
                         message << "Found site "
-                                << site_idx_to_check
+                                << site_idx_to_check + 1
                                 << " multiple times in charset \'"
                                 << charset_names.at(cs_idx)
                                 << "\'\n";
                         throw EcoevolityParsingError(message.str(), this->path_, 0);
                     }
+                    if (site_indices_found.at(site_idx_to_check) > 0) {
+                        std::ostringstream message;
+                        message << "Site "
+                                << site_idx_to_check + 1
+                                << " contained in charset \'"
+                                << charset_names.at(cs_idx)
+                                << "\' was found previously\n";
+                        throw EcoevolityParsingError(message.str(), this->path_, 0);
+                    }
+                    ++site_indices_found.at(site_idx_to_check);
                 }
                 this->locus_end_indices_.push_back(*mnmx.second);
             }
@@ -148,6 +159,26 @@ void BiallelicData::init(
                         << " sites in the alignment\n";
                 throw EcoevolityParsingError(message.str(), this->path_, 0);
             }
+            // Vet the sets for missing sites
+            unsigned int total_sites = 0;
+            std::vector<unsigned int> missing_sites;
+            for (unsigned int site_idx = 0; site_idx < num_chars; ++ site_idx) {
+                if (site_indices_found.at(site_idx) < 1) {
+                    missing_sites.push_back(site_idx);
+                }
+                total_sites += site_indices_found.at(site_idx);
+            }
+            if (missing_sites.size() > 0) {
+                std::ostringstream message;
+                message << "The following sites were missing from the charsets:\n"
+                        << missing_sites.at(0);
+                for (unsigned int i = 1; i < missing_sites.size(); ++i) {
+                    message << ", " << missing_sites.at(i);
+                }
+                message << "\n";
+                throw EcoevolityParsingError(message.str(), this->path_, 0);
+            }
+            ECOEVOLITY_ASSERT(total_sites == num_chars);
             this->storing_seq_loci_info_ = true;
         }
     }
