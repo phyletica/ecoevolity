@@ -872,6 +872,51 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
     return sim_data;
 }
 
+BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
+        RandomNumberGenerator& rng,
+        float singleton_sample_probability,
+        bool validate) const {
+    ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
+    BiallelicData sim_data = this->data_.get_empty_copy();
+    const bool filtering_constant_sites = this->constant_sites_removed_;
+    const std::vector<unsigned int> & locus_end_indices = this->data_.get_locus_end_indices();
+    unsigned int site_idx = 0;
+    for (unsigned int locus_idx = 0; locus_idx < locus_end_indices.size(); ++locus_idx) {
+        std::shared_ptr<GeneTreeSimNode> gene_tree;
+        auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
+        auto pattern = pattern_tree.first;
+        gene_tree = pattern_tree.second;
+        while (site_idx <= locus_end_indices.at(locus_idx)) {
+            bool site_added = false;
+            while (! site_added) {
+                pattern = this->simulate_biallelic_site(
+                        gene_tree,
+                        this->data_.get_allele_counts(this->data_.get_pattern_index_for_site(site_idx)),
+                        rng);
+                std::vector<unsigned int> red_allele_counts = pattern.first;
+                std::vector<unsigned int> allele_counts = pattern.second;
+                if (singleton_sample_probability < 1.0) {
+                    bool sample_pattern = this->sample_pattern(
+                            rng,
+                            singleton_sample_probability,
+                            red_allele_counts,
+                            allele_counts);
+                    if (! sample_pattern) {
+                        continue;
+                    }
+                }
+                std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
+                site_added = sim_data.add_site(red_allele_counts,
+                        allele_counts,
+                        filtering_constant_sites);
+            }
+            ++site_idx;
+        }
+    }
+    ECOEVOLITY_ASSERT(site_idx == this->data_.get_number_of_sites() - 1);
+    return sim_data;
+}
+
 std::pair<BiallelicData, unsigned int>
 PopulationTree::simulate_complete_biallelic_data_set(
         RandomNumberGenerator& rng,
@@ -919,8 +964,9 @@ PopulationTree::simulate_complete_biallelic_data_set(
             site_added = sim_data.add_site(red_allele_counts,
                     allele_counts,
                     filtering_constant_sites);
-            ++locus_site_count;
+            // ++locus_site_count;
         }
+        ++locus_site_count;
     }
     sim_data.update_max_allele_counts();
     sim_data.update_pattern_booleans();
@@ -1071,6 +1117,39 @@ PopulationTree::simulate_biallelic_site(
     std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern = 
             std::make_pair(red_allele_counts, allele_counts);
     return pattern;
+}
+
+std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
+PopulationTree::simulate_biallelic_site_sans_missing(
+        std::shared_ptr<GeneTreeSimNode> gene_tree,
+        const std::vector<unsigned int> & site_allele_counts,
+        RandomNumberGenerator& rng) const {
+    auto pattern = this->simulate_biallelic_site(
+            gene_tree,
+            rng);
+    std::vector<unsigned int> red_allele_counts = pattern.first;
+    std::vector<unsigned int> allele_counts = pattern.second;
+    ECOEVOLITY_ASSERT(site_allele_counts.size() == allele_counts.size());
+    std::vector<unsigned int> sampled_allele_counts (allele_counts);
+    std::vector<unsigned int> sampled_red_allele_counts (red_allele_counts);
+    for (unsigned int pop_idx = 0; pop_idx < allele_counts.size(); ++pop_idx) {
+        if (allele_counts.at(pop_idx) == site_allele_counts.at(pop_idx)) {
+            // No gene copies to prune
+            continue;
+        }
+        double prob_pick_red = (double)sampled_red_allele_counts.at(pop_idx) / (double)sampled_allele_counts.at(pop_idx);
+        for (unsigned int missing_idx = 0;
+                missing_idx < (allele_counts.at(pop_idx) - site_allele_counts.at(pop_idx));
+                ++missing_idx) {
+            double u = rng.uniform_real();
+            if (u < prob_pick_red) {
+                --sampled_red_allele_counts.at(pop_idx);
+            }
+            --sampled_allele_counts.at(pop_idx);
+            prob_pick_red = (double)sampled_red_allele_counts.at(pop_idx) / (double)sampled_allele_counts.at(pop_idx);
+        }
+    }
+    ECOEVOLITY_ASSERT(site_allele_counts == sampled_allele_counts);
 }
 
 
