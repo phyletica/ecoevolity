@@ -10013,3 +10013,376 @@ TEST_CASE("Testing config ComparisonRelativeRootPopulationTree draw_from_prior f
         REQUIRE(pop_size_1.variance() == Approx(0.0));
     }
 }
+
+
+
+TEST_CASE("Testing missing gene copies",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing missing gene copies for fully fixed singleton") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        std::string nex_path2 = "data/singleton-n2.nex";
+        std::string nex_path3 = "data/singleton-n3.nex";
+        // Need to keep constant characters
+        ComparisonPopulationTree tree2(nex_path2, ' ', true, false, false, false);
+        ComparisonPopulationTree tree3(nex_path3, ' ', true, false, false, false);
+        tree2.estimate_mutation_rate();
+        tree3.estimate_mutation_rate();
+
+        tree2.set_root_population_size(Ne * mu);
+        tree3.set_root_population_size(Ne * mu);
+
+        tree2.set_child_population_size(0, (Ne * mu));
+        tree3.set_child_population_size(0, (Ne * mu));
+
+        tree2.set_root_height(0.1);
+        tree3.set_root_height(0.1);
+
+        tree2.set_freq_1(0.5);
+        tree3.set_freq_1(0.5);
+
+        tree2.set_mutation_rate(1.0);
+        tree3.set_mutation_rate(1.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(54321);
+
+        unsigned int nsamples = 1000000;
+
+        std::shared_ptr<GeneTreeSimNode> gtree2;
+        std::shared_ptr<GeneTreeSimNode> gtree3;
+        std::vector<unsigned int> down_sampled_counts = {2};
+
+        std::vector<unsigned int> red_allele_counts2 = {0, 0, 0};
+        std::vector<unsigned int> red_allele_counts3 = {0, 0, 0};
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            gtree2 = tree2.simulate_gene_tree(0, rng, true);
+            gtree3 = tree3.simulate_gene_tree(0, rng, true);
+
+            auto pattern2 = tree2.simulate_biallelic_site(gtree2, rng);
+            auto pattern3 = tree3.simulate_biallelic_site_sans_missing(gtree3, down_sampled_counts, rng);
+
+            ++red_allele_counts2.at(pattern2.first.at(0));
+            ++red_allele_counts3.at(pattern3.first.at(0));
+        }
+
+        unsigned int total2 = 0;
+        unsigned int total3 = 0;
+        for (unsigned int i = 0; i < red_allele_counts2.size(); ++i) {
+            total2 += red_allele_counts2.at(i);
+            total3 += red_allele_counts3.at(i);
+        }
+
+        REQUIRE(total2 == nsamples);
+        REQUIRE(total3 == nsamples);
+
+        std::vector<double> red_allele_freqs2 = {0.0, 0.0, 0.0};
+        std::vector<double> red_allele_freqs3 = {0.0, 0.0, 0.0};
+        for (unsigned int i = 0; i < red_allele_counts2.size(); ++i) {
+            red_allele_freqs2.at(i) = red_allele_counts2.at(i) / (double)nsamples;
+            red_allele_freqs3.at(i) = red_allele_counts3.at(i) / (double)nsamples;
+        }
+
+        std::cout << "Freqs of red allele counts for 2 gene copies:\n";
+        for (unsigned int i = 0; i < red_allele_freqs2.size(); ++i) {
+            std::cout << i << ": " << red_allele_freqs2.at(i) << "\n";
+        }
+        std::cout << "Freqs of red allele counts for 3 gene copies with 1 dropped:\n";
+        for (unsigned int i = 0; i < red_allele_freqs3.size(); ++i) {
+            std::cout << i << ": " << red_allele_freqs3.at(i) << "\n";
+        }
+
+        for (unsigned int i = 0; i < red_allele_freqs2.size(); ++i) {
+            REQUIRE(red_allele_freqs2.at(i) == Approx(red_allele_freqs3.at(i)).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing missing gene copies (1 of 3) with relative root",
+        "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing missing gene copies (1 of 3) for fully fixed singleton") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        std::string nex_path2 = "data/singleton-n2.nex";
+        std::string nex_path3 = "data/singleton-n3.nex";
+        // Need to keep constant characters
+        ComparisonRelativeRootPopulationTree tree2(nex_path2, ' ', true, false, false, false);
+        ComparisonRelativeRootPopulationTree tree3(nex_path3, ' ', true, false, false, false);
+        tree2.estimate_mutation_rate();
+        tree3.estimate_mutation_rate();
+
+        tree2.set_root_population_size(Ne * mu);
+        tree3.set_root_population_size(Ne * mu);
+
+        tree2.set_child_population_size(0, (Ne * mu));
+        tree3.set_child_population_size(0, (Ne * mu));
+
+        tree2.set_root_height(0.1);
+        tree3.set_root_height(0.1);
+
+        tree2.set_freq_1(0.5);
+        tree3.set_freq_1(0.5);
+
+        tree2.set_mutation_rate(1.0);
+        tree3.set_mutation_rate(1.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(54321);
+
+        unsigned int nsamples = 1000000;
+
+        std::shared_ptr<GeneTreeSimNode> gtree2;
+        std::shared_ptr<GeneTreeSimNode> gtree3;
+        std::vector<unsigned int> down_sampled_counts = {2};
+
+        std::vector<unsigned int> red_allele_counts2 = {0, 0, 0};
+        std::vector<unsigned int> red_allele_counts3 = {0, 0, 0};
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            gtree2 = tree2.simulate_gene_tree(0, rng, true);
+            gtree3 = tree3.simulate_gene_tree(0, rng, true);
+
+            auto pattern2 = tree2.simulate_biallelic_site(gtree2, rng);
+            auto pattern3 = tree3.simulate_biallelic_site_sans_missing(gtree3, down_sampled_counts, rng);
+
+            ++red_allele_counts2.at(pattern2.first.at(0));
+            ++red_allele_counts3.at(pattern3.first.at(0));
+        }
+
+        unsigned int total2 = 0;
+        unsigned int total3 = 0;
+        for (unsigned int i = 0; i < red_allele_counts2.size(); ++i) {
+            total2 += red_allele_counts2.at(i);
+            total3 += red_allele_counts3.at(i);
+        }
+
+        REQUIRE(total2 == nsamples);
+        REQUIRE(total3 == nsamples);
+
+        std::vector<double> red_allele_freqs2 = {0.0, 0.0, 0.0};
+        std::vector<double> red_allele_freqs3 = {0.0, 0.0, 0.0};
+        for (unsigned int i = 0; i < red_allele_counts2.size(); ++i) {
+            red_allele_freqs2.at(i) = red_allele_counts2.at(i) / (double)nsamples;
+            red_allele_freqs3.at(i) = red_allele_counts3.at(i) / (double)nsamples;
+        }
+
+        std::cout << "Freqs of red allele counts for 2 gene copies:\n";
+        for (unsigned int i = 0; i < red_allele_freqs2.size(); ++i) {
+            std::cout << i << ": " << red_allele_freqs2.at(i) << "\n";
+        }
+        std::cout << "Freqs of red allele counts for 3 gene copies with 1 dropped:\n";
+        for (unsigned int i = 0; i < red_allele_freqs3.size(); ++i) {
+            std::cout << i << ": " << red_allele_freqs3.at(i) << "\n";
+        }
+
+        for (unsigned int i = 0; i < red_allele_freqs2.size(); ++i) {
+            REQUIRE(red_allele_freqs2.at(i) == Approx(red_allele_freqs3.at(i)).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing missing gene copies (2 of 4) with relative root",
+        "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing missing gene copies (2 of 4) for fully fixed singleton") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        std::string nex_path2 = "data/singleton-n2.nex";
+        std::string nex_path3 = "data/singleton-n4.nex";
+        // Need to keep constant characters
+        ComparisonRelativeRootPopulationTree tree2(nex_path2, ' ', true, false, false, false);
+        ComparisonRelativeRootPopulationTree tree3(nex_path3, ' ', true, false, false, false);
+        tree2.estimate_mutation_rate();
+        tree3.estimate_mutation_rate();
+
+        tree2.set_root_population_size(Ne * mu);
+        tree3.set_root_population_size(Ne * mu);
+
+        tree2.set_child_population_size(0, (Ne * mu));
+        tree3.set_child_population_size(0, (Ne * mu));
+
+        tree2.set_root_height(0.1);
+        tree3.set_root_height(0.1);
+
+        tree2.set_freq_1(0.5);
+        tree3.set_freq_1(0.5);
+
+        tree2.set_mutation_rate(1.0);
+        tree3.set_mutation_rate(1.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(54321);
+
+        unsigned int nsamples = 1000000;
+
+        std::shared_ptr<GeneTreeSimNode> gtree2;
+        std::shared_ptr<GeneTreeSimNode> gtree3;
+        std::vector<unsigned int> down_sampled_counts = {2};
+
+        std::vector<unsigned int> red_allele_counts2 = {0, 0, 0};
+        std::vector<unsigned int> red_allele_counts3 = {0, 0, 0};
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            gtree2 = tree2.simulate_gene_tree(0, rng, true);
+            gtree3 = tree3.simulate_gene_tree(0, rng, true);
+
+            auto pattern2 = tree2.simulate_biallelic_site(gtree2, rng);
+            auto pattern3 = tree3.simulate_biallelic_site_sans_missing(gtree3, down_sampled_counts, rng);
+
+            ++red_allele_counts2.at(pattern2.first.at(0));
+            ++red_allele_counts3.at(pattern3.first.at(0));
+        }
+
+        unsigned int total2 = 0;
+        unsigned int total3 = 0;
+        for (unsigned int i = 0; i < red_allele_counts2.size(); ++i) {
+            total2 += red_allele_counts2.at(i);
+            total3 += red_allele_counts3.at(i);
+        }
+
+        REQUIRE(total2 == nsamples);
+        REQUIRE(total3 == nsamples);
+
+        std::vector<double> red_allele_freqs2 = {0.0, 0.0, 0.0};
+        std::vector<double> red_allele_freqs3 = {0.0, 0.0, 0.0};
+        for (unsigned int i = 0; i < red_allele_counts2.size(); ++i) {
+            red_allele_freqs2.at(i) = red_allele_counts2.at(i) / (double)nsamples;
+            red_allele_freqs3.at(i) = red_allele_counts3.at(i) / (double)nsamples;
+        }
+
+        std::cout << "Freqs of red allele counts for 2 gene copies:\n";
+        for (unsigned int i = 0; i < red_allele_freqs2.size(); ++i) {
+            std::cout << i << ": " << red_allele_freqs2.at(i) << "\n";
+        }
+        std::cout << "Freqs of red allele counts for 3 gene copies with 1 dropped:\n";
+        for (unsigned int i = 0; i < red_allele_freqs3.size(); ++i) {
+            std::cout << i << ": " << red_allele_freqs3.at(i) << "\n";
+        }
+
+        for (unsigned int i = 0; i < red_allele_freqs2.size(); ++i) {
+            REQUIRE(red_allele_freqs2.at(i) == Approx(red_allele_freqs3.at(i)).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing missing gene copies (6 of 10 and 8 of 10) with relative root",
+        "[ComparisonRelativeRootPopulationTree]") {
+
+    SECTION("Testing missing gene copies (6 of 10 and 8 of 10) for fully fixed pair") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        std::string nex_path2 = "data/hemi129-2-1.nex";
+        std::string nex_path3 = "data/hemi129-5-5.nex";
+        // Need to keep constant characters
+        ComparisonRelativeRootPopulationTree tree2(nex_path2, ' ', true, true, false, false);
+        ComparisonRelativeRootPopulationTree tree3(nex_path3, ' ', true, true, false, false);
+        tree2.estimate_mutation_rate();
+        tree3.estimate_mutation_rate();
+
+        tree2.set_root_population_size(Ne * mu);
+        tree3.set_root_population_size(Ne * mu);
+
+        tree2.set_child_population_size(0, (Ne * mu));
+        tree3.set_child_population_size(0, (Ne * mu));
+        tree2.set_child_population_size(1, (Ne * mu));
+        tree3.set_child_population_size(1, (Ne * mu));
+
+        tree2.set_root_height(2.0 * Ne * mu);
+        tree3.set_root_height(2.0 * Ne * mu);
+
+        tree2.set_freq_1(0.5);
+        tree3.set_freq_1(0.5);
+
+        tree2.set_mutation_rate(1.0);
+        tree3.set_mutation_rate(1.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(54321);
+
+        unsigned int nsamples = 1000000;
+
+        std::shared_ptr<GeneTreeSimNode> gtree2;
+        std::shared_ptr<GeneTreeSimNode> gtree3;
+        std::vector<unsigned int> down_sampled_counts = {4, 2};
+
+        std::vector<unsigned int> pop1_red_allele_counts2 = {0, 0, 0, 0, 0};
+        std::vector<unsigned int> pop1_red_allele_counts3 = {0, 0, 0, 0, 0};
+        std::vector<unsigned int> pop2_red_allele_counts2 = {0, 0, 0};
+        std::vector<unsigned int> pop2_red_allele_counts3 = {0, 0, 0};
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            gtree2 = tree2.simulate_gene_tree(0, rng, true);
+            gtree3 = tree3.simulate_gene_tree(0, rng, true);
+
+            auto pattern2 = tree2.simulate_biallelic_site(gtree2, rng);
+            auto pattern3 = tree3.simulate_biallelic_site_sans_missing(gtree3, down_sampled_counts, rng);
+
+            ++pop1_red_allele_counts2.at(pattern2.first.at(0));
+            ++pop1_red_allele_counts3.at(pattern3.first.at(0));
+            ++pop2_red_allele_counts2.at(pattern2.first.at(1));
+            ++pop2_red_allele_counts3.at(pattern3.first.at(1));
+        }
+
+        unsigned int pop1_total2 = 0;
+        unsigned int pop1_total3 = 0;
+        for (unsigned int i = 0; i < pop1_red_allele_counts2.size(); ++i) {
+            pop1_total2 += pop1_red_allele_counts2.at(i);
+            pop1_total3 += pop1_red_allele_counts3.at(i);
+        }
+        unsigned int pop2_total2 = 0;
+        unsigned int pop2_total3 = 0;
+        for (unsigned int i = 0; i < pop2_red_allele_counts2.size(); ++i) {
+            pop2_total2 += pop2_red_allele_counts2.at(i);
+            pop2_total3 += pop2_red_allele_counts3.at(i);
+        }
+
+        REQUIRE(pop1_total2 == nsamples);
+        REQUIRE(pop1_total3 == nsamples);
+        REQUIRE(pop2_total2 == nsamples);
+        REQUIRE(pop2_total3 == nsamples);
+
+        std::vector<double> pop1_red_allele_freqs2 = {0.0, 0.0, 0.0, 0.0, 0.0};
+        std::vector<double> pop1_red_allele_freqs3 = {0.0, 0.0, 0.0, 0.0, 0.0};
+        for (unsigned int i = 0; i < pop1_red_allele_counts2.size(); ++i) {
+            pop1_red_allele_freqs2.at(i) = pop1_red_allele_counts2.at(i) / (double)nsamples;
+            pop1_red_allele_freqs3.at(i) = pop1_red_allele_counts3.at(i) / (double)nsamples;
+        }
+        std::vector<double> pop2_red_allele_freqs2 = {0.0, 0.0, 0.0};
+        std::vector<double> pop2_red_allele_freqs3 = {0.0, 0.0, 0.0};
+        for (unsigned int i = 0; i < pop2_red_allele_counts2.size(); ++i) {
+            pop2_red_allele_freqs2.at(i) = pop2_red_allele_counts2.at(i) / (double)nsamples;
+            pop2_red_allele_freqs3.at(i) = pop2_red_allele_counts3.at(i) / (double)nsamples;
+        }
+
+        std::cout << "Pop 1 freqs of red allele counts for 4 gene copies:\n";
+        for (unsigned int i = 0; i < pop1_red_allele_freqs2.size(); ++i) {
+            std::cout << i << ": " << pop1_red_allele_freqs2.at(i) << "\n";
+        }
+        std::cout << "Pop 1 freqs of red allele counts for 10 gene copies with 6 dropped:\n";
+        for (unsigned int i = 0; i < pop1_red_allele_freqs3.size(); ++i) {
+            std::cout << i << ": " << pop1_red_allele_freqs3.at(i) << "\n";
+        }
+        std::cout << "Pop 2 freqs of red allele counts for 2 gene copies:\n";
+        for (unsigned int i = 0; i < pop2_red_allele_freqs2.size(); ++i) {
+            std::cout << i << ": " << pop2_red_allele_freqs2.at(i) << "\n";
+        }
+        std::cout << "Pop 2 freqs of red allele counts for 10 gene copies with 8 dropped:\n";
+        for (unsigned int i = 0; i < pop2_red_allele_freqs3.size(); ++i) {
+            std::cout << i << ": " << pop2_red_allele_freqs3.at(i) << "\n";
+        }
+
+        for (unsigned int i = 0; i < pop1_red_allele_freqs2.size(); ++i) {
+            REQUIRE(pop1_red_allele_freqs2.at(i) == Approx(pop1_red_allele_freqs3.at(i)).epsilon(0.001));
+        }
+        for (unsigned int i = 0; i < pop2_red_allele_freqs2.size(); ++i) {
+            REQUIRE(pop2_red_allele_freqs2.at(i) == Approx(pop2_red_allele_freqs3.at(i)).epsilon(0.001));
+        }
+    }
+}
