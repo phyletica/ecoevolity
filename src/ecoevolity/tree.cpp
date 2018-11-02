@@ -875,6 +875,7 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
 BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
         RandomNumberGenerator& rng,
         float singleton_sample_probability,
+        bool max_one_variable_site_per_locus,
         bool validate) const {
     ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
     BiallelicData sim_data = this->data_.get_empty_copy();
@@ -889,7 +890,7 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
         while (site_idx <= locus_end_indices.at(locus_idx)) {
             bool site_added = false;
             while (! site_added) {
-                pattern = this->simulate_biallelic_site(
+                pattern = this->simulate_biallelic_site_sans_missing(
                         gene_tree,
                         this->data_.get_allele_counts(this->data_.get_pattern_index_for_site(site_idx)),
                         rng);
@@ -909,6 +910,9 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
                 site_added = sim_data.add_site(red_allele_counts,
                         allele_counts,
                         filtering_constant_sites);
+            }
+            if (filtering_constant_sites && max_one_variable_site_per_locus) {
+                site_idx = locus_end_indices.at(locus_idx);
             }
             ++site_idx;
         }
@@ -1150,6 +1154,9 @@ PopulationTree::simulate_biallelic_site_sans_missing(
         }
     }
     ECOEVOLITY_ASSERT(site_allele_counts == sampled_allele_counts);
+    std::pair<std::vector<unsigned int>, std::vector<unsigned int> > sampled_pattern =
+            std::make_pair(sampled_red_allele_counts, sampled_allele_counts);
+    return sampled_pattern;
 }
 
 

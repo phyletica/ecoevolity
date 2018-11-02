@@ -164,7 +164,7 @@ class BiallelicData {
         bool has_seq_loci_info() const {
             return this->storing_seq_loci_info_;
         }
-        unsigned int get_pattern_index_for_site(unsigned int site_index) {
+        unsigned int get_pattern_index_for_site(unsigned int site_index) const {
             return this->contiguous_pattern_indices_.at(site_index);
         }
 

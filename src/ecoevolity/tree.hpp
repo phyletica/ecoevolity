@@ -431,6 +431,12 @@ class PopulationTree {
                 float singleton_sample_probability = 1.0,
                 bool validate = true) const;
 
+        BiallelicData simulate_linked_biallelic_data_set(
+                RandomNumberGenerator& rng,
+                float singleton_sample_probability,
+                bool max_one_variable_site_per_locus = false,
+                bool validate = true) const;
+
         std::pair<BiallelicData, unsigned int>
         simulate_complete_biallelic_data_set(
                 RandomNumberGenerator& rng,
@@ -456,6 +462,12 @@ class PopulationTree {
         std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
         simulate_biallelic_site(
                 std::shared_ptr<GeneTreeSimNode> gene_tree,
+                RandomNumberGenerator& rng) const;
+
+        std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
+        simulate_biallelic_site_sans_missing(
+                std::shared_ptr<GeneTreeSimNode> gene_tree,
+                const std::vector<unsigned int> & site_allele_counts,
                 RandomNumberGenerator& rng) const;
 
         void write_data_summary(
