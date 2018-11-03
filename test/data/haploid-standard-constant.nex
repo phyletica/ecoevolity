@@ -10,3 +10,9 @@ pop2_d  0-111-
 pop2_e  011011
 	;
 End;
+
+Begin sets;
+    charset locus1 = 1-2;
+    charset locus2 = 3-4;
+    charset locus3 = 5-6;
+End;

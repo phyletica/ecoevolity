@@ -726,12 +726,34 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
                 this->path_);
     }
     if (this->storing_seq_loci_info_) {
-        this->contiguous_pattern_indices_.erase(
-                std::remove(
-                        this->contiguous_pattern_indices_.begin(),
-                        this->contiguous_pattern_indices_.end(),
-                        pattern_index),
-                this->contiguous_pattern_indices_.end());
+        std::vector<unsigned int> site_indices_to_erase;
+        for (unsigned int site_idx = 0;
+                site_idx < this->contiguous_pattern_indices_.size();
+                ++site_idx) {
+            if (this->contiguous_pattern_indices_.at(site_idx) == pattern_index) {
+                site_indices_to_erase.push_back(site_idx);
+            } else if (this->contiguous_pattern_indices_.at(site_idx) > pattern_index) {
+                --this->contiguous_pattern_indices_.at(site_idx);
+            }
+        }
+        for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
+            for (unsigned int locus_idx = 0; locus_idx < this->locus_end_indices_.size(); ++locus_idx) {
+                if (this->locus_end_indices_.at(locus_idx) >= site_indices_to_erase.at(i)) {
+                    if (locus_idx == 0) {
+                        if (this->locus_end_indices_.at(locus_idx) <  1) {
+                            this->locus_end_indices_.erase(this->locus_end_indices_.begin() + locus_idx);
+                        }
+                    } else if (this->locus_end_indices_.at(locus_idx) <= (this->locus_end_indices_.at(locus_idx - 1) + 1)) {
+                            this->locus_end_indices_.erase(this->locus_end_indices_.begin() + locus_idx);
+                    } else {
+                        --this->locus_end_indices_.at(locus_idx);
+                    }
+                }
+            }
+        }
+        for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
+            this->contiguous_pattern_indices_.erase(this->contiguous_pattern_indices_.begin() + site_indices_to_erase.at(i));
+        }
         // ECOEVOLITY_ASSERT(this->contiguous_pattern_indices_.size() == this->get_number_of_sites())
     }
     return;
