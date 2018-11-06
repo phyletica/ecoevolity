@@ -3838,12 +3838,6 @@ TEST_CASE("Testing for constant AND missing diploid site patterns with charsets"
         }
 
         REQUIRE(bd.has_seq_loci_info() == true);
-        expected_locus_ends = {0, 1};
-        expected_pattern_indices = {0, 0};
-        REQUIRE(bd.get_contiguous_pattern_indices() == expected_pattern_indices);
-        REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
-
-        REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1};
         expected_pattern_indices = {0, 0};
         REQUIRE(bd.get_contiguous_pattern_indices() == expected_pattern_indices);

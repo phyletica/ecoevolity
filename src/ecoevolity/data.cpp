@@ -736,15 +736,14 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
                 --this->contiguous_pattern_indices_.at(site_idx);
             }
         }
-        for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
-            for (unsigned int locus_idx = 0; locus_idx < this->locus_end_indices_.size(); ++locus_idx) {
+        for (int locus_idx = (this->locus_end_indices_.size() - 1); locus_idx >= 0; --locus_idx) {
+            for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
                 if (this->locus_end_indices_.at(locus_idx) >= site_indices_to_erase.at(i)) {
-                    if (locus_idx == 0) {
-                        if (this->locus_end_indices_.at(locus_idx) <  1) {
-                            this->locus_end_indices_.erase(this->locus_end_indices_.begin() + locus_idx);
-                        }
-                    } else if (this->locus_end_indices_.at(locus_idx) <= (this->locus_end_indices_.at(locus_idx - 1) + 1)) {
-                            this->locus_end_indices_.erase(this->locus_end_indices_.begin() + locus_idx);
+                    if ((this->locus_end_indices_.at(locus_idx) < 1) ||
+                            ((locus_idx > 0) &&
+                            (this->locus_end_indices_.at(locus_idx) <=
+                            (this->locus_end_indices_.at(locus_idx - 1) + 1)))) {
+                        this->locus_end_indices_.erase(this->locus_end_indices_.begin() + locus_idx);
                     } else {
                         --this->locus_end_indices_.at(locus_idx);
                     }
