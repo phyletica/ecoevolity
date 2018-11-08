@@ -725,6 +725,8 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
                 "Ran out of data while removing patterns",
                 this->path_);
     }
+    // std::cout << "\n";
+    // std::cout << "Deleting pattern index " << pattern_index << "\n";
     if (this->storing_seq_loci_info_) {
         std::vector<unsigned int> site_indices_to_erase;
         for (unsigned int site_idx = 0;
@@ -736,24 +738,43 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
                 --this->contiguous_pattern_indices_.at(site_idx);
             }
         }
-        for (int locus_idx = (this->locus_end_indices_.size() - 1); locus_idx >= 0; --locus_idx) {
-            for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
+        // std::cout << "Sites to delete:\n";
+        // for (unsigned int i = 0; i < site_indices_to_erase.size(); ++i) {
+        //     std::cout << site_indices_to_erase.at(i) << " ";
+        // }
+        // std::cout << "\n";
+        // std::cout << "Locus ends:\n";
+        // for (unsigned int i = 0; i < this->locus_end_indices_.size(); ++i) {
+        //     std::cout << this->locus_end_indices_.at(i) << " ";
+        // }
+        // std::cout << "\n";
+        std::vector<unsigned int> ends_to_erase;
+        for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
+            for (unsigned int locus_idx = 0; locus_idx < this->locus_end_indices_.size(); ++locus_idx) {
                 if (this->locus_end_indices_.at(locus_idx) >= site_indices_to_erase.at(i)) {
                     if ((this->locus_end_indices_.at(locus_idx) < 1) ||
                             ((locus_idx > 0) &&
                             (this->locus_end_indices_.at(locus_idx) <=
                             (this->locus_end_indices_.at(locus_idx - 1) + 1)))) {
-                        this->locus_end_indices_.erase(this->locus_end_indices_.begin() + locus_idx);
+                        ends_to_erase.push_back(locus_idx);
                     } else {
                         --this->locus_end_indices_.at(locus_idx);
                     }
                 }
             }
         }
+        for (int i = (ends_to_erase.size() - 1); i >= 0; --i) {
+            this->locus_end_indices_.erase(this->locus_end_indices_.begin() + ends_to_erase.at(i));
+        }
         for (int i = (site_indices_to_erase.size() - 1); i >= 0; --i) {
             this->contiguous_pattern_indices_.erase(this->contiguous_pattern_indices_.begin() + site_indices_to_erase.at(i));
         }
         // ECOEVOLITY_ASSERT(this->contiguous_pattern_indices_.size() == this->get_number_of_sites())
+        // std::cout << "AFTER: Locus ends:\n";
+        // for (unsigned int i = 0; i < this->locus_end_indices_.size(); ++i) {
+        //     std::cout << this->locus_end_indices_.at(i) << " ";
+        // }
+        // std::cout << "\n";
     }
     return;
 }
