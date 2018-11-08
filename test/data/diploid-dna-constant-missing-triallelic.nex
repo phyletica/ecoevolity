@@ -13,3 +13,9 @@ pop3_g  GCT?Y?GAAT
 pop3_h  ATCCY??AGY
 	;
 End;
+Begin sets;
+    charset locus1 = 1-3;
+    charset locus2 = 4-6;
+    charset locus3 = 7-9;
+    charset locus4 = 10;
+End;
