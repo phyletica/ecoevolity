@@ -757,7 +757,11 @@ void BiallelicData::remove_pattern(unsigned int pattern_index) {
                             (this->locus_end_indices_.at(locus_idx) <=
                             (this->locus_end_indices_.at(locus_idx - 1) + 1)))) {
                         ends_to_erase.push_back(locus_idx);
-                    } else {
+                    }
+                    // } else {
+                    //     --this->locus_end_indices_.at(locus_idx);
+                    // }
+                    if (this->locus_end_indices_.at(locus_idx) > 0) {
                         --this->locus_end_indices_.at(locus_idx);
                     }
                 }
