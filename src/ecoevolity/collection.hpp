@@ -347,7 +347,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -356,7 +357,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 
@@ -369,7 +371,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -378,7 +381,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 
@@ -391,7 +395,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -400,7 +405,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 

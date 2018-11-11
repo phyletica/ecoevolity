@@ -30,7 +30,9 @@ PopulationTree::PopulationTree(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info
+        ) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -41,7 +43,8 @@ PopulationTree::PopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
 }
 
 void PopulationTree::init(
@@ -55,7 +58,8 @@ void PopulationTree::init(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     if (genotypes_are_diploid && (ploidy != 2.0)) {
         throw EcoevolityBiallelicDataError(
                 "Genotypes cannot be diploid if ploidy is not 2",
@@ -68,7 +72,8 @@ void PopulationTree::init(
             population_name_is_prefix,
             genotypes_are_diploid,
             markers_are_dominant,
-            validate);
+            validate,
+            store_seq_loci_info);
     if (this->data_.get_number_of_populations() < 1) {
         throw EcoevolityError("PopulationTree(); no populations were found");
     }
@@ -917,7 +922,7 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
             ++site_idx;
         }
     }
-    ECOEVOLITY_ASSERT(site_idx == this->data_.get_number_of_sites() - 1);
+    ECOEVOLITY_ASSERT(site_idx == this->data_.get_number_of_sites());
     return sim_data;
 }
 
@@ -1171,7 +1176,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->comparison_init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1182,7 +1188,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
 }
 void ComparisonPopulationTree::comparison_init(
         std::string path, 
@@ -1195,7 +1202,8 @@ void ComparisonPopulationTree::comparison_init(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1206,7 +1214,8 @@ void ComparisonPopulationTree::comparison_init(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
                 "ComparisonPopulationTree() does not support more than 2 populations",
@@ -1219,7 +1228,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites, 
-        bool strict_on_triallelic_sites) {
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1230,7 +1240,8 @@ ComparisonPopulationTree::ComparisonPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               settings.get_ploidy());
+               settings.get_ploidy(),
+               store_seq_loci_info);
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
         this->fold_patterns();
@@ -1465,7 +1476,8 @@ DirichletPopulationTree::DirichletPopulationTree(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1476,7 +1488,8 @@ DirichletPopulationTree::DirichletPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
 }
@@ -1510,7 +1523,8 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->comparison_init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1521,7 +1535,8 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
     std::vector<double> dirichlet_parameters (this->get_node_count(), 1.0);
     this->set_population_size_multiplier_prior(std::make_shared<DirichletDistribution>(dirichlet_parameters));
 }
@@ -1537,7 +1552,8 @@ void ComparisonDirichletPopulationTree::comparison_init(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1548,7 +1564,8 @@ void ComparisonDirichletPopulationTree::comparison_init(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
                 "ComparisonDirichletPopulationTree() does not support more than 2 populations",
@@ -1562,7 +1579,8 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites) {
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1573,7 +1591,8 @@ ComparisonDirichletPopulationTree::ComparisonDirichletPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               settings.get_ploidy());
+               settings.get_ploidy(),
+               store_seq_loci_info);
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
         this->fold_patterns();
@@ -1893,7 +1912,8 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->comparison_init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1904,7 +1924,8 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
 }
 void ComparisonRelativeRootPopulationTree::comparison_init(
         std::string path, 
@@ -1917,7 +1938,8 @@ void ComparisonRelativeRootPopulationTree::comparison_init(
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
         bool strict_on_triallelic_sites,
-        double ploidy) {
+        double ploidy,
+        bool store_seq_loci_info) {
     this->init(path,
                population_name_delimiter,
                population_name_is_prefix,
@@ -1928,7 +1950,8 @@ void ComparisonRelativeRootPopulationTree::comparison_init(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               ploidy);
+               ploidy,
+               store_seq_loci_info);
     if (this->data_.get_number_of_populations() > 2) {
         throw EcoevolityComparisonSettingError(
                 "ComparisonRelativeRootPopulationTree() does not support more than 2 populations",
@@ -1942,7 +1965,8 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
         RandomNumberGenerator& rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites) {
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info) {
     this->comparison_init(settings.get_path(),
                settings.get_population_name_delimiter(),
                settings.population_name_is_prefix(),
@@ -1953,7 +1977,8 @@ ComparisonRelativeRootPopulationTree::ComparisonRelativeRootPopulationTree(
                strict_on_constant_sites,
                strict_on_missing_sites,
                strict_on_triallelic_sites,
-               settings.get_ploidy());
+               settings.get_ploidy(),
+               store_seq_loci_info);
     if (settings.constrain_state_frequencies()) {
         this->constrain_state_frequencies();
         this->fold_patterns();

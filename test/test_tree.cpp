@@ -2790,6 +2790,88 @@ TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
     }
 }
 
+TEST_CASE("Testing linked dataset simulation", "[ComparisonPopulationTree]") {
+    SECTION("Testing simulate_linked_biallelic_data_set for fully fixed pair") {
+        std::string nex_path = "data/hemi129-with-missing.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                true,   // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                false,  // strict on constant
+                false,  // strict on missing
+                false,  // strict on triallelic
+                2.0,    // ploidy
+                true    // store charset info
+                );
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        double u_sum = 0.0;
+        double prop_sum = 0.0;
+        unsigned int nreps = 100;
+        BiallelicData data;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            data = tree.simulate_linked_biallelic_data_set(rng,
+                    1.0,    // singleton sample prob
+                    false,  // max one var site per locus
+                    true    // validate
+                    );
+
+            REQUIRE(data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+            REQUIRE(data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+            REQUIRE(data.get_population_labels() == tree.get_data().get_population_labels());
+            REQUIRE(data.markers_are_dominant() == false);
+            REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+            REQUIRE(tree.get_data().get_locus_end_indices() == data.get_locus_end_indices());
+            REQUIRE(tree.get_data().get_contiguous_pattern_indices() == data.get_contiguous_pattern_indices());
+            REQUIRE(tree.get_data().has_seq_loci_info() == data.has_seq_loci_info());
+
+            data.get_empirical_u_v_rates(u, v);
+            u_sum += u;
+            prop_sum += data.get_proportion_1();
+        }
+        REQUIRE(u_sum / nreps == Approx(0.8).epsilon(0.01));
+        REQUIRE(prop_sum / nreps == Approx(0.625).epsilon(0.01));
+
+        REQUIRE(data.has_seq_loci_info() == true);
+        std::vector<unsigned int> expected_locus_ends = {3, 8, 13, 18};
+        REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
+    }
+}
+
 TEST_CASE("Testing singleton acquisition bioas", "[ComparisonPopulationTree]") {
     SECTION("Testing for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";

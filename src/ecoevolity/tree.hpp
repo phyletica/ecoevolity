@@ -101,7 +101,8 @@ class PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
 
         void init(
@@ -115,7 +116,8 @@ class PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
 
         virtual bool using_population_size_multipliers() const {
@@ -544,7 +546,8 @@ class RelativeRootPopulationTree: public PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 ) : PopulationTree(
                     path,
                     population_name_delimiter,
@@ -556,7 +559,8 @@ class RelativeRootPopulationTree: public PopulationTree {
                     strict_on_constant_sites,
                     strict_on_missing_sites,
                     strict_on_triallelic_sites,
-                    ploidy) { }
+                    ploidy,
+                    store_seq_loci_info) { }
 
         bool using_relative_root_population_size() const {
             return true;
@@ -630,7 +634,8 @@ class DirichletPopulationTree: public PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
 
         bool using_population_size_multipliers() const {
@@ -663,14 +668,16 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
         ComparisonPopulationTree(
                 const ComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
         void comparison_init(
                 std::string path, 
@@ -683,7 +690,8 @@ class ComparisonPopulationTree: public PopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
 
         void set_child_population_size(unsigned int child_index, double size);
@@ -730,14 +738,16 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
         ComparisonRelativeRootPopulationTree(
                 const RelativeRootComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
         void comparison_init(
                 std::string path, 
@@ -750,7 +760,8 @@ class ComparisonRelativeRootPopulationTree: public RelativeRootPopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
 
         void set_child_population_size(unsigned int child_index, double size);
@@ -797,14 +808,16 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
         ComparisonDirichletPopulationTree(
                 const DirichletComparisonSettings& settings,
                 RandomNumberGenerator& rng,
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
         void comparison_init(
                 std::string path, 
@@ -817,7 +830,8 @@ class ComparisonDirichletPopulationTree: public ComparisonPopulationTree {
                 bool strict_on_constant_sites = false,
                 bool strict_on_missing_sites = false,
                 bool strict_on_triallelic_sites = true,
-                double ploidy = 2.0
+                double ploidy = 2.0,
+                bool store_seq_loci_info = false
                 );
 
         bool using_population_size_multipliers() const {
