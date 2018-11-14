@@ -3245,7 +3245,6 @@ TEST_CASE("Testing scaling of dataset simulation for singleton with charsets",
         "[ComparisonPopulationTree]") {
 
     SECTION("Testing simulate_biallelic_data_set for fully fixed singleton") {
-        std::cout << "HERE\n";
         unsigned int Ne = 100000;
         double mu = 1e-8;
         double theta = 4 * Ne * mu;
