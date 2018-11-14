@@ -884,39 +884,38 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
         bool validate) const {
     ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
     BiallelicData sim_data = this->data_.get_empty_copy();
-    const bool filtering_constant_sites = this->constant_sites_removed_;
+    bool filtering_constant_sites = this->constant_sites_removed_;
+    if (max_one_variable_site_per_locus) {
+        filtering_constant_sites = true;
+    }
     const std::vector<unsigned int> & locus_end_indices = this->data_.get_locus_end_indices();
     unsigned int site_idx = 0;
     for (unsigned int locus_idx = 0; locus_idx < locus_end_indices.size(); ++locus_idx) {
         std::shared_ptr<GeneTreeSimNode> gene_tree;
-        auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
-        auto pattern = pattern_tree.first;
-        gene_tree = pattern_tree.second;
+        gene_tree = this->simulate_gene_tree(0, rng, true);
+        std::pair<std::vector<unsigned int>, std::vector<unsigned int> > pattern;
         while (site_idx <= locus_end_indices.at(locus_idx)) {
             bool site_added = false;
-            while (! site_added) {
-                pattern = this->simulate_biallelic_site_sans_missing(
-                        gene_tree,
-                        this->data_.get_allele_counts(this->data_.get_pattern_index_for_site(site_idx)),
-                        rng);
-                std::vector<unsigned int> red_allele_counts = pattern.first;
-                std::vector<unsigned int> allele_counts = pattern.second;
-                if (singleton_sample_probability < 1.0) {
-                    bool sample_pattern = this->sample_pattern(
-                            rng,
-                            singleton_sample_probability,
-                            red_allele_counts,
-                            allele_counts);
-                    if (! sample_pattern) {
-                        continue;
-                    }
+            pattern = this->simulate_biallelic_site_sans_missing(
+                    gene_tree,
+                    this->data_.get_allele_counts(this->data_.get_pattern_index_for_site(site_idx)),
+                    rng);
+            std::vector<unsigned int> red_allele_counts = pattern.first;
+            std::vector<unsigned int> allele_counts = pattern.second;
+            if (singleton_sample_probability < 1.0) {
+                bool sample_pattern = this->sample_pattern(
+                        rng,
+                        singleton_sample_probability,
+                        red_allele_counts,
+                        allele_counts);
+                if (! sample_pattern) {
+                    continue;
                 }
-                std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
-                site_added = sim_data.add_site(red_allele_counts,
-                        allele_counts,
-                        filtering_constant_sites);
             }
-            if (filtering_constant_sites && max_one_variable_site_per_locus) {
+            site_added = sim_data.add_site(red_allele_counts,
+                    allele_counts,
+                    filtering_constant_sites);
+            if (site_added && filtering_constant_sites && max_one_variable_site_per_locus) {
                 site_idx = locus_end_indices.at(locus_idx);
             }
             ++site_idx;

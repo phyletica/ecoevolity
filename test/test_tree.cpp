@@ -2872,7 +2872,89 @@ TEST_CASE("Testing linked dataset simulation", "[ComparisonPopulationTree]") {
     }
 }
 
-TEST_CASE("Testing singleton acquisition bioas", "[ComparisonPopulationTree]") {
+TEST_CASE("Testing linked dataset simulation with aflp dataset", "[ComparisonPopulationTree]") {
+    SECTION("Testing simulate_linked_biallelic_data_set for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                false,  // strict on constant
+                false,  // strict on missing
+                false,  // strict on triallelic
+                2.0,    // ploidy
+                true    // store charset info
+                );
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        double u_sum = 0.0;
+        double prop_sum = 0.0;
+        unsigned int nreps = 10;
+        BiallelicData data;
+        for (unsigned int i = 0; i < nreps; ++i) {
+            data = tree.simulate_linked_biallelic_data_set(rng,
+                    1.0,    // singleton sample prob
+                    false,  // max one var site per locus
+                    true    // validate
+                    );
+
+            REQUIRE(data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+            REQUIRE(data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+            REQUIRE(data.get_population_labels() == tree.get_data().get_population_labels());
+            REQUIRE(data.markers_are_dominant() == false);
+            REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+            REQUIRE(tree.get_data().get_locus_end_indices() == data.get_locus_end_indices());
+            REQUIRE(tree.get_data().get_contiguous_pattern_indices() == data.get_contiguous_pattern_indices());
+            REQUIRE(tree.get_data().has_seq_loci_info() == data.has_seq_loci_info());
+
+            data.get_empirical_u_v_rates(u, v);
+            u_sum += u;
+            prop_sum += data.get_proportion_1();
+        }
+        REQUIRE(u_sum / nreps == Approx(0.8).epsilon(0.01));
+        REQUIRE(prop_sum / nreps == Approx(0.625).epsilon(0.01));
+
+        REQUIRE(data.has_seq_loci_info() == true);
+        std::vector<unsigned int> expected_locus_ends = {99, 199, 299, 399, 499, 599, 699, 799, 899, 999, 1099, 1199, 1216};
+        REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
+    }
+}
+
+TEST_CASE("Testing singleton acquisition bias", "[ComparisonPopulationTree]") {
     SECTION("Testing for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -2931,6 +3013,123 @@ TEST_CASE("Testing singleton acquisition bioas", "[ComparisonPopulationTree]") {
             BiallelicData data00 = tree.simulate_biallelic_data_set(rng00, 0.0);
             BiallelicData data05 = tree.simulate_biallelic_data_set(rng05, 0.5);
             BiallelicData data10 = tree.simulate_biallelic_data_set(rng10, 1.0);
+            for (unsigned int i = 0; i < data00.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data00.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data00.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count00 += data00.get_pattern_weight(i);
+                }
+            }
+            for (unsigned int i = 0; i < data05.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data05.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data05.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count05 += data05.get_pattern_weight(i);
+                }
+            }
+            for (unsigned int i = 0; i < data10.get_number_of_patterns(); ++i) {
+                const std::vector<unsigned int>& red_allele_counts = data10.get_red_allele_counts(i);
+                const std::vector<unsigned int>& allele_counts = data10.get_allele_counts(i);
+                unsigned int nreds = 0;
+                unsigned int nalleles = 0;
+                for (unsigned int j = 0; j < allele_counts.size(); ++j) {
+                    nreds += red_allele_counts.at(j);
+                    nalleles += allele_counts.at(j);
+                }
+                if ((nreds == 1) || (nreds == (nalleles - 1))) {
+                    singleton_count10 += data10.get_pattern_weight(i);
+                }
+            }
+        }
+        REQUIRE(singleton_count10 > 0);
+        REQUIRE(singleton_count05 > 0);
+        REQUIRE(singleton_count00 == 0);
+        REQUIRE((double)singleton_count05 == Approx(singleton_count10 * 0.5).epsilon(0.05));
+    }
+}
+
+TEST_CASE("Testing singleton acquisition bias with charsets", "[ComparisonPopulationTree]") {
+    SECTION("Testing for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                false,  // strict on constant
+                false,  // strict on missing
+                false,  // strict on triallelic
+                2.0,    // ploidy
+                true    // store charset info
+                );
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        BiallelicData data1 = tree.simulate_linked_biallelic_data_set(rng, 1.0, false, true);
+        BiallelicData data0 = tree.simulate_linked_biallelic_data_set(rng, 0.0, false, true);
+
+        REQUIRE(data1.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data1.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data1.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data1.markers_are_dominant() == false);
+        REQUIRE(data0.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data0.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data0.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data0.markers_are_dominant() == false);
+        REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+        unsigned int singleton_count10 = 0;
+        unsigned int singleton_count05 = 0;
+        unsigned int singleton_count00 = 0;
+        RandomNumberGenerator rng10 = RandomNumberGenerator(123);
+        RandomNumberGenerator rng05 = RandomNumberGenerator(123);
+        RandomNumberGenerator rng00 = RandomNumberGenerator(123);
+        for (unsigned int rep = 0; rep < 100; ++rep) {
+            BiallelicData data00 = tree.simulate_linked_biallelic_data_set(rng00, 0.0, false, true);
+            BiallelicData data05 = tree.simulate_linked_biallelic_data_set(rng05, 0.5, false, true);
+            BiallelicData data10 = tree.simulate_linked_biallelic_data_set(rng10, 1.0, false, true);
             for (unsigned int i = 0; i < data00.get_number_of_patterns(); ++i) {
                 const std::vector<unsigned int>& red_allele_counts = data00.get_red_allele_counts(i);
                 const std::vector<unsigned int>& allele_counts = data00.get_allele_counts(i);
@@ -3039,6 +3238,92 @@ TEST_CASE("Testing scaling of dataset simulation for singleton",
 
         std::cout << "Simulated mean divergence: " << divergence2.mean() << "\n";
         REQUIRE(divergence2.mean() == Approx(expected_mean).epsilon(0.0001));
+    }
+}
+
+TEST_CASE("Testing scaling of dataset simulation for singleton with charsets",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing simulate_biallelic_data_set for fully fixed singleton") {
+        std::cout << "HERE\n";
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        unsigned int nlineages = 2;
+
+        // Two times the expected gene tree root height
+        double expected_mean = 2.0 * (theta * (1.0 - (1.0 / nlineages)));
+
+        std::string nex_path = "data/dummy-singleton-n2-100k.nex";
+        // Need to keep constant characters
+        ComparisonPopulationTree tree(nex_path, '-',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                false,  // constant sites removed
+                true,   // validate
+                false,  // strict on constant
+                false,  // strict on missing
+                false,  // strict on triallelic
+                2.0,    // ploidy
+                true    // store charset info
+                );
+        REQUIRE(tree.get_leaf_node_count() == 1);
+        tree.estimate_mutation_rate();
+
+        tree.set_root_population_size(Ne * mu);
+        tree.set_child_population_size(0, (Ne * mu));
+
+        tree.set_root_height(0.1);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345678);
+
+        BiallelicData data;
+        SampleSummarizer<double> divergence;
+        unsigned int nsamples = 100;
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            data = tree.simulate_linked_biallelic_data_set(rng, 1.0, false);
+            REQUIRE(data.get_number_of_sites() == 100000);
+            double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
+            divergence.add_sample(x);
+        }
+
+        std::cout << "Expected mean divergence: " << expected_mean << "\n";
+        std::cout << "Simulated mean divergence: " << divergence.mean() << "\n";
+        REQUIRE(divergence.mean() == Approx(expected_mean).epsilon(0.0002));
+
+        tree.set_mutation_rate(mu);
+        tree.set_root_population_size(Ne);
+        tree.set_child_population_size(0, Ne);
+        tree.set_root_height(0.1 / mu);
+
+        SampleSummarizer<double> divergence2;
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            data = tree.simulate_linked_biallelic_data_set(rng, 1.0, false);
+            REQUIRE(data.get_number_of_sites() == 100000);
+            double x = (double)data.get_number_of_variable_sites() / (double)data.get_number_of_sites();
+            divergence2.add_sample(x);
+        }
+
+        std::cout << "Simulated mean divergence: " << divergence2.mean() << "\n";
+        REQUIRE(divergence2.mean() == Approx(expected_mean).epsilon(0.0002));
+
+        REQUIRE(data.has_seq_loci_info() == true);
+        std::vector<unsigned int> expected_locus_ends;
+        unsigned int end_idx = 0;
+        for (unsigned int i = 0; i < 100; ++i) {
+            end_idx += 1000;
+            expected_locus_ends.push_back(end_idx - 1);
+        }
+        REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
     }
 }
 
@@ -3179,6 +3464,101 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
         // coalescence times (over-sampling sites from loci with younger
         // coalescence times), so we should under estimate diversity:
         REQUIRE(divergence2.mean() < (expected_mean - epsilon));
+    }
+}
+
+TEST_CASE("Testing scaling of simulation of one variable site per locus for singleton with charsets",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing one SNP per locus for fully fixed singleton") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        unsigned int nlineages = 2;
+
+        // Two times the expected gene tree root height
+        double expected_mean = 2.0 * (theta * (1.0 - (1.0 / nlineages)));
+        double epsilon = 0.0001;
+
+        std::string nex_path = "data/dummy-singleton-n2-100k.nex";
+        // Need to keep constant characters
+        ComparisonPopulationTree tree(nex_path, '-',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                true,  // constant sites removed
+                true,   // validate
+                true,  // strict on constant
+                true,  // strict on missing
+                true,  // strict on triallelic
+                2.0,    // ploidy
+                true    // store charset info
+                );
+        REQUIRE(tree.get_leaf_node_count() == 1);
+        tree.estimate_mutation_rate();
+
+        tree.set_root_population_size(Ne * mu);
+        tree.set_child_population_size(0, (Ne * mu));
+
+        tree.set_root_height(0.1);
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(1.0);
+
+        /* RandomNumberGenerator rng = RandomNumberGenerator(54321); */
+        RandomNumberGenerator rng = RandomNumberGenerator(12345678);
+
+        SampleSummarizer<double> divergence;
+        unsigned int nsamples = 100;
+
+        BiallelicData data;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            data = tree.simulate_linked_biallelic_data_set(rng, 1.0, true, true);
+            REQUIRE(data.get_number_of_sites() <= 100);
+            double x = (double)data.get_number_of_variable_sites() / (data.get_number_of_sites() + data.get_number_of_constant_sites_removed());
+            divergence.add_sample(x);
+        }
+
+        std::cout << "Expected mean divergence: " << expected_mean << "\n";
+        std::cout << "Simulated mean divergence: " << divergence.mean() << "\n";
+        // By stopping the simulation of sites for each locus when we get a
+        // variable site, we are under-sampling sites from loci with older
+        // coalescence times (over-sampling sites from loci with younger
+        // coalescence times), so we should under estimate diversity:
+        REQUIRE(divergence.mean() < (expected_mean - epsilon));
+
+        tree.set_mutation_rate(mu);
+        tree.set_root_population_size(Ne);
+        tree.set_child_population_size(0, Ne);
+        tree.set_root_height(0.1 / mu);
+
+        SampleSummarizer<double> divergence2;
+
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            data = tree.simulate_linked_biallelic_data_set(rng, 1.0, true, true);
+            REQUIRE(data.get_number_of_sites() <= 100);
+            double x = (double)data.get_number_of_variable_sites() / (data.get_number_of_sites() + data.get_number_of_constant_sites_removed());
+            divergence2.add_sample(x);
+        }
+
+        std::cout << "Simulated mean divergence: " << divergence2.mean() << "\n";
+        // By stopping the simulation of sites for each locus when we get a
+        // variable site, we are under-sampling sites from loci with older
+        // coalescence times (over-sampling sites from loci with younger
+        // coalescence times), so we should under estimate diversity:
+        REQUIRE(divergence2.mean() < (expected_mean - epsilon));
+
+        REQUIRE(data.has_seq_loci_info() == true);
+        std::vector<unsigned int> expected_locus_ends;
+        unsigned int end_idx = 0;
+        for (unsigned int i = 0; i < 100; ++i) {
+            end_idx += 1000;
+            expected_locus_ends.push_back(end_idx - 1);
+        }
+        REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
     }
 }
 
