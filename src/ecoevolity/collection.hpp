@@ -92,6 +92,15 @@ class BaseComparisonPopulationTreeCollection {
             }
         }
 
+        bool has_seq_loci_info() const {
+            for (unsigned int i = 0; i < this->trees_.size();  ++i) {
+                if (! this->trees_.at(i)->has_seq_loci_info()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         bool ignoring_data() const {
             return this->trees_.at(0)->ignoring_data();
         }
@@ -286,6 +295,12 @@ class BaseComparisonPopulationTreeCollection {
                 RandomNumberGenerator& rng,
                 unsigned int locus_size = 1,
                 float singleton_sample_probability = 1.0,
+                bool max_one_variable_site_per_locus = false,
+                bool validate = true) const;
+
+        std::map<std::string, BiallelicData> simulate_linked_biallelic_data_sets(
+                RandomNumberGenerator& rng,
+                float singleton_sample_probability,
                 bool max_one_variable_site_per_locus = false,
                 bool validate = true) const;
 

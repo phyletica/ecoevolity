@@ -922,6 +922,11 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
         }
     }
     ECOEVOLITY_ASSERT(site_idx == this->data_.get_number_of_sites());
+    sim_data.update_max_allele_counts();
+    sim_data.update_pattern_booleans();
+    if (validate) {
+        sim_data.validate();
+    }
     return sim_data;
 }
 

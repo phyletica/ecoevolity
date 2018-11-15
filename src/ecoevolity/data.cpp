@@ -1176,6 +1176,11 @@ void BiallelicData::write_summary(
             << this->get_population_label(i)
             << " (" << this->get_max_allele_count(i) << ")\n";
     }
+    if (this->has_seq_loci_info()) {
+        out << margin << indent
+                << "Number of loci: "
+                << this->locus_end_indices_.size() << "\n";
+    }
 }
 
 std::map<std::vector<unsigned int>, unsigned int>

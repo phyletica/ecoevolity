@@ -128,6 +128,10 @@ class PopulationTree {
             return false;
         }
 
+        bool has_seq_loci_info() const {
+            return this->data_.has_seq_loci_info();
+        }
+
         // These are overloaded by RelativeRootPopulationTree
         bool relative_root_population_size_is_fixed() const { return false; }
         void fix_relative_root_population_size() { return; }

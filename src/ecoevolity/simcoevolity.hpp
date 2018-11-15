@@ -121,6 +121,19 @@ int simcoevolity_main(int argc, char * argv[]) {
                   "one, and each comparison specified in the config file has "
                   "not had constant sites removed (i.e., "
                   "\'constant_sites_removed: false\').");
+    parser.add_option("-c", "--charsets")
+            .action("store_true")
+            .dest("charsets")
+            .help("Use charsets defined in the nexus-formatted alignment files. "
+                  "When this option is used, and there is a \'sets\' block in "
+                  "every comparison\'s nexus-formatted alignment file that has "
+                  "\'charsets\' delineating all the locus boundaries, then "
+                  "multi-locus datasets are simulated that match the empirical "
+                  "dataset (i.e., the same number and length of loci, and the "
+                  "same patterns of missing data for each locus). NOTE: This "
+                  "option will override the \'--locus-size\' option, but can "
+                  "be used in combination with the "
+                  "\'--max-one-variable-site-per-locus\' option.");
     parser.add_option("--parameters-only")
             .action("store_true")
             .dest("parameters_only")
@@ -210,6 +223,8 @@ int simcoevolity_main(int argc, char * argv[]) {
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
     const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
     const bool simulate_sequences = (! options.get("parameters_only"));
+
+    const bool use_charsets = options.get("charsets");
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
@@ -304,7 +319,8 @@ int simcoevolity_main(int argc, char * argv[]) {
             rng,
             strict_on_constant_sites,
             strict_on_missing_sites,
-            strict_on_triallelic_sites);
+            strict_on_triallelic_sites,
+            use_charsets);
 
     if (using_prior_config) {
         // Not used but creating instance to vet settings
@@ -314,7 +330,17 @@ int simcoevolity_main(int argc, char * argv[]) {
                 rng,
                 strict_on_constant_sites,
                 strict_on_missing_sites,
-                strict_on_triallelic_sites);
+                strict_on_triallelic_sites,
+                use_charsets);
+    }
+
+    if (use_charsets) {
+        if (! comparisons.has_seq_loci_info()) {
+            throw EcoevolityError(
+                    "All comparisons must have charsets defined when "
+                    "using the \'--charsets\' option.");
+        }
+        std::cerr << "Using charset info to simulate multi-locus data..." << std::endl;
     }
 
     std::cerr << "\n" << string_util::banner('-') << "\n";
@@ -340,7 +366,13 @@ int simcoevolity_main(int argc, char * argv[]) {
             check_output_path(true_state_path);
 
             comparisons.draw_from_prior(rng);
-            if (locus_size < 2) {
+            if (use_charsets) {
+                sim_alignments = comparisons.simulate_linked_biallelic_data_sets(rng,
+                        singleton_sample_probability,
+                        max_one_variable_site_per_locus,
+                        true);
+            }
+            else if (locus_size < 2) {
                 sim_alignments = comparisons.simulate_biallelic_data_sets(rng,
                         singleton_sample_probability,
                         true);
@@ -359,6 +391,7 @@ int simcoevolity_main(int argc, char * argv[]) {
             comparisons.write_state_log_header(true_state_stream);
             comparisons.log_state(true_state_stream, 0);
             true_state_stream.close();
+
 
             std::ofstream sim_alignment_stream;
             for (auto const & k_v: sim_alignments) {

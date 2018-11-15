@@ -883,6 +883,21 @@ std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::sim
     return alignments;
 }
 
+std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::simulate_linked_biallelic_data_sets(
+        RandomNumberGenerator& rng,
+        float singleton_sample_probability,
+        bool max_one_variable_site_per_locus,
+        bool validate) const {
+    std::map<std::string, BiallelicData> alignments;
+    for (auto tree: this->trees_) {
+        alignments[tree->get_data().get_path()] = tree->simulate_linked_biallelic_data_set(
+                rng,
+                singleton_sample_probability,
+                max_one_variable_site_per_locus,
+                validate);
+    }
+    return alignments;
+}
 
 
 
