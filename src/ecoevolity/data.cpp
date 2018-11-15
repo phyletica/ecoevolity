@@ -1048,7 +1048,12 @@ void BiallelicData::validate() const {
                 this->path_);
     }
     if (this->storing_seq_loci_info_) {
-        if (this->contiguous_pattern_indices_.size() != this->get_number_of_sites()) {
+        if (this->contiguous_pattern_indices_.size() != (this->locus_end_indices_.back() + 1)) {
+            throw EcoevolityBiallelicDataError(
+                    "The number of contiguous pattern indices does not match the end of the last locus",
+                    this->path_);
+        }
+        if (this->has_constant_patterns() && (this->contiguous_pattern_indices_.size() != this->get_number_of_sites())) {
             throw EcoevolityBiallelicDataError(
                     "The number of contiguous pattern indices does not match the number of sites",
                     this->path_);

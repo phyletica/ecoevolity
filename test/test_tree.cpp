@@ -3486,11 +3486,11 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
                 true,   // population_name_is_prefix
                 false,  // diploid
                 false,  // dominant
-                true,  // constant sites removed
+                true,   // constant sites removed
                 true,   // validate
-                true,  // strict on constant
-                true,  // strict on missing
-                true,  // strict on triallelic
+                true,   // strict on constant
+                true,   // strict on missing
+                true,   // strict on triallelic
                 2.0,    // ploidy
                 true    // store charset info
                 );
