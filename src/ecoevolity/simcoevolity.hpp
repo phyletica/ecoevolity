@@ -211,9 +211,11 @@ int simcoevolity_main(int argc, char * argv[]) {
     }
     std::cerr << "Number of sites simulated per locus: " << locus_size << std::endl;
 
+    const bool use_charsets = options.get("charsets");
+
     const bool max_one_variable_site_per_locus = options.get(
             "max_one_variable_site_per_locus");
-    if (max_one_variable_site_per_locus && (locus_size < 2)) {
+    if ((! use_charsets) && (max_one_variable_site_per_locus && (locus_size < 2))) {
         throw EcoevolityError(
                 "Locus length must be 1 or greater to use "
                 "\'--max-one-variable-site-per-locus\'");
@@ -223,8 +225,6 @@ int simcoevolity_main(int argc, char * argv[]) {
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
     const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
     const bool simulate_sequences = (! options.get("parameters_only"));
-
-    const bool use_charsets = options.get("charsets");
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
