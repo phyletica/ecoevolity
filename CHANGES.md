@@ -1,3 +1,15 @@
+Version 0.3.1
+=============
+
+Changes
+-------
+
+-   Fixing bug in simcoevolity that prevented the '--charsets' and
+    '--max-one-variable-site-per-locus' options from being used together.
+    There was a sanity check from before the '--charsets' option existed that
+    needed to be skipped when the '--charsets' option was used.
+
+
 Version 0.3.0
 =============
 
