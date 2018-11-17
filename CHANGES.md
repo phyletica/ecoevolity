@@ -1,3 +1,16 @@
+Version 0.3.0
+=============
+
+Changes
+-------
+
+-   Adding new simulation option to simcoevolity. This new option allows
+    simulating multi-locus datasets (each locus comprised of multiple linked
+    sites) that matches the locus lengths and missing data patterns of the
+    empirical dataset. The information to simulate such datasets is provided in
+    a nexus 'sets' block that delineates the locus boundaries with 'charsets'.
+
+
 Version 0.2.1
 =============
 
