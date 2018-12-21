@@ -92,6 +92,15 @@ class BaseComparisonPopulationTreeCollection {
             }
         }
 
+        bool has_seq_loci_info() const {
+            for (unsigned int i = 0; i < this->trees_.size();  ++i) {
+                if (! this->trees_.at(i)->has_seq_loci_info()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         bool ignoring_data() const {
             return this->trees_.at(0)->ignoring_data();
         }
@@ -289,6 +298,12 @@ class BaseComparisonPopulationTreeCollection {
                 bool max_one_variable_site_per_locus = false,
                 bool validate = true) const;
 
+        std::map<std::string, BiallelicData> simulate_linked_biallelic_data_sets(
+                RandomNumberGenerator& rng,
+                float singleton_sample_probability,
+                bool max_one_variable_site_per_locus = false,
+                bool validate = true) const;
+
         bool all_population_sizes_are_fixed() const {
             for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
                 if (! this->trees_.at(i)->population_sizes_are_fixed()) {
@@ -347,7 +362,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -356,7 +372,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 
@@ -369,7 +386,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -378,7 +396,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 
@@ -391,7 +410,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -400,7 +420,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 

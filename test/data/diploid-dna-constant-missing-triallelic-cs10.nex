@@ -14,8 +14,14 @@ pop3_h  ATCCY??AGY
 	;
 End;
 Begin sets;
-    charset locus1 = 1-3;
-    charset locus2 = 4-6;
-    charset locus3 = 7-9;
-    charset locus4 = 10;
+    charset locus1 = 1;
+    charset locus2 = 2;
+    charset locus3 = 3;
+    charset locus4 = 4;
+    charset locus5 = 5;
+    charset locus6 = 6;
+    charset locus7 = 7;
+    charset locus8 = 8;
+    charset locus9 = 9;
+    charset locus10 = 10;
 End;

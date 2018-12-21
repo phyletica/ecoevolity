@@ -36,3 +36,18 @@ BEGIN CHARACTERS;
 END;
 
 
+BEGIN SETS;
+    CHARSET locus1 = 1-100;
+    CHARSET locus2 = 101-200;
+    CHARSET locus3 = 201-300;
+    CHARSET locus4 = 301-400;
+    CHARSET locus5 = 401-500;
+    CHARSET locus6 = 501-600;
+    CHARSET locus7 = 601-700;
+    CHARSET locus8 = 701-800;
+    CHARSET locus9 = 801-900;
+    CHARSET locus10 = 901-1000;
+    CHARSET locus11 = 1001-1100;
+    CHARSET locus12 = 1101-1200;
+    CHARSET locus13 = 1201-1217;
+END;
