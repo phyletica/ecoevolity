@@ -264,9 +264,9 @@ int sumcoevolity_main(int argc, char * argv[]) {
                     "settings will not be comparable to the posterior "
                     "probabilities.");
         }
-        if (! settings.using_dpp()) {
+        if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform) {
             throw EcoevolityError("Approximating prior probabilites via "
-                    "simulation only supports Dirichlet process model "
+                    "simulation is not supported for the uniform model "
                     "prior");
         }
         const ModelOperatorSettings & model_settings = settings.get_operator_schedule_settings().get_model_operator_settings();

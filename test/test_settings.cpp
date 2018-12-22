@@ -1960,7 +1960,12 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == false);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 1);
@@ -2118,7 +2123,12 @@ TEST_CASE("Testing collection settings from minimal config with two comparisons"
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -2275,7 +2285,12 @@ TEST_CASE("Testing override model prior", "[CollectionSettings]") {
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -2444,7 +2459,12 @@ TEST_CASE("Testing override model prior with DPP", "[CollectionSettings]") {
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -2723,7 +2743,12 @@ TEST_CASE("Testing override with global settings", "[CollectionSettings]") {
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -2928,7 +2953,12 @@ TEST_CASE("Testing override with global settings with parameters", "[CollectionS
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -3141,7 +3171,12 @@ TEST_CASE("Testing collection settings from full config", "[CollectionSettings]"
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 2000000);
         REQUIRE(settings.get_sample_frequency() == 2000);
         REQUIRE(settings.get_number_of_comparisons() == 3);
@@ -3358,7 +3393,12 @@ TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == true);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::fixed);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -3520,7 +3560,12 @@ TEST_CASE("Testing uniform model with split_weight implicitly fixed to 2.4",
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -3682,7 +3727,12 @@ TEST_CASE("Testing uniform model with split_weight explicitly fixed to 2.4",
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -3848,7 +3898,12 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, def
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -4018,7 +4073,12 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, spe
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -4127,7 +4187,12 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config", "[Dirichlet
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == false);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 1);
@@ -4377,7 +4442,12 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config with two comp
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -4551,7 +4621,12 @@ TEST_CASE("Testing DirichletCollectionSettings override model prior", "[Dirichle
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -4737,7 +4812,12 @@ TEST_CASE("Testing DirichletCollectionSettings override model prior with DPP", "
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -5038,7 +5118,12 @@ TEST_CASE("Testing DirichletCollectionSettings override with global settings", "
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -5287,7 +5372,12 @@ TEST_CASE("Testing DirichletCollectionSettings global settings with parameters",
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -5525,7 +5615,12 @@ TEST_CASE("Testing DirichletCollectionSettings from full config", "[DirichletCol
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config-dir-pop.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 2000000);
         REQUIRE(settings.get_sample_frequency() == 2000);
         REQUIRE(settings.get_number_of_comparisons() == 3);
@@ -5759,7 +5854,12 @@ TEST_CASE("Testing DirichletCollectionSettings fixed model prior", "[DirichletCo
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == true);
+        REQUIRE(settings.sampling_event_models() == false);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::fixed);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -5938,7 +6038,12 @@ TEST_CASE("Testing DirichletCollectionSettings uniform model with split_weight i
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -6117,7 +6222,12 @@ TEST_CASE("Testing DirichletCollectionSettings uniform model with split_weight e
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -7159,7 +7269,12 @@ TEST_CASE("Testing relative root collection settings from minimal config", "[Rel
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/minimal-config.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == false);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 1);
@@ -7329,7 +7444,12 @@ TEST_CASE("Testing relative root collection settings from minimal config with tw
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -7498,7 +7618,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior", "[Relat
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -7679,7 +7804,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings override model prior with DPP"
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -7990,7 +8120,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings override with global settings"
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -8220,7 +8355,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings constrain sizes override of gl
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -8448,7 +8588,12 @@ TEST_CASE("Testing relative root collection settings from full config", "[Relati
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/config-relative-root.yml");
-        REQUIRE(settings.using_dpp() == true);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
+
         REQUIRE(settings.get_chain_length() == 2000000);
         REQUIRE(settings.get_sample_frequency() == 2000);
         REQUIRE(settings.get_number_of_comparisons() == 3);
@@ -8677,7 +8822,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings fixed model prior", "[Relative
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == true);
+        REQUIRE(settings.sampling_event_models() == false);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::fixed);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -8851,7 +9001,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -9025,7 +9180,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -9203,7 +9363,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);
@@ -9385,7 +9550,12 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
 
         REQUIRE(settings.to_string() == e);
         REQUIRE(settings.get_path() == "data/dummy.yml");
-        REQUIRE(settings.using_dpp() == false);
+
+        REQUIRE(settings.event_model_is_fixed() == false);
+        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
         REQUIRE(settings.get_number_of_comparisons() == 2);

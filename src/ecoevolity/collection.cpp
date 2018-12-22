@@ -32,6 +32,9 @@ void BaseComparisonPopulationTreeCollection::store_state() {
     if (! this->concentration_is_fixed()) {
         this->concentration_->store();
     }
+    if (! this->discount_is_fixed()) {
+        this->discount_->store();
+    }
 }
 void BaseComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
@@ -44,6 +47,9 @@ void BaseComparisonPopulationTreeCollection::restore_state() {
     }
     if (! this->concentration_is_fixed()) {
         this->concentration_->restore();
+    }
+    if (! this->discount_is_fixed()) {
+        this->discount_->restore();
     }
 }
 
@@ -105,30 +111,50 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bo
         lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
     }
     if (! this->concentration_is_fixed()) {
-        // TODO: Compute the prior prob of model even when the concentration is
-        // fixed.
-        // Currently, this works, because none of the moves that update the
-        // model (e.g., DirichletProcessGibbsSampler) handle the prior ratio
-        // internally. As a result, skipping this when not estimating the
-        // concentration parameter saves a bit of computation. However, any new
-        // moves that update the model that assume the prior is being taken
-        // care of here would not work correcty, but would still sample from
-        // the joint prior as if they were working!  It's not worth the risk of
-        // forgetting to change this if we ever add a model move that depends
-        // on it.
-        if (this->using_dpp()) {
-            lnp += get_dpp_log_prior_probability<unsigned int>(
-                    this->node_height_indices_,
-                    this->get_concentration());
-        }
-        else {
-            lnp += get_uniform_model_log_prior_probability(
-                    this->get_number_of_trees(),
-                    this->get_number_of_events(),
-                    this->get_concentration());
-        }
         lnp += this->concentration_->relative_prior_ln_pdf();
 
+    }
+    if (! this->discount_is_fixed()) {
+        lnp += this->discount_->relative_prior_ln_pdf();
+
+    }
+    // Compute the prior prob of model even when the concentration is fixed.
+    // Previously, below was skipped if the concentration was fixed, which
+    // worked because none of the moves that update the model (e.g.,
+    // DirichletProcessGibbsSampler) needed the prior ratio to determine
+    // acceptance. As a result, skipping this when not estimating the
+    // concentration parameter saved a bit of computation. However, any new
+    // moves that update the model that assume the prior is being taken care of
+    // here would not work correcty, but would still sample from the joint
+    // prior as if they were working! Thus, to make the code more future-proof,
+    // we will always compute the model prior here.
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        lnp += get_pyp_log_prior_probability<unsigned int>(
+                this->node_height_indices_,
+                this->get_concentration(),
+                this->get_discount());
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+        lnp += get_dpp_log_prior_probability<unsigned int>(
+                this->node_height_indices_,
+                this->get_concentration());
+    }
+    // TODO: the uniform model repurposes the concentration parameter for its
+    // 'split_weight' parameter. Now that there's also discount parameter, it
+    // might be worth explicitly adding a 'split_weight' attribute to avoid
+    // confusion.
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+        lnp += get_uniform_model_log_prior_probability(
+                this->get_number_of_trees(),
+                this->get_number_of_events(),
+                this->get_concentration());
+    }
+    else {
+        std::ostringstream message;
+        message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
+                << this->model_prior_
+                << "\'\n";
+        throw EcoevolityError(message.str());
     }
 
     this->log_likelihood_.set_value(lnl);
@@ -527,11 +553,18 @@ void BaseComparisonPopulationTreeCollection::write_state_log_header(
         << "ln_likelihood" << this->logging_delimiter_
         << "ln_prior" << this->logging_delimiter_
         << "number_of_events";
-    if (this->using_dpp()) {
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        out << this->logging_delimiter_ << "concentration"
+            << this->logging_delimiter_ << "discount";
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
         out << this->logging_delimiter_ << "concentration";
     }
-    else {
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
         out << this->logging_delimiter_ << "split_weight";
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+        // Nothing to report
     }
     if (short_summary) {
         out << std::endl;
@@ -554,8 +587,20 @@ void BaseComparisonPopulationTreeCollection::log_state(std::ostream& out,
     out << generation_index << this->logging_delimiter_
         << this->log_likelihood_.get_value() << this->logging_delimiter_
         << this->log_prior_density_.get_value() << this->logging_delimiter_
-        << this->get_number_of_events()
-        << this->logging_delimiter_ << this->get_concentration();
+        << this->get_number_of_events();
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        out << this->logging_delimiter_ << this->get_concentration()
+            << this->logging_delimiter_ << this->get_discount();
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+        out << this->logging_delimiter_ << this->get_concentration();
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+        out << this->logging_delimiter_ << this->get_concentration();
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+        // Nothing to report
+    }
     if (short_summary) {
         out << std::endl;
         return;
@@ -784,33 +829,15 @@ void BaseComparisonPopulationTreeCollection::set_node_height_indices(
 }
 
 void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
-    if (this->using_dpp()) {
-        unsigned int num_heights = this->node_heights_.size();
-        unsigned int new_num_heights = rng.dirichlet_process(this->node_height_indices_, this->get_concentration());
-        if (new_num_heights > num_heights) {
-            for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
-                this->node_heights_.push_back(
-                        std::make_shared<PositiveRealParameter>(
-                            this->node_height_prior_));
-            }
-        }
-        else if (new_num_heights < num_heights) {
-            for (unsigned int i = 0; i < (num_heights - new_num_heights); ++i) {
-                this->node_heights_.pop_back();
-            }
-        }
-        for (unsigned int i = 0; i < new_num_heights; ++i) {
-            this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
-        }
-        for (unsigned int tree_idx = 0;
-                tree_idx < this->trees_.size();
-                ++tree_idx) {
-            unsigned int height_index = this->node_height_indices_.at(tree_idx);
-            this->trees_.at(tree_idx)->set_root_height_parameter(
-                    this->get_height_parameter(height_index));
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+        for (unsigned int height_idx = 0;
+                height_idx < this->node_heights_.size();
+                ++height_idx) {
+            this->node_heights_.at(height_idx)->set_value(
+                    this->node_height_prior_->draw(rng));
         }
     }
-    else if (this->using_reversible_jump()) {
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
         // Not aware of an "easy" way of uniformly sampling set partitions, so
         // (hackily) using reversible jump MCMC to do so.
         bool was_ignoring_data = this->ignoring_data();
@@ -829,18 +856,55 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
                     this->node_height_prior_->draw(rng));
         }
     }
+
+    // Dealing with a process model prior
+    unsigned int num_heights = this->node_heights_.size();
+    unsigned int new_num_heights;
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        new_num_heights = rng.pitman_yor_process(
+                this->node_height_indices_,
+                this->get_concentration(),
+                this->get_discount());
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+        new_num_heights = rng.dirichlet_process(
+                this->node_height_indices_,
+                this->get_concentration());
+    }
     else {
-        for (unsigned int height_idx = 0;
-                height_idx < this->node_heights_.size();
-                ++height_idx) {
-            this->node_heights_.at(height_idx)->set_value(
-                    this->node_height_prior_->draw(rng));
+        std::ostringstream message;
+        message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
+                << this->model_prior_
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+    if (new_num_heights > num_heights) {
+        for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
+            this->node_heights_.push_back(
+                    std::make_shared<PositiveRealParameter>(
+                        this->node_height_prior_));
         }
+    }
+    else if (new_num_heights < num_heights) {
+        for (unsigned int i = 0; i < (num_heights - new_num_heights); ++i) {
+            this->node_heights_.pop_back();
+        }
+    }
+    for (unsigned int i = 0; i < new_num_heights; ++i) {
+        this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
+    }
+    for (unsigned int tree_idx = 0;
+            tree_idx < this->trees_.size();
+            ++tree_idx) {
+        unsigned int height_index = this->node_height_indices_.at(tree_idx);
+        this->trees_.at(tree_idx)->set_root_height_parameter(
+                this->get_height_parameter(height_index));
     }
 }
 
 void BaseComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
     this->concentration_->set_value_from_prior(rng);
+    this->discount_->set_value_from_prior(rng);
     this->draw_heights_from_prior(rng);
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i)->draw_from_prior(rng);
@@ -915,9 +979,11 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
+    this->discount_ = std::make_shared<PositiveRealParameter>(
+            settings.get_discount_settings(),
+            rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings,
-            settings.using_dpp());
+            settings);
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
     }
@@ -1001,9 +1067,11 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
+    this->discount_ = std::make_shared<PositiveRealParameter>(
+            settings.get_discount_settings(),
+            rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings,
-            settings.using_dpp());
+            settings);
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
     }
@@ -1087,9 +1155,11 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
+    this->discount_ = std::make_shared<PositiveRealParameter>(
+            settings.get_discount_settings(),
+            rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings,
-            settings.using_dpp());
+            settings);
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
     }

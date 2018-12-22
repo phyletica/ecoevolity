@@ -21,9 +21,7 @@
 #include "operator.hpp"
 
 
-OperatorSchedule::OperatorSchedule(
-        const CollectionSettings& collection_settings,
-        bool use_dpp) {
+OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings) {
     const OperatorScheduleSettings & settings = collection_settings.get_operator_schedule_settings();
 
     this->turn_off_auto_optimize();
@@ -33,14 +31,29 @@ OperatorSchedule::OperatorSchedule(
     this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
 
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
-        if (use_dpp) {
+        if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else {
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
+            this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
+        }
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
+            // Do not add a model operator
+        }
+        else {
+            std::ostringstream message;
+            message << "ERROR: Unexpected EcoevolityOptions::ModelOperator \'"
+                    << settings.get_model_operator()
+                    << "\'\n";
+            throw EcoevolityError(message.str());
         }
     }
 
@@ -149,8 +162,7 @@ OperatorSchedule::OperatorSchedule(
 }
 
 OperatorSchedule::OperatorSchedule(
-        const RelativeRootCollectionSettings& collection_settings,
-        bool use_dpp) {
+        const RelativeRootCollectionSettings& collection_settings) {
     const OperatorScheduleSettings & settings = collection_settings.get_operator_schedule_settings();
 
     this->turn_off_auto_optimize();
@@ -160,14 +172,29 @@ OperatorSchedule::OperatorSchedule(
     this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
 
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
-        if (use_dpp) {
+        if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else {
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
+            this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
+        }
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
+            // Do not add a model operator
+        }
+        else {
+            std::ostringstream message;
+            message << "ERROR: Unexpected EcoevolityOptions::ModelOperator \'"
+                    << settings.get_model_operator()
+                    << "\'\n";
+            throw EcoevolityError(message.str());
         }
     }
 
@@ -275,8 +302,7 @@ OperatorSchedule::OperatorSchedule(
 }
 
 OperatorSchedule::OperatorSchedule(
-        const DirichletCollectionSettings& collection_settings,
-        bool use_dpp) {
+        const DirichletCollectionSettings& collection_settings) {
     const OperatorScheduleSettings & settings = collection_settings.get_operator_schedule_settings();
 
     this->turn_off_auto_optimize();
@@ -286,14 +312,29 @@ OperatorSchedule::OperatorSchedule(
     this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
 
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
-        if (use_dpp) {
+        if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else {
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
+            this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
+        }
+        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
+            // Do not add a model operator
+        }
+        else {
+            std::ostringstream message;
+            message << "ERROR: Unexpected EcoevolityOptions::ModelOperator \'"
+                    << settings.get_model_operator()
+                    << "\'\n";
+            throw EcoevolityError(message.str());
         }
     }
 
@@ -545,27 +586,24 @@ void OperatorSchedule::turn_off_auto_optimize() {
     this->auto_optimize_ = false;
 }
 
-bool OperatorSchedule::using_dpp() const {
+const EcoevolityOptions::ModelOperator OperatorSchedule::get_model_operator_type() const {
     for (auto op : this->operators_) {
         if (op->get_name() == "DirichletProcessGibbsSampler") {
-            return true;
+            return EcoevolityOptions::ModelOperator::gibbs_dpp;
         }
-    }
-    return false;
-}
-
-bool OperatorSchedule::using_reversible_jump() const {
-    for (auto op : this->operators_) {
+        if (op->get_name() == "PitmanYorProcessGibbsSampler") {
+            return EcoevolityOptions::ModelOperator::gibbs_pyp;
+        }
         if (op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator) {
-            return true;
+            return EcoevolityOptions::ModelOperator::rj;
         }
     }
-    return false;
+    return EcoevolityOptions::ModelOperator::none;
 }
 
 bool OperatorSchedule::sampling_models() const {
-    if (this->using_dpp() || this->using_reversible_jump()) {
-        return true;
+    if (this->get_model_operator_type() == EcoevolityOptions::ModelOperator::none) {
+        return false;
     }
-    return false;
+    return true;
 }

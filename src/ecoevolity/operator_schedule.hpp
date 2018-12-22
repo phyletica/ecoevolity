@@ -44,15 +44,9 @@ class OperatorSchedule {
 
     public:
         OperatorSchedule() { }
-        OperatorSchedule(
-                const CollectionSettings& settings,
-                bool use_dpp = true);
-        OperatorSchedule(
-                const RelativeRootCollectionSettings& settings,
-                bool use_dpp = true);
-        OperatorSchedule(
-                const DirichletCollectionSettings& settings,
-                bool use_dpp = true);
+        OperatorSchedule(const CollectionSettings& settings);
+        OperatorSchedule(const RelativeRootCollectionSettings& settings);
+        OperatorSchedule(const DirichletCollectionSettings& settings);
         virtual ~OperatorSchedule() { }
 
         void add_operator(std::shared_ptr<OperatorInterface> o);
@@ -82,8 +76,7 @@ class OperatorSchedule {
         void turn_on_auto_optimize();
         void turn_off_auto_optimize();
 
-        bool using_dpp() const;
-        bool using_reversible_jump() const;
+        const EcoevolityOptions::ModelOperator get_model_operator_type() const;
         bool sampling_models() const;
 };
 
