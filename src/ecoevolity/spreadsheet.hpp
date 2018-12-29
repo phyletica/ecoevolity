@@ -215,6 +215,10 @@ class Spreadsheet {
             return summarizer;
         }
 
+        bool has_key(const std::string& k) const {
+            return (this->data_.count(k) > 0);
+        }
+
 };
 
 } // namespace spreadsheet 
