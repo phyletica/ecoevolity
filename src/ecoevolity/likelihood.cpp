@@ -80,12 +80,13 @@ void compute_top_of_branch_partials(
     node.copy_top_pattern_probs(m);
 }
 
-std::vector<double> merge_top_of_branch_partials(
+void merge_top_of_branch_partials(
         const unsigned int allele_count_child1,
         const unsigned int allele_count_child2,
         const std::vector<double> & top_partials_child1,
-        const std::vector<double> & top_partials_child2
-        unsigned int & merged_allele_count;
+        const std::vector<double> & top_partials_child2,
+        unsigned int & merged_allele_count,
+        std::vector<double> & merged_pattern_probs,
         ) {
     for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
@@ -104,8 +105,7 @@ std::vector<double> merge_top_of_branch_partials(
     }
 
     unsigned int allele_count = allele_count_child1 + allele_count_child2;
-    std::vector<double> pattern_probs; 
-    pattern_probs.assign(
+    merged_pattern_probs.assign(
             ((((allele_count + 1) * (allele_count + 2))/2) - 1),
             0);
     for (unsigned int n1 = 1; n1 <= allele_count_child1; ++n1) {
@@ -113,7 +113,7 @@ std::vector<double> merge_top_of_branch_partials(
             double f11 = top_partials_child1.at(n1*(n1+1)/2-1+r1);
             for (unsigned int n2 = 1; n2 <= allele_count_child2; ++n2) {
                 for (unsigned int r2 = 0; r2 <= n2; ++r2) {
-                    pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += f11 * top_partials_child2.at(n2*(n2+1)/2-1+r2);
+                    merged_pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += f11 * top_partials_child2.at(n2*(n2+1)/2-1+r2);
                 }
             }
         }
@@ -122,17 +122,16 @@ std::vector<double> merge_top_of_branch_partials(
     for (unsigned int n = 1; n <= allele_count; ++n) {
         double b_nr = 1.0;
         for (unsigned int r = 0; r <= n; ++r) {
-            double f_nr = pattern_probs.at(n*(n+1)/2-1+r);
+            double f_nr = merged_pattern_probs.at(n*(n+1)/2-1+r);
             f_nr /= b_nr;
             // TODO: better way to fix this?
             f_nr = std::max(f_nr, 0.0);
-            pattern_probs.at(n*(n+1)/2-1+r) = f_nr;
+            merged_pattern_probs.at(n*(n+1)/2-1+r) = f_nr;
             b_nr *= ((double)n - r)/(r+1);
 
         }
     }
     merged_allele_count = allele_count;
-    return pattern_probs;
 }
 
 // TODO: Remove this function and use compute_internal_partials_general
@@ -238,28 +237,31 @@ void compute_internal_partials_general(
     unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_allele_count();
     unsigned int merged_allele_count = 0;
 
-    std::vector<double> & pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
-    std::vector<double> & pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
-    std::vector<double> pattern_probs_merged = merge_top_of_branch_partials(
+    const std::vector<double> & pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
+    const std::vector<double> & pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> merged_pattern_probs;
+    merge_top_of_branch_partials(
             allele_count_child1,
             allele_count_child2,
             pattern_probs_child1,
             pattern_probs_child2,
-            merged_allele_count);
+            merged_allele_count,
+            merged_pattern_probs);
 
     for (unsigned int i = 2; i < node.get_number_of_children(); ++i) {
         allele_count_child1 = m.get_allele_count();
         allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
         pattern_probs_child2 = node.get_child(
                 indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
-        pattern_probs_merged = merge_top_of_branch_partials(
+        merge_top_of_branch_partials(
                 allele_count_child1,
                 allele_count_child2,
                 pattern_probs_merged,
                 pattern_probs_child2,
-                merged_allele_count);
+                merged_allele_count,
+                merged_pattern_probs);
     }
-    BiallelicPatternProbabilityMatrix m(merged_allele_count, pattern_probs_merged);
+    BiallelicPatternProbabilityMatrix m(merged_allele_count, merged_pattern_probs);
     node.copy_bottom_pattern_probs(m);
 }
 

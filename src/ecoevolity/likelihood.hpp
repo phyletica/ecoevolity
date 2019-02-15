@@ -47,11 +47,13 @@ void compute_top_of_branch_partials(
         const double ploidy
         );
 
-BiallelicPatternProbabilityMatrix merge_top_of_branch_partials(
+void merge_top_of_branch_partials(
         unsigned int allele_count_child1,
         unsigned int allele_count_child2,
         BiallelicPatternProbabilityMatrix & top_partials_child1,
-        BiallelicPatternProbabilityMatrix & top_partials_child2);
+        BiallelicPatternProbabilityMatrix & top_partials_child2,
+        unsigned int & merged_allele_count,
+        std::vector<double> & merged_pattern_probs);
 
 // TODO: Remove this function and use compute_internal_partials_general
 // instead.  Leaving it in place for now for testing purposes (to make sure new
