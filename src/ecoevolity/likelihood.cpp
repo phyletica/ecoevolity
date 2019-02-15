@@ -80,6 +80,63 @@ void compute_top_of_branch_partials(
     node.copy_top_pattern_probs(m);
 }
 
+BiallelicPatternProbabilityMatrix merge_top_of_branch_partials(
+        unsigned int allele_count_child1,
+        unsigned int allele_count_child2,
+        BiallelicPatternProbabilityMatrix & top_partials_child1,
+        BiallelicPatternProbabilityMatrix & top_partials_child2
+        ) {
+    for (unsigned int n = 1; n <= allele_count_child1; ++n) {
+        double b_nr = 1.0;
+        for (unsigned int r = 0; r <= n; ++r) {
+            top_partials_child1.at(((n*(n+1))/2)-1+r) *= b_nr;
+            b_nr *= ((double)n - r)/(r+1);
+        }
+    }
+
+    for (unsigned int n = 1; n<= allele_count_child2; ++n) {
+        double b_nr = 1.0;
+        for (unsigned int r = 0; r <= n; ++r) {
+            top_partials_child2.at(((n*(n+1))/2)-1+r) *= b_nr;
+            b_nr *= ((double)n - r)/(r+1);
+        }
+    }
+
+    unsigned int allele_count = allele_count_child1 + allele_count_child2;
+    std::vector<double> pattern_probs; 
+    pattern_probs.assign(
+            ((((allele_count + 1) * (allele_count + 2))/2) - 1),
+            0);
+    for (unsigned int n1 = 1; n1 <= allele_count_child1; ++n1) {
+        for (unsigned int r1 = 0; r1 <= n1; ++r1) {
+            double f11 = top_partials_child1.at(n1*(n1+1)/2-1+r1);
+            for (unsigned int n2 = 1; n2 <= allele_count_child2; ++n2) {
+                for (unsigned int r2 = 0; r2 <= n2; ++r2) {
+                    pattern_probs.at((n1+n2)*(n1+n2+1)/2-1+(r1+r2)) += f11 * top_partials_child2.at(n2*(n2+1)/2-1+r2);
+                }
+            }
+        }
+    }
+
+    for (unsigned int n = 1; n <= allele_count; ++n) {
+        double b_nr = 1.0;
+        for (unsigned int r = 0; r <= n; ++r) {
+            double f_nr = pattern_probs.at(n*(n+1)/2-1+r);
+            f_nr /= b_nr;
+            // TODO: better way to fix this?
+            f_nr = std::max(f_nr, 0.0);
+            pattern_probs.at(n*(n+1)/2-1+r) = f_nr;
+            b_nr *= ((double)n - r)/(r+1);
+
+        }
+    }
+    BiallelicPatternProbabilityMatrix m(allele_count, pattern_probs);
+    return m;
+}
+
+// TODO: Remove this function and use compute_internal_partials_general
+// instead.  Leaving it in place for now for testing purposes (to make sure new
+// general function that allows polytomies is working).
 void compute_internal_partials(
         PopulationNode& node) {
     if (node.get_number_of_children() == 1) {
@@ -148,6 +205,62 @@ void compute_internal_partials(
     node.copy_bottom_pattern_probs(m);
 }
 
+void compute_internal_partials_general(
+        PopulationNode& node) {
+    // TODO: remove this if clause once this general function is vetted, and
+    // the compute_internal_partials function is removed.
+    if (node.get_number_of_children() < 3) {
+        compute_internal_partials(node);
+        return
+    }
+    unsigned int number_of_children_with_alleles = 0;
+    std::vector<unsigned int> indices_of_children_with_alleles;
+    for (unsigned int child_idx = 0; child_idx < node.get_number_of_children(); ++child_idx) {
+        if (node.get_child(child_idx)->get_allele_count() > 0) {
+            ++number_of_children_with_alleles;
+            indices_of_children_with_alleles.push_back(child_idx);
+        }
+    }
+    if (number_of_children_with_alleles < 1) {
+        std::ostringstream message;
+        message << "compute_internal_partials_general(); "
+                << "no children have alleles!";
+        throw EcoevolityError(message.str());
+    }
+    if (number_of_children_with_alleles == 1) {
+        ECOEVOLITY_ASSERT(indices_of_children_with_alleles.size() == 1);
+        node.copy_bottom_pattern_probs(node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs());
+        return;
+    }
+
+    unsigned int allele_count_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_allele_count();
+    unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_allele_count();
+
+    BiallelicPatternProbabilityMatrix & pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
+    BiallelicPatternProbabilityMatrix & pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
+    BiallelicPatternProbabilityMatrix m = merge_top_of_branch_partials(
+            allele_count_child1,
+            allele_count_child2,
+            pattern_probs_child1,
+            pattern_probs_child2);
+
+    for (unsigned int i = 2; i < node.get_number_of_children(); ++i) {
+        allele_count_child1 = m.get_allele_count();
+        allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
+        pattern_probs_child2 = node.get_child(
+                indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
+        m = merge_top_of_branch_partials(
+                allele_count_child1,
+                allele_count_child2,
+                m,
+                pattern_probs_child2);
+    }
+    node.copy_bottom_pattern_probs(m);
+}
+
+// TODO: Remove this function and use compute_pattern_partials_general
+// instead.  Leaving it in place for now for testing purposes (to make sure new
+// general function that allows polytomies is working).
 void compute_pattern_partials(
         PopulationNode& node,
         const std::vector<unsigned int>& red_allele_counts,
@@ -201,11 +314,65 @@ void compute_pattern_partials(
     }
     else {
         std::ostringstream message;
-        message << "compute_pattern_probability(); "
+        message << "compute_pattern_partials(); "
                 << "unexpected number of children: "
                 << node.get_number_of_children();
         throw EcoevolityError(message.str());
     }
+}
+
+void compute_pattern_partials_general(
+        PopulationNode& node,
+        const std::vector<unsigned int>& red_allele_counts,
+        const std::vector<unsigned int>& allele_counts,
+        const double u,
+        const double v,
+        const double mutation_rate,
+        const double ploidy,
+        const bool markers_are_dominant
+        ) {
+    ECOEVOLITY_ASSERT(red_allele_counts.size() == allele_counts.size());
+    if (node.is_leaf()) {
+        compute_leaf_partials(
+                node,
+                red_allele_counts.at(node.get_population_index()),
+                allele_counts.at(node.get_population_index()),
+                markers_are_dominant);
+        return;
+    }
+    else if (node.get_number_of_children() == 1) {
+        compute_pattern_partials(*node.get_child(0),
+                red_allele_counts,
+                allele_counts,
+                u,
+                v,
+                mutation_rate,
+                ploidy,
+                markers_are_dominant);
+        compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy);
+        compute_internal_partials(node);
+        return;
+    }
+    else if (node.get_number_of_children() > 1) {
+        for (unsigned int child_idx = 1; child_idx < *node.get_number_of_children(); ++child_idx) {
+            compute_pattern_partials(*node.get_child(child_idx),
+                    red_allele_counts,
+                    allele_counts,
+                    u,
+                    v,
+                    mutation_rate,
+                    ploidy,
+                    markers_are_dominant);
+            compute_top_of_branch_partials(*node.get_child(child_idx), u, v, mutation_rate, ploidy);
+        }
+        compute_internal_partials(node);
+        return;
+    }
+    std::ostringstream message;
+    message << "compute_pattern_partials_general(); "
+            << "unexpected number of children: "
+            << node.get_number_of_children();
+    throw EcoevolityError(message.str());
 }
 
 std::vector< std::vector<double> > compute_root_probabilities(
