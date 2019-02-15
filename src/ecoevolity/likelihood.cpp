@@ -80,11 +80,12 @@ void compute_top_of_branch_partials(
     node.copy_top_pattern_probs(m);
 }
 
-BiallelicPatternProbabilityMatrix merge_top_of_branch_partials(
-        unsigned int allele_count_child1,
-        unsigned int allele_count_child2,
-        BiallelicPatternProbabilityMatrix & top_partials_child1,
-        BiallelicPatternProbabilityMatrix & top_partials_child2
+std::vector<double> merge_top_of_branch_partials(
+        const unsigned int allele_count_child1,
+        const unsigned int allele_count_child2,
+        const std::vector<double> & top_partials_child1,
+        const std::vector<double> & top_partials_child2
+        unsigned int & merged_allele_count;
         ) {
     for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
@@ -130,8 +131,8 @@ BiallelicPatternProbabilityMatrix merge_top_of_branch_partials(
 
         }
     }
-    BiallelicPatternProbabilityMatrix m(allele_count, pattern_probs);
-    return m;
+    merged_allele_count = allele_count;
+    return pattern_probs;
 }
 
 // TODO: Remove this function and use compute_internal_partials_general
@@ -235,26 +236,30 @@ void compute_internal_partials_general(
 
     unsigned int allele_count_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_allele_count();
     unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_allele_count();
+    unsigned int merged_allele_count = 0;
 
-    BiallelicPatternProbabilityMatrix & pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
-    BiallelicPatternProbabilityMatrix & pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
-    BiallelicPatternProbabilityMatrix m = merge_top_of_branch_partials(
+    std::vector<double> & pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> & pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_merged = merge_top_of_branch_partials(
             allele_count_child1,
             allele_count_child2,
             pattern_probs_child1,
-            pattern_probs_child2);
+            pattern_probs_child2,
+            merged_allele_count);
 
     for (unsigned int i = 2; i < node.get_number_of_children(); ++i) {
         allele_count_child1 = m.get_allele_count();
         allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
         pattern_probs_child2 = node.get_child(
                 indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
-        m = merge_top_of_branch_partials(
+        pattern_probs_merged = merge_top_of_branch_partials(
                 allele_count_child1,
                 allele_count_child2,
-                m,
-                pattern_probs_child2);
+                pattern_probs_merged,
+                pattern_probs_child2,
+                merged_allele_count);
     }
+    BiallelicPatternProbabilityMatrix m(merged_allele_count, pattern_probs_merged);
     node.copy_bottom_pattern_probs(m);
 }
 
