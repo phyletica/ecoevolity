@@ -77,23 +77,23 @@ TEST_CASE("Testing small, diploid, standard data set", "[BiallelicData]") {
         std::vector<unsigned int> expected_max_cts = {6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         //fold patterns
         unsigned int number_removed = bd.fold_patterns();
@@ -175,23 +175,23 @@ TEST_CASE("Testing small, diploid, standard data set with charsets", "[Biallelic
         std::vector<unsigned int> expected_max_cts = {6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 4};
@@ -250,7 +250,7 @@ TEST_CASE("Testing diploid standard data with 012 as dominant", "[BiallelicData]
 
     SECTION("Testing data/diploid-standard-data-ntax5-nchar5.nex as dominant") {
         std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -310,23 +310,23 @@ TEST_CASE("Testing standard diploid with only 0/1 genotypes", "[BiallelicData]")
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
     }
 }
 
@@ -371,23 +371,23 @@ TEST_CASE("Testing standard diploid with only 0/1 genotypes and charsets", "[Bia
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 4};
@@ -401,22 +401,22 @@ TEST_CASE("Testing standard haploid with a 2 genotype", "[BiallelicData]") {
 
     SECTION("Testing data/haploid-standard-012.nex") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), NxsException);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), NxsException &);
     }
 
     SECTION("Testing data/haploid-standard-012.nex as diploid") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true), NxsException);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true), NxsException &);
     }
 
     SECTION("Testing data/haploid-standard-012.nex as dominant") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), NxsException);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), NxsException &);
     }
 
     SECTION("Testing data/haploid-standard-012.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard-012.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -477,23 +477,23 @@ TEST_CASE("Testing standard haploid", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -565,23 +565,23 @@ TEST_CASE("Testing standard haploid with charsets", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {3, 4};
@@ -679,36 +679,36 @@ TEST_CASE("Testing standard haploid dominant", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/haploid-standard.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/haploid-standard.nex as diploid") {
         std::string nex_path = "data/haploid-standard.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -730,12 +730,12 @@ TEST_CASE("Testing standard diploid dominant", "[BiallelicData]") {
 
     SECTION("Testing data/diploid-standard-dominant.nex as dominant") {
         std::string nex_path = "data/diploid-standard-dominant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-standard-dominant.nex as dominant and haploid") {
         std::string nex_path = "data/diploid-standard-dominant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -794,23 +794,23 @@ TEST_CASE("Testing standard diploid dominant as NOT dominant", "[BiallelicData]"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -886,23 +886,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -945,23 +945,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
         
         // Folding
         number_removed = bd.fold_patterns();
@@ -1035,23 +1035,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 3, 5};
@@ -1100,23 +1100,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {0, 2, 3};
@@ -1196,23 +1196,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 3, 5};
@@ -1256,23 +1256,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {0, 2, 3};
@@ -1353,23 +1353,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -1407,23 +1407,23 @@ TEST_CASE("Testing for constant diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -1499,23 +1499,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -1556,23 +1556,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -1644,23 +1644,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 3, 5};
@@ -1707,23 +1707,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {0, 2, 3};
@@ -1800,23 +1800,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -1852,26 +1852,26 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/haploid-standard-constant.nex as dominant with charsets") {
@@ -1913,23 +1913,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 3, 5};
@@ -1971,23 +1971,23 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {0, 2, 3};
@@ -1996,17 +1996,17 @@ TEST_CASE("Testing for constant haploid site patterns", "[BiallelicData]") {
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/haploid-standard-constant.nex as diploid") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/haploid-standard-constant.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard-constant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -2016,7 +2016,7 @@ TEST_CASE("Testing for constant dominant diploid site patterns", "[BiallelicData
 
     SECTION("Testing data/diploid-standard-constant-dominant.nex as dominant") {
         std::string nex_path = "data/diploid-standard-constant-dominant.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -2068,23 +2068,23 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
@@ -2125,23 +2125,23 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -2213,23 +2213,23 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 6};
@@ -2276,23 +2276,23 @@ TEST_CASE("Testing for missing haploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 2};
@@ -2378,23 +2378,23 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         REQUIRE(bd.get_number_of_missing_sites_removed() == 0);
@@ -2435,26 +2435,26 @@ TEST_CASE("Testing for missing haploid site patterns as dominant", "[BiallelicDa
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -2507,23 +2507,23 @@ TEST_CASE("Testing for missing haploid site patterns as dominant with charsets",
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 6};
@@ -2570,23 +2570,23 @@ TEST_CASE("Testing for missing haploid site patterns as dominant with charsets",
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 2};
@@ -2595,7 +2595,7 @@ TEST_CASE("Testing for missing haploid site patterns as dominant with charsets",
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -2647,23 +2647,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
@@ -2711,23 +2711,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         number_removed = bd.remove_missing_population_patterns();
@@ -2766,23 +2766,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns", "[BiallelicD
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_rm_expected_labels);
         rm_rm_expected_labels.clear();
         rm_rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -2859,23 +2859,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns with charsets"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 6};
@@ -2929,23 +2929,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns with charsets"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 3};
@@ -2990,23 +2990,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns with charsets"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_rm_expected_labels);
         rm_rm_expected_labels.clear();
         rm_rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 2};
@@ -3086,23 +3086,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         REQUIRE(bd.get_number_of_constant_sites_removed() == 0);
@@ -3144,23 +3144,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         number_removed = bd.remove_missing_population_patterns();
@@ -3194,26 +3194,26 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant", 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_rm_expected_labels);
         rm_rm_expected_labels.clear();
         rm_rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -3258,23 +3258,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant wi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 6};
@@ -3322,23 +3322,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant wi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 3};
@@ -3378,23 +3378,23 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant wi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(2), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(2), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_rm_expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == rm_rm_expected_labels);
         rm_rm_expected_labels.clear();
         rm_rm_expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 2};
@@ -3403,7 +3403,7 @@ TEST_CASE("Testing for constant AND missing haploid site patterns as dominant wi
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
 
         // Folding
-        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -3411,12 +3411,12 @@ TEST_CASE("Testing for constant AND missing dominant haploid site patterns", "[B
 
     SECTION("Testing data/haploid-standard-missing.nex as diploid") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, false), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/haploid-standard-missing.nex as diploid and dominant") {
         std::string nex_path = "data/haploid-standard-missing.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -3467,23 +3467,23 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         unsigned int number_removed = bd.remove_missing_population_patterns();
@@ -3524,23 +3524,23 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         number_removed = bd.remove_constant_patterns();
@@ -3576,23 +3576,23 @@ TEST_CASE("Testing for constant AND missing diploid site patterns", "[BiallelicD
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_rm_expected_labels);
         rm_rm_expected_labels.clear();
         rm_rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -3668,23 +3668,23 @@ TEST_CASE("Testing for constant AND missing diploid site patterns with charsets"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 7};
@@ -3731,23 +3731,23 @@ TEST_CASE("Testing for constant AND missing diploid site patterns with charsets"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(3), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {3};
@@ -3789,23 +3789,23 @@ TEST_CASE("Testing for constant AND missing diploid site patterns with charsets"
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(1), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(1), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_rm_expected_labels);
         rm_rm_expected_labels.clear();
         rm_rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1};
@@ -3851,7 +3851,7 @@ TEST_CASE("Testing for removing all site patterns", "[BiallelicData]") {
         std::string nex_path = "data/diploid-standard-all-remove.nex";
         BiallelicData bd(nex_path);
         int number_removed = bd.remove_constant_patterns();
-        REQUIRE_THROWS_AS(bd.remove_missing_population_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(bd.remove_missing_population_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -3901,23 +3901,23 @@ TEST_CASE("Testing for mirrored diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Removing patterns
         unsigned int number_removed = bd.fold_patterns();
@@ -3961,23 +3961,23 @@ TEST_CASE("Testing for mirrored diploid site patterns", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
     }
 }
 
@@ -4028,23 +4028,23 @@ TEST_CASE("Testing for mirrored diploid site patterns with charsets", "[Bialleli
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 7};
@@ -4094,23 +4094,23 @@ TEST_CASE("Testing for mirrored diploid site patterns with charsets", "[Bialleli
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 7};
@@ -4180,33 +4180,33 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
     }
 
     SECTION("Testing data/diploid-dna.nex as haploid") {
         std::string nex_path = "data/diploid-dna.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), EcoevolityInvalidCharacterError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), EcoevolityInvalidCharacterError &);
     }
 
     SECTION("Testing data/diploid-dna.nex as dominant") {
         std::string nex_path = "data/diploid-dna.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing folding of data/diploid-dna.nex") {
@@ -4247,23 +4247,23 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -4301,23 +4301,23 @@ TEST_CASE("Testing small, diploid, dna data set", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
     }
 }
 
@@ -4367,23 +4367,23 @@ TEST_CASE("Testing small, diploid, dna data set with charsets", "[BiallelicData]
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5};
@@ -4394,12 +4394,12 @@ TEST_CASE("Testing small, diploid, dna data set with charsets", "[BiallelicData]
 
     SECTION("Testing data/diploid-dna.nex as haploid") {
         std::string nex_path = "data/diploid-dna.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), EcoevolityInvalidCharacterError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false), EcoevolityInvalidCharacterError &);
     }
 
     SECTION("Testing data/diploid-dna.nex as dominant") {
         std::string nex_path = "data/diploid-dna.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing folding of data/diploid-dna.nex") {
@@ -4441,23 +4441,23 @@ TEST_CASE("Testing small, diploid, dna data set with charsets", "[BiallelicData]
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5};
@@ -4501,23 +4501,23 @@ TEST_CASE("Testing small, diploid, dna data set with charsets", "[BiallelicData]
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == rm_expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> rm_expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == rm_expected_labels);
         rm_expected_labels.clear();
         rm_expected_labels = {"pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == rm_expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5};
@@ -4579,18 +4579,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -4600,7 +4600,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -4651,9 +4651,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -4701,9 +4701,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         // Remove missing
         number_removed = bd.remove_constant_patterns();
@@ -4747,18 +4747,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -4769,7 +4769,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites", "[Bi
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -4829,18 +4829,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites with c
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -4850,7 +4850,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites with c
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5, 8};
@@ -4907,9 +4907,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites with c
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5, 8};
@@ -4963,9 +4963,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites with c
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 7};
@@ -5015,18 +5015,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites with c
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -5037,7 +5037,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, and constant sites with c
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -5110,18 +5110,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -5131,7 +5131,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Remove constant
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -5187,9 +5187,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -5242,9 +5242,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -5290,18 +5290,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -5312,17 +5312,17 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-nohets.nex as dominant") {
         std::string nex_path = "data/diploid-dna-constant-missing-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-nohets.nex as dominant and haploid") {
         std::string nex_path = "data/diploid-dna-constant-missing-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-nohets.nex as haploid") {
@@ -5377,18 +5377,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -5398,7 +5398,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Remove constant
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -5449,9 +5449,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -5499,9 +5499,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -5547,18 +5547,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -5569,7 +5569,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, and no he
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {3,3,2};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -5637,18 +5637,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -5658,7 +5658,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5, 8};
@@ -5720,9 +5720,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5, 6};
@@ -5781,9 +5781,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 5};
@@ -5835,18 +5835,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -5857,7 +5857,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 5};
@@ -5919,18 +5919,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -5940,7 +5940,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5, 8};
@@ -5997,9 +5997,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5, 6};
@@ -6053,9 +6053,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 5};
@@ -6107,18 +6107,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -6129,7 +6129,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant sites, no hets, 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {3,3,2};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -6209,18 +6209,18 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -6230,7 +6230,7 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Remove constant
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -6278,9 +6278,9 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -6326,9 +6326,9 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         expected_max_cts = {4,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -6378,18 +6378,18 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         expected_max_cts = {4,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -6400,7 +6400,7 @@ TEST_CASE("Testing change in max sample size", "[BiallelicData]") {
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
     }
 }
 
@@ -6455,18 +6455,18 @@ TEST_CASE("Testing change in max sample size with charsets", "[BiallelicData]") 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -6476,7 +6476,7 @@ TEST_CASE("Testing change in max sample size with charsets", "[BiallelicData]") 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5, 8};
@@ -6530,9 +6530,9 @@ TEST_CASE("Testing change in max sample size with charsets", "[BiallelicData]") 
         expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5, 6};
@@ -6584,9 +6584,9 @@ TEST_CASE("Testing change in max sample size with charsets", "[BiallelicData]") 
         expected_max_cts = {4,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 5};
@@ -6642,18 +6642,18 @@ TEST_CASE("Testing change in max sample size with charsets", "[BiallelicData]") 
         expected_max_cts = {4,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -6664,7 +6664,7 @@ TEST_CASE("Testing change in max sample size with charsets", "[BiallelicData]") 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 5};
@@ -6818,23 +6818,23 @@ TEST_CASE("Testing quoted underscores", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1_a", "pop1_b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2_c", "pop2_d", "pop2_e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -6895,23 +6895,23 @@ TEST_CASE("Testing quoted spaces", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(4), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(4), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
-        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(2), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
         expected_labels.clear();
         expected_labels = {"pop2 c", "pop2 d", "pop2 e"};
         REQUIRE(bd.get_sequence_labels(1) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(2), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -8168,18 +8168,18 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -8189,7 +8189,7 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Folding
         unsigned int number_removed = bd.fold_patterns();
@@ -8244,9 +8244,9 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -8298,9 +8298,9 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range &);
 
         // Remove constant
         number_removed = bd.remove_constant_patterns();
@@ -8348,18 +8348,18 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -8370,7 +8370,7 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, and constant 
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -8434,18 +8434,18 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -8455,7 +8455,7 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {2, 5, 8, 9};
@@ -8516,9 +8516,9 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5, 8, 9};
@@ -8576,9 +8576,9 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 4, 7, 8};
@@ -8632,18 +8632,18 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -8654,7 +8654,7 @@ TEST_CASE("Testing diploid dna with triallelic, missing, mirrored, constant site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -8728,18 +8728,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -8749,7 +8749,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Remove constant
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -8805,9 +8805,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -8860,9 +8860,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -8913,18 +8913,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -8935,17 +8935,17 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as dominant") {
         std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as dominant and haploid") {
         std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as haploid") {
@@ -9000,18 +9000,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -9021,7 +9021,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         // Remove constant
         unsigned int number_removed = bd.remove_constant_patterns();
@@ -9072,9 +9072,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
     
         // Remove missing
         number_removed = bd.remove_missing_population_patterns();
@@ -9122,9 +9122,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         // Folding
         number_removed = bd.fold_patterns();
@@ -9170,18 +9170,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -9192,7 +9192,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {3,3,2};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -9261,18 +9261,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -9282,7 +9282,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 3, 5, 7, 8};
@@ -9344,9 +9344,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 3, 5, 6};
@@ -9405,9 +9405,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 3, 4, 5};
@@ -9464,18 +9464,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -9486,7 +9486,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 3, 4, 5};
@@ -9497,12 +9497,12 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
 
     SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as dominant") {
         std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, true, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as dominant and haploid") {
         std::string nex_path = "data/diploid-dna-constant-missing-triallelic-nohets.nex";
-        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(BiallelicData bd(nex_path, ' ', true, false, true), EcoevolityBiallelicDataError &);
     }
 
     SECTION("Testing data/diploid-dna-constant-missing-triallelic-nohets.nex as haploid") {
@@ -9558,18 +9558,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -9579,7 +9579,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {1, 3, 5, 7, 8};
@@ -9636,9 +9636,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(7), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(7), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {2, 5, 6};
@@ -9693,9 +9693,9 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {1, 3, 4, 5};
@@ -9747,18 +9747,18 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(5), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(5), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -9769,7 +9769,7 @@ TEST_CASE("Testing diploid dna with missing, mirrored, constant, triallelic site
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {3,3,2};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
@@ -9839,18 +9839,18 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(10), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(10), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(10), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         std::vector<std::string> expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
         REQUIRE(bd.get_sequence_labels(0) == expected_labels);
@@ -9860,7 +9860,7 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -9921,9 +9921,9 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(9), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(9), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -9981,9 +9981,9 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(8), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(8), std::out_of_range &);
 
         REQUIRE(bd.has_seq_loci_info() == true);
         expected_locus_ends = {0, 1, 2, 3, 4, 5, 6, 7, 8};
@@ -10037,18 +10037,18 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
             REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
         }
 
-        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range);
-        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_pattern_weight(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_allele_counts(6), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_red_allele_counts(6), std::out_of_range &);
 
         REQUIRE(bd.get_population_index("pop1") == 0);
         REQUIRE(bd.get_population_index("pop2") == 1);
         REQUIRE(bd.get_population_index("pop3") == 2);
-        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
         REQUIRE(bd.get_population_label(0) == "pop1");
         REQUIRE(bd.get_population_label(1) == "pop2");
         REQUIRE(bd.get_population_label(2) == "pop3");
-        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
 
         expected_labels.clear();
         expected_labels = {"pop1 a", "pop1 b", "pop1 c"};
@@ -10059,7 +10059,7 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
         expected_labels.clear();
         expected_labels = {"pop3 g", "pop3 h"};
         REQUIRE(bd.get_sequence_labels(2) == expected_labels);
-        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(3), std::out_of_range &);
 
         std::vector<unsigned int> expected_max_cts = {6,6,4};
         REQUIRE(bd.get_max_allele_counts() == expected_max_cts);

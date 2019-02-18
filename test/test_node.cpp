@@ -28,7 +28,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 
     SECTION("Testing label constructor") {
@@ -54,7 +54,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 
     SECTION("Testing height constructor") {
@@ -80,7 +80,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 
     SECTION("Testing label and height constructor") {
@@ -106,7 +106,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 
     SECTION("Testing node ref constructor") {
@@ -134,7 +134,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
         n.set_label("leaf2");
         REQUIRE(n.get_label() == "leaf2");
@@ -174,7 +174,7 @@ TEST_CASE("Testing copy operator of Node", "[Node]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
         n.set_label("leaf2");
         REQUIRE(n.get_label() == "leaf2");
@@ -214,7 +214,7 @@ TEST_CASE("Testing copy operator of Node", "[Node]") {
 /*         REQUIRE(p == nullptr); */
 /*         REQUIRE(typeid(n).hash_code() == typeid(p).hash_code()); */
 
-/*         REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range); */
+/*         REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range &); */
         
 /*         n->set_label("leaf2"); */
 /*         REQUIRE(n->get_label() == "leaf2"); */
@@ -241,7 +241,7 @@ TEST_CASE("Testing parent methods of Node", "[Node]") {
         REQUIRE(c->get_number_of_parents() == 0);
 
         REQUIRE(c->get_parent() == nullptr);
-        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range &);
         REQUIRE(c->is_parent(p) == false);
         REQUIRE(p->is_child(c) == false);
 
@@ -279,7 +279,7 @@ TEST_CASE("Testing child methods of Node", "[Node]") {
         REQUIRE(p->get_number_of_children() == 0);
 
         REQUIRE(c->get_parent() == nullptr);
-        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range &);
         REQUIRE(c->is_parent(p) == false);
         REQUIRE(p->is_child(c) == false);
 
@@ -292,7 +292,7 @@ TEST_CASE("Testing child methods of Node", "[Node]") {
         REQUIRE(p->degree() == 1);
 
         unsigned int i = 1;
-        REQUIRE_THROWS_AS(p->remove_child(i), std::out_of_range);
+        REQUIRE_THROWS_AS(p->remove_child(i), std::out_of_range &);
         i = 0;
         std::shared_ptr<Node> r = p->remove_child(i);
         REQUIRE(r == c);
@@ -727,8 +727,8 @@ TEST_CASE("Testing bare constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_allele_count() == 0);
         REQUIRE(n.is_dirty());
 
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range);
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range &);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -746,7 +746,7 @@ TEST_CASE("Testing bare constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -760,8 +760,8 @@ TEST_CASE("Testing label constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_allele_count() == 0);
         REQUIRE(n.is_dirty());
 
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range);
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range &);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -779,7 +779,7 @@ TEST_CASE("Testing label constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -792,8 +792,8 @@ TEST_CASE("Testing height constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(n.get_allele_count() == 0);
         REQUIRE(n.is_dirty());
 
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range);
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range &);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -811,7 +811,7 @@ TEST_CASE("Testing height constructor of PopulationNode", "[PopulationNode]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -824,8 +824,8 @@ TEST_CASE("Testing label and height constructor of PopulationNode", "[Population
         REQUIRE(n.get_allele_count() == 0);
         REQUIRE(n.is_dirty());
 
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range);
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(1, 0), std::out_of_range &);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(1, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -843,7 +843,7 @@ TEST_CASE("Testing label and height constructor of PopulationNode", "[Population
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -857,9 +857,9 @@ TEST_CASE("Testing allele count constructor of PopulationNode", "[PopulationNode
         REQUIRE(n.is_dirty());
 
         REQUIRE(n.get_bottom_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(4, 0), std::out_of_range &);
         REQUIRE(n.get_top_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(4, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -877,7 +877,7 @@ TEST_CASE("Testing allele count constructor of PopulationNode", "[PopulationNode
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -891,9 +891,9 @@ TEST_CASE("Testing height and allele count constructor of PopulationNode", "[Pop
         REQUIRE(n.is_dirty());
 
         REQUIRE(n.get_bottom_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(4, 0), std::out_of_range &);
         REQUIRE(n.get_top_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(4, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -911,7 +911,7 @@ TEST_CASE("Testing height and allele count constructor of PopulationNode", "[Pop
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -925,9 +925,9 @@ TEST_CASE("Testing label and allele count constructor of PopulationNode", "[Popu
         REQUIRE(n.is_dirty());
 
         REQUIRE(n.get_bottom_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(3, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(3, 0), std::out_of_range &);
         REQUIRE(n.get_top_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(3, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(3, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -945,7 +945,7 @@ TEST_CASE("Testing label and allele count constructor of PopulationNode", "[Popu
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -959,9 +959,9 @@ TEST_CASE("Testing label, height, and allele count constructor of PopulationNode
         REQUIRE(n.is_dirty());
 
         REQUIRE(n.get_bottom_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_bottom_pattern_probability(4, 0), std::out_of_range &);
         REQUIRE(n.get_top_pattern_probability(2, 1) == Approx(0.0));
-        REQUIRE_THROWS_AS(n.get_top_pattern_probability(4, 0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_top_pattern_probability(4, 0), std::out_of_range &);
 
         REQUIRE(n.degree() == 0);
         REQUIRE(n.has_parent() == false);
@@ -979,7 +979,7 @@ TEST_CASE("Testing label, height, and allele count constructor of PopulationNode
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
 }
 
@@ -1013,7 +1013,7 @@ TEST_CASE("Testing node ref constructor of PopulationNode", "[PopulationNode]") 
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
         n.set_label("leaf2");
         REQUIRE(n.get_label() == "leaf2");
@@ -1071,7 +1071,7 @@ TEST_CASE("Testing copy operator of PopulationNode", "[PopulationNode]") {
         REQUIRE(p == nullptr);
         REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
 
-        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
         n.set_label("leaf2");
         REQUIRE(n.get_label() == "leaf2");
@@ -1130,7 +1130,7 @@ TEST_CASE("Testing copy operator of PopulationNode", "[PopulationNode]") {
 /*         REQUIRE(p == nullptr); */
 /*         REQUIRE(typeid(n).hash_code() == typeid(p).hash_code()); */
 
-/*         REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range); */
+/*         REQUIRE_THROWS_AS(n->get_child(0), std::out_of_range &); */
         
 /*         n->set_label("leaf2"); */
 /*         REQUIRE(n->get_label() == "leaf2"); */
@@ -1174,7 +1174,7 @@ TEST_CASE("Testing parent methods of PopulationNode", "[PopulationNode]") {
         REQUIRE(c->get_number_of_parents() == 0);
 
         REQUIRE(c->get_parent() == nullptr);
-        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range &);
         REQUIRE(c->is_parent(p) == false);
         REQUIRE(p->is_child(c) == false);
 
@@ -1212,7 +1212,7 @@ TEST_CASE("Testing child methods of PopulationNode", "[PopulationNode]") {
         REQUIRE(p->get_number_of_children() == 0);
 
         REQUIRE(c->get_parent() == nullptr);
-        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range);
+        REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range &);
         REQUIRE(c->is_parent(p) == false);
         REQUIRE(p->is_child(c) == false);
 
@@ -1225,7 +1225,7 @@ TEST_CASE("Testing child methods of PopulationNode", "[PopulationNode]") {
         REQUIRE(p->degree() == 1);
 
         unsigned int i = 1;
-        REQUIRE_THROWS_AS(p->remove_child(i), std::out_of_range);
+        REQUIRE_THROWS_AS(p->remove_child(i), std::out_of_range &);
         i = 0;
         std::shared_ptr<PopulationNode> r = p->remove_child(i);
         REQUIRE(r == c);

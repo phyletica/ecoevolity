@@ -28,7 +28,7 @@ TEST_CASE("Testing invalid distribution in ContinuousDistributionSettings constr
         std::string name = "blah_distribution";
         std::unordered_map<std::string, double> parameters;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -38,7 +38,7 @@ TEST_CASE("Testing missing gamma parameter settings", "[ContinuousDistributionSe
         std::string name = "gamma_distribution";
         std::unordered_map<std::string, double> parameters;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing missing parameters") {
@@ -46,18 +46,18 @@ TEST_CASE("Testing missing gamma parameter settings", "[ContinuousDistributionSe
         std::unordered_map<std::string, double> parameters;
         parameters["shape"] = 1.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
         parameters["offset"] = 0.01;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
 
         parameters.clear();
         parameters["scale"] = 1.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
         parameters["offset"] = 0.01;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing rate parameter") {
@@ -66,7 +66,7 @@ TEST_CASE("Testing missing gamma parameter settings", "[ContinuousDistributionSe
         parameters["shape"] = 10.0;
         parameters["rate"] = 1.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -76,7 +76,7 @@ TEST_CASE("Testing missing exponential parameter settings", "[ContinuousDistribu
         std::string name = "exponential_distribution";
         std::unordered_map<std::string, double> parameters;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing missing parameters") {
@@ -84,7 +84,7 @@ TEST_CASE("Testing missing exponential parameter settings", "[ContinuousDistribu
         std::unordered_map<std::string, double> parameters;
         parameters["offset"] = 0.01;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing lambda parameter") {
@@ -92,7 +92,7 @@ TEST_CASE("Testing missing exponential parameter settings", "[ContinuousDistribu
         std::unordered_map<std::string, double> parameters;
         parameters["lambda"] = 1.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -103,13 +103,13 @@ TEST_CASE("Testing gamma parameter settings errors", "[ContinuousDistributionSet
         parameters["shape"] = 0.0;
         parameters["scale"] = 1.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
 
         parameters.clear();
         parameters["shape"] = 10.0;
         parameters["scale"] = 0.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -119,7 +119,7 @@ TEST_CASE("Testing exponential parameter settings errors", "[ContinuousDistribut
         std::unordered_map<std::string, double> parameters;
         parameters["rate"] = 0.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -133,7 +133,7 @@ TEST_CASE("Testing dirichlet parameter settings errors", "[ContinuousDistributio
         n = YAML::Load(ss);
         ContinuousDistributionSettings d;
         REQUIRE_THROWS_AS(d = ContinuousDistributionSettings(n),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing single alpha") {
@@ -145,7 +145,7 @@ TEST_CASE("Testing dirichlet parameter settings errors", "[ContinuousDistributio
         n = YAML::Load(ss);
         ContinuousDistributionSettings d;
         REQUIRE_THROWS_AS(d = ContinuousDistributionSettings(n),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing zero alpha") {
@@ -157,7 +157,7 @@ TEST_CASE("Testing dirichlet parameter settings errors", "[ContinuousDistributio
         n = YAML::Load(ss);
         ContinuousDistributionSettings d;
         REQUIRE_THROWS_AS(d = ContinuousDistributionSettings(n),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing negative alpha") {
@@ -169,7 +169,7 @@ TEST_CASE("Testing dirichlet parameter settings errors", "[ContinuousDistributio
         n = YAML::Load(ss);
         ContinuousDistributionSettings d;
         REQUIRE_THROWS_AS(d = ContinuousDistributionSettings(n),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing no alphas") {
@@ -180,7 +180,7 @@ TEST_CASE("Testing dirichlet parameter settings errors", "[ContinuousDistributio
         n = YAML::Load(ss);
         ContinuousDistributionSettings d;
         REQUIRE_THROWS_AS(d = ContinuousDistributionSettings(n),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -355,7 +355,7 @@ TEST_CASE("Testing uniform parameter settings errors", "[ContinuousDistributionS
         parameters["min"] = 1.0;
         parameters["max"] = 0.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -396,7 +396,7 @@ TEST_CASE("Testing missing uniform parameter settings", "[ContinuousDistribution
         std::string name = "uniform_distribution";
         std::unordered_map<std::string, double> parameters;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 
     SECTION("Testing missing parameters") {
@@ -404,12 +404,12 @@ TEST_CASE("Testing missing uniform parameter settings", "[ContinuousDistribution
         std::unordered_map<std::string, double> parameters;
         parameters["min"] = 0.01;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
 
         parameters.clear();
         parameters["max"] = 1.0;
         REQUIRE_THROWS_AS(ContinuousDistributionSettings(name, parameters),
-                EcoevolityContinuousDistributionSettingError);
+                EcoevolityContinuousDistributionSettingError &);
     }
 }
 
@@ -424,7 +424,7 @@ TEST_CASE("Testing error parameter settings", "[PositiveRealParameterSettings]")
                 true,
                 "gamma_distribution",
                 prior_parameters),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
     }
 }
 
@@ -449,7 +449,7 @@ TEST_CASE("Testing fixed parameter settings", "[PositiveRealParameterSettings]")
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
         PositiveRealParameter p = PositiveRealParameter(settings, rng);
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
         REQUIRE(p.get_value() == 0.001);
         REQUIRE(p.is_fixed() == true);
     }
@@ -525,7 +525,7 @@ TEST_CASE("Testing fixed nan parameter settings", "[PositiveRealParameterSetting
                 true,
                 "gamma_distribution",
                 prior_parameters),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
     }
 }
 
@@ -542,7 +542,7 @@ TEST_CASE("Testing dirichlet errors parameter settings", "[PositiveRealParameter
         n = YAML::Load(ss);
         PositiveRealParameterSettings p;
         REQUIRE_THROWS_AS(p = PositiveRealParameterSettings(n),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
     }
 
     SECTION("Testing zero value") {
@@ -557,7 +557,7 @@ TEST_CASE("Testing dirichlet errors parameter settings", "[PositiveRealParameter
         n = YAML::Load(ss);
         PositiveRealParameterSettings p;
         REQUIRE_THROWS_AS(p = PositiveRealParameterSettings(n),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
     }
 
     SECTION("Testing value-parameter mismatch") {
@@ -572,7 +572,7 @@ TEST_CASE("Testing dirichlet errors parameter settings", "[PositiveRealParameter
         n = YAML::Load(ss);
         PositiveRealParameterSettings p;
         REQUIRE_THROWS_AS(p = PositiveRealParameterSettings(n),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
     }
 
     SECTION("Testing prior mismatch") {
@@ -588,7 +588,7 @@ TEST_CASE("Testing dirichlet errors parameter settings", "[PositiveRealParameter
         n = YAML::Load(ss);
         PositiveRealParameterSettings p;
         REQUIRE_THROWS_AS(p = PositiveRealParameterSettings(n),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
     }
 
 }
@@ -1344,7 +1344,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
 
     }
 
@@ -1377,7 +1377,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
 
     }
 
@@ -1412,7 +1412,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
 
     }
 
@@ -1447,7 +1447,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
 
     }
 
@@ -1483,7 +1483,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
 
     }
 
@@ -1520,7 +1520,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityComparisonSettingError);
+                EcoevolityComparisonSettingError &);
 
     }
 
@@ -1557,7 +1557,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
 
     }
 
@@ -1589,7 +1589,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityPositiveRealParameterSettingError);
+                EcoevolityPositiveRealParameterSettingError &);
 
     }
 
@@ -1623,7 +1623,7 @@ TEST_CASE("Testing dirichlet comparison setting constructor", "[DirichletCompari
                 DirichletComparisonSettings settings = DirichletComparisonSettings(
                         n,
                         "dummy-config.yml"),
-                EcoevolityYamlConfigError);
+                EcoevolityYamlConfigError &);
 
     }
 
@@ -2470,7 +2470,7 @@ TEST_CASE("Testing no comparisons", "[CollectionSettings]") {
         cfg_stream << "                        shape: 100.0\n";
         cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
 
-        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -2491,7 +2491,7 @@ TEST_CASE("Testing empty comparisons", "[CollectionSettings]") {
         cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
         cfg_stream << "comparisons:\n";
 
-        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -2502,7 +2502,7 @@ TEST_CASE("Testing empty config", "[CollectionSettings]") {
         std::stringstream cfg_stream;
         cfg_stream << "";
 
-        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -2517,7 +2517,7 @@ TEST_CASE("Testing bad YAML formatting", "[CollectionSettings]") {
         cfg_stream << "- comparison:\n";
         cfg_stream << "    path: \"diploid-dna.nex\"\n";
 
-        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), std::exception);
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), std::exception &);
     }
 }
 
@@ -2535,7 +2535,7 @@ TEST_CASE("Testing fixing with no value", "[CollectionSettings]") {
         cfg_stream << "        population_size:\n";
         cfg_stream << "            estimate: false\n";
 
-        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError);
+        REQUIRE_THROWS_AS(CollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError &);
     }
 }
 
@@ -4159,7 +4159,7 @@ TEST_CASE("Testing DirichletCollectionSettings invalid TimeSizeScaler", "[Dirich
         DirichletCollectionSettings settings;
         REQUIRE_THROWS_AS(
                 settings = DirichletCollectionSettings(cfg_stream, cfg_path),
-                EcoevolityYamlConfigError);
+                EcoevolityYamlConfigError &);
     }
 }
 
@@ -4184,7 +4184,7 @@ TEST_CASE("Testing DirichletCollectionSettings invalid RootPopulationSizeScaler"
         DirichletCollectionSettings settings;
         REQUIRE_THROWS_AS(
                 settings = DirichletCollectionSettings(cfg_stream, cfg_path),
-                EcoevolityYamlConfigError);
+                EcoevolityYamlConfigError &);
     }
 }
 
@@ -4209,7 +4209,7 @@ TEST_CASE("Testing DirichletCollectionSettings invalid LeafPopulationSizeScaler"
         DirichletCollectionSettings settings;
         REQUIRE_THROWS_AS(
                 settings = DirichletCollectionSettings(cfg_stream, cfg_path),
-                EcoevolityYamlConfigError);
+                EcoevolityYamlConfigError &);
     }
 }
 
@@ -4764,7 +4764,7 @@ TEST_CASE("Testing DirichletCollectionSettings no comparisons", "[DirichletColle
         cfg_stream << "                        shape: 100.0\n";
         cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
 
-        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -4785,7 +4785,7 @@ TEST_CASE("Testing DirichletCollectionSettings empty comparisons", "[DirichletCo
         cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
         cfg_stream << "comparisons:\n";
 
-        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -4796,7 +4796,7 @@ TEST_CASE("Testing DirichletCollectionSettings empty config", "[DirichletCollect
         std::stringstream cfg_stream;
         cfg_stream << "";
 
-        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -4811,7 +4811,7 @@ TEST_CASE("Testing DirichletCollectionSettings bad YAML formatting", "[Dirichlet
         cfg_stream << "- comparison:\n";
         cfg_stream << "    path: \"diploid-dna.nex\"\n";
 
-        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), std::exception);
+        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), std::exception &);
     }
 }
 
@@ -4829,7 +4829,7 @@ TEST_CASE("Testing DirichletCollectionSettings fixing with no value", "[Dirichle
         cfg_stream << "        population_size:\n";
         cfg_stream << "            estimate: false\n";
 
-        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError);
+        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError &);
     }
 }
 
@@ -4847,7 +4847,7 @@ TEST_CASE("Testing DirichletCollectionSettings fixing multipliers with no value"
         cfg_stream << "        population_size_multipliers:\n";
         cfg_stream << "            estimate: false\n";
 
-        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError);
+        REQUIRE_THROWS_AS(DirichletCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError &);
     }
 }
 
@@ -5083,7 +5083,7 @@ TEST_CASE("Testing DirichletCollectionSettings multiplier global settings will b
         DirichletCollectionSettings settings;
         REQUIRE_THROWS_AS(
                 settings = DirichletCollectionSettings(cfg_stream, cfg_path),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
     }
 }
 
@@ -7705,7 +7705,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings no comparisons", "[RelativeRoo
         cfg_stream << "                        shape: 100.0\n";
         cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
 
-        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -7726,7 +7726,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings empty comparisons", "[Relative
         cfg_stream << "                        prior_mean_number_of_events: 1.9\n";
         cfg_stream << "comparisons:\n";
 
-        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -7737,7 +7737,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings empty config", "[RelativeRootC
         std::stringstream cfg_stream;
         cfg_stream << "";
 
-        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError);
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityYamlConfigError &);
     }
 }
 
@@ -7752,7 +7752,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings bad YAML formatting", "[Relati
         cfg_stream << "- comparison:\n";
         cfg_stream << "    path: \"diploid-dna.nex\"\n";
 
-        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), std::exception);
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), std::exception &);
     }
 }
 
@@ -7770,7 +7770,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings fixing with no value", "[Relat
         cfg_stream << "        population_size:\n";
         cfg_stream << "            estimate: false\n";
 
-        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError);
+        REQUIRE_THROWS_AS(RelativeRootCollectionSettings(cfg_stream, cfg_path), EcoevolityPositiveRealParameterSettingError &);
     }
 }
 

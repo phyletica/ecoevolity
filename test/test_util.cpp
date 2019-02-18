@@ -26,7 +26,7 @@ SCENARIO("map_at provides easy map element access", "[util]") {
 
             THEN("an out_of_range error is thrown") {
 
-                REQUIRE_THROWS_AS(map_at(test_map, "d"), std::out_of_range);
+                REQUIRE_THROWS_AS(map_at(test_map, "d"), std::out_of_range &);
             }
         }
     }
@@ -51,7 +51,7 @@ SCENARIO("map_at provides easy map element access", "[util]") {
 
             THEN("an out_of_range error is thrown") {
 
-                REQUIRE_THROWS_AS(map_at(test_map, "d"), std::out_of_range);
+                REQUIRE_THROWS_AS(map_at(test_map, "d"), std::out_of_range &);
             }
         }
     }
