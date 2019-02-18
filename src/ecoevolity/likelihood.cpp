@@ -361,7 +361,7 @@ void compute_pattern_partials_general(
         return;
     }
     else if (node.get_number_of_children() > 1) {
-        for (unsigned int child_idx = 1; child_idx < node.get_number_of_children(); ++child_idx) {
+        for (unsigned int child_idx = 0; child_idx < node.get_number_of_children(); ++child_idx) {
             compute_pattern_partials_general(*node.get_child(child_idx),
                     red_allele_counts,
                     allele_counts,
