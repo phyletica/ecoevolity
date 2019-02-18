@@ -174,7 +174,7 @@ TEST_CASE("Testing simcoevolity constant sites error", "[SimcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityConstantSitesError);
+                EcoevolityConstantSitesError &);
 
         delete[] cfg_path;
     }
@@ -353,7 +353,7 @@ TEST_CASE("Testing simcoevolity constant sites error for dirichlet trees", "[Sim
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv)),
-                EcoevolityConstantSitesError);
+                EcoevolityConstantSitesError &);
 
         delete[] cfg_path;
     }
@@ -917,7 +917,7 @@ TEST_CASE("Testing simcoevolity missing sites error", "[SimcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityMissingDataError);
+                EcoevolityMissingDataError &);
 
         delete[] cfg_path;
     }
@@ -1096,7 +1096,7 @@ TEST_CASE("Testing simcoevolity missing sites error for dirichlet trees", "[Simc
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv)),
-                EcoevolityMissingDataError);
+                EcoevolityMissingDataError &);
 
         delete[] cfg_path;
     }
@@ -1661,7 +1661,7 @@ TEST_CASE("Testing simcoevolity constrained singleton error",
         int ret;
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityComparisonSettingError);
+                EcoevolityComparisonSettingError &);
 
         delete[] cfg_path;
     }
@@ -1836,7 +1836,7 @@ TEST_CASE("Testing simcoevolity fixed singleton error",
         int ret;
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityComparisonSettingError);
+                EcoevolityComparisonSettingError &);
 
         delete[] cfg_path;
     }
@@ -2022,7 +2022,7 @@ TEST_CASE("Testing simcoevolity fixed singleton error for dirichlet tree",
         int ret;
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<DirichletCollectionSettings, ComparisonDirichletPopulationTreeCollection>(argc, argv)),
-                EcoevolityComparisonSettingError);
+                EcoevolityComparisonSettingError &);
 
         delete[] cfg_path;
     }
@@ -2196,7 +2196,7 @@ TEST_CASE("Testing simcoevolity population label conflict", "[SimcoevolityCLI]")
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityCollectionSettingError);
+                EcoevolityCollectionSettingError &);
 
         delete[] cfg_path;
     }
@@ -2564,7 +2564,7 @@ TEST_CASE("Testing simcoevolity triallelic sites error", "[SimcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityTriallelicDataError);
+                EcoevolityTriallelicDataError &);
 
         delete[] cfg_path;
     }
@@ -2933,7 +2933,7 @@ TEST_CASE("Testing simcoevolity missing charsets error", "[SimcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityError);
+                EcoevolityError &);
 
         delete[] cfg_path;
     }

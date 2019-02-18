@@ -221,7 +221,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[P
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[PopulationTree]") {
@@ -237,7 +237,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.01, 10.0, 1.0, 1.0, domina
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -378,7 +378,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[Po
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[PopulationTree]") {
@@ -394,7 +394,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.0, 10.0, 1.0, 1.0, dominan
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -533,7 +533,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[Po
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[PopulationTree]") {
@@ -549,7 +549,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.2, 10.0, 1.0, 1.0, dominan
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -692,7 +692,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[PopulationTree]") {
@@ -709,7 +709,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0,
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
   
@@ -850,7 +850,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[PopulationTree]") {
@@ -867,7 +867,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0,
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -3982,7 +3982,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.01, 10.0, 1.0, 1.0, dominant)",
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[DirichletPopulationTree]") {
@@ -3998,7 +3998,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.01, 10.0, 1.0, 1.0, do
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -4139,7 +4139,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.0, 10.0, 1.0, 1.0, dominant)", 
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[DirichletPopulationTree]") {
@@ -4155,7 +4155,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.0, 10.0, 1.0, 1.0, dom
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -4294,7 +4294,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.2, 10.0, 1.0, 1.0, dominant)", 
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[DirichletPopulationTree]") {
@@ -4310,7 +4310,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.2, 10.0, 1.0, 1.0, dom
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -4453,7 +4453,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.03, 10.0, 10.0, 10.0/19.0, domi
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[DirichletPopulationTree]") {
@@ -4470,7 +4470,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.03, 10.0, 10.0, 10.0/1
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
   
@@ -4611,7 +4611,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.03, 10.0, 10.0/19.0, 10.0, domi
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[DirichletPopulationTree]") {
@@ -4628,7 +4628,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.03, 10.0, 10.0/19.0, 1
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -7076,7 +7076,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.01, 10.0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0.01, 10.0, 1.0, 1.0, dominant)", "[RelativeRootPopulationTree]") {
@@ -7092,7 +7092,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -7233,7 +7233,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.0, 10.0,
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0.0, 10.0, 1.0, 1.0, dominant)", "[RelativeRootPopulationTree]") {
@@ -7249,7 +7249,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -7388,7 +7388,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.2, 10.0,
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0.2, 10.0, 1.0, 1.0, dominant)", "[RelativeRootPopulationTree]") {
@@ -7404,7 +7404,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 
@@ -7547,7 +7547,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0.03, 10.0, 10.0, 10.0/19.0, dominant)", "[RelativeRootPopulationTree]") {
@@ -7564,7 +7564,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
   
@@ -7705,7 +7705,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0.03, 10.0, 10.0/19.0, 10.0, dominant)", "[RelativeRootPopulationTree]") {
@@ -7722,7 +7722,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         REQUIRE(tree.get_likelihood_correction() == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
 
-        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError);
+        REQUIRE_THROWS_AS(tree.fold_patterns(), EcoevolityBiallelicDataError &);
     }
 }
 

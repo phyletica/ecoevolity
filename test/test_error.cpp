@@ -8,19 +8,19 @@ TEST_CASE("derived error classes can be thrown", "[error]") {
     size_t line_number = 1;
 
     SECTION("throwing EcoevolityError") {
-        REQUIRE_THROWS_AS(throw EcoevolityError(message), EcoevolityError);
+        REQUIRE_THROWS_AS(throw EcoevolityError(message), EcoevolityError &);
     }
     SECTION("throwing EcoevolityNullPointerError") {
         REQUIRE_THROWS_AS(throw EcoevolityNullPointerError(message),
-                EcoevolityNullPointerError);
+                EcoevolityNullPointerError &);
     }
     SECTION("throwing EcoevolityBiallelicDataError") {
         REQUIRE_THROWS_AS(throw EcoevolityBiallelicDataError(message, file_name),
-                EcoevolityBiallelicDataError);
+                EcoevolityBiallelicDataError &);
     }
     SECTION("throwing EcoevolityParsingError") {
         REQUIRE_THROWS_AS(throw EcoevolityParsingError(message, file_name, line_number),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
     }
     SECTION("throwing EcoevolityInvalidCharacterError") {
         REQUIRE_THROWS_AS(throw EcoevolityInvalidCharacterError(
@@ -28,6 +28,6 @@ TEST_CASE("derived error classes can be thrown", "[error]") {
                     file_name,
                     "test-taxon-name",
                     1),
-                EcoevolityInvalidCharacterError);
+                EcoevolityInvalidCharacterError &);
     }
 }

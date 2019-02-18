@@ -30,24 +30,24 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
         RealParameter p = RealParameter();
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == -std::numeric_limits<double>::infinity());
-        REQUIRE_THROWS_AS(p.fix(), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.fix(), EcoevolityParameterValueError &);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
     }
 
     SECTION("Testing value") {
@@ -60,20 +60,20 @@ TEST_CASE("Testing RealParameter constructors", "[RealParameter]") {
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
     }
 
     SECTION("Testing prior") {
@@ -637,20 +637,20 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
     }
 
     SECTION("Testing value") {
@@ -663,20 +663,20 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
     }
 
     SECTION("Testing value and prior") {
@@ -775,7 +775,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(p.get_prior_max() == 1.0);
         REQUIRE(p.get_prior_name() == "uniform");
         REQUIRE(p.get_prior_string() == "uniform(0, 1)");
-        REQUIRE_THROWS_AS(p.set_value(-0.1), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.set_value(-0.1), EcoevolityParameterValueError &);
         REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
         p.set_value(0.0);
@@ -1038,7 +1038,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
         REQUIRE(p.get_prior_max() == 1.0);
         REQUIRE(p.get_prior_name() == "uniform");
         REQUIRE(p.get_prior_string() == "uniform(0, 1)");
-        REQUIRE_THROWS_AS(p.set_value(-0.1), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.set_value(-0.1), EcoevolityParameterValueError &);
         REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
         p.set_value(0.0);
@@ -1300,8 +1300,8 @@ TEST_CASE("Testing IntVariable value methods", "[IntVariable]") {
 TEST_CASE("Testing Probability value methods", "[Probability]") {
 
     SECTION("Testing value methods") {
-        REQUIRE_THROWS_AS(Probability(1.1), EcoevolityParameterValueError);
-        REQUIRE_THROWS_AS(Probability(-0.1), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(Probability(1.1), EcoevolityParameterValueError &);
+        REQUIRE_THROWS_AS(Probability(-0.1), EcoevolityParameterValueError &);
         Probability p = Probability(0.1);
         REQUIRE(p.get_value() == 0.1);
         p.store();
@@ -1325,14 +1325,14 @@ TEST_CASE("Testing Probability value methods", "[Probability]") {
         REQUIRE(p.get_value() == 0.3);
         REQUIRE(p.get_stored_value() == 0.3);
 
-        REQUIRE_THROWS_AS(p.set_value(1.01), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.set_value(1.01), EcoevolityParameterValueError &);
     }
 }
 
 TEST_CASE("Testing LogProbability value methods", "[LogProbability]") {
 
     SECTION("Testing value methods") {
-        REQUIRE_THROWS_AS(LogProbability(0.1), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(LogProbability(0.1), EcoevolityParameterValueError &);
         LogProbability p = LogProbability(0.0);
         REQUIRE(p.get_value() == 0.0);
         p.store();
@@ -1356,14 +1356,14 @@ TEST_CASE("Testing LogProbability value methods", "[LogProbability]") {
         REQUIRE(p.get_value() == -0.3);
         REQUIRE(p.get_stored_value() == -0.3);
 
-        REQUIRE_THROWS_AS(p.set_value(0.01), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.set_value(0.01), EcoevolityParameterValueError &);
     }
 }
 
 TEST_CASE("Testing PositiveRealVariable value methods", "[PositiveRealVariable]") {
 
     SECTION("Testing value methods") {
-        REQUIRE_THROWS_AS(PositiveRealVariable(-0.1), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(PositiveRealVariable(-0.1), EcoevolityParameterValueError &);
         PositiveRealVariable p = PositiveRealVariable(0.1);
         REQUIRE(p.get_value() == 0.1);
         p.store();
@@ -1387,7 +1387,7 @@ TEST_CASE("Testing PositiveRealVariable value methods", "[PositiveRealVariable]"
         REQUIRE(p.get_value() == 0.3);
         REQUIRE(p.get_stored_value() == 0.3);
 
-        REQUIRE_THROWS_AS(p.set_value(-0.01), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.set_value(-0.01), EcoevolityParameterValueError &);
     }
 }
 
@@ -1400,24 +1400,24 @@ TEST_CASE("Testing CoalescenceRateParameter bare constructor", "[CoalescenceRate
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
 
         REQUIRE(p.is_fixed() == false);
 
-        REQUIRE_THROWS_AS(p.fix(), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.fix(), EcoevolityParameterValueError &);
         p.set_value(0.0);
         p.fix();
         REQUIRE(p.is_fixed() == true);
@@ -1428,10 +1428,10 @@ TEST_CASE("Testing CoalescenceRateParameter bare constructor", "[CoalescenceRate
 
         p.estimate();
         REQUIRE(p.is_fixed() == false);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
     }
 }
 
@@ -1446,20 +1446,20 @@ TEST_CASE("Testing CoalescenceRateParameter value constructor", "[CoalescenceRat
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.check_prior(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.draw_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.set_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.update_value_from_prior(rng), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_mean(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_variance(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_min(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_max(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_name(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.get_prior_string(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
 
         REQUIRE(p.is_fixed() == false);
 
@@ -1472,10 +1472,10 @@ TEST_CASE("Testing CoalescenceRateParameter value constructor", "[CoalescenceRat
 
         p.estimate();
         REQUIRE(p.is_fixed() == false);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError);
-        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.prior_ln_pdf(0.1), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(), EcoevolityNullPointerError &);
+        REQUIRE_THROWS_AS(p.relative_prior_ln_pdf(0.1), EcoevolityNullPointerError &);
     }
 }
 
@@ -1557,7 +1557,7 @@ TEST_CASE("Testing CoalescenceRateParameter prior", "[CoalescenceRateParameter]"
         REQUIRE(p.get_prior_max() == 1.0);
         REQUIRE(p.get_prior_name() == "uniform");
         REQUIRE(p.get_prior_string() == "uniform(0, 1)");
-        REQUIRE_THROWS_AS(p.set_value(-0.1), EcoevolityParameterValueError);
+        REQUIRE_THROWS_AS(p.set_value(-0.1), EcoevolityParameterValueError &);
         REQUIRE(p.prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
         REQUIRE(p.relative_prior_ln_pdf(-0.1) == -std::numeric_limits<double>::infinity());
         p.set_value(std::numeric_limits<double>::infinity());
