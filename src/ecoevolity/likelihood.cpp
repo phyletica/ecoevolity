@@ -83,11 +83,10 @@ void compute_top_of_branch_partials(
 void merge_top_of_branch_partials(
         const unsigned int allele_count_child1,
         const unsigned int allele_count_child2,
-        const std::vector<double> & top_partials_child1,
-        const std::vector<double> & top_partials_child2,
+        std::vector<double> & top_partials_child1,
+        std::vector<double> & top_partials_child2,
         unsigned int & merged_allele_count,
-        std::vector<double> & merged_pattern_probs,
-        ) {
+        std::vector<double> & merged_pattern_probs) {
     for (unsigned int n = 1; n <= allele_count_child1; ++n) {
         double b_nr = 1.0;
         for (unsigned int r = 0; r <= n; ++r) {
@@ -211,7 +210,7 @@ void compute_internal_partials_general(
     // the compute_internal_partials function is removed.
     if (node.get_number_of_children() < 3) {
         compute_internal_partials(node);
-        return
+        return;
     }
     unsigned int number_of_children_with_alleles = 0;
     std::vector<unsigned int> indices_of_children_with_alleles;
@@ -237,8 +236,8 @@ void compute_internal_partials_general(
     unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_allele_count();
     unsigned int merged_allele_count = 0;
 
-    const std::vector<double> & pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
-    const std::vector<double> & pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
+    std::vector<double> pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
     std::vector<double> merged_pattern_probs;
     merge_top_of_branch_partials(
             allele_count_child1,
@@ -249,14 +248,15 @@ void compute_internal_partials_general(
             merged_pattern_probs);
 
     for (unsigned int i = 2; i < node.get_number_of_children(); ++i) {
-        allele_count_child1 = m.get_allele_count();
+        std::vector<double> pattern_probs_child1 = merged_pattern_probs;
+        unsigned int allele_count_child1 = merged_allele_count;
         allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
         pattern_probs_child2 = node.get_child(
                 indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
         merge_top_of_branch_partials(
                 allele_count_child1,
                 allele_count_child2,
-                pattern_probs_merged,
+                pattern_probs_child1,
                 pattern_probs_child2,
                 merged_allele_count,
                 merged_pattern_probs);
@@ -348,7 +348,7 @@ void compute_pattern_partials_general(
         return;
     }
     else if (node.get_number_of_children() == 1) {
-        compute_pattern_partials(*node.get_child(0),
+        compute_pattern_partials_general(*node.get_child(0),
                 red_allele_counts,
                 allele_counts,
                 u,
@@ -357,12 +357,12 @@ void compute_pattern_partials_general(
                 ploidy,
                 markers_are_dominant);
         compute_top_of_branch_partials(*node.get_child(0), u, v, mutation_rate, ploidy);
-        compute_internal_partials(node);
+        compute_internal_partials_general(node);
         return;
     }
     else if (node.get_number_of_children() > 1) {
-        for (unsigned int child_idx = 1; child_idx < *node.get_number_of_children(); ++child_idx) {
-            compute_pattern_partials(*node.get_child(child_idx),
+        for (unsigned int child_idx = 1; child_idx < node.get_number_of_children(); ++child_idx) {
+            compute_pattern_partials_general(*node.get_child(child_idx),
                     red_allele_counts,
                     allele_counts,
                     u,
@@ -372,7 +372,7 @@ void compute_pattern_partials_general(
                     markers_are_dominant);
             compute_top_of_branch_partials(*node.get_child(child_idx), u, v, mutation_rate, ploidy);
         }
-        compute_internal_partials(node);
+        compute_internal_partials_general(node);
         return;
     }
     std::ostringstream message;
@@ -477,7 +477,7 @@ double compute_pattern_likelihood(
         const double ploidy,
         const bool markers_are_dominant
         ) {
-    compute_pattern_partials(root,
+    compute_pattern_partials_general(root,
             red_allele_counts,
             allele_counts,
             u,
