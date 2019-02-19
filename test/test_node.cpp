@@ -2075,3 +2075,72 @@ TEST_CASE("Test get_leaves from root with one leaf", "[xNode]") {
         REQUIRE(leaves_from_root == leaves_from_leaf);
     }
 }
+
+TEST_CASE("Test get_leaves from root with multiple leaves", "[xNode]") {
+
+    SECTION("Testing get_leaves") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::vector< std::shared_ptr<Node> > l;
+        l.push_back(std::make_shared<Node>("leaf 1"));
+        l.push_back(std::make_shared<Node>("leaf 2"));
+        l.push_back(std::make_shared<Node>("leaf 3"));
+        l.push_back(std::make_shared<Node>("leaf 4"));
+        root->add_child(l.at(0));
+        std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+        REQUIRE(leaves.size() == 1);
+        REQUIRE(l.at(0) == leaves.at(0));
+
+        root->add_child(l.at(1));
+        leaves = root->get_leaves();
+        REQUIRE(leaves.size() == 2);
+        REQUIRE(l.at(0) == leaves.at(0));
+        REQUIRE(l.at(1) == leaves.at(1));
+
+        root->add_child(l.at(2));
+        leaves = root->get_leaves();
+        REQUIRE(leaves.size() == 3);
+        REQUIRE(l.at(0) == leaves.at(0));
+        REQUIRE(l.at(1) == leaves.at(1));
+        REQUIRE(l.at(2) == leaves.at(2));
+
+        root->add_child(l.at(3));
+        leaves = root->get_leaves();
+        REQUIRE(leaves.size() == 4);
+        REQUIRE(l.at(0) == leaves.at(0));
+        REQUIRE(l.at(1) == leaves.at(1));
+        REQUIRE(l.at(2) == leaves.at(2));
+        REQUIRE(l.at(3) == leaves.at(3));
+
+        REQUIRE(l == leaves);
+    }
+}
+
+TEST_CASE("Test get_leaves from root with multiple internal daughters", "[xNode]") {
+
+    SECTION("Testing get_leaves") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal 1", 1.0);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal 2", 1.0);
+        std::vector< std::shared_ptr<Node> > l;
+        l.push_back(std::make_shared<Node>("leaf 1"));
+        l.push_back(std::make_shared<Node>("leaf 2"));
+        l.push_back(std::make_shared<Node>("leaf 3"));
+        l.push_back(std::make_shared<Node>("leaf 4"));
+        l.push_back(std::make_shared<Node>("leaf 5"));
+
+        root->add_child(internal1);
+
+        internal1->add_child(l.at(0));
+        internal1->add_child(l.at(1));
+        internal1->add_child(l.at(2));
+
+        root->add_child(internal2);
+
+        internal2->add_child(l.at(3));
+        internal2->add_child(l.at(4));
+
+        std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+        REQUIRE(leaves.size() == 5);
+        REQUIRE(l == leaves);
+    }
+}
