@@ -2049,3 +2049,29 @@ TEST_CASE("Test population size setting and scaling", "[PopulationNode]") {
         REQUIRE(leaf5->get_population_size() == 8.0);
     }
 }
+
+TEST_CASE("Test get_leaves from one leaf", "[xNode]") {
+
+    SECTION("Testing get_leaves") {
+        std::shared_ptr<Node> n = std::make_shared<Node>("root", 1.0);
+        std::vector< std::shared_ptr<Node> > leaves = n->get_leaves();
+        REQUIRE(leaves.size() == 1);
+        REQUIRE(n == leaves.at(0));
+    }
+}
+
+TEST_CASE("Test get_leaves from root with one leaf", "[xNode]") {
+
+    SECTION("Testing get_leaves") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        root->add_child(leaf1);
+        std::vector< std::shared_ptr<Node> > leaves_from_root = root->get_leaves();
+        std::vector< std::shared_ptr<Node> > leaves_from_leaf = leaf1->get_leaves();
+        REQUIRE(leaves_from_root.size() == 1);
+        REQUIRE(leaves_from_leaf.size() == 1);
+        REQUIRE(leaf1 == leaves_from_root.at(0));
+        REQUIRE(leaf1 == leaves_from_leaf.at(0));
+        REQUIRE(leaves_from_root == leaves_from_leaf);
+    }
+}

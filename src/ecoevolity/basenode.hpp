@@ -353,6 +353,21 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return n;
         }
 
+        void get_leaves(std::vector< std::shared_ptr<DerivedNodeT> >& leaves) {
+            if (this->is_leaf()) {
+                leaves.push_back(this->shared_from_this());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_leaves(leaves);
+            }
+        }
+        std::vector< std::shared_ptr<DerivedNodeT> > get_leaves() {
+            std::vector< std::shared_ptr<DerivedNodeT> > leaves;
+            leaves.reserve(this->get_leaf_node_count());
+            this->get_leaves(leaves);
+            return leaves;
+        }
+
         void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->height_->set_prior(prior);
             this->make_all_dirty();
