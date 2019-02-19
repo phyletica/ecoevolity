@@ -42,6 +42,11 @@ class BiallelicData {
     public:
         // Constructor
         BiallelicData() { }
+        BiallelicData(const std::vector<std::string> & population_labels,
+                unsigned int haploid_sample_size_per_population = 10,
+                unsigned int number_of_loci = 10000,
+                unsigned int length_of_loci = 1,
+                bool validate = true);
         BiallelicData(std::string path,
                 char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,
