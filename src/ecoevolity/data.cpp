@@ -25,15 +25,26 @@ BiallelicData::BiallelicData(
         unsigned int haploid_sample_size_per_population,
         unsigned int number_of_loci,
         unsigned int length_of_loci,
+        bool validate) : BiallelicData(
+                population_labels,
+                std::vector<unsigned int>(population_labels.size(),
+                        haploid_sample_size_per_population),
+                number_of_loci,
+                length_of_loci,
+                validate) { }
+
+BiallelicData::BiallelicData(
+        const std::vector<std::string> & population_labels,
+        const std::vector<unsigned int> & haploid_sample_sizes,
+        unsigned int number_of_loci,
+        unsigned int length_of_loci,
         bool validate) {
     ECOEVOLITY_ASSERT(population_labels.size() > 0);
     ECOEVOLITY_ASSERT(number_of_loci > 0);
     ECOEVOLITY_ASSERT(length_of_loci > 0);
-    ECOEVOLITY_ASSERT(haploid_sample_size_per_population > 0);
+    ECOEVOLITY_ASSERT(haploid_sample_sizes.size() == population_labels.size());
     this->population_labels_ = population_labels;
-    std::vector<unsigned int> allele_count_pattern(
-            this->population_labels_.size(),
-            haploid_sample_size_per_population);
+    std::vector<unsigned int> allele_count_pattern = haploid_sample_sizes;
     std::vector<unsigned int> red_allele_count_pattern(
             this->population_labels_.size(),
             0);
@@ -48,7 +59,7 @@ BiallelicData::BiallelicData(
     {
         std::vector<std::string> seq_labels;
         for (unsigned int seq_idx = 0;
-                          seq_idx < haploid_sample_size_per_population;
+                          seq_idx < haploid_sample_sizes.at(pop_idx);
                           ++seq_idx)
         {
             std::vector<std::string> label_elements = string_util::split(

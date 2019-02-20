@@ -47,6 +47,11 @@ class BiallelicData {
                 unsigned int number_of_loci = 10000,
                 unsigned int length_of_loci = 1,
                 bool validate = true);
+        BiallelicData(const std::vector<std::string> & population_labels,
+                const std::vector<unsigned int> & haploid_sample_sizes,
+                unsigned int number_of_loci = 10000,
+                unsigned int length_of_loci = 1,
+                bool validate = true);
         BiallelicData(std::string path,
                 char population_name_delimiter = ' ',
                 bool population_name_is_prefix = true,

@@ -10338,3 +10338,181 @@ TEST_CASE("Testing pop label constructor with 11 pops, 13 genomes, locus length 
         }
     }
 }
+
+TEST_CASE("Testing pop label constructor with 2 pops, 4-6 genomes, locus length 1", "[BiallelicData]") {
+
+    SECTION("Testing label constructor") {
+        unsigned int npops = 2;
+        std::vector<unsigned int> ngenomes = {4, 6};
+        unsigned int nloci = 10;
+        unsigned int locus_length = 1;
+        unsigned int nsites = nloci * locus_length;
+        std::vector<std::string> pop_labels;
+        std::vector< std::vector<std::string> > expected_seq_labels;
+        for (unsigned int i = 0; i < npops; ++i) {
+            std::ostringstream p_label;
+            p_label << "pop" << i;
+            pop_labels.push_back(p_label.str());
+            std::vector<std::string> seq_labels;
+            for (unsigned int j = 0; j < ngenomes.at(i); ++j) {
+                std::ostringstream s_label;
+                s_label << p_label.str() << "-genome" << j;
+                seq_labels.push_back(s_label.str());
+            }
+            expected_seq_labels.push_back(seq_labels);
+        }
+        BiallelicData bd(pop_labels, ngenomes, nloci, locus_length, true);
+        REQUIRE(bd.get_number_of_populations() == npops);
+        REQUIRE(bd.get_number_of_patterns() == 1);
+        REQUIRE(bd.get_number_of_sites() == nsites);
+        REQUIRE(bd.get_number_of_variable_sites() == 0);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.get_path() == "");
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
+
+        REQUIRE(bd.has_seq_loci_info() == true);
+        std::vector<unsigned int> expected_locus_ends(nloci);
+        unsigned int locus_end = locus_length - 1;
+        expected_locus_ends.at(0) = locus_end;
+        for (unsigned int i = 1; i < nloci; ++i) {
+            locus_end += locus_length;
+            expected_locus_ends.at(i) = locus_end;
+        }
+        std::vector<unsigned int> expected_pattern_indices(nsites, 0);
+        REQUIRE(bd.get_contiguous_pattern_indices() == expected_pattern_indices);
+        REQUIRE(bd.get_contiguous_pattern_indices().size() == nsites);
+        REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
+        REQUIRE(bd.get_locus_end_indices().size() == nloci);
+        REQUIRE(bd.get_locus_end_indices().back() == nsites - 1);
+
+        for (unsigned int i = 0; i < npops; ++i) {
+            REQUIRE(bd.get_population_index(pop_labels.at(i)) == i);
+            REQUIRE(bd.get_population_label(i) == pop_labels.at(i));
+            REQUIRE(bd.get_sequence_labels(i) == expected_seq_labels.at(i));
+        }
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_population_label(npops), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(npops), std::out_of_range &);
+
+        std::vector<unsigned int> expected_wts (1, nsites);
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(1);
+        expected_allele_counts[0] = ngenomes;
+        std::vector<unsigned int> expected_max_cts = expected_allele_counts.at(0);
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = nsites;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(1);
+        expected_red_counts[0] = std::vector<unsigned int>(npops, 0);
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+            for (unsigned int pop_idx = 0; pop_idx < npops; ++pop_idx) {
+                REQUIRE(bd.get_allele_count(pattern_idx, pop_idx) ==
+                        expected_allele_counts.at(pattern_idx).at(pop_idx));
+                REQUIRE(bd.get_red_allele_count(pattern_idx, pop_idx) ==
+                        expected_red_counts.at(pattern_idx).at(pop_idx));
+            }
+        }
+    }
+}
+
+TEST_CASE("Testing pop label constructor with 3 pops, 11-4-6 genomes, locus length 5", "[BiallelicData]") {
+
+    SECTION("Testing label constructor") {
+        unsigned int npops = 3;
+        std::vector<unsigned int> ngenomes = {11, 4, 6};
+        unsigned int nloci = 10;
+        unsigned int locus_length = 5;
+        unsigned int nsites = nloci * locus_length;
+        std::vector<std::string> pop_labels;
+        std::vector< std::vector<std::string> > expected_seq_labels;
+        for (unsigned int i = 0; i < npops; ++i) {
+            std::ostringstream p_label;
+            p_label << "pop" << i;
+            pop_labels.push_back(p_label.str());
+            std::vector<std::string> seq_labels;
+            for (unsigned int j = 0; j < ngenomes.at(i); ++j) {
+                std::ostringstream s_label;
+                s_label << p_label.str() << "-genome" << j;
+                seq_labels.push_back(s_label.str());
+            }
+            expected_seq_labels.push_back(seq_labels);
+        }
+        BiallelicData bd(pop_labels, ngenomes, nloci, locus_length, true);
+        REQUIRE(bd.get_number_of_populations() == npops);
+        REQUIRE(bd.get_number_of_patterns() == 1);
+        REQUIRE(bd.get_number_of_sites() == nsites);
+        REQUIRE(bd.get_number_of_variable_sites() == 0);
+        REQUIRE(! bd.markers_are_dominant());
+        REQUIRE(! bd.genotypes_are_diploid());
+        REQUIRE(bd.has_constant_patterns() == true);
+        REQUIRE(bd.has_missing_population_patterns() == false);
+        REQUIRE(bd.has_mirrored_patterns() == false);
+        REQUIRE(bd.patterns_are_folded() == true);
+        REQUIRE(bd.get_path() == "");
+        REQUIRE(bd.has_recoded_triallelic_sites() == false);
+        REQUIRE(bd.get_number_of_triallelic_sites_recoded() == 0);
+
+        REQUIRE(bd.has_seq_loci_info() == true);
+        std::vector<unsigned int> expected_locus_ends(nloci);
+        unsigned int locus_end = locus_length - 1;
+        expected_locus_ends.at(0) = locus_end;
+        for (unsigned int i = 1; i < nloci; ++i) {
+            locus_end += locus_length;
+            expected_locus_ends.at(i) = locus_end;
+        }
+        std::vector<unsigned int> expected_pattern_indices(nsites, 0);
+        REQUIRE(bd.get_contiguous_pattern_indices() == expected_pattern_indices);
+        REQUIRE(bd.get_contiguous_pattern_indices().size() == nsites);
+        REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
+        REQUIRE(bd.get_locus_end_indices().size() == nloci);
+        REQUIRE(bd.get_locus_end_indices().back() == nsites - 1);
+
+        for (unsigned int i = 0; i < npops; ++i) {
+            REQUIRE(bd.get_population_index(pop_labels.at(i)) == i);
+            REQUIRE(bd.get_population_label(i) == pop_labels.at(i));
+            REQUIRE(bd.get_sequence_labels(i) == expected_seq_labels.at(i));
+        }
+        REQUIRE_THROWS_AS(bd.get_population_index("bogus_label"), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_population_label(npops), std::out_of_range &);
+        REQUIRE_THROWS_AS(bd.get_sequence_labels(npops), std::out_of_range &);
+
+        std::vector<unsigned int> expected_wts (1, nsites);
+
+        std::vector< std::vector<unsigned int> > expected_allele_counts(1);
+        expected_allele_counts[0] = ngenomes;
+        std::vector<unsigned int> expected_max_cts = expected_allele_counts.at(0);
+        REQUIRE(bd.get_max_allele_counts() == expected_max_cts);
+
+        std::map<std::vector<unsigned int>, unsigned int> expected_unique_allele_counts;
+        expected_unique_allele_counts[expected_allele_counts.at(0)] = nsites;
+        REQUIRE(bd.get_unique_allele_counts() == expected_unique_allele_counts);
+
+        std::vector< std::vector<unsigned int> > expected_red_counts(1);
+        expected_red_counts[0] = std::vector<unsigned int>(npops, 0);
+
+        for (unsigned int pattern_idx = 0; pattern_idx < expected_wts.size(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == expected_wts.at(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == expected_allele_counts.at(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == expected_red_counts.at(pattern_idx));
+            for (unsigned int pop_idx = 0; pop_idx < npops; ++pop_idx) {
+                REQUIRE(bd.get_allele_count(pattern_idx, pop_idx) ==
+                        expected_allele_counts.at(pattern_idx).at(pop_idx));
+                REQUIRE(bd.get_red_allele_count(pattern_idx, pop_idx) ==
+                        expected_red_counts.at(pattern_idx).at(pop_idx));
+            }
+        }
+    }
+}
