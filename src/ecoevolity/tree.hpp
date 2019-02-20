@@ -29,6 +29,10 @@
 #include "assert.hpp"
 
 
+// TODO: Move core attributes and methods of PopulationTree into a base class,
+// and have PopulationTree a descendant of this base class. This will make it
+// much easier to create new classes of trees without all the baggage of the
+// special case of two-tipped trees.
 class PopulationTree {
     protected:
         BiallelicData data_;
@@ -87,6 +91,7 @@ class PopulationTree {
 
         void update_root_population_size() { return; }
         void update_relative_root_population_size() { return; }
+        void update_unique_allele_counts();
 
     public:
         PopulationTree() { }
@@ -104,6 +109,12 @@ class PopulationTree {
                 double ploidy = 2.0,
                 bool store_seq_loci_info = false
                 );
+
+        PopulationTree(
+                std::shared_ptr<PopulationNode> root,
+                unsigned int number_of_loci = 10000,
+                unsigned int length_of_loci = 1,
+                bool validate_data = false);
 
         void init(
                 std::string path, 
@@ -172,6 +183,8 @@ class PopulationTree {
         const BiallelicData& get_data() const {
             return this->data_;
         }
+
+        void set_data(const BiallelicData & data, bool constant_sites_removed);
 
         void set_ploidy(double ploidy) {
             this->ploidy_ = ploidy;
@@ -489,7 +502,7 @@ class PopulationTree {
 
         // TODO: This PopulationTree hierarchy of classes is messy. The problem
         // is that each derived class has its own subset of methods in addition
-        // to the base class methodds. Thus, I can't simply use "virtual ... =
+        // to the base class methods. Thus, I can't simply use "virtual ... =
         // 0;" here, because some of the derived classes would be left with
         // invalid methods. Declaring methods here that throw errors if not
         // overloaded works for now.

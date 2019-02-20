@@ -47,6 +47,49 @@ PopulationTree::PopulationTree(
                store_seq_loci_info);
 }
 
+PopulationTree::PopulationTree(
+        std::shared_ptr<PopulationNode> root,
+        unsigned int number_of_loci,
+        unsigned int length_of_loci,
+        bool validate_data) {
+    const std::vector< std::shared_ptr<PopulationNode> >& leaves = root->get_leaves();
+    std::vector<std::string> pop_labels;
+    std::vector<unsigned int> haploid_sample_sizes;
+    std::vector<unsigned int> pop_indices;
+    std::vector<unsigned int> expected_pop_indices;
+    pop_labels.reserve(leaves.size());
+    haploid_sample_sizes.reserve(leaves.size());
+    pop_indices.reserve(leaves.size());
+    expected_pop_indices.reserve(leaves.size());
+    for (unsigned int i = 0; i < leaves.size(); ++i) {
+        pop_labels.push_back(leaves.at(i)->get_label());
+        haploid_sample_sizes.push_back(leaves.at(i)->get_allele_count());
+        pop_indices.push_back(leaves.at(i)->get_population_index());
+        expected_pop_indices.push_back(i);
+    }
+    ECOEVOLITY_ASSERT(std::is_permutation(
+                pop_indices.begin(), pop_indices.end(),
+                expected_pop_indices.begin()));
+    BiallelicData bd(pop_labels,
+            haploid_sample_sizes,
+            number_of_loci,
+            length_of_loci,
+            validate_data);
+    this->data_ = bd;
+    this->root_ = root;
+    this->constant_sites_removed_ = false;
+    this->root_->resize_all();
+    this->root_->set_all_node_height_priors(this->node_height_prior_);
+    this->root_->set_all_population_size_priors(this->population_size_prior_);
+    this->update_unique_allele_counts();
+    this->is_dirty_ = true;
+    this->number_of_likelihood_calculations_ = 0;
+    this->likelihood_correction_was_calculated_ = false;
+    if (validate_data) {
+        this->data_.validate();
+    }
+}
+
 void PopulationTree::init(
         std::string path, 
         char population_name_delimiter,
@@ -179,11 +222,7 @@ void PopulationTree::init(
     // At this point, no data manipulation should happen that would require
     // these to be updated (only pattern folding, which will not change the
     // unique allele counts or weights).
-    std::map<std::vector<unsigned int>, unsigned int> unique_allele_count_map = this->data_.get_unique_allele_counts();
-    for (auto const & kv: unique_allele_count_map) {
-        this->unique_allele_counts_.push_back(kv.first);
-        this->unique_allele_count_weights_.push_back(kv.second);
-    }
+    this->update_unique_allele_counts();
 }
 
 void PopulationTree::init_tree() {
@@ -235,6 +274,35 @@ void PopulationTree::init_tree() {
     this->root_ = ancestor;
 }
 
+void PopulationTree::set_data(const BiallelicData & data, bool constant_sites_removed) {
+    const std::vector< std::shared_ptr<PopulationNode> >& leaves = this->root_->get_leaves();
+    ECOEVOLITY_ASSERT(this->data_.get_number_of_populations() == leaves.size());
+    for (unsigned int i = 0; i < leaves.size(); ++i) {
+        if (leaves.at(i)->get_allele_count() != data.get_max_allele_count(leaves.at(i)->get_population_index())) {
+            leaves.at(i)->resize(data.get_max_allele_count(leaves.at(i)->get_population_index()));
+        }
+        if (leaves.at(i)->get_label() != data.get_population_label(leaves.at(i)->get_population_index())) {
+            leaves.at(i)->set_label(data.get_population_label(leaves.at(i)->get_population_index()));
+        }
+    }
+    this->root_->resize_all();
+    this->data_ = data;
+    this->constant_sites_removed_ = constant_sites_removed;
+    this->update_unique_allele_counts();
+    this->is_dirty_ = true;
+    this->number_of_likelihood_calculations_ = 0;
+    this->likelihood_correction_was_calculated_ = false;
+}
+
+void PopulationTree::update_unique_allele_counts() {
+    this->unique_allele_counts_.clear();
+    this->unique_allele_count_weights_.clear();
+    std::map<std::vector<unsigned int>, unsigned int> unique_allele_count_map = this->data_.get_unique_allele_counts();
+    for (auto const & kv: unique_allele_count_map) {
+        this->unique_allele_counts_.push_back(kv.first);
+        this->unique_allele_count_weights_.push_back(kv.second);
+    }
+}
 
 void PopulationTree::calculate_likelihood_correction() {
     double log_likelihood_correction = 0.0;
