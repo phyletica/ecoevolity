@@ -2144,3 +2144,39 @@ TEST_CASE("Test get_leaves from root with multiple internal daughters", "[xNode]
         REQUIRE(l == leaves);
     }
 }
+
+TEST_CASE("Test get_leaf_labels from root with multiple internal daughters", "[xNode]") {
+
+    SECTION("Testing get_leaf_labels") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal 1", 1.0);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal 2", 1.0);
+        std::vector< std::shared_ptr<Node> > l;
+        l.push_back(std::make_shared<Node>("leaf 1"));
+        l.push_back(std::make_shared<Node>("leaf 2"));
+        l.push_back(std::make_shared<Node>("leaf 3"));
+        l.push_back(std::make_shared<Node>("leaf 4"));
+        l.push_back(std::make_shared<Node>("leaf 5"));
+
+        root->add_child(internal1);
+
+        internal1->add_child(l.at(0));
+        internal1->add_child(l.at(1));
+        internal1->add_child(l.at(2));
+
+        root->add_child(internal2);
+
+        internal2->add_child(l.at(3));
+        internal2->add_child(l.at(4));
+
+        std::vector<std::string> expected_leaf_labels = {
+                "leaf 1",
+                "leaf 2",
+                "leaf 3",
+                "leaf 4",
+                "leaf 5"};
+        std::vector<std::string> leaf_labels = root->get_leaf_labels();
+        REQUIRE(leaf_labels.size() == 5);
+        REQUIRE(leaf_labels == expected_leaf_labels);
+    }
+}
