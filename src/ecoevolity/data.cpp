@@ -25,8 +25,7 @@ BiallelicData::BiallelicData(
         unsigned int haploid_sample_size_per_population,
         unsigned int number_of_loci,
         unsigned int length_of_loci,
-        bool validate,
-        ) {
+        bool validate) {
     ECOEVOLITY_ASSERT(population_labels.size() > 0);
     ECOEVOLITY_ASSERT(number_of_loci > 0);
     ECOEVOLITY_ASSERT(length_of_loci > 0);
@@ -38,11 +37,11 @@ BiallelicData::BiallelicData(
     std::vector<unsigned int> red_allele_count_pattern(
             this->population_labels_.size(),
             0);
-    pattern_weight = number_of_loci * length_of_loci;
+    unsigned int number_of_sites = number_of_loci * length_of_loci;
     this->allele_counts_.push_back(allele_count_pattern);
     this->red_allele_counts_.push_back(red_allele_count_pattern);
     this->max_allele_counts_ = allele_count_pattern;
-    this->pattern_weights_.push_back(pattern_weight);
+    this->pattern_weights_.push_back(number_of_sites);
     for (unsigned int pop_idx = 0;
                       pop_idx < this->population_labels_.size();
                       ++pop_idx)
@@ -52,12 +51,12 @@ BiallelicData::BiallelicData(
                           seq_idx < haploid_sample_size_per_population;
                           ++seq_idx)
         {
-            std::vector<std::string> label_elements = string_util.split(
+            std::vector<std::string> label_elements = string_util::split(
                     this->population_labels_.at(pop_idx),
-                    '-')
-            label_str = string_util.join(label_elements, "")
+                    '-');
+            std::string label_str = string_util::join(label_elements, "");
             std::ostringstream label_stream;
-            label_stream << label_str << "-" << "seq" << seq_idx;
+            label_stream << label_str << "-genome" << seq_idx;
             seq_labels.push_back(label_stream.str());
             this->seq_label_to_pop_label_map_[label_stream.str()] = this->population_labels_.at(pop_idx);
         }
@@ -69,11 +68,11 @@ BiallelicData::BiallelicData(
     this->appendable_ = true;
 
     this->storing_seq_loci_info_ = true;
-    this->contiguous_pattern_indices_(number_of_loci * length_of_loci, 0);
+    this->contiguous_pattern_indices_ = std::vector<unsigned int>(number_of_sites, 0);
     unsigned int end_of_locus = length_of_loci - 1;
-    for unsigned int(locus_idx = 0; locus_idx < number_of_loci; ++locus_idx) {
+    for (unsigned int locus_idx = 0; locus_idx < number_of_loci; ++locus_idx) {
         this->locus_end_indices_.push_back(end_of_locus);
-        end_of_locus += locus_length;
+        end_of_locus += length_of_loci;
     }
 
     this->update_pattern_booleans();
