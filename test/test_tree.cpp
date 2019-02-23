@@ -4,7 +4,7 @@
 
 
 TEST_CASE("Testing scaling of simulate_gene_tree for three species",
-        "[xxPopulationTree]") {
+        "[PopulationTree]") {
 
     SECTION("Testing three species") {
         std::vector<unsigned int> Nes = {
@@ -143,7 +143,7 @@ TEST_CASE("Testing scaling of simulate_gene_tree for three species",
     }
 }
 
-TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at root", "[xPopulationTree]") {
+TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at root", "[PopulationTree]") {
 
     SECTION("Testing constructor and likelihood calc") {
         std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(3, "root", 0.1);
@@ -208,7 +208,7 @@ TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at root"
     }
 }
 
-TEST_CASE("Testing likelihood of PopulationTree with four-way polytomy at root", "[xPopulationTree]") {
+TEST_CASE("Testing likelihood of PopulationTree with four-way polytomy at root", "[PopulationTree]") {
 
     SECTION("Testing constructor and likelihood calc") {
         std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(4, "root", 0.1);
@@ -280,7 +280,7 @@ TEST_CASE("Testing likelihood of PopulationTree with four-way polytomy at root",
     }
 }
 
-TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at internal", "[xPopulationTree]") {
+TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at internal", "[PopulationTree]") {
 
     SECTION("Testing constructor and likelihood calc") {
         std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(5, "root", 0.1);
@@ -318,6 +318,88 @@ TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at inter
         internal11->add_child(leaf12);
         root1->add_child(internal11);
         root1->add_child(leaf13);
+
+        PopulationTree tree0(root0,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+        PopulationTree tree1(root1,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+
+        tree0.set_all_population_sizes(0.005);
+        tree1.set_all_population_sizes(0.005);
+
+        double l0 = tree0.compute_log_likelihood();
+        double l1 = tree1.compute_log_likelihood();
+        std::cout << "\nPolytomy lnL: " << l0;
+        std::cout << "\nBifurcating lnL: " << l1 << "\n\n";
+        REQUIRE(l0 == l1);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(1234);
+        BiallelicData bd = tree0.simulate_linked_biallelic_data_set(rng,
+                1.0,    // singleton sample probability
+                false,  // max one variable site per locus
+                true);  // validate data set
+
+        tree0.set_data(bd, false);
+        tree1.set_data(bd, false);
+
+        l0 = tree0.compute_log_likelihood();
+        l1 = tree1.compute_log_likelihood();
+        std::cout << "\nPolytomy lnL: " << l0;
+        std::cout << "\nBifurcating lnL: " << l1 << "\n\n";
+        REQUIRE(l0 == l1);
+    }
+}
+
+TEST_CASE("Testing likelihood of PopulationTree with four-way polytomy at internal", "[PopulationTree]") {
+
+    SECTION("Testing constructor and likelihood calc") {
+        std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(6, "root", 0.1);
+        std::shared_ptr<PopulationNode> internal00 = std::make_shared<PopulationNode>(5, "internal 0", 0.05);
+        std::shared_ptr<PopulationNode> leaf00 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
+        leaf00->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf01 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 6);
+        leaf01->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf02 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, 8);
+        leaf02->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf03 = std::make_shared<PopulationNode>(3, "leaf 3", 0.0, 10);
+        leaf03->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf04 = std::make_shared<PopulationNode>(4, "leaf 4", 0.0, 12);
+        leaf04->fix_node_height();
+
+        internal00->add_child(leaf00);
+        internal00->add_child(leaf01);
+        internal00->add_child(leaf02);
+        internal00->add_child(leaf03);
+        root0->add_child(internal00);
+        root0->add_child(leaf04);
+
+        std::shared_ptr<PopulationNode> root1 = std::make_shared<PopulationNode>(8, "root", 0.1);
+        std::shared_ptr<PopulationNode> internal10 = std::make_shared<PopulationNode>(5, "internal 0", 0.05);
+        std::shared_ptr<PopulationNode> internal11 = std::make_shared<PopulationNode>(6, "internal 1", 0.05);
+        std::shared_ptr<PopulationNode> internal12 = std::make_shared<PopulationNode>(7, "internal 2", 0.05);
+        std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
+        leaf10->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 6);
+        leaf11->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf12 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, 8);
+        leaf12->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf13 = std::make_shared<PopulationNode>(3, "leaf 3", 0.0, 10);
+        leaf13->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf14 = std::make_shared<PopulationNode>(4, "leaf 4", 0.0, 12);
+        leaf14->fix_node_height();
+
+        internal10->add_child(leaf10);
+        internal10->add_child(leaf11);
+        internal11->add_child(internal10);
+        internal11->add_child(leaf12);
+        internal12->add_child(internal11);
+        internal12->add_child(leaf13);
+        root1->add_child(internal12);
+        root1->add_child(leaf14);
 
         PopulationTree tree0(root0,
                 100,   // number of loci
