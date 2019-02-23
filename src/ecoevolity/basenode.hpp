@@ -353,6 +353,18 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return n;
         }
 
+        void get_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& nodes) {
+            nodes.push_back(this->shared_from_this());
+            for (auto child_iter: this->children_) {
+                child_iter->get_nodes(nodes);
+            }
+        }
+        std::vector< std::shared_ptr<DerivedNodeT> > get_nodes() {
+            std::vector< std::shared_ptr<DerivedNodeT> > nodes;
+            this->get_nodes(nodes);
+            return nodes;
+        }
+
         void get_leaves(std::vector< std::shared_ptr<DerivedNodeT> >& leaves) {
             if (this->is_leaf()) {
                 leaves.push_back(this->shared_from_this());

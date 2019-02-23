@@ -436,7 +436,8 @@ class PopulationTree {
                 double population_size,
                 RandomNumberGenerator& rng,
                 double bottom_of_branch_height = 0.0,
-                double top_of_branch_height = std::numeric_limits<double>::infinity()
+                double top_of_branch_height = std::numeric_limits<double>::infinity(),
+                unsigned int branch_index = 0
                 );
 
         bool sample_pattern(

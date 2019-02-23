@@ -55,21 +55,31 @@ PopulationTree::PopulationTree(
     const std::vector< std::shared_ptr<PopulationNode> >& leaves = root->get_leaves();
     std::vector<std::string> pop_labels;
     std::vector<unsigned int> haploid_sample_sizes;
-    std::vector<unsigned int> pop_indices;
-    std::vector<unsigned int> expected_pop_indices;
+    std::vector<unsigned int> leaf_pop_indices;
+    std::vector<unsigned int> internal_pop_indices;
+    std::vector<unsigned int> expected_leaf_pop_indices;
+    std::vector<unsigned int> expected_internal_pop_indices;
     pop_labels.reserve(leaves.size());
     haploid_sample_sizes.reserve(leaves.size());
-    pop_indices.reserve(leaves.size());
-    expected_pop_indices.reserve(leaves.size());
+    leaf_pop_indices.reserve(leaves.size());
+    expected_leaf_pop_indices.reserve(leaves.size());
     for (unsigned int i = 0; i < leaves.size(); ++i) {
         pop_labels.push_back(leaves.at(i)->get_label());
         haploid_sample_sizes.push_back(leaves.at(i)->get_allele_count());
-        pop_indices.push_back(leaves.at(i)->get_population_index());
-        expected_pop_indices.push_back(i);
+        expected_leaf_pop_indices.push_back(i);
+    }
+    root->get_node_indices(internal_pop_indices, leaf_pop_indices);
+    for (unsigned int i = leaves.size();
+            i < (leaves.size() + internal_pop_indices.size());
+            ++i) {
+        expected_internal_pop_indices.push_back(i);
     }
     ECOEVOLITY_ASSERT(std::is_permutation(
-                pop_indices.begin(), pop_indices.end(),
-                expected_pop_indices.begin()));
+                leaf_pop_indices.begin(), leaf_pop_indices.end(),
+                expected_leaf_pop_indices.begin()));
+    ECOEVOLITY_ASSERT(std::is_permutation(
+                internal_pop_indices.begin(), internal_pop_indices.end(),
+                expected_internal_pop_indices.begin()));
     BiallelicData bd(pop_labels,
             haploid_sample_sizes,
             number_of_loci,
@@ -722,15 +732,21 @@ void PopulationTree::simulate_gene_tree(
         RandomNumberGenerator & rng,
         const bool use_max_allele_counts) const {
 
+    // std::cout << "Top of simulate_gene_tree\n";
+    // std::cout << "node index: " << node->get_population_index() << "\n";
+    // std::cout << "node label: " << node->get_label() << "\n";
     std::vector< std::shared_ptr<GeneTreeSimNode> > lineages;
     if (node->has_children()) {
         // Handle internal branch: must get uncoalesced lineages from children
+        // std::cout << "Has children!\n";
         for (unsigned int i = 0;
                 i < node->get_number_of_children();
                 ++i) {
             std::shared_ptr<PopulationNode> child = node->get_child(i);
-            int child_idx = child->get_population_index();
-            ECOEVOLITY_ASSERT(child_idx >= 0);
+            unsigned int child_idx = child->get_population_index();
+            // std::cout << "child has index: " << "\n";
+            // std::cout << "child has nlineages: " << branch_lineages.count(child_idx) << "\n";
+            // ECOEVOLITY_ASSERT(child_idx >= 0);
             if (branch_lineages.count(child_idx) < 1) {
                 this->simulate_gene_tree(child,
                         branch_lineages,
@@ -745,6 +761,7 @@ void PopulationTree::simulate_gene_tree(
         }
         if (node->get_number_of_parents() < 1) {
             // At root node: coalesce until 1 gene lineage and return
+            // std::cout << "At root!\n";
             if (lineages.size() < 2) {
                 branch_lineages[node->get_population_index()] = lineages;
                 return;
@@ -755,13 +772,15 @@ void PopulationTree::simulate_gene_tree(
                     this->get_node_theta(*node),
                     rng,
                     node_height,
-                    std::numeric_limits<double>::infinity()
+                    std::numeric_limits<double>::infinity(),
+                    node->get_population_index()
                     );
             branch_lineages[node->get_population_index()] = lineages;
             return;
         }
         // Internal branch that is not the root: Coalesce from bottom to top of
         // branch
+        // std::cout << "Internal node that's not root!\n";
         double node_length = this->get_node_length_in_subs_per_site(*node);
         double node_height = this->get_node_height_in_subs_per_site(*node);
         this->coalesce_in_branch(
@@ -769,12 +788,14 @@ void PopulationTree::simulate_gene_tree(
                 this->get_node_theta(*node),
                 rng,
                 node_height,
-                node_height + node_length
+                node_height + node_length,
+                node->get_population_index()
                 );
         branch_lineages[node->get_population_index()] = lineages;
     } else {
         // Handle terminal branch: create genealogy tips and coalesce to top of
         // branch
+        // std::cout << "Terminal node!\n";
         unsigned int allele_count;
         if (use_max_allele_counts) {
             allele_count = this->data_.get_max_allele_count(
@@ -804,7 +825,8 @@ void PopulationTree::simulate_gene_tree(
                 this->get_node_theta(*node),
                 rng,
                 node_height,
-                node_height + node_length
+                node_height + node_length,
+                node->get_population_index()
                 );
         branch_lineages[node->get_population_index()] = lineages;
     }
@@ -831,7 +853,8 @@ double PopulationTree::coalesce_in_branch(
         double population_size,
         RandomNumberGenerator& rng,
         double bottom_of_branch_height,
-        double top_of_branch_height
+        double top_of_branch_height,
+        unsigned int branch_index
         ) {
     ECOEVOLITY_ASSERT(lineages.size() > 0);
     ECOEVOLITY_ASSERT(bottom_of_branch_height < top_of_branch_height);
@@ -850,12 +873,13 @@ double PopulationTree::coalesce_in_branch(
         }
         current_height += wait;
         std::shared_ptr<GeneTreeSimNode> mrca = std::make_shared<GeneTreeSimNode>(
-                current_height);
+                branch_index, current_height);
         for (int i = 0; i < 2; ++i) {
             int idx = rng.uniform_int(0, lineages.size() - 1);
             mrca->add_child(lineages.at(idx));
             lineages.erase(lineages.begin() + idx);
         }
+        // std::cout << "coalescence!\n";
         lineages.push_back(mrca);
         --k;
         ECOEVOLITY_ASSERT(lineages.size() == k);

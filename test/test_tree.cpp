@@ -3,10 +3,150 @@
 #include "ecoevolity/stats_util.hpp"
 
 
+TEST_CASE("Testing scaling of simulate_gene_tree for three species",
+        "[xxPopulationTree]") {
+
+    SECTION("Testing three species") {
+        std::vector<unsigned int> Nes = {
+                50000,
+                10000,
+                25000,
+                100000,
+                200000};
+        unsigned int ngenomes = 10;
+        std::vector<unsigned int> nlineages = {
+                ngenomes,
+                ngenomes,
+                ngenomes,
+                2,
+                2};
+        double mu = 1e-8;
+        std::vector<double> thetas(Nes.size());
+        for (unsigned int i = 0; i < Nes.size(); ++i) {
+            thetas.at(i) = 4 * Nes.at(i) * mu;
+        }
+        double time_internal = 2e7;
+        double time_root = 4e7;
+
+        std::vector<double> expected_means(Nes.size());
+        std::vector<double> expected_variances(Nes.size());
+        for (unsigned int i = 0; i < Nes.size(); ++i) {
+            expected_means.at(i) = thetas.at(i)* (1.0 - (1.0 / nlineages.at(i)));
+            expected_variances.at(i) = expected_means.at(i) * expected_means.at(i);
+        }
+        expected_means.at(4) += (time_root * mu);
+        expected_means.at(3) += (time_internal * mu);
+
+        std::shared_ptr<PopulationNode> root = std::make_shared<PopulationNode>(4, "root", 0.1);
+        std::shared_ptr<PopulationNode> internal = std::make_shared<PopulationNode>(3, "internal 0", 0.05);
+        std::shared_ptr<PopulationNode> leaf0 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, ngenomes);
+        leaf0->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf1 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, ngenomes);
+        leaf1->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf2 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, ngenomes);
+        leaf2->fix_node_height();
+
+        internal->add_child(leaf0);
+        internal->add_child(leaf1);
+        root->add_child(internal);
+        root->add_child(leaf2);
+
+
+        PopulationTree tree(root,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+
+        leaf0->set_population_size(Nes.at(0));
+        leaf1->set_population_size(Nes.at(1));
+        leaf2->set_population_size(Nes.at(2));
+        internal->set_population_size(Nes.at(3));
+        root->set_population_size(Nes.at(4));
+
+        internal->set_height(time_internal);
+        root->set_height(time_root);
+
+        tree.estimate_mutation_rate();
+
+        tree.set_freq_1(0.5);
+
+        tree.set_mutation_rate(mu);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(54321);
+
+        std::shared_ptr<GeneTreeSimNode> gtree;
+        std::vector<SampleSummarizer<double> > height_summaries(Nes.size());
+        SampleSummarizer<double> tree_length;
+
+        for (unsigned int i = 0; i < 100000; ++i) {
+            gtree = tree.simulate_gene_tree(0, rng);
+            REQUIRE(gtree->is_root());
+            REQUIRE(gtree->get_number_of_children() == 2);
+            REQUIRE(gtree->get_leaf_node_count() == ngenomes * 3);
+            std::vector<double> oldest_coals(5, -1.0);
+            const std::vector< std::shared_ptr<GeneTreeSimNode> >& gnodes = gtree->get_nodes();
+            for (auto const & node_iter: gnodes) {
+                if (node_iter->get_height() > oldest_coals.at(node_iter->get_population_index())) {
+                    oldest_coals.at(node_iter->get_population_index()) = node_iter->get_height();
+                }
+            }
+            for (unsigned int branch_idx = 0; branch_idx < oldest_coals.size(); ++branch_idx) {
+                height_summaries.at(branch_idx).add_sample(oldest_coals.at(branch_idx));
+            }
+            tree_length.add_sample(gtree->get_clade_length());
+        }
+
+        for (unsigned int i = 0; i < Nes.size(); ++i) {
+            std::cout << "\nnode: " << i << "\n";
+            std::cout << "expected height: " << expected_means.at(i) << "\n";
+            std::cout << "mean height: " << height_summaries.at(i).mean() << "\n";
+            std::cout << "nsamples: " << height_summaries.at(i).sample_size() << std::endl;
+        }
+        for (unsigned int i = 0; i < Nes.size(); ++i) {
+            REQUIRE(height_summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.0005));
+            REQUIRE(height_summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.0005));
+        }
+
+
+
+        tree.set_mutation_rate(mu * 2.0);
+
+        std::vector<SampleSummarizer<double> > scale_height_summaries(Nes.size());
+        SampleSummarizer<double> scale_tree_length;
+
+        for (unsigned int i = 0; i < 100000; ++i) {
+            gtree = tree.simulate_gene_tree(0, rng);
+            gtree->scale(0.5);
+            REQUIRE(gtree->is_root());
+            REQUIRE(gtree->get_number_of_children() == 2);
+            REQUIRE(gtree->get_leaf_node_count() == 30);
+            std::vector<double> oldest_coals(5, -1.0);
+            const std::vector< std::shared_ptr<GeneTreeSimNode> >& scale_gnodes = gtree->get_nodes();
+            for (auto const & node_iter: scale_gnodes) {
+                if (node_iter->get_height() > oldest_coals.at(node_iter->get_population_index())) {
+                    oldest_coals.at(node_iter->get_population_index()) = node_iter->get_height();
+                }
+            }
+            for (unsigned int branch_idx = 0; branch_idx < oldest_coals.size(); ++branch_idx) {
+                scale_height_summaries.at(branch_idx).add_sample(oldest_coals.at(branch_idx));
+            }
+            scale_tree_length.add_sample(gtree->get_clade_length());
+        }
+
+        for (unsigned int i = 0; i < Nes.size(); ++i) {
+            REQUIRE(scale_height_summaries.at(i).mean() == Approx(expected_means.at(i)).epsilon(0.0005));
+            REQUIRE(scale_height_summaries.at(i).variance() == Approx(expected_variances.at(i)).epsilon(0.0005));
+        }
+
+        REQUIRE(scale_tree_length.mean() == Approx(tree_length.mean()).epsilon(0.0001));
+        REQUIRE(scale_tree_length.variance() == Approx(tree_length.variance()).epsilon(0.0001));
+    }
+}
+
 TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at root", "[xPopulationTree]") {
 
     SECTION("Testing constructor and likelihood calc") {
-        std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>("root", 0.1);
+        std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(3, "root", 0.1);
         std::shared_ptr<PopulationNode> leaf00 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
         leaf00->fix_node_height();
         std::shared_ptr<PopulationNode> leaf01 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 4);
@@ -18,8 +158,8 @@ TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at root"
         root0->add_child(leaf01);
         root0->add_child(leaf02);
 
-        std::shared_ptr<PopulationNode> internal1 = std::make_shared<PopulationNode>("internal 0", 0.1);
-        std::shared_ptr<PopulationNode> root1 = std::make_shared<PopulationNode>("root", 0.1);
+        std::shared_ptr<PopulationNode> internal1 = std::make_shared<PopulationNode>(3, "internal 0", 0.1);
+        std::shared_ptr<PopulationNode> root1 = std::make_shared<PopulationNode>(4, "root", 0.1);
         std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
         leaf10->fix_node_height();
         std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 4);
@@ -65,9 +205,146 @@ TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at root"
         std::cout << "\nPolytomy lnL: " << l0;
         std::cout << "\nBifurcating lnL: " << l1 << "\n\n";
         REQUIRE(l0 == l1);
+    }
+}
 
-        tree0.fold_patterns();
-        tree1.fold_patterns();
+TEST_CASE("Testing likelihood of PopulationTree with four-way polytomy at root", "[xPopulationTree]") {
+
+    SECTION("Testing constructor and likelihood calc") {
+        std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(4, "root", 0.1);
+        std::shared_ptr<PopulationNode> leaf00 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
+        leaf00->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf01 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 4);
+        leaf01->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf02 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, 4);
+        leaf02->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf03 = std::make_shared<PopulationNode>(3, "leaf 3", 0.0, 4);
+        leaf03->fix_node_height();
+
+        root0->add_child(leaf00);
+        root0->add_child(leaf01);
+        root0->add_child(leaf02);
+        root0->add_child(leaf03);
+
+        std::shared_ptr<PopulationNode> internal10 = std::make_shared<PopulationNode>(4, "internal 0", 0.1);
+        std::shared_ptr<PopulationNode> internal11 = std::make_shared<PopulationNode>(5, "internal 1", 0.1);
+        std::shared_ptr<PopulationNode> root1 = std::make_shared<PopulationNode>(6, "root", 0.1);
+        std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
+        leaf10->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 4);
+        leaf11->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf12 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, 4);
+        leaf12->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf13 = std::make_shared<PopulationNode>(3, "leaf 3", 0.0, 4);
+        leaf13->fix_node_height();
+
+        internal10->add_child(leaf10);
+        internal10->add_child(leaf11);
+        internal11->add_child(internal10);
+        internal11->add_child(leaf12);
+        root1->add_child(internal11);
+        root1->add_child(leaf13);
+
+        PopulationTree tree0(root0,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+        PopulationTree tree1(root1,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+
+        tree0.set_all_population_sizes(0.005);
+        tree1.set_all_population_sizes(0.005);
+
+        double l0 = tree0.compute_log_likelihood();
+        double l1 = tree1.compute_log_likelihood();
+        std::cout << "\nPolytomy lnL: " << l0;
+        std::cout << "\nBifurcating lnL: " << l1 << "\n\n";
+        REQUIRE(l0 == l1);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(1234);
+        BiallelicData bd = tree0.simulate_linked_biallelic_data_set(rng,
+                1.0,    // singleton sample probability
+                false,  // max one variable site per locus
+                true);  // validate data set
+
+        tree0.set_data(bd, false);
+        tree1.set_data(bd, false);
+
+        l0 = tree0.compute_log_likelihood();
+        l1 = tree1.compute_log_likelihood();
+        std::cout << "\nPolytomy lnL: " << l0;
+        std::cout << "\nBifurcating lnL: " << l1 << "\n\n";
+        REQUIRE(l0 == l1);
+    }
+}
+
+TEST_CASE("Testing likelihood of PopulationTree with three-way polytomy at internal", "[xPopulationTree]") {
+
+    SECTION("Testing constructor and likelihood calc") {
+        std::shared_ptr<PopulationNode> root0 = std::make_shared<PopulationNode>(5, "root", 0.1);
+        std::shared_ptr<PopulationNode> internal00 = std::make_shared<PopulationNode>(4, "internal 0", 0.05);
+        std::shared_ptr<PopulationNode> leaf00 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
+        leaf00->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf01 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 4);
+        leaf01->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf02 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, 4);
+        leaf02->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf03 = std::make_shared<PopulationNode>(3, "leaf 3", 0.0, 4);
+        leaf03->fix_node_height();
+
+        internal00->add_child(leaf00);
+        internal00->add_child(leaf01);
+        internal00->add_child(leaf02);
+        root0->add_child(internal00);
+        root0->add_child(leaf03);
+
+        std::shared_ptr<PopulationNode> root1 = std::make_shared<PopulationNode>(6, "root", 0.1);
+        std::shared_ptr<PopulationNode> internal10 = std::make_shared<PopulationNode>(4, "internal 0", 0.05);
+        std::shared_ptr<PopulationNode> internal11 = std::make_shared<PopulationNode>(5, "internal 1", 0.05);
+        std::shared_ptr<PopulationNode> leaf10 = std::make_shared<PopulationNode>(0, "leaf 0", 0.0, 4);
+        leaf10->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf11 = std::make_shared<PopulationNode>(1, "leaf 1", 0.0, 4);
+        leaf11->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf12 = std::make_shared<PopulationNode>(2, "leaf 2", 0.0, 4);
+        leaf12->fix_node_height();
+        std::shared_ptr<PopulationNode> leaf13 = std::make_shared<PopulationNode>(3, "leaf 3", 0.0, 4);
+        leaf13->fix_node_height();
+
+        internal10->add_child(leaf10);
+        internal10->add_child(leaf11);
+        internal11->add_child(internal10);
+        internal11->add_child(leaf12);
+        root1->add_child(internal11);
+        root1->add_child(leaf13);
+
+        PopulationTree tree0(root0,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+        PopulationTree tree1(root1,
+                100,   // number of loci
+                1,     // length of loci
+                true); // validate data
+
+        tree0.set_all_population_sizes(0.005);
+        tree1.set_all_population_sizes(0.005);
+
+        double l0 = tree0.compute_log_likelihood();
+        double l1 = tree1.compute_log_likelihood();
+        std::cout << "\nPolytomy lnL: " << l0;
+        std::cout << "\nBifurcating lnL: " << l1 << "\n\n";
+        REQUIRE(l0 == l1);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(1234);
+        BiallelicData bd = tree0.simulate_linked_biallelic_data_set(rng,
+                1.0,    // singleton sample probability
+                false,  // max one variable site per locus
+                true);  // validate data set
+
+        tree0.set_data(bd, false);
+        tree1.set_data(bd, false);
 
         l0 = tree0.compute_log_likelihood();
         l1 = tree1.compute_log_likelihood();

@@ -192,7 +192,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
 class PopulationNode: public BaseNode<PopulationNode>{
     private:
         typedef BaseNode<PopulationNode> BaseClass;
-        int population_index_ = -1;
+        unsigned int population_index_ = 0;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(0.001);
@@ -283,6 +283,14 @@ class PopulationNode: public BaseNode<PopulationNode>{
         PopulationNode(
                 unsigned int population_index,
                 std::string label,
+                double height) :
+            BaseClass(label, height)
+        {
+            this->population_index_ = population_index;
+        }
+        PopulationNode(
+                unsigned int population_index,
+                std::string label,
                 double height,
                 unsigned int allele_count) :
             BaseClass(label, height)
@@ -312,7 +320,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         //     return * this;
         // }
 
-        int get_population_index() const {
+        unsigned int get_population_index() const {
             return this->population_index_;
         }
 
@@ -575,6 +583,18 @@ class PopulationNode: public BaseNode<PopulationNode>{
 
         double get_population_size_relative_prior_ln_pdf() const {
             return this->population_size_->relative_prior_ln_pdf();
+        }
+
+        void get_node_indices(std::vector<unsigned int> & internal_indices,
+                std::vector<unsigned int> & leaf_indices) {
+            if (this->is_leaf()) {
+                leaf_indices.push_back(this->get_population_index());
+            } else {
+                internal_indices.push_back(this->get_population_index());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_node_indices(internal_indices, leaf_indices);
+            }
         }
 
 };
