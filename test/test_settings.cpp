@@ -1877,9 +1877,9 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         std::string e =  "";
         e += "---\n";
         e += "event_model_prior:\n";
-        e += "    uniform:\n";
+        e += "    dirichlet_process:\n";
         e += "        parameters:\n";
-        e += "            split_weight:\n";
+        e += "            concentration:\n";
         e += "                value: 1\n";
         e += "                estimate: false\n";
         e += "event_time_prior:\n";
@@ -1964,7 +1964,7 @@ TEST_CASE("Testing collection settings from minimal config", "[CollectionSetting
         REQUIRE(settings.event_model_is_fixed() == false);
         REQUIRE(settings.sampling_event_models() == false);
         REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
-        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform);
+        REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp);
 
         REQUIRE(settings.get_chain_length() == 100000);
         REQUIRE(settings.get_sample_frequency() == 100);
@@ -3395,7 +3395,7 @@ TEST_CASE("Testing fixed model prior", "[CollectionSettings]") {
         REQUIRE(settings.get_path() == "data/dummy.yml");
 
         REQUIRE(settings.event_model_is_fixed() == true);
-        REQUIRE(settings.sampling_event_models() == true);
+        REQUIRE(settings.sampling_event_models() == false);
         REQUIRE(settings.get_model_operator() == EcoevolityOptions::ModelOperator::none);
         REQUIRE(settings.get_model_prior() == EcoevolityOptions::ModelPrior::fixed);
 
@@ -4096,9 +4096,9 @@ TEST_CASE("Testing DirichletCollectionSettings from minimal config", "[Dirichlet
         std::string e =  "";
         e += "---\n";
         e += "event_model_prior:\n";
-        e += "    uniform:\n";
+        e += "    dirichlet_process:\n";
         e += "        parameters:\n";
-        e += "            split_weight:\n";
+        e += "            concentration:\n";
         e += "                value: 1\n";
         e += "                estimate: false\n";
         e += "event_time_prior:\n";
@@ -7180,9 +7180,9 @@ TEST_CASE("Testing relative root collection settings from minimal config", "[Rel
         std::string e =  "";
         e += "---\n";
         e += "event_model_prior:\n";
-        e += "    uniform:\n";
+        e += "    dirichlet_process:\n";
         e += "        parameters:\n";
-        e += "            split_weight:\n";
+        e += "            concentration:\n";
         e += "                value: 1\n";
         e += "                estimate: false\n";
         e += "event_time_prior:\n";
