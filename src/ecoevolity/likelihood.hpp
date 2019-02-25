@@ -55,30 +55,10 @@ void merge_top_of_branch_partials(
         unsigned int & merged_allele_count,
         std::vector<double> & merged_pattern_probs);
 
-// TODO: Remove this function and use compute_internal_partials_general
-// instead.  Leaving it in place for now for testing purposes (to make sure new
-// general function that allows polytomies is working).
 void compute_internal_partials(
         PopulationNode& node);
 
-void compute_internal_partials_general(
-        PopulationNode& node);
-
-// TODO: Remove this function and use compute_pattern_partials_general
-// instead.  Leaving it in place for now for testing purposes (to make sure new
-// general function that allows polytomies is working).
 void compute_pattern_partials(
-        PopulationNode& node,
-        const std::vector<unsigned int>& red_allele_counts,
-        const std::vector<unsigned int>& allele_counts,
-        const double u,
-        const double v,
-        const double mutation_rate,
-        const double ploidy,
-        const bool markers_are_dominant
-        );
-
-void compute_pattern_partials_general(
         PopulationNode& node,
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
