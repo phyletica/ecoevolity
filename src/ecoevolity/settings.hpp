@@ -38,6 +38,7 @@
 #include "math_util.hpp"
 #include "probability.hpp"
 #include "data.hpp"
+#include "options.hpp"
 
 
 class YamlCppUtils {
@@ -1176,7 +1177,8 @@ class OperatorScheduleSettings {
             }
         }
 
-        virtual std::string to_string(unsigned int indent_level = 0) const {
+        virtual std::string to_string(unsigned int indent_level = 0,
+            EcoevolityOptions::ModelPrior model_prior = EcoevolityOptions::ModelPrior::dpp) const {
             std::ostringstream ss;
             ss << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
@@ -1189,8 +1191,10 @@ class OperatorScheduleSettings {
             ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
-            ss << margin << indent << indent << "DiscountScaler:\n";
-            ss << this->discount_scaler_settings_.to_string(indent_level + 3);
+            if (model_prior == EcoevolityOptions::ModelPrior::pyp) {
+                ss << margin << indent << indent << "DiscountScaler:\n";
+                ss << this->discount_scaler_settings_.to_string(indent_level + 3);
+            }
             ss << margin << indent << indent << "TimeSizeRateMixer:\n";
             ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "TimeSizeRateScaler:\n";
@@ -2679,7 +2683,7 @@ class BaseCollectionSettings {
         const std::string& get_operator_log_path() const {
             return this->operator_log_path_;
         }
-        const EcoevolityOptions::ModelOperator get_model_operator() const {
+        EcoevolityOptions::ModelOperator get_model_operator() const {
             if (! this->sampling_models_) {
                 return EcoevolityOptions::ModelOperator::none;
             }
@@ -2697,7 +2701,7 @@ class BaseCollectionSettings {
             }
             return EcoevolityOptions::ModelOperator::none;
         }
-        const EcoevolityOptions::Modelprior get_model_prior() const {
+        EcoevolityOptions::ModelPrior get_model_prior() const {
             return this->model_prior_;
         }
         double get_chain_length() const {
@@ -2911,7 +2915,9 @@ class BaseCollectionSettings {
                 out << comp.to_string(1);
             }
 
-            out << this->operator_schedule_settings_.to_string();
+            out << this->operator_schedule_settings_.to_string(
+                    0,
+                    this->model_prior_);
         }
 
         std::string to_string() const {
@@ -3103,12 +3109,11 @@ class BaseCollectionSettings {
                     "gamma_distribution",
                     default_parameters);
             // Set default settings for discount parameter
-            this->use_pyp_ = false;
             this->discount_settings_.value_ = 0.0;
             this->discount_settings_.is_fixed_ = true;
             std::unordered_map<std::string, double> default_discount_parameters;
-            default_parameters["alpha"] = 1.0;
-            default_parameters["beta"] = 1.0;
+            default_discount_parameters["alpha"] = 1.0;
+            default_discount_parameters["beta"] = 1.0;
             this->discount_settings_.prior_settings_ = ContinuousDistributionSettings(
                     "beta_distribution",
                     default_discount_parameters);
@@ -3426,13 +3431,13 @@ class BaseCollectionSettings {
                 throw EcoevolityYamlConfigError(
                         "pitman_yor_process must have a parameters key");
             }
-            if (node.size() < 1) {
+            if (pyp_node.size() < 1) {
                 throw EcoevolityYamlConfigError(
                         "empty pitman_yor_process parameters node");
             }
             std::unordered_set<std::string> keys;
-            for (YAML::const_iterator parameter = node.begin();
-                    parameter != node.end();
+            for (YAML::const_iterator parameter = pyp_node.begin();
+                    parameter != pyp_node.end();
                     ++parameter) {
                 if (keys.count(parameter->first.as<std::string>()) > 0) {
                     std::string message = (
@@ -3659,12 +3664,14 @@ class CollectionSettings: public BaseCollectionSettings<ComparisonSettings>{
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp)
                 : BaseClass(
                         time_prior,
                         chain_length,
                         sample_frequency,
                         concentration_settings,
+                        discount_settings,
                         use_dpp) { }
         CollectionSettings(
                 const std::string & yaml_config_path)
@@ -3690,12 +3697,14 @@ class RelativeRootCollectionSettings: public BaseCollectionSettings<RelativeRoot
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp)
                 : BaseClass(
                         time_prior,
                         chain_length,
                         sample_frequency,
                         concentration_settings,
+                        discount_settings,
                         use_dpp) { }
         RelativeRootCollectionSettings(
                 const std::string & yaml_config_path)
@@ -3721,12 +3730,14 @@ class DirichletCollectionSettings: public BaseCollectionSettings<DirichletCompar
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp)
                 : BaseClass(
                         time_prior,
                         chain_length,
                         sample_frequency,
                         concentration_settings,
+                        discount_settings,
                         use_dpp,
                         true) {
         }

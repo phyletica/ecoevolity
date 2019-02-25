@@ -152,7 +152,7 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bo
     else {
         std::ostringstream message;
         message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
-                << this->model_prior_
+                << (int)this->model_prior_
                 << "\'\n";
         throw EcoevolityError(message.str());
     }
@@ -874,7 +874,7 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
     else {
         std::ostringstream message;
         message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
-                << this->model_prior_
+                << (int)this->model_prior_
                 << "\'\n";
         throw EcoevolityError(message.str());
     }

@@ -76,7 +76,7 @@ class OperatorSchedule {
         void turn_on_auto_optimize();
         void turn_off_auto_optimize();
 
-        const EcoevolityOptions::ModelOperator get_model_operator_type() const;
+        EcoevolityOptions::ModelOperator get_model_operator_type() const;
         bool sampling_models() const;
 };
 

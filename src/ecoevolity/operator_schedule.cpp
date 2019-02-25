@@ -31,27 +31,27 @@ OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings
     this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
 
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
-        if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
+        if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
             this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
             // Do not add a model operator
         }
         else {
             std::ostringstream message;
             message << "ERROR: Unexpected EcoevolityOptions::ModelOperator \'"
-                    << settings.get_model_operator()
+                    << (int)collection_settings.get_model_operator()
                     << "\'\n";
             throw EcoevolityError(message.str());
         }
@@ -172,27 +172,27 @@ OperatorSchedule::OperatorSchedule(
     this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
 
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
-        if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
+        if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
             this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
             // Do not add a model operator
         }
         else {
             std::ostringstream message;
             message << "ERROR: Unexpected EcoevolityOptions::ModelOperator \'"
-                    << settings.get_model_operator()
+                    << (int)collection_settings.get_model_operator()
                     << "\'\n";
             throw EcoevolityError(message.str());
         }
@@ -312,27 +312,27 @@ OperatorSchedule::OperatorSchedule(
     this->set_auto_optimize_delay(settings.get_auto_optimize_delay());
 
     if (settings.get_model_operator_settings().get_weight() > 0.0) {
-        if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
+        if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_dpp) {
             this->add_operator(std::make_shared<DirichletProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
             this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
         }
-        else if (settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::none) {
             // Do not add a model operator
         }
         else {
             std::ostringstream message;
             message << "ERROR: Unexpected EcoevolityOptions::ModelOperator \'"
-                    << settings.get_model_operator()
+                    << (int)collection_settings.get_model_operator()
                     << "\'\n";
             throw EcoevolityError(message.str());
         }
@@ -586,7 +586,7 @@ void OperatorSchedule::turn_off_auto_optimize() {
     this->auto_optimize_ = false;
 }
 
-const EcoevolityOptions::ModelOperator OperatorSchedule::get_model_operator_type() const {
+EcoevolityOptions::ModelOperator OperatorSchedule::get_model_operator_type() const {
     for (auto op : this->operators_) {
         if (op->get_name() == "DirichletProcessGibbsSampler") {
             return EcoevolityOptions::ModelOperator::gibbs_dpp;

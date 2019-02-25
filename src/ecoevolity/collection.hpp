@@ -112,7 +112,7 @@ class BaseComparisonPopulationTreeCollection {
         void set_model_prior(EcoevolityOptions::ModelPrior p) {
             this->model_prior_ = p;
         }
-        const EcoevolityOptions::ModelPrior get_model_prior() const {
+        EcoevolityOptions::ModelPrior get_model_prior() const {
             return this->model_prior_;
         }
 
