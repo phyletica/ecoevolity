@@ -169,7 +169,7 @@ TEST_CASE("Testing constant sites error", "[EcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityConstantSitesError);
+                EcoevolityConstantSitesError &);
 
         delete[] cfg_path;
     }
@@ -506,7 +506,7 @@ TEST_CASE("Testing missing sites error", "[EcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityMissingDataError);
+                EcoevolityMissingDataError &);
 
         delete[] cfg_path;
     }
@@ -844,7 +844,7 @@ TEST_CASE("Testing constrained singleton error",
         int ret;
         REQUIRE_THROWS_AS(
                 (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityComparisonSettingError);
+                EcoevolityComparisonSettingError &);
 
         delete[] cfg_path;
     }
@@ -1013,7 +1013,7 @@ TEST_CASE("Testing fixed singleton error",
         int ret;
         REQUIRE_THROWS_AS(
                 (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityComparisonSettingError);
+                EcoevolityComparisonSettingError &);
 
         delete[] cfg_path;
     }
@@ -1181,7 +1181,7 @@ TEST_CASE("Testing population label conflict", "[EcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityCollectionSettingError);
+                EcoevolityCollectionSettingError &);
 
         delete[] cfg_path;
     }
@@ -1518,7 +1518,7 @@ TEST_CASE("Testing triallelic sites error", "[EcoevolityCLI]") {
 
         REQUIRE_THROWS_AS(
                 (ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv)),
-                EcoevolityTriallelicDataError);
+                EcoevolityTriallelicDataError &);
 
         delete[] cfg_path;
     }

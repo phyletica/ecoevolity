@@ -6,16 +6,16 @@ TEST_CASE("Testing double SampleSummarizer", "[stats_util]") {
     SECTION("Testing empty double summarizer") {
         SampleSummarizer<double> ss;
         REQUIRE(ss.sample_size() == 0);
-        REQUIRE_THROWS_AS(ss.min(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.max(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.mean(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.variance(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.population_variance(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.std_dev(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.std_error(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.skewness(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.kurtosis(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.excess_kurtosis(), EcoevolityError);
+        REQUIRE_THROWS_AS(ss.min(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.max(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.mean(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.variance(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.population_variance(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.std_dev(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.std_error(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.skewness(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.kurtosis(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.excess_kurtosis(), EcoevolityError &);
     }
 
     SECTION("Testing double summarizer with one sample 0") {
@@ -125,16 +125,16 @@ TEST_CASE("Testing int SampleSummarizer", "[stats_util]") {
     SECTION("Testing empty int summarizer") {
         SampleSummarizer<int> ss;
         REQUIRE(ss.sample_size() == 0);
-        REQUIRE_THROWS_AS(ss.min(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.max(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.mean(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.variance(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.population_variance(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.std_dev(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.std_error(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.skewness(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.kurtosis(), EcoevolityError);
-        REQUIRE_THROWS_AS(ss.excess_kurtosis(), EcoevolityError);
+        REQUIRE_THROWS_AS(ss.min(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.max(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.mean(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.variance(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.population_variance(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.std_dev(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.std_error(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.skewness(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.kurtosis(), EcoevolityError &);
+        REQUIRE_THROWS_AS(ss.excess_kurtosis(), EcoevolityError &);
     }
 
     SECTION("Testing int summarizer with one sample 0") {

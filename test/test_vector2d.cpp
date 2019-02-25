@@ -8,51 +8,51 @@ TEST_CASE("Testing nrows, ncols constructor of Vector2d", "[Vector2d]") {
         Vector2d m(0,0);
         REQUIRE(m.get_nrows() == 0);
         REQUIRE(m.get_ncols() == 0);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range &);
     }
 
     SECTION("Testing 1x0 constructor") {
         Vector2d m(1,0);
         REQUIRE(m.get_nrows() == 1);
         REQUIRE(m.get_ncols() == 0);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range &);
     }
 
     SECTION("Testing 0x1 constructor") {
         Vector2d m(0,1);
         REQUIRE(m.get_nrows() == 0);
         REQUIRE(m.get_ncols() == 1);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range &);
     }
 
     SECTION("Testing 1x1 constructor") {
         Vector2d m(1,1);
         REQUIRE(m.get_nrows() == 1);
         REQUIRE(m.get_ncols() == 1);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
         REQUIRE(m.at(1,1) == Approx(0.0));
-        REQUIRE_THROWS_AS(m.at(2,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,2), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(2,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,2), std::out_of_range &);
     }
 
     SECTION("Testing 2x4 constructor") {
         Vector2d m(2,4);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 4);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.0));
         REQUIRE(m.at(1,2) == Approx(0.0));
@@ -62,17 +62,17 @@ TEST_CASE("Testing nrows, ncols constructor of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,2) == Approx(0.0));
         REQUIRE(m.at(2,3) == Approx(0.0));
         REQUIRE(m.at(2,4) == Approx(0.0));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,5), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,5), std::out_of_range &);
     }
 
     SECTION("Testing 4x2 constructor") {
         Vector2d m(4,2);
         REQUIRE(m.get_nrows() == 4);
         REQUIRE(m.get_ncols() == 2);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.0));
         REQUIRE(m.at(1,2) == Approx(0.0));
@@ -82,8 +82,8 @@ TEST_CASE("Testing nrows, ncols constructor of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(3,2) == Approx(0.0));
         REQUIRE(m.at(4,1) == Approx(0.0));
         REQUIRE(m.at(4,2) == Approx(0.0));
-        REQUIRE_THROWS_AS(m.at(5,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(5,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range &);
     }
 }
 
@@ -93,47 +93,47 @@ TEST_CASE("Testing square identity constructor of Vector2d", "[Vector2d]") {
         Vector2d m(0);
         REQUIRE(m.get_nrows() == 0);
         REQUIRE(m.get_ncols() == 0);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,1), std::out_of_range &);
     }
 
     SECTION("Testing 1x1 square constructor") {
         Vector2d m(1);
         REQUIRE(m.get_nrows() == 1);
         REQUIRE(m.get_ncols() == 1);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
         REQUIRE(m.at(1,1) == Approx(1.0));
-        REQUIRE_THROWS_AS(m.at(2,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,2), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(2,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,2), std::out_of_range &);
     }
 
     SECTION("Testing 2x2 square constructor") {
         Vector2d m(2);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 2);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(1.0));
         REQUIRE(m.at(1,2) == Approx(0.0));
         REQUIRE(m.at(2,1) == Approx(0.0));
         REQUIRE(m.at(2,2) == Approx(1.0));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range &);
     }
 
     SECTION("Testing 3x3 square constructor") {
         Vector2d m(3);
         REQUIRE(m.get_nrows() == 3);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(1.0));
         REQUIRE(m.at(1,2) == Approx(0.0));
@@ -144,8 +144,8 @@ TEST_CASE("Testing square identity constructor of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(3,1) == Approx(0.0));
         REQUIRE(m.at(3,2) == Approx(0.0));
         REQUIRE(m.at(3,3) == Approx(1.0));
-        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
     }
 }
 
@@ -156,9 +156,9 @@ TEST_CASE("Testing value constructor of Vector2d", "[Vector2d]") {
         Vector2d m(2, 3, values);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -166,8 +166,8 @@ TEST_CASE("Testing value constructor of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,1) == Approx(0.21));
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(2,3) == Approx(0.23));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
     }
 
     SECTION("Testing 3x2 value constructor") {
@@ -175,9 +175,9 @@ TEST_CASE("Testing value constructor of Vector2d", "[Vector2d]") {
         Vector2d m(3, 2, values);
         REQUIRE(m.get_nrows() == 3);
         REQUIRE(m.get_ncols() == 2);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -185,8 +185,8 @@ TEST_CASE("Testing value constructor of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(3,1) == Approx(0.31));
         REQUIRE(m.at(3,2) == Approx(0.32));
-        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range &);
     }
 }
 
@@ -196,11 +196,11 @@ TEST_CASE("Testing setter of Vector2d", "[Vector2d]") {
         Vector2d m(2, 3);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.0));
         REQUIRE(m.at(1,2) == Approx(0.0));
@@ -250,9 +250,9 @@ TEST_CASE("Testing transpose of Vector2d", "[Vector2d]") {
         Vector2d m(2, 3, values);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -260,15 +260,15 @@ TEST_CASE("Testing transpose of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,1) == Approx(0.21));
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(2,3) == Approx(0.23));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
 
         Vector2d m2 = m.transpose();
         REQUIRE(m2.get_nrows() == 3);
         REQUIRE(m2.get_ncols() == 2);
-        REQUIRE_THROWS_AS(m2.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m2.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m2.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m2.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m2.at(0,1), std::out_of_range &);
 
         REQUIRE(m2.at(1,1) == Approx(0.11));
         REQUIRE(m2.at(1,2) == Approx(0.21));
@@ -276,15 +276,15 @@ TEST_CASE("Testing transpose of Vector2d", "[Vector2d]") {
         REQUIRE(m2.at(2,2) == Approx(0.22));
         REQUIRE(m2.at(3,1) == Approx(0.13));
         REQUIRE(m2.at(3,2) == Approx(0.23));
-        REQUIRE_THROWS_AS(m2.at(4,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m2.at(1,3), std::out_of_range);
+        REQUIRE_THROWS_AS(m2.at(4,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m2.at(1,3), std::out_of_range &);
 
         // Make sure original was unaffected.
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -292,8 +292,8 @@ TEST_CASE("Testing transpose of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,1) == Approx(0.21));
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(2,3) == Approx(0.23));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
     }
 }
 
@@ -357,8 +357,8 @@ TEST_CASE("Testing get column methods Vector2d", "[Vector2d]") {
     SECTION("Testing get column copy") {
         std::vector<double> values = {0.11, 0.12, 0.13, 0.21, 0.22, 0.23};
         Vector2d m(2, 3, values);
-        REQUIRE_THROWS_AS(m.get_column(0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.get_column(4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_column(0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.get_column(4), std::out_of_range &);
 
         std::vector<double> c = m.get_column(3);
         REQUIRE(c.size() == 3);
@@ -382,8 +382,8 @@ TEST_CASE("Testing get column methods Vector2d", "[Vector2d]") {
     SECTION("Testing get column fill") {
         std::vector<double> values = {0.11, 0.12, 0.13, 0.21, 0.22, 0.23};
         Vector2d m(2, 3, values);
-        REQUIRE_THROWS_AS(m.get_column(0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.get_column(4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.get_column(0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.get_column(4), std::out_of_range &);
 
         std::vector<double> c = {-1.0};
         m.get_column(3, c);
@@ -412,9 +412,9 @@ TEST_CASE("Testing resize of Vector2d", "[Vector2d]") {
         Vector2d m(2, 3, values);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -422,15 +422,15 @@ TEST_CASE("Testing resize of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,1) == Approx(0.21));
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(2,3) == Approx(0.23));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
 
         m.resize(3,4);
         REQUIRE(m.get_nrows() == 3);
         REQUIRE(m.get_ncols() == 4);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -444,15 +444,15 @@ TEST_CASE("Testing resize of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(3,2) == Approx(0.0));
         REQUIRE(m.at(3,3) == Approx(0.0));
         REQUIRE(m.at(3,4) == Approx(0.0));
-        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,5), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,5), std::out_of_range &);
 
         m.resize(3, 2);
         REQUIRE(m.get_nrows() == 3);
         REQUIRE(m.get_ncols() == 2);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -460,20 +460,20 @@ TEST_CASE("Testing resize of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(3,1) == Approx(0.0));
         REQUIRE(m.at(3,2) == Approx(0.0));
-        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(4,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,3), std::out_of_range &);
 
         m.resize(2, 1);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 1);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(2,1) == Approx(0.21));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,2), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,2), std::out_of_range &);
     }
 }
 
@@ -483,9 +483,9 @@ TEST_CASE("Testing get zero based vector of Vector2d", "[Vector2d]") {
         Vector2d m(2, 3, values);
         REQUIRE(m.get_nrows() == 2);
         REQUIRE(m.get_ncols() == 3);
-        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(0,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,0), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(0,1), std::out_of_range &);
 
         REQUIRE(m.at(1,1) == Approx(0.11));
         REQUIRE(m.at(1,2) == Approx(0.12));
@@ -493,8 +493,8 @@ TEST_CASE("Testing get zero based vector of Vector2d", "[Vector2d]") {
         REQUIRE(m.at(2,1) == Approx(0.21));
         REQUIRE(m.at(2,2) == Approx(0.22));
         REQUIRE(m.at(2,3) == Approx(0.23));
-        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range);
-        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range);
+        REQUIRE_THROWS_AS(m.at(3,1), std::out_of_range &);
+        REQUIRE_THROWS_AS(m.at(1,4), std::out_of_range &);
 
         std::vector<double> v = m.get_zero_based_vector();
         REQUIRE(v.size() == values.size());
