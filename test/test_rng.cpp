@@ -2092,7 +2092,7 @@ TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.0)", "[RandomNumberGenerator]") 
     }
 }
 
-TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.1)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.1)", "[RandomNumberGenerator]") {
 
     SECTION("Testing pitman_yor_process(6, 1.7, 0.1)") {
         unsigned int nsamples = 100000;
@@ -2154,7 +2154,7 @@ TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.1)", "[xRandomNumberGenerator]")
     }
 }
 
-TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.5)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.5)", "[RandomNumberGenerator]") {
 
     SECTION("Testing pitman_yor_process(6, 1.7, 0.5)") {
         unsigned int nsamples = 200000;
@@ -2216,7 +2216,7 @@ TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.5)", "[xRandomNumberGenerator]")
     }
 }
 
-TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.9)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.9)", "[RandomNumberGenerator]") {
 
     SECTION("Testing pitman_yor_process(6, 1.7, 0.9)") {
         unsigned int nsamples = 100000;
@@ -2278,7 +2278,7 @@ TEST_CASE("Testing pitman_yor_process(6, 1.7, 0.9)", "[xRandomNumberGenerator]")
     }
 }
 
-TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.1)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.1)", "[RandomNumberGenerator]") {
 
     SECTION("Testing pitman_yor_process(3, 0.6, 0.1)") {
         unsigned int nsamples = 200000;
@@ -2338,7 +2338,7 @@ TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.1)", "[xRandomNumberGenerator]")
     }
 }
 
-TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.5)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.5)", "[RandomNumberGenerator]") {
 
     SECTION("Testing pitman_yor_process(3, 0.6, 0.5)") {
         unsigned int nsamples = 200000;
@@ -2398,7 +2398,7 @@ TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.5)", "[xRandomNumberGenerator]")
     }
 }
 
-TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.9)", "[xRandomNumberGenerator]") {
+TEST_CASE("Testing pitman_yor_process(3, 0.6, 0.9)", "[RandomNumberGenerator]") {
 
     SECTION("Testing pitman_yor_process(3, 0.6, 0.9)") {
         unsigned int nsamples = 200000;

@@ -27,17 +27,17 @@ class EcoevolityOptions {
         EcoevolityOptions() { }
 
 		enum ModelPrior {
-            fixed = 0,
-            uniform = 1,
-            dpp = 2,
-            pyp = 3,
+            fixed = 1,
+            uniform = 2,
+            dpp = 3,
+            pyp = 4,
         };
 
         enum ModelOperator {
-            none = 0,
-            rj = 1,
-            gibbs_dpp = 2,
-            gibbs_pyp = 3,
+            none = 1,
+            rj = 2,
+            gibbs_dpp = 3,
+            gibbs_pyp = 4,
         };
 
 };

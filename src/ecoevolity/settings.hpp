@@ -3431,13 +3431,13 @@ class BaseCollectionSettings {
                 throw EcoevolityYamlConfigError(
                         "pitman_yor_process must have a parameters key");
             }
-            if (pyp_node.size() < 1) {
+            if (pyp_node["parameters"].size() < 1) {
                 throw EcoevolityYamlConfigError(
                         "empty pitman_yor_process parameters node");
             }
             std::unordered_set<std::string> keys;
-            for (YAML::const_iterator parameter = pyp_node.begin();
-                    parameter != pyp_node.end();
+            for (YAML::const_iterator parameter = pyp_node["parameters"].begin();
+                    parameter != pyp_node["parameters"].end();
                     ++parameter) {
                 if (keys.count(parameter->first.as<std::string>()) > 0) {
                     std::string message = (

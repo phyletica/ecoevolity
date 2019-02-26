@@ -998,6 +998,7 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     if (settings.event_model_is_fixed()) {
         this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
     }
+    this->model_prior_ = settings.get_model_prior();
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -1086,6 +1087,7 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
     if (settings.event_model_is_fixed()) {
         this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
     }
+    this->model_prior_ = settings.get_model_prior();
 }
 
 void ComparisonRelativeRootPopulationTreeCollection::init_trees(
@@ -1174,6 +1176,7 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
     if (settings.event_model_is_fixed()) {
         this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
     }
+    this->model_prior_ = settings.get_model_prior();
 }
 
 void ComparisonDirichletPopulationTreeCollection::init_trees(
