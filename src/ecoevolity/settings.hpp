@@ -979,7 +979,7 @@ class OperatorScheduleSettings {
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 3.0, 1.0);
         ScaleOperatorSettings discount_scaler_settings_ = ScaleOperatorSettings(
-                3.0, 1.0);
+                3.0, 0.3);
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
                 6.0, 0.1);
         ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(

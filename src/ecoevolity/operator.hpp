@@ -411,6 +411,48 @@ class ConcentrationScaler : public CollectionOperatorInterface<ScaleOperator> {
 };
 
 
+class DiscountScaler : public CollectionOperatorInterface<ScaleOperator> {
+
+    public:
+        DiscountScaler();
+        DiscountScaler(double weight);
+        DiscountScaler(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class DiscountMover : public CollectionOperatorInterface<WindowOperator> {
+
+    public:
+        DiscountMover();
+        DiscountMover(double weight);
+        DiscountMover(double weight, double window_size);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
 class FreqMover : public TreeOperatorInterface<WindowOperator> {
 
     public:

@@ -1145,6 +1145,100 @@ std::string ConcentrationScaler::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// DiscountScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+DiscountScaler::DiscountScaler() : CollectionOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+DiscountScaler::DiscountScaler(
+        double weight) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+DiscountScaler::DiscountScaler(
+        double weight,
+        double scale) : CollectionOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void DiscountScaler::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double DiscountScaler::propose(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    double v = comparisons->get_discount();
+    double hastings;
+    this->update(rng, v, hastings);
+    if ((v < 0.0) || (v >= 1.0)) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->set_discount(v);
+    return hastings;
+}
+
+std::string DiscountScaler::target_parameter() const {
+    return "discount";
+}
+
+std::string DiscountScaler::get_name() const {
+    return "DiscountScaler";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// DiscountMover methods
+//////////////////////////////////////////////////////////////////////////////
+
+DiscountMover::DiscountMover() : CollectionOperatorInterface<WindowOperator>() {
+    this->op_ = WindowOperator();
+}
+
+DiscountMover::DiscountMover(
+        double weight) : CollectionOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator();
+}
+
+DiscountMover::DiscountMover(
+        double weight,
+        double window_size_) : CollectionOperatorInterface<WindowOperator>(weight) {
+    this->op_ = WindowOperator(window_size_);
+}
+
+void DiscountMover::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double DiscountMover::propose(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    double v = comparisons->get_discount();
+    double hastings;
+    this->update(rng, v, hastings);
+    if ((v < 0.0) || (v >= 1.0)) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->set_discount(v);
+    return hastings;
+}
+
+std::string DiscountMover::target_parameter() const {
+    return "discount";
+}
+
+std::string DiscountMover::get_name() const {
+    return "DiscountMover";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // FreqMover methods
 //////////////////////////////////////////////////////////////////////////////
 
