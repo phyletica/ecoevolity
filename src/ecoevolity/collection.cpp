@@ -979,7 +979,7 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
-    this->discount_ = std::make_shared<PositiveRealParameter>(
+    this->discount_ = std::make_shared<DiscountParameter>(
             settings.get_discount_settings(),
             rng);
     this->operator_schedule_ = OperatorSchedule(
@@ -1068,7 +1068,7 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
-    this->discount_ = std::make_shared<PositiveRealParameter>(
+    this->discount_ = std::make_shared<DiscountParameter>(
             settings.get_discount_settings(),
             rng);
     this->operator_schedule_ = OperatorSchedule(
@@ -1157,7 +1157,7 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
-    this->discount_ = std::make_shared<PositiveRealParameter>(
+    this->discount_ = std::make_shared<DiscountParameter>(
             settings.get_discount_settings(),
             rng);
     this->operator_schedule_ = OperatorSchedule(

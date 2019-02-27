@@ -45,7 +45,7 @@ class BaseComparisonPopulationTreeCollection {
         // concentration parameter of Dirichlet process
         std::shared_ptr<PositiveRealParameter> concentration_;
         // discount parameter of Pitman-Yor process
-        std::shared_ptr<PositiveRealParameter> discount_;
+        std::shared_ptr<DiscountParameter> discount_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
