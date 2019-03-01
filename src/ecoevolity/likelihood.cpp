@@ -154,26 +154,15 @@ void compute_internal_partials(
         return;
     }
 
-    unsigned int allele_count_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_allele_count();
-    unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_allele_count();
-    unsigned int merged_allele_count = 0;
+    unsigned int merged_allele_count = node.get_child(indices_of_children_with_alleles.at(0))->get_allele_count();
 
-    std::vector<double> pattern_probs_child1 = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
-    std::vector<double> pattern_probs_child2 = node.get_child(indices_of_children_with_alleles.at(1))->get_top_pattern_probs().get_pattern_prob_matrix();
-    std::vector<double> merged_pattern_probs;
-    merge_top_of_branch_partials(
-            allele_count_child1,
-            allele_count_child2,
-            pattern_probs_child1,
-            pattern_probs_child2,
-            merged_allele_count,
-            merged_pattern_probs);
+    std::vector<double> merged_pattern_probs = node.get_child(indices_of_children_with_alleles.at(0))->get_top_pattern_probs().get_pattern_prob_matrix();
 
-    for (unsigned int i = 2; i < node.get_number_of_children(); ++i) {
+    for (unsigned int i = 1; i < node.get_number_of_children(); ++i) {
         std::vector<double> pattern_probs_child1 = merged_pattern_probs;
         unsigned int allele_count_child1 = merged_allele_count;
-        allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
-        pattern_probs_child2 = node.get_child(
+        unsigned int allele_count_child2 = node.get_child(indices_of_children_with_alleles.at(i))->get_allele_count();
+        std::vector<double> pattern_probs_child2 = node.get_child(
                 indices_of_children_with_alleles.at(i))->get_top_pattern_probs().get_pattern_prob_matrix();
         merge_top_of_branch_partials(
                 allele_count_child1,
