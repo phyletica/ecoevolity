@@ -356,6 +356,42 @@ inline double get_pyp_log_prior_probability(
             concentration, discount);
 }
 
+template <typename T>
+inline double get_wdp_log_prior_probability(
+        const std::vector<T>& partition,
+        double concentration,
+        double discount) {
+    ECOEVOLITY_ASSERT((discount >= 0.0) && (discount < 1.0));
+    ECOEVOLITY_ASSERT(concentration > -discount);
+    double log_p = 0.0;
+    T current_element;
+    std::map<T, unsigned int> subset_counts;
+    unsigned ncategories = 0;
+    for (unsigned int i = 0; i < partition.size(); ++i) {
+        current_element = partition.at(i);
+        if (subset_counts.count(current_element) < 1) {
+            log_p += (std::log(concentration + (discount * i)) -
+                    std::log(concentration + i));
+            subset_counts[current_element] = 1;
+            ++ncategories;
+            continue;
+        }
+        log_p += (std::log(subset_counts[current_element] - (discount * subset_counts[current_element])) -
+                std::log(concentration + i));
+        ++subset_counts[current_element];
+    }
+    return log_p;
+}
+
+inline double get_wdp_log_prior_probability(
+        const std::string& partition,
+        double concentration,
+        double discount) {
+    std::vector<char> partition_vector(partition.begin(), partition.end());
+    return get_wdp_log_prior_probability<char>(partition_vector,
+            concentration, discount);
+}
+
 
 // Recursion is much slower (~ 1000 times slower!) than dynamic programming
 // approach below.
