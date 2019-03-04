@@ -182,6 +182,9 @@ inline double get_dpp_concentration(
         current_e = get_dpp_expected_number_of_categories(c,
                 number_of_elements);
     }
+    if (c <= 0.0) {
+        return precision;
+    }
     return c;
 }
 
@@ -264,6 +267,9 @@ inline double get_pyp_concentration(
         }
         current_e = get_pyp_expected_number_of_categories(c, discount,
                 number_of_elements);
+    }
+    if (c <= 0.0) {
+        return precision;
     }
     return c;
 }
