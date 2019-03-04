@@ -557,10 +557,17 @@ void CollectionOperatorInterface<DerivedOperatorType>::perform_collection_move(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
+
+    if (! this->compute_model_prior_) {
+        // If this operator requires skipping of model prior calculation, we
+        // need to update the prior without the model prior taken into account
+        comparisons->compute_log_likelihood_and_prior(false, this->compute_model_prior_);
+    }
+
     this->call_store_methods(comparisons);
 
     double hastings_ratio = this->propose(rng, comparisons, nthreads);
-    comparisons->compute_log_likelihood_and_prior(true);
+    comparisons->compute_log_likelihood_and_prior(true, this->compute_model_prior_);
 
     double likelihood_ratio = 
         comparisons->get_log_likelihood() -
@@ -582,6 +589,13 @@ void CollectionOperatorInterface<DerivedOperatorType>::perform_collection_move(
     }
     comparisons->make_trees_clean();
     this->optimize(comparisons->get_operator_schedule(), acceptance_probability);
+
+    if (! this->compute_model_prior_) {
+        // If this operator requires skipping of model prior calculation, we
+        // need to update prior WITH the model prior included now that we are
+        // done, so that the next operator does not get borked.
+        comparisons->compute_log_likelihood_and_prior(false, true);
+    }
 }
 
 

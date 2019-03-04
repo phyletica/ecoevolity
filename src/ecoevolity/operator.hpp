@@ -258,6 +258,8 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
 
 template<class DerivedOperatorType>
 class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
+    protected:
+        bool compute_model_prior_ = true;
 
     public:
         CollectionOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
@@ -1316,8 +1318,12 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
                 unsigned int number_of_nodes_in_event);
 
     public:
-        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() { }
-        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() {
+            this->compute_model_prior_ = false;
+        }
+        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) {
+            this->compute_model_prior_ = false;
+        }
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;

@@ -73,7 +73,9 @@ class BaseComparisonPopulationTreeCollection {
         void restore_state();
         void store_model_state();
         void restore_model_state();
-        void compute_log_likelihood_and_prior(bool compute_partials = true);
+        void compute_log_likelihood_and_prior(
+                bool compute_partials = true,
+                bool compute_model_prior = true);
 
         void compute_tree_partials();
         void make_trees_clean();
