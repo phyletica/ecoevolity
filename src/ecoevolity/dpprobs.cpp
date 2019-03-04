@@ -103,6 +103,34 @@ int dpprobs_main(int argc, char * argv[]) {
                   "ignored, and the concentration parameter is treated as a "
                   "gamma-distriuted random variable with shape and scale "
                   "specified by the \'--shape\' and \'--scale\' options.");
+    parser.add_option("-d", "--discount")
+            .action("store")
+            .type("double")
+            .dest("discount")
+            .set_default("0.0")
+            .help("The value of the discount parameter of the Pitman-Yor "
+                    "process. Default is zero, which is the Dirichlet "
+                    "process. Any value greater than zero, but less than 1.0, "
+                    "results in a Pitman-Yor process. If parameters for a beta "
+                    "prior on discount are provided (i.e., using "
+                    "\'--discount-a\' and \'--discount-b\'), this setting is "
+                    "ignored, and the discount is drawn from the beta prior.");
+    parser.add_option("--discount-alpha")
+            .action("store")
+            .type("double")
+            .dest("discount_alpha")
+            .set_default("1.0")
+            .help("Alpha parameter of the beta-distributed prior on the "
+                  "discount parameter of the Pitman-Yor process. The "
+                  "\'--discount-b\' option must also be specified.");
+    parser.add_option("--discount-beta")
+            .action("store")
+            .type("double")
+            .dest("discount_beta")
+            .set_default("1.0")
+            .help("Beta parameter of the beta-distributed prior on the "
+                  "discount parameter of the Pitman-Yor process. The "
+                  "\'--discount-a\' option must also be specified.");
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();
@@ -117,6 +145,55 @@ int dpprobs_main(int argc, char * argv[]) {
                 "a parameter value and the number of elements is required.");
     }
 
+    // Parse discount options
+    if ((options.is_set_by_user("discount_alpha")) &&
+            (! options.is_set_by_user("discount_beta"))) {
+        throw EcoevolityError("\'--discount-a\' option used without "
+                "\'--discount-b\'; they must be used together.");
+    }
+    if ((! options.is_set_by_user("discount_alpha")) &&
+            (options.is_set_by_user("discount_beta"))) {
+        throw EcoevolityError("\'--discount-b\' option used without "
+                "\'--discount-a\'; they must be used together.");
+    }
+    EcoevolityOptions::ModelPrior model_prior = EcoevolityOptions::ModelPrior::dpp;
+    double discount = 0.0;
+    if (options.is_set_by_user("discount")) {
+        model_prior = EcoevolityOptions::ModelPrior::pyp;
+        discount = options.get("discount");
+    }
+    if ((discount < 0.0) || (discount >= 1.0)) {
+        std::ostringstream message;
+        message << "Invalid discount value ("
+                << discount
+                << "); it must be 0.0 <= discount < 1.0\n";
+        throw EcoevolityError(message.str());
+    }
+    double discount_mean = discount;
+    double discount_alpha = options.get("discount_alpha");
+    double discount_beta = options.get("discount_beta");
+    if (discount_alpha <= 0.0) {
+        std::ostringstream message;
+        message << "Alpha parameter of beta distribution (\'--discount-a\') "
+                << "is \' " << discount_alpha << "\'; it must be positive.";
+        throw EcoevolityError(message.str());
+    }
+    if (discount_beta <= 0.0) {
+        std::ostringstream message;
+        message << "Beta parameter of beta distribution (\'--discount-b\') "
+                << "is \' " << discount_beta << "\'; it must be positive.";
+        throw EcoevolityError(message.str());
+    }
+    bool discount_is_fixed = true;
+    if ((options.is_set_by_user("discount_alpha")) &&
+            (options.is_set_by_user("discount_beta"))) {
+        model_prior = EcoevolityOptions::ModelPrior::pyp;
+        discount_is_fixed = false;
+        discount_mean = discount_alpha / (discount_alpha + discount_beta);
+    }
+    BetaDistribution beta_dist_discount(discount_alpha, discount_beta);
+
+    // Parse parameter option
     double parameter_value = 1.0;
     const std::string parameter_value_arg = args.at(0);
     std::istringstream p_reader(parameter_value_arg);
@@ -159,12 +236,19 @@ int dpprobs_main(int argc, char * argv[]) {
     std::string parameter(p);
     if (parameter == "concentration") {
         concentration = parameter_value;
-        mean_ncats = get_dpp_expected_number_of_categories(concentration,
+        mean_ncats = get_pyp_expected_number_of_categories(concentration,
+                discount_mean,
                 number_of_elements);
     }
     else if (parameter == "mean") {
         mean_ncats = parameter_value;
-        concentration = get_dpp_concentration(mean_ncats, number_of_elements);
+        if (mean_ncats < 1.0) {
+            throw EcoevolityError(
+                    "Mean number of categories must be 1.0 or greater");
+        }
+        concentration = get_pyp_concentration(mean_ncats,
+                number_of_elements,
+                discount_mean);
     }
     else {
         throw EcoevolityError("Unrecognized parameter type: " + parameter);
@@ -188,7 +272,8 @@ int dpprobs_main(int argc, char * argv[]) {
         scale = options.get("scale");
         // Need to override specified parameter value argument
         concentration = shape * scale;
-        mean_ncats = get_dpp_expected_number_of_categories(concentration,
+        mean_ncats = get_pyp_expected_number_of_categories(concentration,
+                discount_mean,
                 number_of_elements);
     }
     if (scale <= 0.0) {
@@ -197,19 +282,33 @@ int dpprobs_main(int argc, char * argv[]) {
 
     GammaDistribution gamma_concentration(shape, scale);
 
+    if (model_prior == EcoevolityOptions::ModelPrior::dpp) {
+        std::cerr << "Process = Dirichlet\n";
+    }
+    else if (model_prior == EcoevolityOptions::ModelPrior::pyp) {
+        std::cerr << "Process = Pitman-Yor\n";
+    }
+    else {
+        throw EcoevolityError("Unexpected model prior.");
+    }
     std::cerr << "Seed = " << seed << std::endl;
     std::cerr << "Number of samples = " << nreps << std::endl;
     std::cerr << "Number of elements = " << number_of_elements << std::endl;
     if (concentration_is_fixed) {
         std::cerr << "Concentration = " << concentration << std::endl;
-        std::cerr << "Mean number of categories = " << mean_ncats << std::endl;
     }
     else {
         std::cerr << "Concentration ~ "
                   << gamma_concentration.to_string() << std::endl;
-        std::cerr << "Mean number of categories given mean concentration = "
-                  << mean_ncats << std::endl;
     }
+    if (discount_is_fixed) {
+        std::cerr << "Discount = " << discount << std::endl;
+    }
+    else {
+        std::cerr << "Discount ~ "
+                  << beta_dist_discount.to_string() << std::endl;
+    }
+    std::cerr << "Mean number of categories = " << mean_ncats << std::endl;
 
     std::string number_of_elements_str = std::to_string(number_of_elements);
     unsigned int ncats_padding = number_of_elements_str.size();
@@ -219,6 +318,7 @@ int dpprobs_main(int argc, char * argv[]) {
     time_t finish;
     time(&start);
 
+    unsigned int total = 0;
     std::vector<unsigned int> elements (number_of_elements, 0);
     std::map<unsigned int, unsigned int> number_of_categories_counts;
     for (unsigned int i = 1; i <= number_of_elements; ++i) {
@@ -229,9 +329,16 @@ int dpprobs_main(int argc, char * argv[]) {
         if (! concentration_is_fixed) {
             concentration = rng.gamma(shape, scale);
         }
-        number_of_categories = rng.dirichlet_process(elements, concentration);
+        if (! discount_is_fixed) {
+            discount = rng.beta(discount_alpha, discount_beta);
+        }
+        number_of_categories = rng.pitman_yor_process(elements, concentration, discount);
         ++number_of_categories_counts[number_of_categories];
+        total += number_of_categories;
     }
+
+    double sample_mean_ncats = (double)total / (double)nreps;
+    std::cerr << "Sample mean number of categories = " << sample_mean_ncats << std::endl;
 
     unsigned int tally = 0;
     for (auto const & kv: number_of_categories_counts) {

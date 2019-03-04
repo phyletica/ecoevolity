@@ -31,6 +31,7 @@
 #include "math_util.hpp"
 #include "probability.hpp"
 #include "string_util.hpp"
+#include "options.hpp"
 
 
 void write_dpprobs_splash(std::ostream& out);
