@@ -140,7 +140,7 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(
                     this->get_concentration(),
                     this->get_discount());
         }
-        if (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp) {
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp) {
             lnp += get_wdp_log_prior_probability<unsigned int>(
                     this->node_height_indices_,
                     this->get_concentration(),
