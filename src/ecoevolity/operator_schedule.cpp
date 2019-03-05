@@ -41,6 +41,11 @@ OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_wdp) {
+            this->add_operator(std::make_shared<WeightedDiscountProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
         else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
@@ -189,6 +194,11 @@ OperatorSchedule::OperatorSchedule(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_wdp) {
+            this->add_operator(std::make_shared<WeightedDiscountProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
         else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::rj) {
             this->add_operator(std::make_shared<ReversibleJumpSampler>(
                     settings.get_model_operator_settings().get_weight()));
@@ -333,6 +343,11 @@ OperatorSchedule::OperatorSchedule(
         }
         else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_pyp) {
             this->add_operator(std::make_shared<PitmanYorProcessGibbsSampler>(
+                    settings.get_model_operator_settings().get_weight(),
+                    settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
+        }
+        else if (collection_settings.get_model_operator() == EcoevolityOptions::ModelOperator::gibbs_wdp) {
+            this->add_operator(std::make_shared<WeightedDiscountProcessGibbsSampler>(
                     settings.get_model_operator_settings().get_weight(),
                     settings.get_model_operator_settings().get_number_of_auxiliary_categories()));
         }
@@ -614,6 +629,9 @@ EcoevolityOptions::ModelOperator OperatorSchedule::get_model_operator_type() con
         }
         if (op->get_name() == "PitmanYorProcessGibbsSampler") {
             return EcoevolityOptions::ModelOperator::gibbs_pyp;
+        }
+        if (op->get_name() == "WeightedDiscountProcessGibbsSampler") {
+            return EcoevolityOptions::ModelOperator::gibbs_wdp;
         }
         if (op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator) {
             return EcoevolityOptions::ModelOperator::rj;
