@@ -12,6 +12,7 @@ set(ECOEVOLITY_SOURCES
     ecoevolity.cpp
     simcoevolity.cpp
     dpprobs.cpp
+    wdprobs.cpp
     sumcoevolity.cpp
     data.cpp)
 
@@ -41,6 +42,11 @@ install(TARGETS simcoevolity
 add_executable(dpprobs dpprobs_main.cpp)
 target_link_libraries(dpprobs ${LIBRARIES_TO_LINK})
 install(TARGETS dpprobs
+        DESTINATION bin)
+
+add_executable(wdprobs wdprobs_main.cpp)
+target_link_libraries(wdprobs ${LIBRARIES_TO_LINK})
+install(TARGETS wdprobs
         DESTINATION bin)
 
 add_executable(sumcoevolity sumcoevolity_main.cpp)
