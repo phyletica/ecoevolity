@@ -97,7 +97,9 @@ void BaseComparisonPopulationTreeCollection::restore_model_state() {
     }
 }
 
-void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
+void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(
+        bool compute_partials,
+        bool compute_model_prior) {
     double lnl = 0.0;
     double lnp = 0.0;
     if (compute_partials) {
@@ -118,43 +120,49 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bo
         lnp += this->discount_->relative_prior_ln_pdf();
 
     }
-    // Compute the prior prob of model even when the concentration is fixed.
-    // Previously, below was skipped if the concentration was fixed, which
-    // worked because none of the moves that update the model (e.g.,
-    // DirichletProcessGibbsSampler) needed the prior ratio to determine
-    // acceptance. As a result, skipping this when not estimating the
-    // concentration parameter saved a bit of computation. However, any new
-    // moves that update the model that assume the prior is being taken care of
-    // here would not work correcty, but would still sample from the joint
-    // prior as if they were working! Thus, to make the code more future-proof,
-    // we will always compute the model prior here.
-    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
-        lnp += get_pyp_log_prior_probability<unsigned int>(
-                this->node_height_indices_,
-                this->get_concentration(),
-                this->get_discount());
-    }
-    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
-        lnp += get_dpp_log_prior_probability<unsigned int>(
-                this->node_height_indices_,
-                this->get_concentration());
-    }
-    // TODO: the uniform model repurposes the concentration parameter for its
-    // 'split_weight' parameter. Now that there's also discount parameter, it
-    // might be worth explicitly adding a 'split_weight' attribute to avoid
-    // confusion.
-    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
-        lnp += get_uniform_model_log_prior_probability(
-                this->get_number_of_trees(),
-                this->get_number_of_events(),
-                this->get_concentration());
-    }
-    else {
-        std::ostringstream message;
-        message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
-                << (int)this->model_prior_
-                << "\'\n";
-        throw EcoevolityError(message.str());
+    // ReversibleJumpSampler needs this conditional in order to skip the model
+    // prior computation, because it incorporates the model prior into the move
+    // itself.
+    if (compute_model_prior) {
+        // Compute the prior prob of model even when the concentration is fixed.
+        // Previously, below was skipped if the concentration was fixed, which
+        // worked because none of the moves that update the model (e.g.,
+        // DirichletProcessGibbsSampler) needed the prior ratio to determine
+        // acceptance. As a result, skipping this when not estimating the
+        // concentration parameter saved a bit of computation. However, any new
+        // moves that update the model that assume the prior is being taken care of
+        // here would not work correcty, but would still sample from the joint
+        // prior as if they were working! Thus, to make the code more future-proof,
+        // we will always compute the model prior here.
+        if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+            lnp += get_pyp_log_prior_probability<unsigned int>(
+                    this->node_height_indices_,
+                    this->get_concentration(),
+                    this->get_discount());
+        }
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+            lnp += get_dpp_log_prior_probability<unsigned int>(
+                    this->node_height_indices_,
+                    this->get_concentration());
+        }
+        // TODO: the uniform model repurposes the concentration parameter for its
+        // 'split_weight' parameter. Now that there's also discount parameter, it
+        // might be worth explicitly adding a 'split_weight' attribute to avoid
+        // confusion.
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+            lnp += get_uniform_model_log_prior_probability(
+                    this->get_number_of_trees(),
+                    this->get_number_of_events(),
+                    this->get_concentration());
+        }
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {}
+        else {
+            std::ostringstream message;
+            message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
+                    << (int)this->model_prior_
+                    << "\'\n";
+            throw EcoevolityError(message.str());
+        }
     }
 
     this->log_likelihood_.set_value(lnl);
@@ -836,6 +844,7 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
             this->node_heights_.at(height_idx)->set_value(
                     this->node_height_prior_->draw(rng));
         }
+        return;
     }
     else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
         // Not aware of an "easy" way of uniformly sampling set partitions, so
@@ -855,8 +864,8 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
             this->node_heights_.at(height_idx)->set_value(
                     this->node_height_prior_->draw(rng));
         }
+        return;
     }
-
     // Dealing with a process model prior
     unsigned int num_heights = this->node_heights_.size();
     unsigned int new_num_heights;
