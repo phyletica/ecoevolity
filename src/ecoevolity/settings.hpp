@@ -3465,7 +3465,7 @@ class BaseCollectionSettings {
                 keys.insert(parameter->first.as<std::string>());
 
                 if (parameter->first.as<std::string>() == "concentration") {
-                    this->parse_concentration_parameter(parameter->second);
+                    this->parse_concentration_parameter(parameter->second, false);
                 }
                 else if (parameter->first.as<std::string>() == "discount") {
                     this->discount_settings_ = PositiveRealParameterSettings(parameter->second);
@@ -3514,7 +3514,7 @@ class BaseCollectionSettings {
                 keys.insert(parameter->first.as<std::string>());
 
                 if (parameter->first.as<std::string>() == "concentration") {
-                    this->parse_concentration_parameter(parameter->second);
+                    this->parse_concentration_parameter(parameter->second, false);
                 }
                 else if (parameter->first.as<std::string>() == "discount") {
                     this->discount_settings_ = PositiveRealParameterSettings(parameter->second);
@@ -3554,7 +3554,8 @@ class BaseCollectionSettings {
             this->parse_split_weight_parameter(uniform_node["parameters"]["split_weight"]);
         }
 
-        void parse_concentration_parameter(const YAML::Node& node) {
+        void parse_concentration_parameter(const YAML::Node& node,
+                bool for_dpp = true) {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting concentration node to be a map, but found: " +
@@ -3595,8 +3596,8 @@ class BaseCollectionSettings {
                     this->concentration_settings_.is_fixed_ = (! f);
                 }
                 else if (arg->first.as<std::string>() == "prior") {
-                    this->concentration_settings_.prior_settings_ = this->parse_dpp_gamma_hyper_prior(
-                            arg->second);
+                    this->concentration_settings_.prior_settings_ = this->parse_concentration_hyper_prior(
+                            arg->second, for_dpp);
                 }
                 else {
                     std::string message = "Unrecognized concentration key: " +
@@ -3653,7 +3654,9 @@ class BaseCollectionSettings {
             }
         }
 
-        ContinuousDistributionSettings parse_dpp_gamma_hyper_prior(const YAML::Node& node) {
+        ContinuousDistributionSettings parse_concentration_hyper_prior(
+                const YAML::Node& node,
+                bool for_dpp = true) {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting concentration prior node to be a map, but found: " +
@@ -3689,7 +3692,7 @@ class BaseCollectionSettings {
             if (parameters["scale"]) {
                 scale = parameters["scale"].as<double>();
             }
-            else if (parameters["prior_mean_number_of_events"]) {
+            else if ((for_dpp) && (parameters["prior_mean_number_of_events"])) {
                 double prior_mean_num_events = parameters["prior_mean_number_of_events"].as<double>();
                 if (prior_mean_num_events < 1.0) {
                     throw EcoevolityYamlConfigError("prior_mean_number_of_events must be at least 1.0");
