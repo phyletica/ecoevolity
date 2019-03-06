@@ -3750,7 +3750,12 @@ double WeightedDiscountProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
 
-    unsigned int number_of_trees = comparisons->get_number_of_trees();
+    const unsigned int number_of_trees = comparisons->get_number_of_trees();
+
+    const double ln_concentration_over_num_aux = std::log(
+            (comparisons->get_concentration() + (comparisons->get_discount() * (number_of_trees - 1))) /
+            this->get_number_of_auxiliary_categories());
+
     for (unsigned int tree_idx = 0;
             tree_idx < number_of_trees;
             ++tree_idx) {
@@ -3764,10 +3769,6 @@ double WeightedDiscountProcessGibbsSampler::propose(RandomNumberGenerator& rng,
         std::vector<double> ln_tree_likelihoods;
         unsigned int number_of_aux_categories = this->get_number_of_auxiliary_categories();
         // unsigned int number_of_existing_categories = other_height_indices.size();
-
-        double ln_concentration_over_num_aux = std::log(
-                (comparisons->get_concentration() + (comparisons->get_discount() * (number_of_trees - 1))) /
-                this->get_number_of_auxiliary_categories());
 
         bool tree_in_singleton_category = false;
         if (other_height_indices.size() < comparisons->get_number_of_events()) {
