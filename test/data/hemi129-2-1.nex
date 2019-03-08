@@ -1,0 +1,22 @@
+#NEXUS
+
+BEGIN TAXA;
+    DIMENSIONS NTAX=3;
+    TAXLABELS
+        kya_GH37
+        kya_GH38
+        fas_GH210
+  ;
+END;
+
+BEGIN CHARACTERS;
+    DIMENSIONS NCHAR=13;
+    FORMAT DATATYPE=STANDARD SYMBOLS="012" MISSING=? GAP=-;
+    MATRIX
+        kya_GH37     0222112200201
+        kya_GH38     0222202100201
+        fas_GH210    0121202020101
+    ;
+END;
+
+

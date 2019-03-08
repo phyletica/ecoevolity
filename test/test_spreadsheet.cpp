@@ -70,7 +70,7 @@ TEST_CASE("Testing parse on empty file", "[spreadsheet]") {
         std::map<std::string, std::vector<std::string> > data;
         std::vector<std::string> header;
         REQUIRE_THROWS_AS(spreadsheet::parse(in_stream, data, header),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
         in_stream.close();
     }
 
@@ -78,7 +78,7 @@ TEST_CASE("Testing parse on empty file", "[spreadsheet]") {
         std::map<std::string, std::vector<std::string> > data;
         std::vector<std::string> header;
         REQUIRE_THROWS_AS(spreadsheet::parse(test_path, data, header),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
     }
 }
 
@@ -89,7 +89,7 @@ TEST_CASE("Testing parse on empty stream", "[spreadsheet]") {
         std::map<std::string, std::vector<std::string> > data;
         std::vector<std::string> header;
         REQUIRE_THROWS_AS(spreadsheet::parse(stream, data, header),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
     }
 }
 
@@ -461,14 +461,14 @@ TEST_CASE("Testing Spreadsheet.update on empty file", "[spreadsheet]") {
 
         spreadsheet::Spreadsheet data = spreadsheet::Spreadsheet();
         REQUIRE_THROWS_AS(data.update(in_stream),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
         in_stream.close();
     }
 
     SECTION("Testing path of empty file") {
         spreadsheet::Spreadsheet data = spreadsheet::Spreadsheet();
         REQUIRE_THROWS_AS(data.update(test_path),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
     }
 }
 
@@ -478,7 +478,7 @@ TEST_CASE("Testing Spreadsheet.update on empty stream", "[spreadsheet]") {
 
         spreadsheet::Spreadsheet data = spreadsheet::Spreadsheet();
         REQUIRE_THROWS_AS(data.update(stream),
-                EcoevolityParsingError);
+                EcoevolityParsingError &);
     }
 }
 

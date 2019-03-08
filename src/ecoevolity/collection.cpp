@@ -32,6 +32,9 @@ void BaseComparisonPopulationTreeCollection::store_state() {
     if (! this->concentration_is_fixed()) {
         this->concentration_->store();
     }
+    if (! this->discount_is_fixed()) {
+        this->discount_->store();
+    }
 }
 void BaseComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
@@ -44,6 +47,9 @@ void BaseComparisonPopulationTreeCollection::restore_state() {
     }
     if (! this->concentration_is_fixed()) {
         this->concentration_->restore();
+    }
+    if (! this->discount_is_fixed()) {
+        this->discount_->restore();
     }
 }
 
@@ -91,7 +97,9 @@ void BaseComparisonPopulationTreeCollection::restore_model_state() {
     }
 }
 
-void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bool compute_partials) {
+void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(
+        bool compute_partials,
+        bool compute_model_prior) {
     double lnl = 0.0;
     double lnp = 0.0;
     if (compute_partials) {
@@ -105,19 +113,56 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(bo
         lnp += this->node_heights_.at(h)->relative_prior_ln_pdf();
     }
     if (! this->concentration_is_fixed()) {
-        if (this->using_dpp()) {
+        lnp += this->concentration_->relative_prior_ln_pdf();
+
+    }
+    if (! this->discount_is_fixed()) {
+        lnp += this->discount_->relative_prior_ln_pdf();
+
+    }
+    // ReversibleJumpSampler needs this conditional in order to skip the model
+    // prior computation, because it incorporates the model prior into the move
+    // itself.
+    if (compute_model_prior) {
+        // Compute the prior prob of model even when the concentration is fixed.
+        // Previously, below was skipped if the concentration was fixed, which
+        // worked because none of the moves that update the model (e.g.,
+        // DirichletProcessGibbsSampler) needed the prior ratio to determine
+        // acceptance. As a result, skipping this when not estimating the
+        // concentration parameter saved a bit of computation. However, any new
+        // moves that update the model that assume the prior is being taken care of
+        // here would not work correcty, but would still sample from the joint
+        // prior as if they were working! Thus, to make the code more future-proof,
+        // we will always compute the model prior here.
+        if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+            lnp += get_pyp_log_prior_probability<unsigned int>(
+                    this->node_height_indices_,
+                    this->get_concentration(),
+                    this->get_discount());
+        }
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
             lnp += get_dpp_log_prior_probability<unsigned int>(
                     this->node_height_indices_,
                     this->get_concentration());
         }
-        else {
+        // TODO: the uniform model repurposes the concentration parameter for its
+        // 'split_weight' parameter. Now that there's also discount parameter, it
+        // might be worth explicitly adding a 'split_weight' attribute to avoid
+        // confusion.
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
             lnp += get_uniform_model_log_prior_probability(
                     this->get_number_of_trees(),
                     this->get_number_of_events(),
                     this->get_concentration());
         }
-        lnp += this->concentration_->relative_prior_ln_pdf();
-
+        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {}
+        else {
+            std::ostringstream message;
+            message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
+                    << (int)this->model_prior_
+                    << "\'\n";
+            throw EcoevolityError(message.str());
+        }
     }
 
     this->log_likelihood_.set_value(lnl);
@@ -540,11 +585,18 @@ void BaseComparisonPopulationTreeCollection::write_state_log_header(
         << "ln_likelihood" << this->logging_delimiter_
         << "ln_prior" << this->logging_delimiter_
         << "number_of_events";
-    if (this->using_dpp()) {
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        out << this->logging_delimiter_ << "concentration"
+            << this->logging_delimiter_ << "discount";
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
         out << this->logging_delimiter_ << "concentration";
     }
-    else {
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
         out << this->logging_delimiter_ << "split_weight";
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+        // Nothing to report
     }
     if (short_summary) {
         out << std::endl;
@@ -567,8 +619,20 @@ void BaseComparisonPopulationTreeCollection::log_state(std::ostream& out,
     out << generation_index << this->logging_delimiter_
         << this->log_likelihood_.get_value() << this->logging_delimiter_
         << this->log_prior_density_.get_value() << this->logging_delimiter_
-        << this->get_number_of_events()
-        << this->logging_delimiter_ << this->get_concentration();
+        << this->get_number_of_events();
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        out << this->logging_delimiter_ << this->get_concentration()
+            << this->logging_delimiter_ << this->get_discount();
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+        out << this->logging_delimiter_ << this->get_concentration();
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+        out << this->logging_delimiter_ << this->get_concentration();
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+        // Nothing to report
+    }
     if (short_summary) {
         out << std::endl;
         return;
@@ -797,33 +861,16 @@ void BaseComparisonPopulationTreeCollection::set_node_height_indices(
 }
 
 void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumberGenerator& rng) {
-    if (this->using_dpp()) {
-        unsigned int num_heights = this->node_heights_.size();
-        unsigned int new_num_heights = rng.dirichlet_process(this->node_height_indices_, this->get_concentration());
-        if (new_num_heights > num_heights) {
-            for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
-                this->node_heights_.push_back(
-                        std::make_shared<PositiveRealParameter>(
-                            this->node_height_prior_));
-            }
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+        for (unsigned int height_idx = 0;
+                height_idx < this->node_heights_.size();
+                ++height_idx) {
+            this->node_heights_.at(height_idx)->set_value(
+                    this->node_height_prior_->draw(rng));
         }
-        else if (new_num_heights < num_heights) {
-            for (unsigned int i = 0; i < (num_heights - new_num_heights); ++i) {
-                this->node_heights_.pop_back();
-            }
-        }
-        for (unsigned int i = 0; i < new_num_heights; ++i) {
-            this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
-        }
-        for (unsigned int tree_idx = 0;
-                tree_idx < this->trees_.size();
-                ++tree_idx) {
-            unsigned int height_index = this->node_height_indices_.at(tree_idx);
-            this->trees_.at(tree_idx)->set_root_height_parameter(
-                    this->get_height_parameter(height_index));
-        }
+        return;
     }
-    else if (this->using_reversible_jump()) {
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
         // Not aware of an "easy" way of uniformly sampling set partitions, so
         // (hackily) using reversible jump MCMC to do so.
         bool was_ignoring_data = this->ignoring_data();
@@ -841,19 +888,56 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
             this->node_heights_.at(height_idx)->set_value(
                     this->node_height_prior_->draw(rng));
         }
+        return;
+    }
+    // Dealing with a process model prior
+    unsigned int num_heights = this->node_heights_.size();
+    unsigned int new_num_heights;
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+        new_num_heights = rng.pitman_yor_process(
+                this->node_height_indices_,
+                this->get_concentration(),
+                this->get_discount());
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+        new_num_heights = rng.dirichlet_process(
+                this->node_height_indices_,
+                this->get_concentration());
     }
     else {
-        for (unsigned int height_idx = 0;
-                height_idx < this->node_heights_.size();
-                ++height_idx) {
-            this->node_heights_.at(height_idx)->set_value(
-                    this->node_height_prior_->draw(rng));
+        std::ostringstream message;
+        message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
+                << (int)this->model_prior_
+                << "\'\n";
+        throw EcoevolityError(message.str());
+    }
+    if (new_num_heights > num_heights) {
+        for (unsigned int i = 0; i < (new_num_heights - num_heights); ++i) {
+            this->node_heights_.push_back(
+                    std::make_shared<PositiveRealParameter>(
+                        this->node_height_prior_));
         }
+    }
+    else if (new_num_heights < num_heights) {
+        for (unsigned int i = 0; i < (num_heights - new_num_heights); ++i) {
+            this->node_heights_.pop_back();
+        }
+    }
+    for (unsigned int i = 0; i < new_num_heights; ++i) {
+        this->node_heights_.at(i)->set_value(this->node_height_prior_->draw(rng));
+    }
+    for (unsigned int tree_idx = 0;
+            tree_idx < this->trees_.size();
+            ++tree_idx) {
+        unsigned int height_index = this->node_height_indices_.at(tree_idx);
+        this->trees_.at(tree_idx)->set_root_height_parameter(
+                this->get_height_parameter(height_index));
     }
 }
 
 void BaseComparisonPopulationTreeCollection::draw_from_prior(RandomNumberGenerator& rng) {
     this->concentration_->set_value_from_prior(rng);
+    this->discount_->set_value_from_prior(rng);
     this->draw_heights_from_prior(rng);
     for (unsigned int i = 0; i < this->trees_.size(); ++i) {
         this->trees_.at(i)->draw_from_prior(rng);
@@ -896,6 +980,21 @@ std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::sim
     return alignments;
 }
 
+std::map<std::string, BiallelicData> BaseComparisonPopulationTreeCollection::simulate_linked_biallelic_data_sets(
+        RandomNumberGenerator& rng,
+        float singleton_sample_probability,
+        bool max_one_variable_site_per_locus,
+        bool validate) const {
+    std::map<std::string, BiallelicData> alignments;
+    for (auto tree: this->trees_) {
+        alignments[tree->get_data().get_path()] = tree->simulate_linked_biallelic_data_set(
+                rng,
+                singleton_sample_probability,
+                max_one_variable_site_per_locus,
+                validate);
+    }
+    return alignments;
+}
 
 
 
@@ -904,7 +1003,8 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -912,9 +1012,11 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
+    this->discount_ = std::make_shared<DiscountParameter>(
+            settings.get_discount_settings(),
+            rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings,
-            settings.using_dpp());
+            settings);
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
     }
@@ -922,12 +1024,14 @@ ComparisonPopulationTreeCollection::ComparisonPopulationTreeCollection(
             rng,
             strict_on_constant_sites,
             strict_on_missing_sites,
-            strict_on_triallelic_sites);
+            strict_on_triallelic_sites,
+            store_seq_loci_info);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
     if (settings.event_model_is_fixed()) {
         this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
     }
+    this->model_prior_ = settings.get_model_prior();
 }
 
 void ComparisonPopulationTreeCollection::init_trees(
@@ -935,7 +1039,8 @@ void ComparisonPopulationTreeCollection::init_trees(
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info
         ) {
     std::unordered_set<std::string> population_labels;
     double fresh_height;
@@ -949,7 +1054,8 @@ void ComparisonPopulationTreeCollection::init_trees(
                 rng,
                 strict_on_constant_sites,
                 strict_on_missing_sites,
-                strict_on_triallelic_sites
+                strict_on_triallelic_sites,
+                store_seq_loci_info
                 );
         for (auto const& pop_label: new_tree->get_population_labels()) {
             auto p = population_labels.insert(pop_label);
@@ -986,7 +1092,8 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -994,9 +1101,11 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
+    this->discount_ = std::make_shared<DiscountParameter>(
+            settings.get_discount_settings(),
+            rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings,
-            settings.using_dpp());
+            settings);
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
     }
@@ -1004,12 +1113,14 @@ ComparisonRelativeRootPopulationTreeCollection::ComparisonRelativeRootPopulation
             rng,
             strict_on_constant_sites,
             strict_on_missing_sites,
-            strict_on_triallelic_sites);
+            strict_on_triallelic_sites,
+            store_seq_loci_info);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
     if (settings.event_model_is_fixed()) {
         this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
     }
+    this->model_prior_ = settings.get_model_prior();
 }
 
 void ComparisonRelativeRootPopulationTreeCollection::init_trees(
@@ -1017,7 +1128,8 @@ void ComparisonRelativeRootPopulationTreeCollection::init_trees(
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info
         ) {
     std::unordered_set<std::string> population_labels;
     double fresh_height;
@@ -1031,7 +1143,8 @@ void ComparisonRelativeRootPopulationTreeCollection::init_trees(
                 rng,
                 strict_on_constant_sites,
                 strict_on_missing_sites,
-                strict_on_triallelic_sites
+                strict_on_triallelic_sites,
+                store_seq_loci_info
                 );
         for (auto const& pop_label: new_tree->get_population_labels()) {
             auto p = population_labels.insert(pop_label);
@@ -1068,7 +1181,8 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info
         ) : BaseComparisonPopulationTreeCollection() {
     this->state_log_path_ = settings.get_state_log_path();
     this->operator_log_path_ = settings.get_operator_log_path();
@@ -1076,9 +1190,11 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
     this->concentration_ = std::make_shared<PositiveRealParameter>(
             settings.get_concentration_settings(),
             rng);
+    this->discount_ = std::make_shared<DiscountParameter>(
+            settings.get_discount_settings(),
+            rng);
     this->operator_schedule_ = OperatorSchedule(
-            settings,
-            settings.using_dpp());
+            settings);
     if (this->operator_schedule_.get_total_weight() <= 0.0) {
         throw EcoevolityError("No operators have weight");
     }
@@ -1086,12 +1202,14 @@ ComparisonDirichletPopulationTreeCollection::ComparisonDirichletPopulationTreeCo
             rng,
             strict_on_constant_sites,
             strict_on_missing_sites,
-            strict_on_triallelic_sites);
+            strict_on_triallelic_sites,
+            store_seq_loci_info);
     this->stored_node_heights_.reserve(this->trees_.size());
     this->stored_node_height_indices_.reserve(this->trees_.size());
     if (settings.event_model_is_fixed()) {
         this->set_node_height_indices(settings.get_fixed_event_model_indices(), rng);
     }
+    this->model_prior_ = settings.get_model_prior();
 }
 
 void ComparisonDirichletPopulationTreeCollection::init_trees(
@@ -1099,7 +1217,8 @@ void ComparisonDirichletPopulationTreeCollection::init_trees(
         RandomNumberGenerator & rng,
         bool strict_on_constant_sites,
         bool strict_on_missing_sites,
-        bool strict_on_triallelic_sites
+        bool strict_on_triallelic_sites,
+        bool store_seq_loci_info
         ) {
     std::unordered_set<std::string> population_labels;
     double fresh_height;
@@ -1113,7 +1232,8 @@ void ComparisonDirichletPopulationTreeCollection::init_trees(
                 rng,
                 strict_on_constant_sites,
                 strict_on_missing_sites,
-                strict_on_triallelic_sites
+                strict_on_triallelic_sites,
+                store_seq_loci_info
                 );
         for (auto const& pop_label: new_tree->get_population_labels()) {
             auto p = population_labels.insert(pop_label);

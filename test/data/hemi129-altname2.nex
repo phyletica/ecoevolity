@@ -74,3 +74,10 @@ BEGIN CHARACTERS;
         pop1b_GH347    02222220220222200200
     ;
 END;
+
+BEGIN SETS;
+    charset locus1 = 1-5;
+    charset locus2 = 6-10;
+    charset locus3 = 11-15;
+    charset locus4 = 16-20;
+END;

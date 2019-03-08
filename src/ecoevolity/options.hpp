@@ -17,25 +17,29 @@
  * with Ecoevolity.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
-#ifndef DPPROBS_HPP
-#define DPPROBS_HPP
-
-#include <limits>
-#include <time.h>
-
-#include "cpp-optparse/OptionParser.h"
-
-#include "version.hpp"
-#include "error.hpp"
-#include "rng.hpp"
-#include "math_util.hpp"
-#include "probability.hpp"
-#include "string_util.hpp"
-#include "options.hpp"
+#ifndef ECOEVOLITY_OPTIONS_HPP
+#define ECOEVOLITY_OPTIONS_HPP
 
 
-void write_dpprobs_splash(std::ostream& out);
+class EcoevolityOptions {
 
-int dpprobs_main(int argc, char * argv[]);
+    public:
+        EcoevolityOptions() { }
+
+		enum ModelPrior {
+            fixed = 1,
+            uniform = 2,
+            dpp = 3,
+            pyp = 4,
+        };
+
+        enum ModelOperator {
+            none = 1,
+            rj = 2,
+            gibbs_dpp = 3,
+            gibbs_pyp = 4,
+        };
+
+};
 
 #endif

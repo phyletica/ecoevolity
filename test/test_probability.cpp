@@ -12,9 +12,9 @@ TEST_CASE("Testing ImproperUniformDistribution", "[ImproperUniformDistribution]"
         REQUIRE(u.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(u.get_min() == -std::numeric_limits<double>::infinity());
         REQUIRE(u.to_string() == "uniform(-inf, +inf)");
-        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistributionError &);
         REQUIRE(u.relative_ln_pdf(1.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(100.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(-1.0) == 0.0);
@@ -29,9 +29,9 @@ TEST_CASE("Testing ImproperPositiveUniformDistribution", "[ImproperPositiveUnifo
         REQUIRE(u.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(u.get_min() == 0.0);
         REQUIRE(u.to_string() == "uniform(0, +inf)");
-        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(u.get_mean(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u.get_variance(), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(u.ln_pdf(1.0), EcoevolityProbabilityDistributionError &);
         REQUIRE(u.relative_ln_pdf(1.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(100.0) == 0.0);
         REQUIRE(u.relative_ln_pdf(-1.0) == -std::numeric_limits<double>::infinity());
@@ -137,10 +137,10 @@ TEST_CASE("Testing UniformDistribution", "[UniformDistribution]") {
 TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(BetaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(BetaDistribution(1.0, 0.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(BetaDistribution(-1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(BetaDistribution(1.0, -1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(BetaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(BetaDistribution(1.0, 0.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(BetaDistribution(-1.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(BetaDistribution(1.0, -1.0), EcoevolityProbabilityDistributionError &);
     }
 
     SECTION("Testing bare constructor") {
@@ -401,10 +401,10 @@ TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
     }
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(0.0, 1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(1.0, 0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(-1.0, 1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetGammaDistribution(1.0, -1.0, 1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(OffsetGammaDistribution(0.0, 1.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(OffsetGammaDistribution(1.0, 0.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(OffsetGammaDistribution(-1.0, 1.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(OffsetGammaDistribution(1.0, -1.0, 1.0), EcoevolityProbabilityDistributionError &);
     }
 
     SECTION("Testing OffsetGammaDistribution(2, 4, 5)") {
@@ -538,10 +538,10 @@ TEST_CASE("Testing GammaDistribution", "[GammaDistribution]") {
         REQUIRE(mn == Approx(0.0).epsilon(0.001));
     }
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(GammaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(GammaDistribution(1.0, 0.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(GammaDistribution(-1.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(GammaDistribution(1.0, -1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(GammaDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(GammaDistribution(1.0, 0.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(GammaDistribution(-1.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(GammaDistribution(1.0, -1.0), EcoevolityProbabilityDistributionError &);
     }
 
     SECTION("Testing GammaDistribution(2, 4)") {
@@ -675,8 +675,8 @@ TEST_CASE("Testing OffsetExponentialDistribution", "[OffsetExponentialDistributi
     }
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(OffsetExponentialDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(OffsetExponentialDistribution(-0.01, 1.0), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(OffsetExponentialDistribution(0.0, 1.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(OffsetExponentialDistribution(-0.01, 1.0), EcoevolityProbabilityDistributionError &);
     }
 
     SECTION("Testing OffsetExponentialDistribution(5, -5)") {
@@ -772,8 +772,8 @@ TEST_CASE("Testing ExponentialDistribution", "[ExponentialDistribution]") {
     }
 
     SECTION("Testing constructor errors") {
-        REQUIRE_THROWS_AS(ExponentialDistribution(0.0), EcoevolityProbabilityDistributionError);
-        REQUIRE_THROWS_AS(ExponentialDistribution(-0.01), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(ExponentialDistribution(0.0), EcoevolityProbabilityDistributionError &);
+        REQUIRE_THROWS_AS(ExponentialDistribution(-0.01), EcoevolityProbabilityDistributionError &);
     }
 
     SECTION("Testing ExponentialDistribution(5)") {
@@ -868,13 +868,13 @@ TEST_CASE("Testing DirichletDistribution constructor errors",
 
     SECTION("Testing constructor errors") {
         std::vector<double> parameters = {0.0, 2.0};
-        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError &);
         parameters = {2.0, 0.0};
-        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError &);
         parameters = {1.0, -1.0};
-        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError &);
         parameters = {-1.0, 1.0};
-        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError);
+        REQUIRE_THROWS_AS(DirichletDistribution f = DirichletDistribution(parameters), EcoevolityProbabilityDistributionError &);
     }
 }
 

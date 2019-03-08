@@ -1,5 +1,7 @@
 #include "catch.hpp"
+#include "ecoevolity/rng.hpp"
 #include "ecoevolity/math_util.hpp"
+#include "ecoevolity/stats_util.hpp"
 
 TEST_CASE("Testing get_uniform_model_log_prior_probability with n=1, split_weight=1.0",
         "[math_util]") {
@@ -371,6 +373,26 @@ TEST_CASE("Testing get_dpp_expected_number_of_categories 1.068 7282", "[math_uti
     REQUIRE(e == Approx(10.0).epsilon(0.0001));
 }
 
+TEST_CASE("Testing get_dpp_expected_number_of_categories 2.9, 10", "[math_util]") {
+    SECTION("Testing 2.9, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double e = get_dpp_expected_number_of_categories(a, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.dirichlet_process(elements, a);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
+}
+
 TEST_CASE("Testing get_dpp_concentration 3.0 7282", "[math_util]") {
     double e = get_dpp_concentration(3.0, 7282);
     REQUIRE(e == Approx(0.218).epsilon(0.001));
@@ -425,6 +447,80 @@ TEST_CASE("Testing get_dpp_log_prior_probability with {0,0} alpha=1",
     }
 }
 
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,0} alpha=1, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(0.5);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "00";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,0} alpha=1, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(0.5);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "00";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+}
+
 TEST_CASE("Testing get_dpp_log_prior_probability with {0,0} alpha=0.5",
         "[math_util]") {
     double concentration = 0.5;
@@ -474,6 +570,80 @@ TEST_CASE("Testing get_dpp_log_prior_probability with {0,1} alpha=0.5",
     SECTION("Testing string") {
         std::string partition = "01";
         REQUIRE(get_dpp_log_prior_probability(partition, concentration) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,1} alpha=0.5, discount=0.0",
+        "[math_util]") {
+    double concentration = 0.5;
+    double discount = 0.0;
+    double expected_prob = std::log(1.0/3.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "01";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,1} alpha=0.5, discount=0.0",
+        "[math_util]") {
+    double concentration = 0.5;
+    double discount = 0.0;
+    double expected_prob = std::log(1.0/3.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "01";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                    concentration,
+                    discount) == Approx(expected_prob));
     }
 }
 
@@ -1193,3 +1363,805 @@ TEST_CASE("Testing log_multinomial_coefficient", "[math_util]") {
         REQUIRE(log_multinomial_coefficient(x) == Approx(std::log(1260.0)));
     }
 }
+
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,0,0} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(2.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 0};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 0};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 0};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '0'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "000";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,0,0} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(2.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 0};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 0};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 0};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '0'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "000";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,0,1} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(3.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 1};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 1};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 1};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '1'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "001";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,0,1} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(3.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 1};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 1};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 1};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '1'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "001";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,1,0} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(3.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 0};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 0};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 0};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '0'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "010";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,1,0} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(3.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 0};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 0};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 0};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '0'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "010";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,1,1} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(3.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 1};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 1};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 1};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '1'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "011";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,1,1} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(3.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 1};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 1};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 1};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '1'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "011";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,1,2} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(9.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 2};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 2};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 2};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '2'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "012";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,1,2} alpha=3.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 3.0;
+    double discount = 0.0;
+    double expected_prob = std::log(9.0/20.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 2};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 2};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 2};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '2'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "012";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,0,0,0,0} alpha=1.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(24.0/120.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 0, 0, 0};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 0, 0, 0};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 0, 0, 0};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '0', '0', '0'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "00000";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,0,0,0,0} alpha=1.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(24.0/120.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 0, 0, 0};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 0, 0, 0};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 0, 0, 0};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '0', '0', '0'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "00000";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,1,2,3,4} alpha=1.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(1.0/120.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 2, 3, 4};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 2, 3, 4};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 2, 3, 4};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '2', '3', '4'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "01234";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,1,2,3,4} alpha=1.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(1.0/120.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 1, 2, 3, 4};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 1, 2, 3, 4};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 1, 2, 3, 4};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '1', '2', '3', '4'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "01234";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability with {0,0,1,0,2} alpha=1.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(2.0/120.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_pyp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_pyp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_pyp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '1', '0', '2'};
+        REQUIRE(get_pyp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "00102";
+        REQUIRE(get_pyp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_wdp_log_prior_probability with {0,0,1,0,2} alpha=1.0, discount=0.0",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.0;
+    double expected_prob = std::log(2.0/120.0);
+    SECTION("Testing vector of unsigned int") {
+        std::vector<unsigned int> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_wdp_log_prior_probability<unsigned int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of int") {
+        std::vector<int> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_wdp_log_prior_probability<int>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of size_t") {
+        std::vector<size_t> partition = {0, 0, 1, 0, 2};
+        REQUIRE(get_wdp_log_prior_probability<size_t>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing vector of char") {
+        std::vector<char> partition = {'0', '0', '1', '0', '2'};
+        REQUIRE(get_wdp_log_prior_probability<char>(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+    SECTION("Testing string") {
+        std::string partition = "00102";
+        REQUIRE(get_wdp_log_prior_probability(partition,
+                concentration,
+                discount) == Approx(expected_prob));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 0.218, 0.0, 7282", "[math_util]") {
+    double e = get_pyp_expected_number_of_categories(0.218, 0.0, 7282);
+    REQUIRE(e == Approx(3.0).epsilon(0.001));
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 1.068, 0.0, 7282", "[math_util]") {
+    double e = get_pyp_expected_number_of_categories(1.068, 0.0, 7282);
+    REQUIRE(e == Approx(10.0).epsilon(0.0001));
+}
+
+TEST_CASE("Testing ln_pochhammer", "[math_util]") {
+    SECTION("testing ln_pochhammer(1, 5)") {
+        REQUIRE(ln_pochhammer(1, 5) == Approx(std::log(120.0)));
+        REQUIRE(ln_pochhammer(2.9, 10) == Approx(std::log(203697425)));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.5, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.5, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.5;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.pitman_yor_process(elements, a, d);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.1, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.1, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.1;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.pitman_yor_process(elements, a, d);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing get_pyp_expected_number_of_categories 2.9, 0.9, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.9, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.9;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        std::vector<unsigned int> elements (num_elements, 0);
+        REQUIRE(elements.size() == num_elements);
+        SampleSummarizer<double> ncats;
+        RandomNumberGenerator rng(342254);
+
+        unsigned int nsamples = 100000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.pitman_yor_process(elements, a, d);
+            ncats.add_sample(float(n));
+        }
+        REQUIRE(ncats.mean() == Approx(e).epsilon(0.005));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration 3.0, 0.0,  7282", "[math_util]") {
+    double e = get_pyp_concentration(3.0, 7282, 0.0);
+    REQUIRE(e == Approx(0.218).epsilon(0.001));
+}
+TEST_CASE("Testing get_pyp_concentration 10.0, 0.0, 7282", "[math_util]") {
+    double e = get_pyp_concentration(10.0, 7282, 0.0);
+    REQUIRE(e == Approx(1.068).epsilon(0.0001));
+}
+
+TEST_CASE("Testing get_pyp_concentration 2.9, 0.1, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.1, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.1;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        double conc = get_pyp_concentration(e, num_elements, d);
+
+        REQUIRE(conc == Approx(a).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration 2.9, 0.5, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.5, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.5;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        double conc = get_pyp_concentration(e, num_elements, d);
+
+        REQUIRE(conc == Approx(a).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration 2.9, 0.9, 10", "[math_util]") {
+    SECTION("Testing 2.9, 0.9, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.9;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+
+        double conc = get_pyp_concentration(e, num_elements, d);
+
+        REQUIRE(conc == Approx(a).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing get_pyp_concentration_gamma_scale", "[math_util]") {
+    SECTION("Testing 2.9, 0.5, 10") {
+        unsigned int num_elements = 10;
+        double a = 2.9;
+        double d = 0.5;
+        double e = get_pyp_expected_number_of_categories(a, d, num_elements);
+        std::vector<double> shapes {0.001, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 100.0, 10000.0};
+        for (auto shape : shapes) {
+            double scale = get_pyp_concentration_gamma_scale(e, num_elements, d, shape);
+            REQUIRE(a == Approx(shape * scale).epsilon(0.001));
+        }
+    }
+}
+
+TEST_CASE("Testing get_dpp_log_prior_probability exchangeability with 6 elements sets of size 1, 2, 3",
+        "[math_util]") {
+    double concentration = 1.0;
+    std::vector<unsigned int> partition = {0, 0, 0, 1, 1, 2};
+    double log_p = get_dpp_log_prior_probability<unsigned int>(partition, concentration);
+    std::vector< std::vector<unsigned int> > permutations = {
+            {0, 1, 1, 2, 2, 2},
+            {0, 0, 1, 2, 2, 2},
+            {0, 1, 1, 1, 2, 2},
+            {0, 0, 1, 1, 1, 2},
+            {0, 1, 0, 1, 0, 2},
+            {0, 1, 1, 0, 0, 2},
+            {0, 1, 2, 0, 0, 1},
+            {0, 1, 2, 1, 0, 0},
+            {0, 1, 2, 0, 1, 0},
+    };
+    for (unsigned int i = 0; i < permutations.size(); ++i) {
+        REQUIRE(log_p == get_dpp_log_prior_probability(permutations.at(i), concentration));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability exchangeability with 6 elements sets of size 1, 2, 3",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.5;
+    std::vector<unsigned int> partition = {0, 0, 0, 1, 1, 2};
+    double log_p = get_pyp_log_prior_probability<unsigned int>(partition, concentration, discount);
+    std::vector< std::vector<unsigned int> > permutations = {
+            {0, 1, 1, 2, 2, 2},
+            {0, 0, 1, 2, 2, 2},
+            {0, 1, 1, 1, 2, 2},
+            {0, 0, 1, 1, 1, 2},
+            {0, 1, 0, 1, 0, 2},
+            {0, 1, 1, 0, 0, 2},
+            {0, 1, 2, 0, 0, 1},
+            {0, 1, 2, 1, 0, 0},
+            {0, 1, 2, 0, 1, 0},
+    };
+    for (unsigned int i = 0; i < permutations.size(); ++i) {
+        REQUIRE(log_p == get_pyp_log_prior_probability(permutations.at(i), concentration, discount));
+    }
+}
+
+// This test confirms that the elements of the weighted-discount process are
+// not exchangeable, so the Gibbs sampler will not work.
+// TEST_CASE("Testing get_wdp_log_prior_probability exchangeability with 6 elements sets of size 1, 2, 3",
+//         "[math_util]") {
+//     double concentration = 1.0;
+//     double discount = 0.5;
+//     std::vector<unsigned int> partition = {0, 0, 0, 1, 1, 2};
+//     double log_p = get_wdp_log_prior_probability<unsigned int>(partition, concentration, discount);
+//     std::vector< std::vector<unsigned int> > permutations = {
+//             {0, 1, 1, 2, 2, 2},
+//             {0, 0, 1, 2, 2, 2},
+//             {0, 1, 1, 1, 2, 2},
+//             {0, 0, 1, 1, 1, 2},
+//             {0, 1, 0, 1, 0, 2},
+//             {0, 1, 1, 0, 0, 2},
+//             {0, 1, 2, 0, 0, 1},
+//             {0, 1, 2, 1, 0, 0},
+//             {0, 1, 2, 0, 1, 0},
+//     };
+//     for (unsigned int i = 0; i < permutations.size(); ++i) {
+//         REQUIRE(log_p == get_wdp_log_prior_probability(permutations.at(i), concentration, discount));
+//     }
+// }

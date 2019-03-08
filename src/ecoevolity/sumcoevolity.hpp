@@ -92,6 +92,15 @@ int sumcoevolity_main(int argc, char * argv[]) {
             .help("Number of simulation samples. "
                   "Only used if YAML config file is provided. "
                   "Default: 100000.");
+    parser.add_option("--comparisons")
+            .action("store")
+            .dest("comparisons")
+            .set_default("")
+            .help("A list of comparisons for which you would like to calculate "
+                  "the posterior probability of sharing the same event. This "
+                  "needs to be a quoted, space-separated list of comparison "
+                  "labels (i.e., the prefix or suffix used to identify "
+                  "comparisons in the alignment files).");
     parser.add_option("--seed")
             .action("store")
             .type("long")
@@ -170,6 +179,32 @@ int sumcoevolity_main(int argc, char * argv[]) {
 
     bool prevent_overwrite = (! options.get("force"));
 
+    bool user_specified_comparisons = false;
+    std::string comparisons_str = "";
+    std::vector<std::string> comparison_labels;
+    if (options.is_set_by_user("comparisons")) {
+        user_specified_comparisons = true;
+        comparisons_str = options.get("comparisons").get_str();
+        comparison_labels = string_util::split(comparisons_str, ' ');
+        if (comparison_labels.size() < 2) {
+            throw EcoevolityError(
+                    "comparisons option must be given at least 2 comparison "
+                    "labels"
+                    );
+        }
+        std::unordered_set<std::string> uniq_comp_labels;
+        for (unsigned int i = 0; i < comparison_labels.size(); ++i) {
+            if (uniq_comp_labels.count(comparison_labels.at(i)) > 0) {
+                std::ostringstream message;
+                message << "ERROR: comparison label \'"
+                        << comparison_labels.at(i)
+                        << "\' is duplicated.\n";
+                throw EcoevolityError(message.str());
+            }
+            uniq_comp_labels.insert(comparison_labels.at(i));
+        }
+    }
+
 
     // Start real work
     time_t start;
@@ -195,13 +230,38 @@ int sumcoevolity_main(int argc, char * argv[]) {
               << log_paths.size() << " log files.\n";
 
     std::vector<std::string> keys = posterior_sample.get_keys();
+
+    // Vet user specified comparison labels
+    if (user_specified_comparisons) {
+        for (unsigned int i = 0; i < comparison_labels.size(); ++i) {
+            if (! posterior_sample.has_key("root_height_index_" + comparison_labels.at(i))) {
+                std::ostringstream message;
+                message << "ERROR: comparison label \'"
+                        << comparison_labels.at(i)
+                        << "\' not found in log files.\n";
+                throw EcoevolityError(message.str());
+            }
+        }
+    }
+
     std::vector<std::vector<unsigned int> > indices;
+    std::vector<unsigned int> comparison_indices;
+    unsigned int comparison_index = 0;
     for (auto const & k: keys) { 
         if (string_util::startswith(k, "root_height_index_")) {
             indices.push_back(posterior_sample.get<unsigned int>(k));
+            if (user_specified_comparisons) {
+                for (auto const & l: comparison_labels) {
+                    if (k == ("root_height_index_" + l)) {
+                        comparison_indices.push_back(comparison_index);
+                    }
+                }
+            }
+            ++comparison_index;
         }
     }
     unsigned int number_of_comparisons = indices.size();
+
 
     std::map<unsigned int, unsigned int> nevents_counts;
     std::map<unsigned int, unsigned int> prior_nevents_counts;
@@ -209,6 +269,8 @@ int sumcoevolity_main(int argc, char * argv[]) {
         nevents_counts[i] = 0;
         prior_nevents_counts[i] = 0;
     }
+    unsigned int comparisons_shared_count = 0;
+    unsigned int prior_comparisons_shared_count = 0;
 
     std::map<std::vector<unsigned int>, unsigned int> model_counts;
     std::map<std::vector<unsigned int>, unsigned int> prior_model_counts;
@@ -227,6 +289,19 @@ int sumcoevolity_main(int argc, char * argv[]) {
             ++model_counts[model];
         }
         ++nevents_counts[nevents.at(i)];
+        if (user_specified_comparisons) {
+            unsigned int ref_index = model.at(comparison_indices.at(0));
+            bool comps_shared = true;
+            for (unsigned int comp_idx = 1; comp_idx < comparison_indices.size(); ++comp_idx) {
+                if (model.at(comparison_indices.at(comp_idx)) != ref_index) {
+                    comps_shared = false;
+                    break;
+                }
+            }
+            if (comps_shared) {
+                ++comparisons_shared_count;
+            }
+        }
     }
     unsigned int tally = 0;
     for (auto const & kv: nevents_counts) {
@@ -264,9 +339,9 @@ int sumcoevolity_main(int argc, char * argv[]) {
                     "settings will not be comparable to the posterior "
                     "probabilities.");
         }
-        if (! settings.using_dpp()) {
+        if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform) {
             throw EcoevolityError("Approximating prior probabilites via "
-                    "simulation only supports Dirichlet process model "
+                    "simulation is not supported for the uniform model "
                     "prior");
         }
         const ModelOperatorSettings & model_settings = settings.get_operator_schedule_settings().get_model_operator_settings();
@@ -308,6 +383,19 @@ int sumcoevolity_main(int argc, char * argv[]) {
             else {
                 ++prior_model_counts[model];
             }
+            if (user_specified_comparisons) {
+                unsigned int ref_index = model.at(comparison_indices.at(0));
+                bool comps_shared = true;
+                for (unsigned int comp_idx = 1; comp_idx < comparison_indices.size(); ++comp_idx) {
+                    if (model.at(comparison_indices.at(comp_idx)) != ref_index) {
+                        comps_shared = false;
+                        break;
+                    }
+                }
+                if (comps_shared) {
+                    ++prior_comparisons_shared_count;
+                }
+            }
         }
         tally = 0;
         for (auto const & kv: prior_nevents_counts) {
@@ -328,6 +416,69 @@ int sumcoevolity_main(int argc, char * argv[]) {
     double max_post_prob = (number_of_posterior_samples - 1) / (double)number_of_posterior_samples;
 
     double max_prior_prob = (nreps - 1) / (double)nreps;
+
+    // output probability of comparisons sharing event
+    if (user_specified_comparisons) {
+        bool min_post = false;
+        bool max_post = false;
+        bool min_prior = false;
+        bool max_prior = false;
+
+        double post_prob = comparisons_shared_count / (double)number_of_posterior_samples;
+
+        std::cerr << "Evaluating whether the following comparisons shared an event:\n"
+                  << "\t" << string_util::join(comparison_labels, " ") << "\n";
+
+        std::cerr << "\tposterior probability: ";
+        if (comparisons_shared_count < 1) {
+            post_prob = min_post_prob;
+            std::cerr << "<" << post_prob << "\n";
+            min_post = true;
+        }
+        else if (comparisons_shared_count == number_of_posterior_samples) {
+            post_prob = max_post_prob;
+            std::cerr << ">" << post_prob << "\n";
+            max_post = true;
+        }
+        else {
+            std::cerr << post_prob << "\n";
+        }
+        if (running_sims) {
+            std::cerr << "\tprior probability: ";
+            double prior_prob = prior_comparisons_shared_count / (double)nreps;
+            if (prior_comparisons_shared_count < 1) {
+                prior_prob = min_prior_prob;
+                std::cerr << "<" << prior_prob << "\n";
+                min_prior = true;
+            }
+            else if (prior_comparisons_shared_count == nreps) {
+                prior_prob = max_prior_prob;
+                std::cerr << ">" << prior_prob << "\n";
+                max_prior = true;
+            }
+            else {
+                std::cerr << prior_prob << "\n";
+            }
+            std::cerr << "\tBayes factor: ";
+            double bf = (
+                    (post_prob / (1.0 - post_prob)) /
+                    (prior_prob / (1.0 - prior_prob))
+                    );
+            if ((max_post && max_prior) || (min_post && min_prior)) {
+                // Cannot know the BF under these conditions
+                std::cerr << "NA\n";
+            }
+            else if (max_post || min_prior) {
+                std::cerr << ">" << bf << "\n";
+            }
+            else if (min_post || max_prior) {
+                std::cerr << "<" << bf << "\n";
+            }
+            else {
+                std::cerr << bf << "\n";
+            }
+        }
+    }
 
     // output nevents results
     std::string nevents_path = prefix + "sumcoevolity-results-nevents.txt";

@@ -42,7 +42,10 @@ class BaseComparisonPopulationTreeCollection {
         std::vector<unsigned int> stored_node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        // concentration parameter of Dirichlet process
         std::shared_ptr<PositiveRealParameter> concentration_;
+        // discount parameter of Pitman-Yor process
+        std::shared_ptr<DiscountParameter> discount_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
@@ -50,6 +53,7 @@ class BaseComparisonPopulationTreeCollection {
         unsigned int number_of_threads_ = 1;
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
+        EcoevolityOptions::ModelPrior model_prior_;
 
         void add_height(
                 double height,
@@ -69,7 +73,9 @@ class BaseComparisonPopulationTreeCollection {
         void restore_state();
         void store_model_state();
         void restore_model_state();
-        void compute_log_likelihood_and_prior(bool compute_partials = true);
+        void compute_log_likelihood_and_prior(
+                bool compute_partials = true,
+                bool compute_model_prior = true);
 
         void compute_tree_partials();
         void make_trees_clean();
@@ -92,16 +98,24 @@ class BaseComparisonPopulationTreeCollection {
             }
         }
 
+        bool has_seq_loci_info() const {
+            for (unsigned int i = 0; i < this->trees_.size();  ++i) {
+                if (! this->trees_.at(i)->has_seq_loci_info()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         bool ignoring_data() const {
             return this->trees_.at(0)->ignoring_data();
         }
 
-        bool using_dpp() const {
-            return this->operator_schedule_.using_dpp();
+        void set_model_prior(EcoevolityOptions::ModelPrior p) {
+            this->model_prior_ = p;
         }
-
-        bool using_reversible_jump() const {
-            return this->operator_schedule_.using_reversible_jump();
+        EcoevolityOptions::ModelPrior get_model_prior() const {
+            return this->model_prior_;
         }
 
         bool sampling_models() const {
@@ -227,6 +241,16 @@ class BaseComparisonPopulationTreeCollection {
             return this->concentration_->is_fixed();
         }
 
+        double get_discount() const {
+            return this->discount_->get_value();
+        }
+        void set_discount(double value) {
+            this->discount_->set_value(value);
+        }
+        bool discount_is_fixed() const {
+            return this->discount_->is_fixed();
+        }
+
         std::vector<unsigned int> get_other_height_indices(
                 unsigned int tree_index) const;
 
@@ -291,6 +315,12 @@ class BaseComparisonPopulationTreeCollection {
                 bool max_one_variable_site_per_locus = false,
                 bool validate = true) const;
 
+        std::map<std::string, BiallelicData> simulate_linked_biallelic_data_sets(
+                RandomNumberGenerator& rng,
+                float singleton_sample_probability,
+                bool max_one_variable_site_per_locus = false,
+                bool validate = true) const;
+
         bool all_population_sizes_are_fixed() const {
             for (unsigned int i = 0; i < this->get_number_of_trees(); ++i) {
                 if (! this->trees_.at(i)->population_sizes_are_fixed()) {
@@ -349,7 +379,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -358,7 +389,8 @@ class ComparisonPopulationTreeCollection: public BaseComparisonPopulationTreeCol
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 
@@ -371,7 +403,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -380,7 +413,8 @@ class ComparisonRelativeRootPopulationTreeCollection: public BaseComparisonPopul
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 
@@ -393,7 +427,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 
     protected:
@@ -402,7 +437,8 @@ class ComparisonDirichletPopulationTreeCollection: public BaseComparisonPopulati
                 RandomNumberGenerator & rng,
                 bool strict_on_constant_sites = true,
                 bool strict_on_missing_sites = true,
-                bool strict_on_triallelic_sites = true
+                bool strict_on_triallelic_sites = true,
+                bool store_seq_loci_info = false
                 );
 };
 

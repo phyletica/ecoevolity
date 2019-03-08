@@ -258,6 +258,8 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
 
 template<class DerivedOperatorType>
 class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
+    protected:
+        bool compute_model_prior_ = true;
 
     public:
         CollectionOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
@@ -396,6 +398,48 @@ class ConcentrationScaler : public CollectionOperatorInterface<ScaleOperator> {
         ConcentrationScaler(double weight);
         ConcentrationScaler(double weight, double scale);
         // virtual ~ConcentrationScaler() { }
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class DiscountScaler : public CollectionOperatorInterface<ScaleOperator> {
+
+    public:
+        DiscountScaler();
+        DiscountScaler(double weight);
+        DiscountScaler(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class DiscountMover : public CollectionOperatorInterface<WindowOperator> {
+
+    public:
+        DiscountMover();
+        DiscountMover(double weight);
+        DiscountMover(double weight, double window_size);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
@@ -1211,6 +1255,59 @@ class DirichletProcessGibbsSampler : public CollectionOperatorInterface<Operator
                 double& hastings_ratio) const { };
 };
 
+
+class PitmanYorProcessGibbsSampler : public CollectionOperatorInterface<Operator> {
+
+    protected:
+        unsigned int number_of_auxiliary_categories_ = 4;
+
+    public:
+        PitmanYorProcessGibbsSampler() : CollectionOperatorInterface<Operator>() { }
+        PitmanYorProcessGibbsSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        PitmanYorProcessGibbsSampler(double weight,
+                unsigned int number_of_auxiliary_categories);
+        virtual ~PitmanYorProcessGibbsSampler() { }
+
+        void set_number_of_auxiliary_categories(unsigned int n);
+        unsigned int get_number_of_auxiliary_categories() const;
+
+        std::string get_name() const;
+
+        std::string to_string(const OperatorSchedule& os) const;
+
+        void perform_collection_move(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        double propose_gibbs(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const { };
+};
+
+
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
@@ -1221,8 +1318,12 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
                 unsigned int number_of_nodes_in_event);
 
     public:
-        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() { }
-        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() {
+            this->compute_model_prior_ = false;
+        }
+        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) {
+            this->compute_model_prior_ = false;
+        }
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;
