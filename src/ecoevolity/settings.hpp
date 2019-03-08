@@ -1191,9 +1191,7 @@ class OperatorScheduleSettings {
             ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
-            if (
-                    (model_prior == EcoevolityOptions::ModelPrior::pyp) ||
-                    (model_prior == EcoevolityOptions::ModelPrior::wdp)) {
+            if (model_prior == EcoevolityOptions::ModelPrior::pyp) {
                 ss << margin << indent << indent << "DiscountScaler:\n";
                 ss << this->discount_scaler_settings_.to_string(indent_level + 3);
             }
@@ -2695,9 +2693,6 @@ class BaseCollectionSettings {
             if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
                 return EcoevolityOptions::ModelOperator::gibbs_pyp;
             }
-            if (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp) {
-                return EcoevolityOptions::ModelOperator::gibbs_wdp;
-            }
             if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
                 return EcoevolityOptions::ModelOperator::gibbs_dpp;
             }
@@ -2875,15 +2870,9 @@ class BaseCollectionSettings {
                 }
                 out << "]\n";
             }
-            else if ((this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) ||
-                    (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp)) {
-                if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
-                    out << indent << "pitman_yor_process:\n";
-                }
-                else {
-                    out << indent << "weighted_discount_process:\n";
-                }
-                out << indent << indent << "parameters:\n"
+            else if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+                out << indent << "pitman_yor_process:\n"
+                    << indent << indent << "parameters:\n"
                     << indent << indent <<  indent << "concentration:\n";
                 out << this->concentration_settings_.to_string(4);
                 out << indent << indent <<  indent << "discount:\n";
@@ -3188,15 +3177,13 @@ class BaseCollectionSettings {
             if (this->concentration_settings_.is_fixed() ||
                     (this->comparisons_.size() < 2) ||
                     ((this->model_prior_ != EcoevolityOptions::ModelPrior::pyp) &&
-                    (this->model_prior_ != EcoevolityOptions::ModelPrior::wdp) &&
                     (this->model_prior_ != EcoevolityOptions::ModelPrior::dpp))
                     ) {
                 this->operator_schedule_settings_.concentration_scaler_settings_.set_weight(0.0);
             }
             if (this->discount_settings_.is_fixed() ||
                     (this->comparisons_.size() < 2) ||
-                    ((this->model_prior_ != EcoevolityOptions::ModelPrior::pyp) &&
-                    (this->model_prior_ != EcoevolityOptions::ModelPrior::wdp))
+                    (this->model_prior_ != EcoevolityOptions::ModelPrior::pyp)
                     ) {
                 this->operator_schedule_settings_.discount_scaler_settings_.set_weight(0.0);
             }
@@ -3316,10 +3303,6 @@ class BaseCollectionSettings {
             if (model_prior_node["pitman_yor_process"]) {
                 this->model_prior_ = EcoevolityOptions::ModelPrior::pyp;
                 this->parse_pitman_yor_process_prior(model_prior_node["pitman_yor_process"]);
-            }
-            else if (model_prior_node["weighted_discount_process"]) {
-                this->model_prior_ = EcoevolityOptions::ModelPrior::wdp;
-                this->parse_weighted_discount_process_prior(model_prior_node["weighted_discount_process"]);
             }
             else if (model_prior_node["dirichlet_process"]) {
                 this->model_prior_ = EcoevolityOptions::ModelPrior::dpp;
@@ -3476,55 +3459,6 @@ class BaseCollectionSettings {
                 }
                 else {
                     std::string message = "Unrecognized pitman_yor_process parameter: " +
-                            parameter->first.as<std::string>();
-                    throw EcoevolityYamlConfigError(message);
-                }
-            }
-        }
-
-        void parse_weighted_discount_process_prior(const YAML::Node& wdp_node) {
-            if (! wdp_node.IsMap()) {
-                throw EcoevolityYamlConfigError(
-                        "Expecting weighted_discount_process to be a map, but found: " +
-                        YamlCppUtils::get_node_type(wdp_node));
-            }
-
-            if (wdp_node.size() != 1) {
-                throw EcoevolityYamlConfigError(
-                        "weighted_discount_process node must have a single key");
-            }
-            if (! wdp_node["parameters"]) {
-                throw EcoevolityYamlConfigError(
-                        "weighted_discount_process must have a parameters key");
-            }
-            if (wdp_node["parameters"].size() < 1) {
-                throw EcoevolityYamlConfigError(
-                        "empty weighted_discount_process parameters node");
-            }
-            std::unordered_set<std::string> keys;
-            for (YAML::const_iterator parameter = wdp_node["parameters"].begin();
-                    parameter != wdp_node["parameters"].end();
-                    ++parameter) {
-                if (keys.count(parameter->first.as<std::string>()) > 0) {
-                    std::string message = (
-                            "Duplicate weighted_discount_process parameter key: " +
-                            parameter->first.as<std::string>());
-                    throw EcoevolityYamlConfigError(message);
-                }
-                keys.insert(parameter->first.as<std::string>());
-
-                if (parameter->first.as<std::string>() == "concentration") {
-                    this->parse_concentration_parameter(parameter->second, false);
-                }
-                else if (parameter->first.as<std::string>() == "discount") {
-                    this->discount_settings_ = PositiveRealParameterSettings(parameter->second);
-                    if (this->discount_settings_.use_empirical_value()) {
-                        throw EcoevolityPositiveRealParameterSettingError(
-                                "empirical value not supported for discount parameter");
-                    }
-                }
-                else {
-                    std::string message = "Unrecognized weighted_discount_process parameter: " +
                             parameter->first.as<std::string>();
                     throw EcoevolityYamlConfigError(message);
                 }

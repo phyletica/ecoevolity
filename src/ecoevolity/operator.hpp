@@ -1308,58 +1308,6 @@ class PitmanYorProcessGibbsSampler : public CollectionOperatorInterface<Operator
 };
 
 
-class WeightedDiscountProcessGibbsSampler : public CollectionOperatorInterface<Operator> {
-
-    protected:
-        unsigned int number_of_auxiliary_categories_ = 4;
-
-    public:
-        WeightedDiscountProcessGibbsSampler() : CollectionOperatorInterface<Operator>() { }
-        WeightedDiscountProcessGibbsSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
-        WeightedDiscountProcessGibbsSampler(double weight,
-                unsigned int number_of_auxiliary_categories);
-        virtual ~WeightedDiscountProcessGibbsSampler() { }
-
-        void set_number_of_auxiliary_categories(unsigned int n);
-        unsigned int get_number_of_auxiliary_categories() const;
-
-        std::string get_name() const;
-
-        std::string to_string(const OperatorSchedule& os) const;
-
-        void perform_collection_move(
-                RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads);
-
-        void operate(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads = 1);
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        double propose(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads);
-
-        double propose_gibbs(RandomNumberGenerator& rng,
-                BaseComparisonPopulationTreeCollection * comparisons,
-                unsigned int nthreads);
-
-        std::string target_parameter() const;
-
-        virtual void optimize(OperatorSchedule& os, double log_alpha) { }
-
-        virtual void update(
-                RandomNumberGenerator& rng,
-                double& parameter_value,
-                double& hastings_ratio) const { };
-};
-
-
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:

@@ -31,7 +31,6 @@ class EcoevolityOptions {
             uniform = 2,
             dpp = 3,
             pyp = 4,
-            wdp = 5,
         };
 
         enum ModelOperator {
@@ -39,7 +38,6 @@ class EcoevolityOptions {
             rj = 2,
             gibbs_dpp = 3,
             gibbs_pyp = 4,
-            gibbs_wdp = 5,
         };
 
 };

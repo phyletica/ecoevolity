@@ -140,12 +140,6 @@ void BaseComparisonPopulationTreeCollection::compute_log_likelihood_and_prior(
                     this->get_concentration(),
                     this->get_discount());
         }
-        else if (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp) {
-            lnp += get_wdp_log_prior_probability<unsigned int>(
-                    this->node_height_indices_,
-                    this->get_concentration(),
-                    this->get_discount());
-        }
         else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
             lnp += get_dpp_log_prior_probability<unsigned int>(
                     this->node_height_indices_,
@@ -567,8 +561,7 @@ void BaseComparisonPopulationTreeCollection::write_state_log_header(
         << "ln_likelihood" << this->logging_delimiter_
         << "ln_prior" << this->logging_delimiter_
         << "number_of_events";
-    if ((this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) ||
-            (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp)) {
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
         out << this->logging_delimiter_ << "concentration"
             << this->logging_delimiter_ << "discount";
     }
@@ -603,8 +596,7 @@ void BaseComparisonPopulationTreeCollection::log_state(std::ostream& out,
         << this->log_likelihood_.get_value() << this->logging_delimiter_
         << this->log_prior_density_.get_value() << this->logging_delimiter_
         << this->get_number_of_events();
-    if ((this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) ||
-            (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp)) {
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
         out << this->logging_delimiter_ << this->get_concentration()
             << this->logging_delimiter_ << this->get_discount();
     }
@@ -879,12 +871,6 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
     unsigned int new_num_heights;
     if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
         new_num_heights = rng.pitman_yor_process(
-                this->node_height_indices_,
-                this->get_concentration(),
-                this->get_discount());
-    }
-    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::wdp) {
-        new_num_heights = rng.weighted_discount_process(
                 this->node_height_indices_,
                 this->get_concentration(),
                 this->get_discount());
