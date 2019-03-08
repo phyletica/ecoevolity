@@ -3654,10 +3654,10 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
                 comparisons->get_shared_event_indices();
         unsigned int i = rng.uniform_int(0, shared_indices.size() - 1);
         unsigned int event_index = shared_indices.at(i);
-        /* double event_height = comparisons->get_height(event_index); */
+        double event_height = comparisons->get_height(event_index);
         double lower_bound = comparisons->get_nearest_smaller_height(event_index);
-        double upper_bound = comparisons->get_nearest_larger_height(event_index);
-        double new_height = rng.uniform_real(lower_bound, upper_bound);
+        // double upper_bound = comparisons->get_nearest_larger_height(event_index);
+        double new_height = rng.uniform_real(lower_bound, event_height);
 
         std::vector<unsigned int> tree_indices = comparisons->get_indices_of_mapped_trees(event_index);
         unsigned int num_mapped_nodes = tree_indices.size();
