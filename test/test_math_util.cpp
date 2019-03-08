@@ -2099,3 +2099,69 @@ TEST_CASE("Testing get_pyp_concentration_gamma_scale", "[math_util]") {
     }
 }
 
+TEST_CASE("Testing get_dpp_log_prior_probability exchangeability with 6 elements sets of size 1, 2, 3",
+        "[math_util]") {
+    double concentration = 1.0;
+    std::vector<unsigned int> partition = {0, 0, 0, 1, 1, 2};
+    double log_p = get_dpp_log_prior_probability<unsigned int>(partition, concentration);
+    std::vector< std::vector<unsigned int> > permutations = {
+            {0, 1, 1, 2, 2, 2},
+            {0, 0, 1, 2, 2, 2},
+            {0, 1, 1, 1, 2, 2},
+            {0, 0, 1, 1, 1, 2},
+            {0, 1, 0, 1, 0, 2},
+            {0, 1, 1, 0, 0, 2},
+            {0, 1, 2, 0, 0, 1},
+            {0, 1, 2, 1, 0, 0},
+            {0, 1, 2, 0, 1, 0},
+    };
+    for (unsigned int i = 0; i < permutations.size(); ++i) {
+        REQUIRE(log_p == get_dpp_log_prior_probability(permutations.at(i), concentration));
+    }
+}
+
+TEST_CASE("Testing get_pyp_log_prior_probability exchangeability with 6 elements sets of size 1, 2, 3",
+        "[math_util]") {
+    double concentration = 1.0;
+    double discount = 0.5;
+    std::vector<unsigned int> partition = {0, 0, 0, 1, 1, 2};
+    double log_p = get_pyp_log_prior_probability<unsigned int>(partition, concentration, discount);
+    std::vector< std::vector<unsigned int> > permutations = {
+            {0, 1, 1, 2, 2, 2},
+            {0, 0, 1, 2, 2, 2},
+            {0, 1, 1, 1, 2, 2},
+            {0, 0, 1, 1, 1, 2},
+            {0, 1, 0, 1, 0, 2},
+            {0, 1, 1, 0, 0, 2},
+            {0, 1, 2, 0, 0, 1},
+            {0, 1, 2, 1, 0, 0},
+            {0, 1, 2, 0, 1, 0},
+    };
+    for (unsigned int i = 0; i < permutations.size(); ++i) {
+        REQUIRE(log_p == get_pyp_log_prior_probability(permutations.at(i), concentration, discount));
+    }
+}
+
+// This test confirms that the elements of the weighted-discount process are
+// not exchangeable, so the Gibbs sampler will not work.
+// TEST_CASE("Testing get_wdp_log_prior_probability exchangeability with 6 elements sets of size 1, 2, 3",
+//         "[math_util]") {
+//     double concentration = 1.0;
+//     double discount = 0.5;
+//     std::vector<unsigned int> partition = {0, 0, 0, 1, 1, 2};
+//     double log_p = get_wdp_log_prior_probability<unsigned int>(partition, concentration, discount);
+//     std::vector< std::vector<unsigned int> > permutations = {
+//             {0, 1, 1, 2, 2, 2},
+//             {0, 0, 1, 2, 2, 2},
+//             {0, 1, 1, 1, 2, 2},
+//             {0, 0, 1, 1, 1, 2},
+//             {0, 1, 0, 1, 0, 2},
+//             {0, 1, 1, 0, 0, 2},
+//             {0, 1, 2, 0, 0, 1},
+//             {0, 1, 2, 1, 0, 0},
+//             {0, 1, 2, 0, 1, 0},
+//     };
+//     for (unsigned int i = 0; i < permutations.size(); ++i) {
+//         REQUIRE(log_p == get_wdp_log_prior_probability(permutations.at(i), concentration, discount));
+//     }
+// }
