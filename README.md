@@ -29,7 +29,7 @@ Science Foundation (grant numbers DBI 1308885 and DEB 1656004).
 License
 =======
 
-Copyright (C) 2015-2016 Jamie R. Oaks
+This program was written by [Jamie Oaks](http://phyletica.github.io).
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
