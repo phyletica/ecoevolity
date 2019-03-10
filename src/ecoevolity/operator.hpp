@@ -1308,6 +1308,7 @@ class PitmanYorProcessGibbsSampler : public CollectionOperatorInterface<Operator
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
+        double prob_propose_jump_to_gap_ = 1.0;
         EventTimeScaler time_scaler_ = EventTimeScaler(0.0, 0.5);
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
@@ -1317,6 +1318,7 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
     public:
         ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() { }
         ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        ReversibleJumpSampler(double weight, double prob_propose_jump_to_gap);
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;

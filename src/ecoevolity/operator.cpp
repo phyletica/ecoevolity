@@ -3663,6 +3663,12 @@ double PitmanYorProcessGibbsSampler::propose(RandomNumberGenerator& rng,
 // ReversibleJumpSampler methods
 //////////////////////////////////////////////////////////////////////////////
 
+ReversibleJumpSampler::ReversibleJumpSampler(
+        double weight,
+        double prob_propose_jump_to_gap) : CollectionOperatorInterface<Operator>(weight) {
+    this->prob_propose_jump_to_gap_ = prob_propose_jump_to_gap;
+}
+
 std::string ReversibleJumpSampler::get_name() const {
     return "ReversibleJumpSampler";
 }
@@ -3774,8 +3780,17 @@ void ReversibleJumpSampler::perform_collection_move(
 double ReversibleJumpSampler::propose(RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int nthreads) {
-    return this->propose_jump_to_gap(rng, comparisons);
-    // return this->propose_jump_to_prior(rng, comparisons);
+    if (this->prob_propose_jump_to_gap_ >= 1.0) {
+        return this->propose_jump_to_gap(rng, comparisons);
+    }
+    if (this->prob_propose_jump_to_gap_ <= 0.0) {
+        return this->propose_jump_to_prior(rng, comparisons);
+    }
+    double u = rng.uniform_real();
+    if (u < this->prob_propose_jump_to_gap_) {
+        return this->propose_jump_to_gap(rng, comparisons);
+    }
+    return this->propose_jump_to_prior(rng, comparisons);
 }
 
 double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
@@ -3959,8 +3974,8 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
         }
         comparisons->map_trees_to_new_height(subset_indices, new_height);
 
-        // TODO: check this
-        double ln_jacobian = 0.0;
+        // Jacobian is accounted for below by 1 / (height - younger neighbor height)
+        // double ln_jacobian = 0.0;
 
         double ln_model_prior_ratio = std::log(comparisons->get_concentration());
 
@@ -4008,7 +4023,7 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
         else if (in_general_state_after && (! in_shared_state_before)) {
             ln_hastings += std::log(2.0);
         }
-        return ln_model_prior_ratio + ln_height_prior_ratio + ln_hastings + ln_jacobian;
+        return ln_model_prior_ratio + ln_height_prior_ratio + ln_hastings;
     }
     // Merge move
     std::vector<unsigned int> candidate_indices =
@@ -4026,8 +4041,8 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
     // number of nodes.
     this->get_split_subset_size_probabilities(nnodes_in_merged_event);
 
-    // TODO: check this
-    double ln_jacobian = 0.0;
+    // Jacobian is accounted for below by 1 / (height - younger neighbor height)
+    // double ln_jacobian = 0.0;
 
     double ln_model_prior_ratio = std::log(1.0 / comparisons->get_concentration());
 
@@ -4077,7 +4092,7 @@ double ReversibleJumpSampler::propose_jump_to_gap(RandomNumberGenerator& rng,
     else if (in_shared_state_after && (! in_general_state_before)) {
         ln_hastings += std::log(2.0);
     }
-    return ln_model_prior_ratio + ln_height_prior_ratio + ln_hastings + ln_jacobian;
+    return ln_model_prior_ratio + ln_height_prior_ratio + ln_hastings;
 }
 
 const std::vector<double>& ReversibleJumpSampler::get_split_subset_size_probabilities(
