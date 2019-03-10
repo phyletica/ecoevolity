@@ -75322,3 +75322,95 @@ TEST_CASE("Testing DiscountMover with 4 pairs",
         REQUIRE(d_summary.variance() == Approx(expected_variance).epsilon(0.001));
     }
 }
+
+
+TEST_CASE("Testing ReversibleJumpSampler with 2 pairs and split weight 1.0",
+        "[xReversibleJumpSampler]") {
+
+    SECTION("Testing 2 pairs and split weight 1.0,") {
+        double split_weight = 1.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-rjsampler-test2p-" + tag + "-t1.cfg";
+        std::string log_path = "data/tmp-config-rjsampler-test2p-" + tag + "-t1-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    uniform:\n";
+        os << "        parameters:\n";
+        os << "            split_weight:\n";
+        os << "                value: " << split_weight << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ReversibleJumpSampler op = ReversibleJumpSampler(1.0);
+
+        std::shared_ptr<BaseComparisonPopulationTreeCollection> comparisons = std::make_shared<ComparisonPopulationTreeCollection>(settings, rng);
+        comparisons->ignore_data();
+
+        // Initialize prior probs
+        comparisons->compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons->get_number_of_trees();
+        REQUIRE(ntrees == 2);
+
+        // comparisons->set_operator_schedule(op_schedule);
+        unsigned int niterations = 20;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            double max_height = -1.0;
+            for (unsigned int j = 0; j < comparisons->get_number_of_events(); ++j) {
+                if (comparisons->get_height(j) > max_height) {
+                    max_height = comparisons->get_height(j);
+                }
+            }
+            double expected_ln_hastings = std::log(max_height * 2.0);
+            std::cout << "expected split hastings: " << expected_ln_hastings << "\n";
+            std::cout << "expected merge hastings: " << std::log(1.0 / (max_height * 2.0)) << "\n";
+            if (comparisons->get_number_of_events() == 1) {
+                std::cout << "splitting\n";
+            }
+            else if (comparisons->get_number_of_events() == 2) {
+                std::cout << "merging\n";
+                expected_ln_hastings = std::log(1.0 / (max_height * 2.0));
+            }
+            else {
+                REQUIRE(1 == 2);
+            }
+            double ln_hastings = op.propose_jump_to_gap(rng, comparisons.get());
+            std::cout << "returned hastings: " << ln_hastings << "\n";
+            REQUIRE(ln_hastings == Approx(expected_ln_hastings).epsilon(0.000000001));
+            std::cout << "PASS!\n";
+        }
+    }
+}
