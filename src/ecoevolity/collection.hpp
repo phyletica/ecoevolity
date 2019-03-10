@@ -73,9 +73,9 @@ class BaseComparisonPopulationTreeCollection {
         void restore_state();
         void store_model_state();
         void restore_model_state();
+        double get_log_prior_density_of_node_heights() const;
         void compute_log_likelihood_and_prior(
-                bool compute_partials = true,
-                bool compute_model_prior = true);
+                bool compute_partials = true);
 
         void compute_tree_partials();
         void make_trees_clean();
@@ -165,6 +165,10 @@ class BaseComparisonPopulationTreeCollection {
 
         unsigned int get_height_index(unsigned int tree_index) const {
             return this->node_height_indices_.at(tree_index);
+        }
+
+        double get_log_prior_density_of_height(double height) const {
+            return this->node_height_prior_->relative_ln_pdf(height);
         }
 
         std::vector<unsigned int> get_standardized_height_indices() const;

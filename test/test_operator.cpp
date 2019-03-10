@@ -75385,29 +75385,41 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 pairs and split weight 1.0",
         unsigned int ntrees = comparisons->get_number_of_trees();
         REQUIRE(ntrees == 2);
 
-        // comparisons->set_operator_schedule(op_schedule);
         unsigned int niterations = 20;
         for (unsigned int i = 0; i < niterations; ++i) {
             double max_height = -1.0;
+            double min_height = std::numeric_limits<double>::infinity();
             for (unsigned int j = 0; j < comparisons->get_number_of_events(); ++j) {
                 if (comparisons->get_height(j) > max_height) {
                     max_height = comparisons->get_height(j);
                 }
+                if (comparisons->get_height(j) < min_height) {
+                    min_height = comparisons->get_height(j);
+                }
             }
             double expected_ln_hastings = std::log(max_height * 2.0);
-            std::cout << "expected split hastings: " << expected_ln_hastings << "\n";
-            std::cout << "expected merge hastings: " << std::log(1.0 / (max_height * 2.0)) << "\n";
-            if (comparisons->get_number_of_events() == 1) {
+            double ln_hastings = op.propose_jump_to_gap(rng, comparisons.get());
+            if (comparisons->get_number_of_events() == 2) {
                 std::cout << "splitting\n";
+                double min_height = std::numeric_limits<double>::infinity();
+                for (unsigned int j = 0; j < comparisons->get_number_of_events(); ++j) {
+                    if (comparisons->get_height(j) < min_height) {
+                        min_height = comparisons->get_height(j);
+                    }
+                }
+                double expected_ln_prior_ratio = comparisons->get_log_prior_density_of_height(min_height);
+                expected_ln_hastings += expected_ln_prior_ratio;
             }
-            else if (comparisons->get_number_of_events() == 2) {
+            else if (comparisons->get_number_of_events() == 1) {
                 std::cout << "merging\n";
                 expected_ln_hastings = std::log(1.0 / (max_height * 2.0));
+                double expected_ln_prior_ratio = -comparisons->get_log_prior_density_of_height(min_height);
+                expected_ln_hastings += expected_ln_prior_ratio;
             }
             else {
                 REQUIRE(1 == 2);
             }
-            double ln_hastings = op.propose_jump_to_gap(rng, comparisons.get());
+            std::cout << "expected hastings: " << expected_ln_hastings << "\n";
             std::cout << "returned hastings: " << ln_hastings << "\n";
             REQUIRE(ln_hastings == Approx(expected_ln_hastings).epsilon(0.000000001));
             std::cout << "PASS!\n";

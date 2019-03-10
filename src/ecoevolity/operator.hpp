@@ -258,9 +258,6 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
 
 template<class DerivedOperatorType>
 class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
-    protected:
-        bool compute_model_prior_ = true;
-
     public:
         CollectionOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
         CollectionOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
@@ -1318,12 +1315,8 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
                 unsigned int number_of_nodes_in_event);
 
     public:
-        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() {
-            this->compute_model_prior_ = false;
-        }
-        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) {
-            this->compute_model_prior_ = false;
-        }
+        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() { }
+        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;
@@ -1334,6 +1327,11 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
                 BaseComparisonPopulationTreeCollection * comparisons) const;
         virtual void call_restore_methods(
                 BaseComparisonPopulationTreeCollection * comparisons) const;
+
+        void perform_collection_move(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,
