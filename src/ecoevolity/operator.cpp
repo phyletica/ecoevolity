@@ -3679,7 +3679,6 @@ std::string ReversibleJumpSampler::target_parameter() const {
 
 void ReversibleJumpSampler::call_store_methods(
         BaseComparisonPopulationTreeCollection * comparisons) const {
-    comparisons->store_state();
     comparisons->store_model_state();
 }
 

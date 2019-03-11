@@ -23,9 +23,7 @@
 void BaseComparisonPopulationTreeCollection::store_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
-    for (unsigned int t = 0; t < this->trees_.size(); ++t) {
-        this->trees_.at(t)->store_state();
-    }
+    this->store_state_of_trees();
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         this->node_heights_.at(h)->store();
     }
@@ -39,9 +37,7 @@ void BaseComparisonPopulationTreeCollection::store_state() {
 void BaseComparisonPopulationTreeCollection::restore_state() {
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
-    for (unsigned int t = 0; t < this->trees_.size(); ++t) {
-        this->trees_.at(t)->restore_state();
-    }
+    this->restore_state_of_trees();
     for (unsigned int h = 0; h < this->node_heights_.size(); ++h) {
         this->node_heights_.at(h)->restore();
     }
@@ -52,10 +48,28 @@ void BaseComparisonPopulationTreeCollection::restore_state() {
         this->discount_->restore();
     }
 }
+void BaseComparisonPopulationTreeCollection::store_state_of_trees() {
+    for (unsigned int t = 0; t < this->trees_.size(); ++t) {
+        this->trees_.at(t)->store_state();
+    }
+}
+void BaseComparisonPopulationTreeCollection::restore_state_of_trees() {
+    for (unsigned int t = 0; t < this->trees_.size(); ++t) {
+        this->trees_.at(t)->restore_state();
+    }
+}
 
 void BaseComparisonPopulationTreeCollection::store_model_state() {
     this->log_likelihood_.store();
     this->log_prior_density_.store();
+    this->store_state_of_trees();
+    if (! this->concentration_is_fixed()) {
+        this->concentration_->store();
+    }
+    if (! this->discount_is_fixed()) {
+        this->discount_->store();
+    }
+
     this->stored_node_heights_.resize(this->get_number_of_events());
     for (unsigned int h_idx = 0;
             h_idx < this->get_number_of_events();
@@ -71,8 +85,17 @@ void BaseComparisonPopulationTreeCollection::restore_model_state() {
             &&
             (this->node_heights_.size() >= this->stored_node_heights_.size() - 1)
             );
+
     this->log_likelihood_.restore();
     this->log_prior_density_.restore();
+    this->restore_state_of_trees();
+    if (! this->concentration_is_fixed()) {
+        this->concentration_->restore();
+    }
+    if (! this->discount_is_fixed()) {
+        this->discount_->restore();
+    }
+
     if (this->node_heights_.size() < this->stored_node_heights_.size()) {
         this->node_heights_.push_back(
                 std::make_shared<PositiveRealParameter>(

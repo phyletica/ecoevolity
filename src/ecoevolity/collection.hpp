@@ -71,6 +71,8 @@ class BaseComparisonPopulationTreeCollection {
 
         void store_state();
         void restore_state();
+        void store_state_of_trees();
+        void restore_state_of_trees();
         void store_model_state();
         void restore_model_state();
         double get_log_prior_density_of_node_heights() const;
