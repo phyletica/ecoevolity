@@ -9545,7 +9545,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 800000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -9654,7 +9654,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
 
         char arg0[] = "ecoevolity";
         char arg1[] = "--seed";
-        char arg2[] = "68412635";
+        char arg2[] = "46184354";
         char arg3[] = "--ignore-data";
         char * cfg_path = new char[test_path.size() + 1];
         std::copy(test_path.begin(), test_path.end(), cfg_path);
@@ -9676,7 +9676,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 singletons, 1 pair, and fully pa
         spreadsheet::Spreadsheet prior_sample;
         prior_sample.update(log_path);
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 80001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");
@@ -12788,7 +12788,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
         os << "event_model_prior:\n";
         os << "    uniform:\n";
         os << "mcmc_settings:\n";
-        os << "    chain_length: 400000\n";
+        os << "    chain_length: 800000\n";
         os << "    sample_frequency: 10\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
@@ -12967,7 +12967,7 @@ TEST_CASE("Testing ReversibleJumpSampler with 2 dirichlet singletons, 1 dirichle
             dir3_expected_variances.at(i) *= (9.0);
         }
 
-        unsigned int expected_sample_size = 40001;
+        unsigned int expected_sample_size = 80001;
 
         SampleSummarizer<double> height_summary1 = prior_sample.summarize<double>("root_height_kya");
         SampleSummarizer<double> height_summary2 = prior_sample.summarize<double>("root_height_pop1");

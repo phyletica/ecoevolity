@@ -18966,12 +18966,12 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_gap with 3 pairs and sp
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0, 1.0);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -18994,8 +18994,9 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_gap with 3 pairs and sp
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -19119,7 +19120,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19142,8 +19143,9 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -19262,12 +19264,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(123456);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0, 1.0);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19290,8 +19292,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 2.0",
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -19417,7 +19420,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19440,8 +19443,9 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -19567,7 +19571,7 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 3 pairs and split weig
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19590,8 +19594,9 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 3 pairs and split weig
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -19712,12 +19717,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0, 1.0);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19740,8 +19745,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 3 pairs and split weight 0.5",
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -19867,7 +19873,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -19890,8 +19896,9 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 3 pairs and 
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -20014,12 +20021,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0, 1.0);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -20042,8 +20049,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 3.0",
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -20184,7 +20192,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and 
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -20207,8 +20215,9 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and 
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -20349,7 +20358,7 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weig
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -20372,8 +20381,9 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weig
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -20509,12 +20519,12 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         CollectionSettings settings = CollectionSettings(test_path);
 
         RandomNumberGenerator rng = RandomNumberGenerator(12345);
-        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0, 1.0);
         OperatorSchedule op_schedule = OperatorSchedule();
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -20537,8 +20547,9 @@ TEST_CASE("Testing ReversibleJumpSampler with 4 pairs and split weight 1/3.0",
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -20679,7 +20690,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and 
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -20702,8 +20713,9 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 4 pairs and 
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
@@ -20844,7 +20856,7 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weig
         op_schedule.turn_on_auto_optimize();
         op_schedule.set_auto_optimize_delay(100);
         op_schedule.add_operator(op);
-        // op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
 
         ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
         comparisons.ignore_data();
@@ -20867,8 +20879,9 @@ TEST_CASE("Testing ReversibleJumpSampler mixed jumps with 4 pairs and split weig
         std::vector<unsigned int> height_indices(ntrees, 0);
         unsigned int nevents;
         for (unsigned int i = 0; i < niterations; ++i) {
-            OperatorInterface& o = op_schedule.draw_operator(rng);
-            o.operate(rng, &comparisons, 1);
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            // o.operate(rng, &comparisons, 1);
+            op->operate(rng, &comparisons, 1);
             if ((i + 1) % sample_freq == 0) {
                 split_weight_summary.add_sample(comparisons.get_concentration());
                 nevents = comparisons.get_number_of_events();
