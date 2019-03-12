@@ -3798,7 +3798,7 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
     const bool in_shared_state_before = (nevents == 1);
     const bool split_event = ((! in_general_state_before) &&
             (in_shared_state_before || (rng.uniform_real() < 0.5)));
-    double mean_height = comparisons->get_node_height_prior_mean();
+    // double mean_height = comparisons->get_node_height_prior_mean();
     if (split_event) {
         std::vector<unsigned int> shared_indices =
                 comparisons->get_shared_event_indices();
@@ -3879,7 +3879,7 @@ double ReversibleJumpSampler::propose_jump_to_prior(RandomNumberGenerator& rng,
         move_height_index = height_indices.at(1);
         target_height_index = height_indices.at(0);
     }
-    double removed_height = comparisons->get_height(move_height_index);
+    // double removed_height = comparisons->get_height(move_height_index);
     unsigned int new_merged_event_index = comparisons->merge_height(move_height_index, target_height_index);
     unsigned int nnodes_in_merged_event = comparisons->get_number_of_trees_mapped_to_height(new_merged_event_index);
     // Don't need the returned probability vector, but need to make sure we
