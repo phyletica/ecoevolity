@@ -352,8 +352,13 @@ void compute_constant_pattern_log_likelihood_correction(
                     ploidy,
                     markers_are_dominant);
         }
+        double variable_likelihood = 1.0 - all_green_likelihood - all_red_likelihood;
+        if (variable_likelihood <= 0.0) {
+            lnl_correction = -std::numeric_limits<double>::infinity();
+            break;
+        }
         lnl_correction += (unique_allele_count_weights.at(pattern_idx) *
-                std::log(1.0 - all_green_likelihood - all_red_likelihood));
+                std::log(variable_likelihood));
     }
     constant_log_likelihood_correction = lnl_correction;
 }

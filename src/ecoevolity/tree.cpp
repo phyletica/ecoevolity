@@ -1453,6 +1453,21 @@ double PopulationTree::compute_log_likelihood(
         // }
         //////////////////////////////////////////////////////////////////////
         // else {
+        if (constant_pattern_lnl_correction == -std::numeric_limits<double>::infinity()) {
+            std::ostringstream message;
+            message << "\n#######################################################################\n"
+                    <<   "###############################  ERROR  ###############################\n"
+                    << "The probability of a variable character is zero for the current state\n"
+                    << "of the population-tree model for the data in:\n    \'"
+                    << this->data_.get_path() << "\'.\n"
+                    << "Correcting the likelihood for missing constant characters would thus\n"
+                    << "result an infinite likelihood for any character pattern.\n"
+                    << "This is likely due to the event time and population sizes being very\n"
+                    << "small.\n"
+                    << "#######################################################################\n";
+            throw EcoevolityError(message.str());
+
+        }
         log_likelihood -= constant_pattern_lnl_correction;
         // }
     }
