@@ -1454,8 +1454,11 @@ double PopulationTree::compute_log_likelihood(
         //////////////////////////////////////////////////////////////////////
         // else {
         if (constant_pattern_lnl_correction == -std::numeric_limits<double>::infinity()) {
+            double root_height = this->get_node_height_in_subs_per_site(this->get_root());
+            std::vector<double> pop_sizes = this->get_population_sizes();
             std::ostringstream message;
-            message << "\n#######################################################################\n"
+            message << "\n"
+                    << "\n#######################################################################\n"
                     <<   "###############################  ERROR  ###############################\n"
                     << "The probability of a variable character is zero for the current state\n"
                     << "of the population-tree model for the data in:\n    \'"
@@ -1463,10 +1466,16 @@ double PopulationTree::compute_log_likelihood(
                     << "Correcting the likelihood for missing constant characters would thus\n"
                     << "result an infinite likelihood for any character pattern.\n"
                     << "This is likely due to the event time and population sizes being very\n"
-                    << "small.\n"
-                    << "#######################################################################\n";
+                    << "small. The current height of the root node in expected subsitutions\n"
+                    << "per site is:\n    "
+                    << root_height * this->get_mutation_rate() << "\n"
+                    << "The current population sizes (scaled by the mutation rate) are:\n    "
+                    << pop_sizes.at(0) * this->get_mutation_rate();
+            for (unsigned int i = 1; i < pop_sizes.size(); ++i) {
+                message << " " << pop_sizes.at(i) * this->get_mutation_rate();
+            }
+            message << "\n#######################################################################\n";
             throw EcoevolityError(message.str());
-
         }
         log_likelihood -= constant_pattern_lnl_correction;
         // }
@@ -1477,6 +1486,9 @@ double PopulationTree::compute_log_likelihood(
     // ECOEVOLITY_DEBUG(
     //     std::cerr << "compute_log_likelihood(): " << log_likelihood << std::endl;
     // )
+    if (std::isnan(log_likelihood)) {
+        throw EcoevolityError("PopulationTree::compute_log_likelihood resulted in a NAN likelihood");
+    }
 
     this->log_likelihood_.set_value(log_likelihood);
     return log_likelihood;
