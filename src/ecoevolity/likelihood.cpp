@@ -290,6 +290,14 @@ double compute_root_likelihood(
     if (sum < 0.0) {
         return 0.0;
     }
+    // TODO: There's probably a better way to deal with NANs before this point
+    // This is likely the result of underflow when probabilities are getting
+    // extremely small.
+    // When conditionals are on the order of 1e-305, the bottom pattern probs
+    // can be NAN or -NAN.
+    if (std::isnan(sum)) {
+        return 0.0;
+    }
     return sum;
 }
 
