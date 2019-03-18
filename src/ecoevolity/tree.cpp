@@ -1454,12 +1454,16 @@ double PopulationTree::compute_log_likelihood(
         //////////////////////////////////////////////////////////////////////
         // else {
         if (constant_pattern_lnl_correction == -std::numeric_limits<double>::infinity()) {
+            // Rather than throw an error return -inf and let the MCMC machinery reject
+            // TODO: Is there a better way to handle this? Technically, the log likelihood
+            // would be inf or NAN (not -inf)
+            log_likelihood = -std::numeric_limits<double>::infinity();
             double root_height = this->get_node_height_in_subs_per_site(this->get_root());
             std::vector<double> pop_sizes = this->get_population_sizes();
             std::ostringstream message;
             message << "\n"
                     << "\n#######################################################################\n"
-                    <<   "###############################  ERROR  ###############################\n"
+                    <<   "##############################  WARNING  ##############################\n"
                     << "The probability of a variable character is zero for the current state\n"
                     << "of the population-tree model for the data in:\n    \'"
                     << this->data_.get_path() << "\'.\n"
@@ -1474,10 +1478,17 @@ double PopulationTree::compute_log_likelihood(
             for (unsigned int i = 1; i < pop_sizes.size(); ++i) {
                 message << " " << pop_sizes.at(i) * this->get_mutation_rate();
             }
-            message << "\n#######################################################################\n";
-            throw EcoevolityError(message.str());
+            message << "\n"
+                    << "This state will be rejected by Metropolis-Hastings algorithm, however,\n"
+                    << "the MCMC exploring such parameter space could indicate a larger\n"
+                    << "problem, such as a prior specified in the wrong units\n"
+            message << "#######################################################################\n";
+            std::cerr << message.str();
+            // throw EcoevolityError(message.str());
         }
-        log_likelihood -= constant_pattern_lnl_correction;
+        else {
+            log_likelihood -= constant_pattern_lnl_correction;
+        }
         // }
     }
 
