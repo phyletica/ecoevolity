@@ -773,6 +773,24 @@ void BaseComparisonPopulationTreeCollection::mcmc(
 
     this->make_trees_dirty();
     this->compute_log_likelihood_and_prior(true);
+    if (this->get_log_likelihood() == -std::numeric_limits<double>::infinity()) {
+        std::ostringstream message;
+        message << "\n"
+                << "\n#######################################################################\n"
+                <<   "###############################  ERROR  ###############################\n"
+                <<   "The initial model state has a probability density of zero.\n"
+                <<   "#######################################################################\n";
+        throw EcoevolityError(message.str());
+    }
+    if (std::isnan(this->get_log_likelihood())) {
+        std::ostringstream message;
+        message << "\n"
+                << "\n#######################################################################\n"
+                <<   "###############################  ERROR  ###############################\n"
+                <<   "The initial model state has a NAN log likelihood.\n"
+                <<   "#######################################################################\n";
+        throw EcoevolityError(message.str());
+    }
     this->log_state(state_log_stream, 0);
     this->log_state(std::cout, 0, true);
 

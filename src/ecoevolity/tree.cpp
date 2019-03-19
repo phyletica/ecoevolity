@@ -1453,7 +1453,42 @@ double PopulationTree::compute_log_likelihood(
         // }
         //////////////////////////////////////////////////////////////////////
         // else {
-        log_likelihood -= constant_pattern_lnl_correction;
+        if (constant_pattern_lnl_correction == -std::numeric_limits<double>::infinity()) {
+            // Rather than throw an error return -inf and let the MCMC machinery reject
+            // TODO: Is there a better way to handle this? Technically, the log likelihood
+            // would be inf or NAN (not -inf)
+            log_likelihood = -std::numeric_limits<double>::infinity();
+            double root_height = this->get_node_height_in_subs_per_site(this->get_root());
+            std::vector<double> pop_sizes = this->get_population_sizes();
+            std::ostringstream message;
+            message << "\n"
+                    << "\n#######################################################################\n"
+                    <<   "##############################  WARNING  ##############################\n"
+                    <<   "The probability of a variable character is zero for the current state\n"
+                    <<   "of the population-tree model for the data in:\n    \'"
+                    <<   this->data_.get_path() << "\'.\n"
+                    <<   "Correcting the likelihood for missing constant characters would thus\n"
+                    <<   "result an infinite likelihood for any character pattern.\n"
+                    <<   "This is likely due to the event time and population sizes being very\n"
+                    <<   "small. The current height of the root node in expected subsitutions\n"
+                    <<   "per site is:\n    "
+                    <<   root_height * this->get_mutation_rate() << "\n"
+                    <<   "The current population sizes (scaled by the mutation rate) are:\n    "
+                    <<   pop_sizes.at(0) * this->get_mutation_rate();
+            for (unsigned int i = 1; i < pop_sizes.size(); ++i) {
+                message << " " << pop_sizes.at(i) * this->get_mutation_rate();
+            }
+            message << "\n"
+                    << "This state will be rejected by the Metropolis-Hastings algorithm,\n"
+                    << "however, the MCMC exploring such parameter space could indicate a\n"
+                    << "larger problem, such as a prior specified in the wrong units\n"
+                    << "#######################################################################\n\n";
+            std::cerr << message.str();
+            // throw EcoevolityError(message.str());
+        }
+        else {
+            log_likelihood -= constant_pattern_lnl_correction;
+        }
         // }
     }
 
@@ -1462,6 +1497,9 @@ double PopulationTree::compute_log_likelihood(
     // ECOEVOLITY_DEBUG(
     //     std::cerr << "compute_log_likelihood(): " << log_likelihood << std::endl;
     // )
+    if (std::isnan(log_likelihood)) {
+        throw EcoevolityError("PopulationTree::compute_log_likelihood resulted in a NAN likelihood");
+    }
 
     this->log_likelihood_.set_value(log_likelihood);
     return log_likelihood;
