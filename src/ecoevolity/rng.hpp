@@ -401,7 +401,7 @@ class RandomNumberGenerator {
             // using shuffling) does NOT work. This produces a multinomial
             // distribution over partitions, which is not uniform.
 
-            ECOEVOLITY_ASSERT (split_weight > 0.0);
+            ECOEVOLITY_ASSERT(split_weight > 0.0);
             unsigned int n = elements.size();
             ECOEVOLITY_ASSERT(n > 0);
             std::vector<long double> ncat_probs;
@@ -422,9 +422,6 @@ class RandomNumberGenerator {
                     elements.at(i) = 0;
                 }
                 return ncats;
-            }
-            for (unsigned int i = 0; i < n; ++i) {
-                elements.at(i) = i;
             }
             if (ncats == n) {
                 for (unsigned int i = 0; i < n; ++i) {

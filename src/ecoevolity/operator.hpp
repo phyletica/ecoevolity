@@ -258,9 +258,6 @@ class TreeOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> 
 
 template<class DerivedOperatorType>
 class CollectionOperatorInterface : public BaseOperatorInterface<DerivedOperatorType> {
-    protected:
-        bool compute_model_prior_ = true;
-
     public:
         CollectionOperatorInterface() : BaseOperatorInterface<DerivedOperatorType>() { }
         CollectionOperatorInterface(double weight) : BaseOperatorInterface<DerivedOperatorType>(weight) { }
@@ -1311,19 +1308,16 @@ class PitmanYorProcessGibbsSampler : public CollectionOperatorInterface<Operator
 class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
 
     protected:
-        EventTimeScaler time_scaler_ = EventTimeScaler(0.0, 0.5);
+        double prob_propose_jump_to_gap_ = 0.8;
         std::map<unsigned int, std::vector<double> > split_subset_size_probs_;
         std::map<unsigned int, double> ln_number_of_possible_splits_;
         void populate_split_subset_size_probabilities(
                 unsigned int number_of_nodes_in_event);
 
     public:
-        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() {
-            this->compute_model_prior_ = false;
-        }
-        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) {
-            this->compute_model_prior_ = false;
-        }
+        ReversibleJumpSampler() : CollectionOperatorInterface<Operator>() { }
+        ReversibleJumpSampler(double weight) : CollectionOperatorInterface<Operator>(weight) { }
+        ReversibleJumpSampler(double weight, double prob_propose_jump_to_gap);
         virtual ~ReversibleJumpSampler() { }
 
         std::string get_name() const;
@@ -1334,6 +1328,11 @@ class ReversibleJumpSampler : public CollectionOperatorInterface<Operator> {
                 BaseComparisonPopulationTreeCollection * comparisons) const;
         virtual void call_restore_methods(
                 BaseComparisonPopulationTreeCollection * comparisons) const;
+
+        void perform_collection_move(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
 
         void operate(RandomNumberGenerator& rng,
                 BaseComparisonPopulationTreeCollection * comparisons,

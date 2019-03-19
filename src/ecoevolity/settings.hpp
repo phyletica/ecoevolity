@@ -3315,15 +3315,15 @@ class BaseCollectionSettings {
                 this->concentration_settings_.value_ = 1.0;
                 this->concentration_settings_.is_fixed_ = true;
                 this->parse_uniform_model_prior(model_prior_node["uniform"]);
-                std::ostringstream message;
-                message << "\n#######################################################################\n"
-                        <<   "# **  WARNING  **  WARNING  **  WARNING  **  WARNING  **  WARNING  ** #\n"
-                        <<   "#######################################################################\n"
-                        <<   "The \'uniform\' model prior is currently experimental (i.e., buggy).\n"
-                        <<   "**DO NOT** use this setting for any analyses you hope to interpret\n"
-                        <<   "and/or publish. Thank you.\n"
-                        <<   "#######################################################################\n";
-                std::cerr << message.str() << std::endl;
+                // std::ostringstream message;
+                // message << "\n#######################################################################\n"
+                //         <<   "# **  WARNING  **  WARNING  **  WARNING  **  WARNING  **  WARNING  ** #\n"
+                //         <<   "#######################################################################\n"
+                //         <<   "The \'uniform\' model prior is currently experimental (i.e., buggy).\n"
+                //         <<   "**DO NOT** use this setting for any analyses you hope to interpret\n"
+                //         <<   "and/or publish. Thank you.\n"
+                //         <<   "#######################################################################\n";
+                // std::cerr << message.str() << std::endl;
             }
             else if(model_prior_node["fixed"]) {
                 this->model_prior_ = EcoevolityOptions::ModelPrior::fixed;
