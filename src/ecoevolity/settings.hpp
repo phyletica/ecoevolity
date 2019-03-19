@@ -38,6 +38,7 @@
 #include "math_util.hpp"
 #include "probability.hpp"
 #include "data.hpp"
+#include "options.hpp"
 
 
 class YamlCppUtils {
@@ -977,6 +978,8 @@ class OperatorScheduleSettings {
                 10.0, 4);
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 3.0, 1.0);
+        ScaleOperatorSettings discount_scaler_settings_ = ScaleOperatorSettings(
+                3.0, 0.3);
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
                 6.0, 0.1);
         ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
@@ -994,6 +997,7 @@ class OperatorScheduleSettings {
             this->auto_optimize_delay_ = other.auto_optimize_delay_;
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
+            this->discount_scaler_settings_ = other.discount_scaler_settings_;
             this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
             this->time_root_size_mixer_settings_ = other.time_root_size_mixer_settings_;
             this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
@@ -1021,6 +1025,9 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_concentration_scaler_settings() const {
             return this->concentration_scaler_settings_;
+        }
+        const ScaleOperatorSettings& get_discount_scaler_settings() const {
+            return this->discount_scaler_settings_;
         }
         const ScaleOperatorSettings& get_time_size_rate_mixer_settings() const {
             return this->time_size_rate_mixer_settings_;
@@ -1111,6 +1118,16 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
+                else if (op->first.as<std::string>() == "DiscountScaler") {
+                    try {
+                        this->discount_scaler_settings_.update_from_config(op->second);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing DiscountScaler settings\n";
+                        throw;
+                    }
+                }
                 else if (op->first.as<std::string>() == "TimeSizeRateMixer") {
                     try {
                         this->time_size_rate_mixer_settings_.update_from_config(op->second);
@@ -1160,7 +1177,8 @@ class OperatorScheduleSettings {
             }
         }
 
-        virtual std::string to_string(unsigned int indent_level = 0) const {
+        virtual std::string to_string(unsigned int indent_level = 0,
+            EcoevolityOptions::ModelPrior model_prior = EcoevolityOptions::ModelPrior::dpp) const {
             std::ostringstream ss;
             ss << std::boolalpha;
             std::string margin = string_util::get_indent(indent_level);
@@ -1173,6 +1191,10 @@ class OperatorScheduleSettings {
             ss << this->model_operator_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
+            if (model_prior == EcoevolityOptions::ModelPrior::pyp) {
+                ss << margin << indent << indent << "DiscountScaler:\n";
+                ss << this->discount_scaler_settings_.to_string(indent_level + 3);
+            }
             ss << margin << indent << indent << "TimeSizeRateMixer:\n";
             ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 3);
             ss << margin << indent << indent << "TimeSizeRateScaler:\n";
@@ -2591,6 +2613,7 @@ class BaseCollectionSettings {
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp,
                 bool use_population_size_multipliers = false)
                 : BaseCollectionSettings(use_population_size_multipliers) {
@@ -2598,7 +2621,11 @@ class BaseCollectionSettings {
             this->chain_length_ = chain_length;
             this->sample_frequency_ = sample_frequency;
             this->concentration_settings_ = concentration_settings;
-            this->use_dpp_ = use_dpp;
+            this->discount_settings_ = discount_settings;
+            if (use_dpp) {
+                this->model_prior_ = EcoevolityOptions::ModelPrior::dpp;
+                this->sampling_models_ = true;
+            }
         }
         BaseCollectionSettings(
                 const std::string & yaml_config_path,
@@ -2622,7 +2649,9 @@ class BaseCollectionSettings {
             this->chain_length_ = other.chain_length_;
             this->sample_frequency_ = other.sample_frequency_;
             this->concentration_settings_ = other.concentration_settings_;
-            this->use_dpp_ = other.use_dpp_;
+            this->discount_settings_ = other.discount_settings_;
+            this->model_prior_ = other.model_prior_;
+            this->sampling_models_ = other.sampling_models_;
             this->fixed_event_model_indices_ = other.fixed_event_model_indices_;
             this->comparisons_ = other.comparisons_;
             this->default_time_prior_ = other.default_time_prior_;
@@ -2654,8 +2683,26 @@ class BaseCollectionSettings {
         const std::string& get_operator_log_path() const {
             return this->operator_log_path_;
         }
-        bool using_dpp() const {
-            return this->use_dpp_;
+        EcoevolityOptions::ModelOperator get_model_operator() const {
+            if (! this->sampling_models_) {
+                return EcoevolityOptions::ModelOperator::none;
+            }
+            if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
+                return EcoevolityOptions::ModelOperator::none;
+            }
+            if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+                return EcoevolityOptions::ModelOperator::gibbs_pyp;
+            }
+            if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
+                return EcoevolityOptions::ModelOperator::gibbs_dpp;
+            }
+            if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+                return EcoevolityOptions::ModelOperator::rj;
+            }
+            return EcoevolityOptions::ModelOperator::none;
+        }
+        EcoevolityOptions::ModelPrior get_model_prior() const {
+            return this->model_prior_;
         }
         double get_chain_length() const {
             return this->chain_length_;
@@ -2751,6 +2798,10 @@ class BaseCollectionSettings {
             return this->concentration_settings_;
         }
 
+        const PositiveRealParameterSettings& get_discount_settings() const {
+            return this->discount_settings_;
+        }
+
         const std::vector<ComparisonSettingsType>& get_comparison_settings() const { 
             return this->comparisons_;
         }
@@ -2812,24 +2863,39 @@ class BaseCollectionSettings {
 
             out << "---\n"
                 << "event_model_prior:\n";
-            if (this->event_model_is_fixed()) {
+            if (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed) {
                 out << indent << "fixed: [" << this->fixed_event_model_indices_.at(0);
                 for (unsigned int i = 1; i < this->fixed_event_model_indices_.size(); ++i) {
                     out << ", " << this->fixed_event_model_indices_.at(i);
                 }
                 out << "]\n";
             }
-            else if (this->use_dpp_) {
+            else if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+                out << indent << "pitman_yor_process:\n"
+                    << indent << indent << "parameters:\n"
+                    << indent << indent <<  indent << "concentration:\n";
+                out << this->concentration_settings_.to_string(4);
+                out << indent << indent <<  indent << "discount:\n";
+                out << this->discount_settings_.to_string(4);
+            }
+            else if (this->model_prior_ == EcoevolityOptions::ModelPrior::dpp) {
                 out << indent << "dirichlet_process:\n"
                     << indent << indent << "parameters:\n"
                     << indent << indent <<  indent << "concentration:\n";
                 out << this->concentration_settings_.to_string(4);
             }
-            else {
+            else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
                 out << indent << "uniform:\n"
                     << indent << indent << "parameters:\n"
                     << indent << indent <<  indent << "split_weight:\n";
                 out << this->concentration_settings_.to_string(4);
+            }
+            else {
+                std::ostringstream message;
+                message << "ERROR: Unexpected EcoevolityOptions::ModelPrior \'"
+                        << this->model_prior_
+                        << "\'\n";
+                throw EcoevolityError(message.str());
             }
 
             out << "event_time_prior:\n";
@@ -2849,7 +2915,9 @@ class BaseCollectionSettings {
                 out << comp.to_string(1);
             }
 
-            out << this->operator_schedule_settings_.to_string();
+            out << this->operator_schedule_settings_.to_string(
+                    0,
+                    this->model_prior_);
         }
 
         std::string to_string() const {
@@ -2877,10 +2945,11 @@ class BaseCollectionSettings {
         }
 
         bool event_model_is_fixed() const {
-            if (this->fixed_event_model_indices_.size() > 0) {
-                return true;
-            }
-            return false;
+            return (this->model_prior_ == EcoevolityOptions::ModelPrior::fixed);
+        }
+
+        bool sampling_event_models() const {
+            return this->sampling_models_;
         }
 
         const std::vector<unsigned int>& get_fixed_event_model_indices() const {
@@ -2891,7 +2960,8 @@ class BaseCollectionSettings {
     protected:
 
         std::string path_ = "";
-        bool use_dpp_ = true;
+        EcoevolityOptions::ModelPrior model_prior_ = EcoevolityOptions::ModelPrior::dpp;
+        bool sampling_models_ = true;
         std::vector<unsigned int> fixed_event_model_indices_;
         unsigned int chain_length_ = 100000;
         unsigned int sample_frequency_ = 100;
@@ -2903,6 +2973,8 @@ class BaseCollectionSettings {
         ContinuousDistributionSettings time_prior_settings_;
 
         PositiveRealParameterSettings concentration_settings_;
+
+        PositiveRealParameterSettings discount_settings_;
 
         ComparisonSettingsType global_comparison_settings_;
 
@@ -3025,7 +3097,8 @@ class BaseCollectionSettings {
                         default_shape);
             }
             else {
-                this->use_dpp_ = true;
+                this->model_prior_ = EcoevolityOptions::ModelPrior::dpp;
+                this->sampling_models_ = false;
                 this->concentration_settings_.value_ = 1.0;
                 this->concentration_settings_.is_fixed_ = true;
             }
@@ -3035,6 +3108,15 @@ class BaseCollectionSettings {
             this->concentration_settings_.prior_settings_ = ContinuousDistributionSettings(
                     "gamma_distribution",
                     default_parameters);
+            // Set default settings for discount parameter
+            this->discount_settings_.value_ = 0.0;
+            this->discount_settings_.is_fixed_ = true;
+            std::unordered_map<std::string, double> default_discount_parameters;
+            default_discount_parameters["alpha"] = 1.0;
+            default_discount_parameters["beta"] = 1.0;
+            this->discount_settings_.prior_settings_ = ContinuousDistributionSettings(
+                    "beta_distribution",
+                    default_discount_parameters);
             ///////////////////////////////////////////////////////////////////
 
             std::unordered_set<std::string> keys;
@@ -3086,21 +3168,28 @@ class BaseCollectionSettings {
                 }
             }
 
-            // Override DPP settings if only one comparison
-            if (this->comparisons_.size() < 2) {
-                this->use_dpp_ = false;
-            }
-
             // "Turn off" operators that are not needed
             this->update_operator_schedule_settings();
             
         }
 
         void update_operator_schedule_settings() {
-            if ((! this->use_dpp_) || (this->concentration_settings_.is_fixed())) {
+            if (this->concentration_settings_.is_fixed() ||
+                    (this->comparisons_.size() < 2) ||
+                    ((this->model_prior_ != EcoevolityOptions::ModelPrior::pyp) &&
+                    (this->model_prior_ != EcoevolityOptions::ModelPrior::dpp))
+                    ) {
                 this->operator_schedule_settings_.concentration_scaler_settings_.set_weight(0.0);
             }
-            if ((this->comparisons_.size() < 2) || (this->event_model_is_fixed())) {
+            if (this->discount_settings_.is_fixed() ||
+                    (this->comparisons_.size() < 2) ||
+                    (this->model_prior_ != EcoevolityOptions::ModelPrior::pyp)
+                    ) {
+                this->operator_schedule_settings_.discount_scaler_settings_.set_weight(0.0);
+            }
+            if ((this->comparisons_.size() < 2) ||
+                    (! this->sampling_event_models()) ||
+                    (this->event_model_is_fixed())) {
                 this->operator_schedule_settings_.model_operator_settings_.set_weight(0.0);
             }
             if (this->operator_schedule_settings_.using_population_size_multipliers()) {
@@ -3211,12 +3300,18 @@ class BaseCollectionSettings {
                 throw EcoevolityYamlConfigError(
                         "event_model_prior node should only have a single key");
             }
-            if (model_prior_node["dirichlet_process"]) {
-                this->use_dpp_ = true;
+            if (model_prior_node["pitman_yor_process"]) {
+                this->model_prior_ = EcoevolityOptions::ModelPrior::pyp;
+                this->parse_pitman_yor_process_prior(model_prior_node["pitman_yor_process"]);
+            }
+            else if (model_prior_node["dirichlet_process"]) {
+                this->model_prior_ = EcoevolityOptions::ModelPrior::dpp;
                 this->parse_dirichlet_process_prior(model_prior_node["dirichlet_process"]);
             }
             else if (model_prior_node["uniform"]) {
-                this->use_dpp_ = false;
+                this->model_prior_ = EcoevolityOptions::ModelPrior::uniform;
+                this->discount_settings_.value_ = 0.0;
+                this->discount_settings_.is_fixed_ = true;
                 this->concentration_settings_.value_ = 1.0;
                 this->concentration_settings_.is_fixed_ = true;
                 this->parse_uniform_model_prior(model_prior_node["uniform"]);
@@ -3231,7 +3326,8 @@ class BaseCollectionSettings {
                 std::cerr << message.str() << std::endl;
             }
             else if(model_prior_node["fixed"]) {
-                this->use_dpp_ = false;
+                this->model_prior_ = EcoevolityOptions::ModelPrior::fixed;
+                this->sampling_models_ = false;
                 this->parse_fixed_event_model(model_prior_node["fixed"]);
             }
             else {
@@ -3320,6 +3416,55 @@ class BaseCollectionSettings {
             this->parse_concentration_parameter(dpp_node["parameters"]["concentration"]);
         }
 
+        void parse_pitman_yor_process_prior(const YAML::Node& pyp_node) {
+            if (! pyp_node.IsMap()) {
+                throw EcoevolityYamlConfigError(
+                        "Expecting pitman_yor_process to be a map, but found: " +
+                        YamlCppUtils::get_node_type(pyp_node));
+            }
+
+            if (pyp_node.size() != 1) {
+                throw EcoevolityYamlConfigError(
+                        "pitman_yor_process node must have a single key");
+            }
+            if (! pyp_node["parameters"]) {
+                throw EcoevolityYamlConfigError(
+                        "pitman_yor_process must have a parameters key");
+            }
+            if (pyp_node["parameters"].size() < 1) {
+                throw EcoevolityYamlConfigError(
+                        "empty pitman_yor_process parameters node");
+            }
+            std::unordered_set<std::string> keys;
+            for (YAML::const_iterator parameter = pyp_node["parameters"].begin();
+                    parameter != pyp_node["parameters"].end();
+                    ++parameter) {
+                if (keys.count(parameter->first.as<std::string>()) > 0) {
+                    std::string message = (
+                            "Duplicate pitman_yor_process parameter key: " +
+                            parameter->first.as<std::string>());
+                    throw EcoevolityYamlConfigError(message);
+                }
+                keys.insert(parameter->first.as<std::string>());
+
+                if (parameter->first.as<std::string>() == "concentration") {
+                    this->parse_concentration_parameter(parameter->second, false);
+                }
+                else if (parameter->first.as<std::string>() == "discount") {
+                    this->discount_settings_ = PositiveRealParameterSettings(parameter->second);
+                    if (this->discount_settings_.use_empirical_value()) {
+                        throw EcoevolityPositiveRealParameterSettingError(
+                                "empirical value not supported for discount parameter");
+                    }
+                }
+                else {
+                    std::string message = "Unrecognized pitman_yor_process parameter: " +
+                            parameter->first.as<std::string>();
+                    throw EcoevolityYamlConfigError(message);
+                }
+            }
+        }
+
         void parse_uniform_model_prior(const YAML::Node& uniform_node) {
             if ((uniform_node.IsNull()) || (uniform_node.size() < 1)) {
                 return;
@@ -3343,7 +3488,8 @@ class BaseCollectionSettings {
             this->parse_split_weight_parameter(uniform_node["parameters"]["split_weight"]);
         }
 
-        void parse_concentration_parameter(const YAML::Node& node) {
+        void parse_concentration_parameter(const YAML::Node& node,
+                bool for_dpp = true) {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting concentration node to be a map, but found: " +
@@ -3369,7 +3515,7 @@ class BaseCollectionSettings {
                 if (arg->first.as<std::string>() == "value") {
                     if (arg->second.as<std::string>() == "empirical") {
                         throw EcoevolityPositiveRealParameterSettingError(
-                                "empirical value not supported for concentration_parameter");
+                                "empirical value not supported for concentration parameter");
                     }
                     double v = arg->second.as<double>();
                         if (v < 0.0) {
@@ -3384,8 +3530,8 @@ class BaseCollectionSettings {
                     this->concentration_settings_.is_fixed_ = (! f);
                 }
                 else if (arg->first.as<std::string>() == "prior") {
-                    this->concentration_settings_.prior_settings_ = this->parse_dpp_gamma_hyper_prior(
-                            arg->second);
+                    this->concentration_settings_.prior_settings_ = this->parse_concentration_hyper_prior(
+                            arg->second, for_dpp);
                 }
                 else {
                     std::string message = "Unrecognized concentration key: " +
@@ -3442,7 +3588,9 @@ class BaseCollectionSettings {
             }
         }
 
-        ContinuousDistributionSettings parse_dpp_gamma_hyper_prior(const YAML::Node& node) {
+        ContinuousDistributionSettings parse_concentration_hyper_prior(
+                const YAML::Node& node,
+                bool for_dpp = true) {
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "Expecting concentration prior node to be a map, but found: " +
@@ -3478,7 +3626,7 @@ class BaseCollectionSettings {
             if (parameters["scale"]) {
                 scale = parameters["scale"].as<double>();
             }
-            else if (parameters["prior_mean_number_of_events"]) {
+            else if ((for_dpp) && (parameters["prior_mean_number_of_events"])) {
                 double prior_mean_num_events = parameters["prior_mean_number_of_events"].as<double>();
                 if (prior_mean_num_events < 1.0) {
                     throw EcoevolityYamlConfigError("prior_mean_number_of_events must be at least 1.0");
@@ -3519,12 +3667,14 @@ class CollectionSettings: public BaseCollectionSettings<ComparisonSettings>{
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp)
                 : BaseClass(
                         time_prior,
                         chain_length,
                         sample_frequency,
                         concentration_settings,
+                        discount_settings,
                         use_dpp) { }
         CollectionSettings(
                 const std::string & yaml_config_path)
@@ -3550,12 +3700,14 @@ class RelativeRootCollectionSettings: public BaseCollectionSettings<RelativeRoot
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp)
                 : BaseClass(
                         time_prior,
                         chain_length,
                         sample_frequency,
                         concentration_settings,
+                        discount_settings,
                         use_dpp) { }
         RelativeRootCollectionSettings(
                 const std::string & yaml_config_path)
@@ -3581,12 +3733,14 @@ class DirichletCollectionSettings: public BaseCollectionSettings<DirichletCompar
                 unsigned int chain_length,
                 unsigned int sample_frequency,
                 const PositiveRealParameterSettings& concentration_settings,
+                const PositiveRealParameterSettings& discount_settings,
                 bool use_dpp)
                 : BaseClass(
                         time_prior,
                         chain_length,
                         sample_frequency,
                         concentration_settings,
+                        discount_settings,
                         use_dpp,
                         true) {
         }

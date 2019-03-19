@@ -39260,6 +39260,11 @@ TEST_CASE("Testing derived operator interface metadata",
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::collection_operator);
         REQUIRE(op->get_name() == "DirichletProcessGibbsSampler");
     }
+    SECTION("PitmanYorProcessGibbsSampler") {
+        std::shared_ptr<OperatorInterface> op = std::make_shared<PitmanYorProcessGibbsSampler>(1.0);
+        REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::collection_operator);
+        REQUIRE(op->get_name() == "PitmanYorProcessGibbsSampler");
+    }
     SECTION("ReversibleJumpSampler") {
         std::shared_ptr<OperatorInterface> op = std::make_shared<ReversibleJumpSampler>(1.0);
         REQUIRE(op->get_type() == OperatorInterface::OperatorTypeEnum::rj_operator);
@@ -74460,5 +74465,860 @@ TEST_CASE("Testing ConcentrationScaler with 4 pairs",
         REQUIRE(conc_summary.sample_size() == nsamples);
         REQUIRE(conc_summary.mean() == Approx(conc_shape * conc_scale).epsilon(0.001));
         REQUIRE(conc_summary.variance() == Approx(conc_shape * conc_scale * conc_scale).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing PitmanYorProcessGibbsSampler with 3 pairs and concentration 1.4142, discount 0",
+        "[PitmanYorProcessGibbsSampler]") {
+
+    SECTION("Testing 3 pairs, conc 1.4142, with optimizing") {
+        double concentration = 1.4142;
+        double discount = 0.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-pypgibbssamper-test-" + tag + "-tpyp1.cfg";
+        std::string log_path = "data/tmp-config-pypgibbssampler-test-" + tag + "-tpyp1-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                value: " << concentration << "\n";
+        os << "                estimate: false\n";
+        os << "            discount:\n";
+        os << "                value: " << discount << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<PitmanYorProcessGibbsSampler>(1.0, 2);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
+                    get_pyp_log_prior_probability(kv.first, concentration, discount))).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing PitmanYorProcessGibbsSampler with 6 pairs and concentration 1.7, discount 0",
+        "[PitmanYorProcessGibbsSampler]") {
+
+    SECTION("Testing 6 pairs, conc 1.7, discount 0, with optimizing") {
+        double concentration = 1.7;
+        double discount = 0.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-pypgibbssamper-test-" + tag + "-tpyp2.cfg";
+        std::string log_path = "data/tmp-config-pypgibbssampler-test-" + tag + "-tpyp2-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                value: " << concentration << "\n";
+        os << "                estimate: false\n";
+        os << "            discount:\n";
+        os << "                value: " << discount << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname5.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<PitmanYorProcessGibbsSampler>(1.0, 3);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 6);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+
+        REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
+                    get_pyp_log_prior_probability(kv.first, concentration, discount))).epsilon(0.005));
+        }
+    }
+}
+
+TEST_CASE("Testing PitmanYorProcessGibbsSampler with 3 pairs and concentration 1.4142, discount 0.5",
+        "[PitmanYorProcessGibbsSampler]") {
+
+    SECTION("Testing 3 pairs, conc 1.4142, discount 0.5, with optimizing") {
+        double concentration = 1.4142;
+        double discount = 0.5;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-pypgibbssamper-test-" + tag + "-tpyp3.cfg";
+        std::string log_path = "data/tmp-config-pypgibbssampler-test-" + tag + "-tpyp3-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                value: " << concentration << "\n";
+        os << "                estimate: false\n";
+        os << "            discount:\n";
+        os << "                value: " << discount << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<PitmanYorProcessGibbsSampler>(1.0, 2);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+
+        REQUIRE(model_counts.at("000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012") == nevent_counts.at(3));
+        REQUIRE((model_counts.at("001") + model_counts.at("010") + model_counts.at("011")) == nevent_counts.at(2));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
+                    get_pyp_log_prior_probability(kv.first, concentration, discount))).epsilon(0.002));
+        }
+    }
+}
+
+TEST_CASE("Testing PitmanYorProcessGibbsSampler with 6 pairs and concentration 1.7, discount 0.5",
+        "[PitmanYorProcessGibbsSampler]") {
+
+    SECTION("Testing 6 pairs, conc 1.7, discount 0.5, with optimizing") {
+        double concentration = 1.7;
+        double discount = 0.5;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-pypgibbssamper-test-" + tag + "-tpyp4.cfg";
+        std::string log_path = "data/tmp-config-pypgibbssampler-test-" + tag + "-tpyp4-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                value: " << concentration << "\n";
+        os << "                estimate: false\n";
+        os << "            discount:\n";
+        os << "                value: " << discount << "\n";
+        os << "                estimate: false\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    equal_population_sizes: true\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.002\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname4.nex\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname5.nex\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<PitmanYorProcessGibbsSampler>(1.0, 3);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 6);
+        std::vector< SampleSummarizer<double> > height_summaries(ntrees);
+
+        std::map<std::string, int> model_counts;
+        std::map<int, int> nevent_counts;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 600000;
+        unsigned int sample_freq = 3;
+        unsigned int nsamples = niterations / sample_freq;
+        std::vector<unsigned int> height_indices(ntrees, 0);
+        unsigned int nevents;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                nevents = comparisons.get_number_of_events();
+                height_indices = comparisons.get_standardized_height_indices();
+                std::ostringstream stream;
+                for (auto h_idx : height_indices) {
+                    stream << h_idx;
+                }
+                std::string model_str = stream.str();
+                if (model_counts.count(model_str) < 1) {
+                    model_counts[model_str] = 1;
+                }
+                else {
+                    ++model_counts[model_str];
+                }
+                if (nevent_counts.count(nevents) < 1) {
+                    nevent_counts[nevents] = 1;
+                }
+                else {
+                    ++nevent_counts[nevents];
+                }
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    height_summaries.at(tree_idx).add_sample(tree->get_root_height());
+                }
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+        
+        double size_sh;
+        double size_sc;
+        for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+            REQUIRE(height_summaries.at(tree_idx).sample_size() == nsamples);
+            REQUIRE(height_summaries.at(tree_idx).mean() == Approx(height_shape * height_scale).epsilon(0.005));
+            REQUIRE(height_summaries.at(tree_idx).variance() == Approx(height_shape * height_scale * height_scale).epsilon(0.01));
+        }
+
+        REQUIRE(model_counts.at("000000") == nevent_counts.at(1));
+        REQUIRE(model_counts.at("012345") == nevent_counts.at(6));
+        unsigned int tally = 0;
+        for (auto const & kv: model_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+        tally = 0;
+        for (auto const & kv: nevent_counts) {
+            tally += kv.second;
+        }
+        REQUIRE(tally == nsamples);
+
+        for (auto const & kv: model_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: nevent_counts) {
+            std::cout << kv.first << ": " << kv.second / (double)nsamples << "\n";
+        }
+        for (auto const & kv: model_counts) {
+            REQUIRE((kv.second / (double)nsamples) == Approx(std::exp(
+                    get_pyp_log_prior_probability(kv.first, concentration, discount))).epsilon(0.005));
+        }
+    }
+}
+
+
+TEST_CASE("Testing DiscountScaler with 4 pairs",
+        "[DiscountOperator]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double concentration = 1.4142;
+        double discount_a = 5.0;
+        double discount_b = 1.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizescaler-test-" + tag + "-tdisscaler1.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test-" + tag + "-tdisscaler1-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: " << concentration << "\n";
+        os << "                 estimate: false\n";
+        os << "             discount:\n";
+        os << "                 value: 0.5\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     beta_distribution:\n";
+        os << "                         alpha: " << discount_a << "\n";
+        os << "                         beta: " << discount_b << "\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<DiscountScaler>(1.0, 0.5);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<PitmanYorProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> d_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            if ((i + 1) % 2 == 0) {
+                op->operate(rng, &comparisons, 1);
+            } else {
+                op2->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                d_summary.add_sample(comparisons.get_discount());
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        double size_sh;
+        double size_sc;
+        REQUIRE(d_summary.sample_size() == nsamples);
+        REQUIRE(d_summary.mean() == Approx(discount_a / (discount_a + discount_b)).epsilon(0.001));
+        double expected_variance = ((discount_a * discount_b) / 
+                ((discount_a + discount_b) *
+                 (discount_a + discount_b) *
+                 (discount_a + discount_b + 1)));
+        REQUIRE(d_summary.variance() == Approx(expected_variance).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing DiscountMover with 4 pairs",
+        "[DiscountOperator]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double concentration = 1.4142;
+        double discount_a = 5.0;
+        double discount_b = 1.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizescaler-test-" + tag + "-tdisscaler1.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test-" + tag + "-tdisscaler1-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: " << concentration << "\n";
+        os << "                 estimate: false\n";
+        os << "             discount:\n";
+        os << "                 value: 0.5\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     beta_distribution:\n";
+        os << "                         alpha: " << discount_a << "\n";
+        os << "                         beta: " << discount_b << "\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<DiscountMover>(1.0, 0.1);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<PitmanYorProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> d_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            if ((i + 1) % 2 == 0) {
+                op->operate(rng, &comparisons, 1);
+            } else {
+                op2->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                d_summary.add_sample(comparisons.get_discount());
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        double size_sh;
+        double size_sc;
+        REQUIRE(d_summary.sample_size() == nsamples);
+        REQUIRE(d_summary.mean() == Approx(discount_a / (discount_a + discount_b)).epsilon(0.001));
+        double expected_variance = ((discount_a * discount_b) / 
+                ((discount_a + discount_b) *
+                 (discount_a + discount_b) *
+                 (discount_a + discount_b + 1)));
+        REQUIRE(d_summary.variance() == Approx(expected_variance).epsilon(0.001));
     }
 }

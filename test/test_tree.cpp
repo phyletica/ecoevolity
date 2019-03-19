@@ -1019,6 +1019,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1044,6 +1045,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1075,6 +1077,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[Popu
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1096,6 +1099,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0, 10.0/19.0)
         tree.fold_patterns();
         l = tree.compute_log_likelihood(3);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1177,6 +1181,7 @@ TEST_CASE("Testing hemi129.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1202,6 +1207,7 @@ TEST_CASE("Testing hemi129.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)
         tree.fold_patterns();
         l = tree.compute_log_likelihood(1);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1233,6 +1239,7 @@ TEST_CASE("Testing aflp_25.nex likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[Popu
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -1254,6 +1261,7 @@ TEST_CASE("Testing aflp_25.nex threaded likelihood (0.03, 10.0, 10.0/19.0, 10.0)
         tree.fold_patterns();
         l = tree.compute_log_likelihood(5);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -2470,7 +2478,8 @@ TEST_CASE("Testing hemi129.nex likelihood (1.04856228318474786e-08, 2.0 / 4.4393
         tree.set_root_height(1.04856228318474786e-08);
         tree.set_all_population_sizes(4.43934332792563837e-305 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(std::isnan(l));
+        // REQUIRE(std::isnan(l));
+        REQUIRE(std::isinf(l));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -4780,6 +4789,7 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -4805,6 +4815,7 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.03, 10.0, 10.0, 10.0/1
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -4836,6 +4847,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.03, 10.0, 10.0, 10.0/19.0)", "[
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -4857,6 +4869,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.03, 10.0, 10.0, 10.0/1
         tree.fold_patterns();
         l = tree.compute_log_likelihood(3);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -4938,6 +4951,7 @@ TEST_CASE("Testing hemi129.nex DPT likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -4963,6 +4977,7 @@ TEST_CASE("Testing hemi129.nex DPT threaded likelihood (0.03, 10.0, 10.0/19.0, 1
         tree.fold_patterns();
         l = tree.compute_log_likelihood(1);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -4994,6 +5009,7 @@ TEST_CASE("Testing aflp_25.nex DPT likelihood (0.03, 10.0, 10.0/19.0, 10.0)", "[
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -5015,6 +5031,7 @@ TEST_CASE("Testing aflp_25.nex DPT threaded likelihood (0.03, 10.0, 10.0/19.0, 1
         tree.fold_patterns();
         l = tree.compute_log_likelihood(5);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -6330,7 +6347,8 @@ TEST_CASE("Testing ComparisonDirichletPopulationTree likelihood (1.0485622831847
         tree.set_root_height(1.04856228318474786e-08);
         tree.set_mean_population_size(4.43934332792563837e-305 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(std::isnan(l));
+        // REQUIRE(std::isnan(l));
+        REQUIRE(std::isinf(l));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }
@@ -7874,6 +7892,7 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -7899,6 +7918,7 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.fold_patterns();
         l = tree.compute_log_likelihood(2);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-327.7437811413033));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -7930,6 +7950,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -7951,6 +7972,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         tree.fold_patterns();
         l = tree.compute_log_likelihood(3);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-6472.856486972301));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -8032,6 +8054,7 @@ TEST_CASE("Testing hemi129.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -8057,6 +8080,7 @@ TEST_CASE("Testing hemi129.nex threaded RelativeRootPopulationTree likelihood (0
         tree.fold_patterns();
         l = tree.compute_log_likelihood(1);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-265.0023534261969));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-135.97095011239867));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -8088,6 +8112,7 @@ TEST_CASE("Testing aflp_25.nex RelativeRootPopulationTree likelihood (0.03, 10.0
         tree.fold_patterns();
         l = tree.compute_log_likelihood();
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -8109,6 +8134,7 @@ TEST_CASE("Testing aflp_25.nex threaded RelativeRootPopulationTree likelihood (0
         tree.fold_patterns();
         l = tree.compute_log_likelihood(5);
         REQUIRE(! std::isnan(l));
+        REQUIRE(! std::isinf(l));
         REQUIRE(l != Approx(-10163.468886613919));
         REQUIRE(tree.get_likelihood_correction(true) == Approx(-3317.567573476714));
         REQUIRE(tree.get_degree_of_root() == 2);
@@ -9347,7 +9373,8 @@ TEST_CASE("Testing ComparisonRelativeRootPopulationTree hemi129.nex likelihood (
         tree.set_root_height(1.04856228318474786e-08);
         tree.set_all_population_sizes(4.43934332792563837e-305 / 4.0);
         double l = tree.compute_log_likelihood();
-        REQUIRE(std::isnan(l));
+        // REQUIRE(std::isnan(l));
+        REQUIRE(std::isinf(l));
         REQUIRE(tree.get_likelihood_correction() == Approx(-135.97095011239867));
     }
 }

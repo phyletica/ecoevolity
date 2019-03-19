@@ -1,3 +1,15 @@
+Version 0.3.2
+=============
+
+Changes
+-------
+
+-   Fixing bug related to NAN likelihoods. Under extreme combinations of
+    parameters, NAN likelihoods were being logged, and no error or warning
+    occurred. This release fixes that issue. Any analyses prior to this release
+    that did not report NAN likelihoods were not affected by this bug.
+
+
 Version 0.3.1
 =============
 

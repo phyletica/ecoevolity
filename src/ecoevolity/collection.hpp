@@ -42,7 +42,10 @@ class BaseComparisonPopulationTreeCollection {
         std::vector<unsigned int> stored_node_height_indices_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        // concentration parameter of Dirichlet process
         std::shared_ptr<PositiveRealParameter> concentration_;
+        // discount parameter of Pitman-Yor process
+        std::shared_ptr<DiscountParameter> discount_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_;
         OperatorSchedule operator_schedule_;
         std::string state_log_path_ = "ecoevolity-state-run-1.log";
@@ -50,6 +53,7 @@ class BaseComparisonPopulationTreeCollection {
         unsigned int number_of_threads_ = 1;
         unsigned int logging_precision_ = 18;
         std::string logging_delimiter_ = "\t";
+        EcoevolityOptions::ModelPrior model_prior_;
 
         void add_height(
                 double height,
@@ -69,7 +73,9 @@ class BaseComparisonPopulationTreeCollection {
         void restore_state();
         void store_model_state();
         void restore_model_state();
-        void compute_log_likelihood_and_prior(bool compute_partials = true);
+        void compute_log_likelihood_and_prior(
+                bool compute_partials = true,
+                bool compute_model_prior = true);
 
         void compute_tree_partials();
         void make_trees_clean();
@@ -105,12 +111,11 @@ class BaseComparisonPopulationTreeCollection {
             return this->trees_.at(0)->ignoring_data();
         }
 
-        bool using_dpp() const {
-            return this->operator_schedule_.using_dpp();
+        void set_model_prior(EcoevolityOptions::ModelPrior p) {
+            this->model_prior_ = p;
         }
-
-        bool using_reversible_jump() const {
-            return this->operator_schedule_.using_reversible_jump();
+        EcoevolityOptions::ModelPrior get_model_prior() const {
+            return this->model_prior_;
         }
 
         bool sampling_models() const {
@@ -213,6 +218,8 @@ class BaseComparisonPopulationTreeCollection {
 
         double get_nearest_smaller_height(
                 unsigned int height_index) const;
+        double get_nearest_larger_height(
+                unsigned int height_index) const;
         unsigned int get_nearest_smaller_height_index(
                 unsigned int height_index,
                 bool allow_smallest_index = false) const;
@@ -232,6 +239,16 @@ class BaseComparisonPopulationTreeCollection {
         }
         bool concentration_is_fixed() const {
             return this->concentration_->is_fixed();
+        }
+
+        double get_discount() const {
+            return this->discount_->get_value();
+        }
+        void set_discount(double value) {
+            this->discount_->set_value(value);
+        }
+        bool discount_is_fixed() const {
+            return this->discount_->is_fixed();
         }
 
         std::vector<unsigned int> get_other_height_indices(
