@@ -68,6 +68,9 @@ void compute_top_of_branch_partials(
         return;
     }
 
+    // Nested for loops here over discrete lengths and pop sizes (percentiles
+    // of discretized distributions). Average the probs inside the
+    // internal for loop, and sum averaged probs in outer for loop
     double theta = 2 * ploidy * node.get_population_size() * mutation_rate;
     double length = node.get_length() * mutation_rate;
     BiallelicPatternProbabilityMatrix m = matrix_exponentiator.expQTtx(
@@ -77,6 +80,8 @@ void compute_top_of_branch_partials(
             theta,
             length,
             node.get_bottom_pattern_probs());
+    // Get average probs after outer for loop finishes, and copy
+    // the final average probs to the top patterns
     node.copy_top_pattern_probs(m);
 }
 
@@ -291,6 +296,12 @@ double compute_root_likelihood(
     //     }
     // )
 
+    // NOTE about analytically integrating over pop sizes using a discretized
+    // distibution: To integrate over pop size of the root branch, before this
+    // point, we need to sum over `condtionals`. The bottom pattern probs
+    // (`root.get_bottom_pattern_probability(n, r)`) should already be
+    // integrated over pop sizes up to the bottom of the root branch, so only
+    // the `conditionals` need to be integrated here.
     double sum = 0.0;
     for (unsigned int n = 1; n <= N; ++n) {
         for (unsigned int r = 0; r <= n; ++r) {
