@@ -561,4 +561,215 @@ inline double log_multinomial_coefficient(const std::vector<unsigned int>& il) {
     return log_factorial(numerator) - denominator;
 }
 
+
+/*!
+ * This function calculates the quantiles of a standard normal distribution.
+ *
+ * \brief Quantile of a standard normal distribution.
+ * \param prob is the probability up to the quantile. 
+ * \return Returns quantile value. 
+ * \throws Does not throw an error.
+ * \see Odeh, R. E. and J. O. Evans. 1974. The percentage points of the normal
+ *      distribution. Applied Statistics, 22:96-97.
+ * \see Wichura, M. J.  1988. Algorithm AS 241: The percentage points of the
+ *      normal distribution. 37:477-484.
+ * \see Beasley, JD & S. G. Springer. 1977. Algorithm AS 111: The percentage
+ *      points of the normal distribution. 26:118-121.
+ *
+ * @note    From revbayes (commit c8bf96ec786)
+ *          RbStatistics::Normal::quantile
+ *          (https://github.com/revbayes/revbayes)
+ */
+double normal_quantile(double p) {
+    
+	double a0 = -0.322232431088;
+	double a1 = -1.0;
+	double a2 = -0.342242088547;
+	double a3 = -0.0204231210245;
+ 	double a4 = -0.453642210148e-4;
+ 	double b0 = 0.0993484626060;
+ 	double b1 = 0.588581570495;
+ 	double b2 = 0.531103462366; 
+ 	double b3 = 0.103537752850; 
+ 	double b4 = 0.0038560700634;
+	double p1 = ( p < 0.5 ? p : 1.0 - p);
+	if (p1 < 1e-20)
+        return (-9999.0);
+	double y = std::sqrt( std::log(1.0/(p1*p1)) );   
+	double z = y + ((((y*a4+a3)*y+a2)*y+a1)*y+a0) / ((((y*b4+b3)*y+b2)*y+b1)*y+b0);
+	return ( p < 0.5 ? -z : z );
+}
+
+
+/*!
+ * This function calculates the quantile of a chi square distribution with v
+ * degrees of freedom.
+ *
+ * \brief Quantile of a chi square distribution.
+ * \param df is the degrees of freedom of the chi square.
+ * \param prob is the probability up to the quantile. 
+ * \return Returns quantile value (or -1 if in error). 
+ * \throws Does not throw an error.
+ *
+ * @note    From revbayes (commit c8bf96ec786)
+ *          RbStatistics::ChiSquare::quantile
+ *          (https://github.com/revbayes/revbayes)
+ */
+inline double chi_square_quantile(double prob, double df)
+{
+    
+	double 		e = 0.5e-6, aa = 0.6931471805, p = prob, g,
+				xx, c, ch, a = 0.0, q = 0.0, p1 = 0.0, p2 = 0.0, t = 0.0, 
+				x = 0.0, b = 0.0, s1, s2, s3, s4, s5, s6;
+	
+	if (p < 0.000002 || p > 0.999998 || df <= 0.0)
+		return (-1.0);
+    
+	g = std::lgamma(df/2.0);
+	xx = df/2.0;
+	c = xx - 1.0;
+	if (df >= -1.24 * std::log(p))
+		goto l1;
+	ch = std::pow((p * xx * exp(g + xx * aa)), 1.0/xx);
+	if (ch-e < 0) 
+		return (ch);
+	goto l4;
+	l1:
+		if (df > 0.32)
+			goto l3;
+		ch = 0.4;   
+		a = std::log(1.0-p);
+	l2:
+		q = ch;  
+		p1 = 1.0+ch*(4.67+ch);  
+		p2 = ch*(6.73+ch*(6.66+ch));
+		t = -0.5+(4.67+2.0*ch)/p1 - (6.73+ch*(13.32+3.0*ch))/p2;
+		ch -= (1.0-exp(a+g+0.5*ch+c*aa)*p2/p1)/t;
+		if (fabs(q/ch-1.0)-0.01 <= 0.0) 
+			goto l4;
+		else                       
+			goto l2;
+	l3: 
+		x = normal_quantile(p);
+		p1 = 0.222222/df;
+		ch = df*std::pow((x*std::sqrt(p1)+1.0-p1), 3.0);
+		if (ch > 2.2*df+6.0)
+			ch = -2.0*(std::log(1.0-p)-c*std::log(0.5*ch)+g);
+	l4:
+        double last_improv = q - ch;
+		q = ch; 
+		p1 = 0.5*ch;
+		if ((t = incomplete_gamma(p1, xx, g)) < 0.0)
+        {
+            std::cerr<<"\nError incomplete_gamma\n";
+			return (-1.0);
+		}
+		p2 = p-t;
+		t = p2*std::exp(xx*aa+g+p1-c*std::log(ch));   
+		b = t/ch;  
+		a = 0.5*t-b*c;
+		s1 = (210.0+a*(140.0+a*(105.0+a*(84.0+a*(70.0+60.0*a))))) / 420.0;
+		s2 = (420.0+a*(735.0+a*(966.0+a*(1141.0+1278.0*a))))/2520.0;
+		s3 = (210.0+a*(462.0+a*(707.0+932.0*a)))/2520.0;
+		s4 = (252.0+a*(672.0+1182.0*a)+c*(294.0+a*(889.0+1740.0*a)))/5040.0;
+		s5 = (84.0+264.0*a+c*(175.0+606.0*a))/2520.0;
+		s6 = (120.0+c*(346.0+127.0*c))/5040.0;
+		ch += t*(1+0.5*t*s1-b*c*(s1-b*(s2-b*(s3-b*(s4-b*(s5-b*s6))))));
+		if (fabs(q/ch-1.0) > e && fabs(q - ch) - fabs(last_improv) < e /* <- against flip-flop */) 
+			goto l4;
+    
+		return (ch);
+}
+
+/*!
+ * Calculate the incomplete gamma integral.
+ *
+ * (1) series expansion     if (alpha>x || x<=1)
+ * (2) continued fraction   otherwise
+ * RATNEST FORTRAN by
+ * Bhattacharjee GP (1970) The incomplete gamma integral.  Applied Statistics,
+ * 19: 285-287 (AS32)
+ *
+ * @note    From revbayes (commit c8bf96ec786)
+ *          RbMath::incompleteGamma
+ *          (https://github.com/revbayes/revbayes)
+ */
+double incomplete_gamma(double x, double alpha, double scale) {
+
+    
+    double accurate = 1e-8, overflow = 1e30;
+    double factor, gin, rn, a, b, an, dif, term;
+    double pn0, pn1, pn2, pn3, pn4, pn5;
+    
+    if (x == 0.0) {
+        return 0.0;
+    }
+    if (x < 0.0 || alpha <= 0.0) 
+    {
+        std::ostringstream s;
+        s << "Cannot compute incomplete gamma function for x = " << x << ", alpha = " << alpha << "and scale = " << scale;
+        throw EcoevolityError(s.str());
+    }
+    
+    factor = std::exp(alpha * std::log(x) - x - scale);
+    
+    if (x > 1 && x >= alpha) {
+        // continued fraction
+        a = 1 - alpha;
+        b = a + x + 1;
+        term = 0;
+        pn0 = 1;
+        pn1 = x;
+        pn2 = x + 1;
+        pn3 = x * b;
+        gin = pn2 / pn3;
+        
+        do {
+            a++;
+            b += 2;
+            term++;
+            an = a * term;
+            pn4 = b * pn2 - an * pn0;
+            pn5 = b * pn3 - an * pn1;
+            
+            if (pn5 != 0) {
+                rn = pn4 / pn5;
+                dif = fabs(gin - rn);
+                if (dif <= accurate) {
+                    if (dif <= accurate * rn) {
+                        break;
+                    }
+                }
+                
+                gin = rn;
+            }
+            pn0 = pn2;
+            pn1 = pn3;
+            pn2 = pn4;
+            pn3 = pn5;
+            if (fabs(pn4) >= overflow) {
+                pn0 /= overflow;
+                pn1 /= overflow;
+                pn2 /= overflow;
+                pn3 /= overflow;
+            }
+        } while (true);
+        gin = 1 - factor * gin;
+    } else {
+        // series expansion
+        gin = 1;
+        term = 1;
+        rn = alpha;
+        do {
+            rn++;
+            term *= x / rn;
+            gin += term;
+        }
+        while (term > accurate);
+        gin *= factor / alpha;
+    }
+    return gin;
+}
+
+
 #endif
