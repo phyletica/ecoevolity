@@ -279,6 +279,7 @@ rst_epilog = """
 .. |Pyco| replace:: Pycoevolity
 .. _Pyco: https://github.com/phyletica/pycoevolity
 
+.. |simco| replace:: ``simcoevolity``
 .. |sumco| replace:: ``sumcoevolity``
 .. |dpprobs| replace:: DPprobs
 .. |cdpprobs| replace:: ``dpprobs``
