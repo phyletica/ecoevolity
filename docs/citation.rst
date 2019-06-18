@@ -15,7 +15,7 @@ please also cite:
     Oaks, J.R., C.D. Siler, And R.M. Brown. 2019. The comparative biogeography
     of Philippine geckos challenges predictions from a paradigm of
     climate‐driven vicariant diversification across an island archipelago.
-    Evolution 73:1151-1167. DOI: `<https://doi.org/10.1111/evo.13754`_
+    Evolution 73:1151-1167. DOI: `<https://doi.org/10.1111/evo.13754>`_
 
 We also strongly encourage you to cite the original description of the
 likelihood used by |eco|_:
