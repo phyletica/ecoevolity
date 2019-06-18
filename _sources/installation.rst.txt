@@ -224,9 +224,11 @@ Docker provides a nice way of sharing lightweight containers that act like a
 virtual machine.
 We have created a Docker container with |eco| built in.
 To get started, you first need to 
-`install Docker <https://www.docker.com/community-edition>`_.
+`install Docker <https://docs.docker.com/install/>`_.
+To do so, go to `<https://docs.docker.com/install>`_ and scroll down and click on
+your platform under "Supported platforms."
 If you're on a Mac or Windows machine, might need to sign up for a free Docker
-account to download it.
+account to download Docker Desktop.
 Once Docker is installed and running pull down our Docker image::
 
     docker pull phyletica/ecoevolity-docker
