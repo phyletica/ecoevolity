@@ -20,6 +20,10 @@
 #include "ecoevolity.hpp"
 
 int main(int argc, char *argv[]) {
+#ifdef BUILD_WITH_ABSOLUTE_ROOT_SIZE
+    ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
+#else
     ecoevolity_main<RelativeRootCollectionSettings, ComparisonRelativeRootPopulationTreeCollection>(argc, argv);
+#endif
     return 0;
 }
