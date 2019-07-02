@@ -20,6 +20,10 @@
 #include "simcoevolity.hpp"
 
 int main(int argc, char *argv[]) {
+#ifdef BUILD_WITH_ABSOLUTE_ROOT_SIZE
+    simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
+#else
     simcoevolity_main<RelativeRootCollectionSettings, ComparisonRelativeRootPopulationTreeCollection>(argc, argv);
+#endif
     return 0;
 }

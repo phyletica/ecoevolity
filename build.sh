@@ -71,6 +71,7 @@ export ECOEVOLITY_BUILD_DIR="${ECOEVOLITY_BASE_DIR}/build"
 extra_args=""
 static=""
 threads=""
+absolute_root_size=""
 install_prefix="$ECOEVOLITY_BUILD_DIR"
 universal_mac_build=""
 linux_dist_build=""
@@ -122,6 +123,9 @@ do
             linux_dist_build=1
             static=1
             ;;
+        --absolute-root-size)
+            absolute_root_size=1
+            ;;
         * )
             extra_args="$extra_args $1"
     esac
@@ -136,6 +140,10 @@ fi
 if [ -n "$threads" ]
 then
     args="${args} -DBUILD_WITH_THREADS=yes"
+fi
+if [ -n "$absolute_root_size" ]
+then
+    args="${args} -DBUILD_WITH_ABSOLUTE_ROOT_SIZE=yes"
 fi
 if [ -n "$extra_args" ]
 then

@@ -73,6 +73,15 @@ MESSAGE(STATUS "BUILD_WITH_THREADS: ${BUILD_WITH_THREADS}")
 
 
 #######################################################################
+# Find and set up variables for parameterization of root size
+option (BUILD_WITH_ABSOLUTE_ROOT_SIZE "Build so prior on root size is absolute" OFF)
+if (BUILD_WITH_ABSOLUTE_ROOT_SIZE)
+    add_definitions(-DBUILD_WITH_ABSOLUTE_ROOT_SIZE)
+endif()
+MESSAGE(STATUS "BUILD_WITH_ABSOLUTE_ROOT_SIZE: ${BUILD_WITH_ABSOLUTE_ROOT_SIZE}")
+
+
+#######################################################################
 # Compiler settings 
 option (STATIC_LINKING "Build with static links" OFF)
 if (STATIC_LINKING)
