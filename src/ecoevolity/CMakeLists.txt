@@ -28,14 +28,21 @@ else()
     set(LIBRARIES_TO_LINK ${ECOEVOLITY_LIBRARY} ${NCL_LIBRARIES} ${YAML_CPP_LIBRARY})
 endif()
 
-add_executable(ecoevolity ecoevolity_main.cpp)
-target_link_libraries(ecoevolity ${LIBRARIES_TO_LINK})
-install(TARGETS ecoevolity
+set(ECOEVOLITY_EXE_NAME "ecoevolity")
+set(SIMCOEVOLITY_EXE_NAME "simcoevolity")
+if (BUILD_WITH_ABSOLUTE_ROOT_SIZE)
+    set(ECOEVOLITY_EXE_NAME "${ECOEVOLITY_EXE_NAME}-ar")
+    set(SIMCOEVOLITY_EXE_NAME "${SIMCOEVOLITY_EXE_NAME}-ar")
+endif()
+
+add_executable("${ECOEVOLITY_EXE_NAME}" ecoevolity_main.cpp)
+target_link_libraries("${ECOEVOLITY_EXE_NAME}" ${LIBRARIES_TO_LINK})
+install(TARGETS "${ECOEVOLITY_EXE_NAME}"
         DESTINATION bin)
 
-add_executable(simcoevolity simcoevolity_main.cpp)
-target_link_libraries(simcoevolity ${LIBRARIES_TO_LINK})
-install(TARGETS simcoevolity
+add_executable("${SIMCOEVOLITY_EXE_NAME}" simcoevolity_main.cpp)
+target_link_libraries("${SIMCOEVOLITY_EXE_NAME}" ${LIBRARIES_TO_LINK})
+install(TARGETS "${SIMCOEVOLITY_EXE_NAME}"
         DESTINATION bin)
 
 add_executable(dpprobs dpprobs_main.cpp)
