@@ -129,7 +129,7 @@ class BiallelicData {
         bool add_site(
                 const std::vector<unsigned int>& red_allele_counts,
                 const std::vector<unsigned int>& allele_counts,
-                bool filtering_contant_sites = true);
+                bool end_of_locus = false);
 
         void update_pattern_booleans();
         void update_max_allele_counts();
@@ -163,6 +163,42 @@ class BiallelicData {
         }
         bool has_seq_loci_info() const {
             return this->storing_seq_loci_info_;
+        }
+        void start_storing_seq_loci_info() {
+            if (! this->appendable_) {
+                throw EcoevolityBiallelicDataError(
+                        "Cannot toggle storing of loci info for a parsed dataset",
+                        this->path_);
+            }
+            this->contiguous_pattern_indices_.clear();
+            this->locus_end_indices_.clear();
+            this->storing_seq_loci_info_ = true;
+        }
+        void stop_storing_seq_loci_info() {
+            if (! this->appendable_) {
+                throw EcoevolityBiallelicDataError(
+                        "Cannot toggle storing of loci info for a parsed dataset",
+                        this->path_);
+            }
+            this->contiguous_pattern_indices_.clear();
+            this->locus_end_indices_.clear();
+            this->storing_seq_loci_info_ = false;
+        }
+        void start_filtering_constant_sites() {
+            if (! this->appendable_) {
+                throw EcoevolityBiallelicDataError(
+                        "Cannot toggle constant site filtering for a parsed dataset",
+                        this->path_);
+            }
+            this->constant_sites_removed_ = true;
+        }
+        void stop_filtering_constant_sites() {
+            if (! this->appendable_) {
+                throw EcoevolityBiallelicDataError(
+                        "Cannot toggle constant site filtering for a parsed dataset",
+                        this->path_);
+            }
+            this->constant_sites_removed_ = false; 
         }
         unsigned int get_pattern_index_for_site(unsigned int site_index) const {
             return this->contiguous_pattern_indices_.at(site_index);

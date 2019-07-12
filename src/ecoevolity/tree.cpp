@@ -831,7 +831,6 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
         float singleton_sample_probability,
         bool validate) const {
     BiallelicData sim_data = this->data_.get_empty_copy();
-    const bool filtering_constant_sites = this->constant_sites_removed_;
     // Looping over patterns to make sure simulated dataset has exact same
     // sample configuration (i.e., the same pattern of missing data) as the
     // member dataset.
@@ -862,8 +861,7 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
                 }
                 std::shared_ptr<GeneTreeSimNode> gtree = pattern_tree.second;
                 site_added = sim_data.add_site(red_allele_counts,
-                        allele_counts,
-                        filtering_constant_sites);
+                        allele_counts);
             }
         }
     }
@@ -884,9 +882,14 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
         bool validate) const {
     ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
     BiallelicData sim_data = this->data_.get_empty_copy();
-    bool filtering_constant_sites = this->constant_sites_removed_;
+    sim_data.start_storing_seq_loci_info();
+    sim_data.stop_filtering_constant_sites();
+    if (this->constant_sites_removed_) {
+        sim_data.start_filtering_constant_sites();
+    }
     if (max_one_variable_site_per_locus) {
-        filtering_constant_sites = true;
+        sim_data.stop_storing_seq_loci_info();
+        sim_data.start_filtering_constant_sites();
     }
     const std::vector<unsigned int> & locus_end_indices = this->data_.get_locus_end_indices();
     unsigned int site_idx = 0;
@@ -912,16 +915,18 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
                     continue;
                 }
             }
+            bool end_of_locus = (locus_idx == locus_end_indices.at(locus_idx))
             site_added = sim_data.add_site(red_allele_counts,
                     allele_counts,
-                    filtering_constant_sites);
-            if (site_added && filtering_constant_sites && max_one_variable_site_per_locus) {
+                    end_of_locus);
+            if (site_added && max_one_variable_site_per_locus) {
                 site_idx = locus_end_indices.at(locus_idx);
             }
             ++site_idx;
         }
     }
     ECOEVOLITY_ASSERT(site_idx == this->data_.get_number_of_sites());
+    ECOEVOLITY_ASSERT(this->data_.get_locus_end_indices() == sim_data.get_locus_end_indices());
     sim_data.update_max_allele_counts();
     sim_data.update_pattern_booleans();
     if (validate) {
@@ -938,7 +943,14 @@ PopulationTree::simulate_complete_biallelic_data_set(
         bool validate) const {
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
-    const bool filtering_constant_sites = this->constant_sites_removed_;
+    sim_data.start_storing_seq_loci_info();
+    sim_data.stop_filtering_constant_sites();
+    if (this->constant_sites_removed_) {
+        sim_data.start_filtering_constant_sites();
+    }
+    if (locus_size < 2) {
+        sim_data.stop_storing_seq_loci_info();
+    }
     std::shared_ptr<GeneTreeSimNode> current_gene_tree;
     auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
     auto pattern = pattern_tree.first;
@@ -974,10 +986,11 @@ PopulationTree::simulate_complete_biallelic_data_set(
                     continue;
                 }
             }
+            bool end_of_locus = ((locus_site_count == (locus_size - 1)) &&
+                    locus_size > 1)
             site_added = sim_data.add_site(red_allele_counts,
                     allele_counts,
-                    filtering_constant_sites);
-            // ++locus_site_count;
+                    end_of_locus);
         }
         ++locus_site_count;
     }
@@ -1002,7 +1015,8 @@ PopulationTree::simulate_data_set_max_one_variable_site_per_locus(
                 "To simulated one variable site per locus, the \"template\" "
                 "dataset must include constant sites");
     }
-    const bool filtering_constant_sites = true;
+    sim_data.stop_storing_seq_loci_info();
+    sim_data.start_filtering_constant_sites();
     std::shared_ptr<GeneTreeSimNode> current_gene_tree;
     auto pattern_tree = this->simulate_biallelic_site(0, rng, true);
     auto pattern = pattern_tree.first;
@@ -1039,8 +1053,7 @@ PopulationTree::simulate_data_set_max_one_variable_site_per_locus(
             }
         }
         site_added = sim_data.add_site(red_allele_counts,
-                allele_counts,
-                filtering_constant_sites);
+                allele_counts);
         if (site_added) {
             // We have a variable site for this locus, so need to skip over
             // the remaining sites of this locus.

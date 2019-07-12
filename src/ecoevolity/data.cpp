@@ -429,15 +429,16 @@ BiallelicData BiallelicData::get_empty_copy() const {
     copy.pop_label_to_index_map_ = this->pop_label_to_index_map_;
     copy.appendable_ = true;
     copy.storing_seq_loci_info_ = this->storing_seq_loci_info_;
-    copy.contiguous_pattern_indices_ = this->contiguous_pattern_indices_;
-    copy.locus_end_indices_ = this->locus_end_indices_;
+    // Do not want pattern indices or locus info to copy over
+    // copy.contiguous_pattern_indices_ = this->contiguous_pattern_indices_;
+    // copy.locus_end_indices_ = this->locus_end_indices_;
     return copy;
 }
 
 bool BiallelicData::add_site(
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
-        bool filtering_constant_patterns) {
+        bool end_of_locus) {
     if (! this->appendable_) {
         throw EcoevolityBiallelicDataError(
                 "Patterns cannot be added to a parsed dataset",
@@ -450,7 +451,7 @@ bool BiallelicData::add_site(
                     this->path_);
         }
     }
-    if (filtering_constant_patterns && this->pattern_is_constant(red_allele_counts, allele_counts)) {
+    if (this->constant_sites_removed_ && this->pattern_is_constant(red_allele_counts, allele_counts)) {
         if (red_allele_counts == allele_counts) {
             ++this->number_of_constant_red_sites_removed_;
         }
@@ -468,11 +469,23 @@ bool BiallelicData::add_site(
             allele_counts);
     if (pattern_exists) {
         ++this->pattern_weights_.at(pattern_index);
+        if (this->storing_seq_loci_info_) {
+            this->contiguous_pattern_indices_.push_back(pattern_index);
+            if (end_of_locus) {
+                this->locus_end_indices_.push_back(this->contiguous_pattern_indices_.size() - 1);
+            }
+        }
         return true;
     }
     this->red_allele_counts_.push_back(red_allele_counts);
     this->allele_counts_.push_back(allele_counts);
     this->pattern_weights_.push_back(1);
+    if (this->storing_seq_loci_info_) {
+        this->contiguous_pattern_indices_.push_back(this->pattern_weights_.size() - 1);
+        if (end_of_locus) {
+            this->locus_end_indices_.push_back(this->contiguous_pattern_indices_.size() - 1);
+        }
+    }
     return true;
 }
 
