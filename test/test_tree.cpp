@@ -2796,6 +2796,204 @@ TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
         data.get_empirical_u_v_rates(u, v);
         REQUIRE(u == Approx(0.8).epsilon(0.01));
         REQUIRE(data.get_proportion_1() == Approx(0.625).epsilon(0.01));
+
+        std::string io_nex_path = "data/tmp-data-test1.nex";
+        std::ofstream out;
+        out.open(io_nex_path);
+        data.write_nexus(out, '-');
+        out.close();
+        REQUIRE(path::exists(io_nex_path));
+        BiallelicData io_data(io_nex_path,
+                '-',   // pop name delimiter
+                true,  // pop name is prefix
+                false, // genotypes are diploid
+                false, // markers are dominant
+                true,  // validate
+                false   // store seq loci info
+                );
+        REQUIRE(io_data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(io_data.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(io_data.markers_are_dominant() == false);
+
+        io_data.get_empirical_u_v_rates(u, v);
+        REQUIRE(u == Approx(0.8).epsilon(0.01));
+        REQUIRE(io_data.get_proportion_1() == Approx(0.625).epsilon(0.01));
+    }
+}
+
+TEST_CASE("Testing complete linked dataset simulation", "[xComparisonPopulationTree]") {
+    SECTION("Testing simulate_complete_biallelic_data_set for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ', true, false, false, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        unsigned int locus_size = 100;
+        std::pair<BiallelicData, unsigned int> data_nloci= tree.simulate_complete_biallelic_data_set(
+                rng,
+                locus_size,
+                1.0,
+                true);
+        BiallelicData data = data_nloci.first;
+        unsigned int nloci = data_nloci.second;
+        std::vector<unsigned int> expected_locus_end_indices;
+        unsigned int end_idx = (locus_size - 1);
+        while(end_idx < tree.get_data().get_number_of_sites()) {
+            expected_locus_end_indices.push_back(end_idx);
+            end_idx += locus_size;
+        }
+        expected_locus_end_indices.push_back(tree.get_data().get_number_of_sites() - 1);
+        
+        REQUIRE(data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data.markers_are_dominant() == false);
+        REQUIRE(tree.get_data().markers_are_dominant() == false);
+        REQUIRE(data.get_locus_end_indices() == expected_locus_end_indices);
+        REQUIRE(nloci == data.get_locus_end_indices().size());
+
+        data.get_empirical_u_v_rates(u, v);
+        REQUIRE(u == Approx(0.8).epsilon(0.01));
+        REQUIRE(data.get_proportion_1() == Approx(0.625).epsilon(0.01));
+
+        std::string io_nex_path = "data/tmp-data-test-complete1.nex";
+        std::ofstream out;
+        out.open(io_nex_path);
+        data.write_nexus(out, '-');
+        out.close();
+        REQUIRE(path::exists(io_nex_path));
+        BiallelicData io_data(io_nex_path,
+                '-',   // pop name delimiter
+                true,  // pop name is prefix
+                false, // genotypes are diploid
+                false, // markers are dominant
+                true,  // validate
+                true   // store seq loci info
+                );
+        REQUIRE(io_data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(io_data.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(io_data.markers_are_dominant() == false);
+        REQUIRE(io_data.get_locus_end_indices() == expected_locus_end_indices);
+
+        io_data.get_empirical_u_v_rates(u, v);
+        REQUIRE(u == Approx(0.8).epsilon(0.01));
+        REQUIRE(io_data.get_proportion_1() == Approx(0.625).epsilon(0.01));
+    }
+}
+
+TEST_CASE("Testing complete linked dataset simulation one locus", "[xComparisonPopulationTree]") {
+    SECTION("Testing simulate_complete_biallelic_data_set for fully fixed pair") {
+        std::string nex_path = "data/aflp_25.nex";
+        // Need to keep constant characters to get expected
+        // character state frequencies
+        ComparisonPopulationTree tree(nex_path, ' ', true, false, false, false);
+
+        std::shared_ptr<ExponentialDistribution> height_prior = std::make_shared<ExponentialDistribution>(100.0);
+        std::shared_ptr<GammaDistribution> size_prior = std::make_shared<GammaDistribution>(2.0, 1.2);
+        std::shared_ptr<BetaDistribution> f_prior = std::make_shared<BetaDistribution>(2.0, 1.5);
+        std::shared_ptr<GammaDistribution> rate_prior = std::make_shared<GammaDistribution>(3.0, 1.1);
+
+        tree.set_node_height_prior(height_prior);
+        tree.set_population_size_prior(size_prior);
+        tree.set_freq_1_prior(f_prior);
+        tree.set_mutation_rate_prior(rate_prior);
+
+        tree.set_root_height(0.1);
+        tree.constrain_population_sizes();
+        tree.set_all_population_sizes(0.005);
+        tree.fix_population_sizes();
+        tree.estimate_mutation_rate();
+        tree.set_mutation_rate(1.0);
+        tree.fix_mutation_rate();
+
+        tree.estimate_state_frequencies();
+        tree.set_freq_1(0.625);
+        tree.fix_state_frequencies();
+
+        double u;
+        double v;
+
+        tree.get_data().get_empirical_u_v_rates(u, v);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        unsigned int locus_size = 10000;
+        std::pair<BiallelicData, unsigned int> data_nloci= tree.simulate_complete_biallelic_data_set(
+                rng,
+                locus_size,
+                1.0,
+                true);
+        BiallelicData data = data_nloci.first;
+        unsigned int nloci = data_nloci.second;
+        REQUIRE(nloci == 1);
+        std::vector<unsigned int> expected_locus_end_indices;
+        expected_locus_end_indices.push_back(tree.get_data().get_number_of_sites() - 1);
+        
+        REQUIRE(data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(data.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(data.markers_are_dominant() == false);
+        REQUIRE(tree.get_data().markers_are_dominant() == false);
+        REQUIRE(data.get_locus_end_indices() == expected_locus_end_indices);
+
+        data.get_empirical_u_v_rates(u, v);
+        REQUIRE(u == Approx(0.8).epsilon(0.01));
+        REQUIRE(data.get_proportion_1() == Approx(0.625).epsilon(0.01));
+
+        std::string io_nex_path = "data/tmp-data-test-complete1.nex";
+        std::ofstream out;
+        out.open(io_nex_path);
+        data.write_nexus(out, '-');
+        out.close();
+        REQUIRE(path::exists(io_nex_path));
+        BiallelicData io_data(io_nex_path,
+                '-',   // pop name delimiter
+                true,  // pop name is prefix
+                false, // genotypes are diploid
+                false, // markers are dominant
+                true,  // validate
+                true   // store seq loci info
+                );
+        REQUIRE(io_data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(io_data.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(io_data.markers_are_dominant() == false);
+        REQUIRE(io_data.get_locus_end_indices() == expected_locus_end_indices);
+
+        io_data.get_empirical_u_v_rates(u, v);
+        REQUIRE(u == Approx(0.8).epsilon(0.01));
+        REQUIRE(io_data.get_proportion_1() == Approx(0.625).epsilon(0.01));
     }
 }
 
@@ -2848,8 +3046,11 @@ TEST_CASE("Testing linked dataset simulation", "[ComparisonPopulationTree]") {
 
         double u_sum = 0.0;
         double prop_sum = 0.0;
+        double io_u_sum = 0.0;
+        double io_prop_sum = 0.0;
         unsigned int nreps = 100;
         BiallelicData data;
+        BiallelicData io_data;
         for (unsigned int i = 0; i < nreps; ++i) {
             data = tree.simulate_linked_biallelic_data_set(rng,
                     1.0,    // singleton sample prob
@@ -2864,20 +3065,51 @@ TEST_CASE("Testing linked dataset simulation", "[ComparisonPopulationTree]") {
             REQUIRE(tree.get_data().markers_are_dominant() == false);
 
             REQUIRE(tree.get_data().get_locus_end_indices() == data.get_locus_end_indices());
-            REQUIRE(tree.get_data().get_contiguous_pattern_indices() == data.get_contiguous_pattern_indices());
             REQUIRE(tree.get_data().has_seq_loci_info() == data.has_seq_loci_info());
 
             data.get_empirical_u_v_rates(u, v);
             u_sum += u;
             prop_sum += data.get_proportion_1();
+
+            std::string io_nex_path = "data/tmp-data-test2-" + std::to_string(i) + ".nex";
+            std::ofstream out;
+            out.open(io_nex_path);
+            data.write_nexus(out, '-');
+            out.close();
+            REQUIRE(path::exists(io_nex_path));
+            io_data = BiallelicData(io_nex_path,
+                    '-',   // pop name delimiter
+                    true,  // pop name is prefix
+                    false, // genotypes are diploid
+                    false, // markers are dominant
+                    true,  // validate
+                    true   // store seq loci info
+                    );
+            REQUIRE(io_data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+            REQUIRE(io_data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+            REQUIRE(io_data.get_population_labels() == tree.get_data().get_population_labels());
+            REQUIRE(io_data.markers_are_dominant() == false);
+
+            REQUIRE(tree.get_data().get_locus_end_indices() == io_data.get_locus_end_indices());
+            REQUIRE(tree.get_data().has_seq_loci_info() == io_data.has_seq_loci_info());
+
+            io_data.get_empirical_u_v_rates(u, v);
+            io_u_sum += u;
+            io_prop_sum += data.get_proportion_1();
         }
         REQUIRE(u_sum / nreps == Approx(0.8).epsilon(0.01));
         REQUIRE(prop_sum / nreps == Approx(0.625).epsilon(0.01));
+        REQUIRE(io_u_sum == Approx(u_sum));
+        REQUIRE(io_prop_sum == Approx(prop_sum));
 
         REQUIRE(data.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {3, 8, 13, 18};
         REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
         REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
+
+        REQUIRE(io_data.has_seq_loci_info() == true);
+        REQUIRE(io_data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data.get_locus_end_indices() == expected_locus_ends);
     }
 }
 
@@ -2930,8 +3162,11 @@ TEST_CASE("Testing linked dataset simulation with aflp dataset", "[ComparisonPop
 
         double u_sum = 0.0;
         double prop_sum = 0.0;
+        double io_u_sum = 0.0;
+        double io_prop_sum = 0.0;
         unsigned int nreps = 10;
         BiallelicData data;
+        BiallelicData io_data;
         for (unsigned int i = 0; i < nreps; ++i) {
             data = tree.simulate_linked_biallelic_data_set(rng,
                     1.0,    // singleton sample prob
@@ -2946,20 +3181,51 @@ TEST_CASE("Testing linked dataset simulation with aflp dataset", "[ComparisonPop
             REQUIRE(tree.get_data().markers_are_dominant() == false);
 
             REQUIRE(tree.get_data().get_locus_end_indices() == data.get_locus_end_indices());
-            REQUIRE(tree.get_data().get_contiguous_pattern_indices() == data.get_contiguous_pattern_indices());
             REQUIRE(tree.get_data().has_seq_loci_info() == data.has_seq_loci_info());
 
             data.get_empirical_u_v_rates(u, v);
             u_sum += u;
             prop_sum += data.get_proportion_1();
+
+            std::string io_nex_path = "data/tmp-data-test3-" + std::to_string(i) + ".nex";
+            std::ofstream out;
+            out.open(io_nex_path);
+            data.write_nexus(out, '-');
+            out.close();
+            REQUIRE(path::exists(io_nex_path));
+            io_data = BiallelicData(io_nex_path,
+                    '-',   // pop name delimiter
+                    true,  // pop name is prefix
+                    false, // genotypes are diploid
+                    false, // markers are dominant
+                    true,  // validate
+                    true   // store seq loci info
+                    );
+            REQUIRE(io_data.get_number_of_sites() == tree.get_data().get_number_of_sites());
+            REQUIRE(io_data.get_number_of_populations() == tree.get_data().get_number_of_populations());
+            REQUIRE(io_data.get_population_labels() == tree.get_data().get_population_labels());
+            REQUIRE(io_data.markers_are_dominant() == false);
+
+            REQUIRE(tree.get_data().get_locus_end_indices() == io_data.get_locus_end_indices());
+            REQUIRE(tree.get_data().has_seq_loci_info() == io_data.has_seq_loci_info());
+
+            io_data.get_empirical_u_v_rates(u, v);
+            io_u_sum += u;
+            io_prop_sum += data.get_proportion_1();
         }
         REQUIRE(u_sum / nreps == Approx(0.8).epsilon(0.01));
         REQUIRE(prop_sum / nreps == Approx(0.625).epsilon(0.01));
+        REQUIRE(io_u_sum == Approx(u_sum));
+        REQUIRE(io_prop_sum == Approx(prop_sum));
 
         REQUIRE(data.has_seq_loci_info() == true);
         std::vector<unsigned int> expected_locus_ends = {99, 199, 299, 399, 499, 599, 699, 799, 899, 999, 1099, 1199, 1216};
         REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
         REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
+
+        REQUIRE(io_data.has_seq_loci_info() == true);
+        REQUIRE(io_data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data.get_locus_end_indices() == expected_locus_ends);
     }
 }
 
@@ -3119,19 +3385,67 @@ TEST_CASE("Testing singleton acquisition bias with charsets", "[ComparisonPopula
         BiallelicData data1 = tree.simulate_linked_biallelic_data_set(rng, 1.0, false, true);
         BiallelicData data0 = tree.simulate_linked_biallelic_data_set(rng, 0.0, false, true);
 
+        BiallelicData io_data1;
+        BiallelicData io_data0;
+
+        std::string io_nex_path1 = "data/tmp-data-test4.nex";
+        std::string io_nex_path0 = "data/tmp-data-test5.nex";
+        std::ofstream out1;
+        std::ofstream out0;
+        out1.open(io_nex_path1);
+        out0.open(io_nex_path0);
+        data1.write_nexus(out1, '-');
+        data0.write_nexus(out0, '-');
+        out1.close();
+        out0.close();
+        REQUIRE(path::exists(io_nex_path1));
+        REQUIRE(path::exists(io_nex_path0));
+        io_data1 = BiallelicData(io_nex_path1,
+                '-',   // pop name delimiter
+                true,  // pop name is prefix
+                false, // genotypes are diploid
+                false, // markers are dominant
+                true,  // validate
+                true   // store seq loci info
+                );
+        io_data0 = BiallelicData(io_nex_path0,
+                '-',   // pop name delimiter
+                true,  // pop name is prefix
+                false, // genotypes are diploid
+                false, // markers are dominant
+                true,  // validate
+                true   // store seq loci info
+                );
+
         REQUIRE(data1.get_number_of_sites() == tree.get_data().get_number_of_sites());
         REQUIRE(data1.get_number_of_populations() == tree.get_data().get_number_of_populations());
         REQUIRE(data1.get_population_labels() == tree.get_data().get_population_labels());
         REQUIRE(data1.markers_are_dominant() == false);
+        REQUIRE(data1.get_locus_end_indices() == tree.get_data().get_locus_end_indices());
         REQUIRE(data0.get_number_of_sites() == tree.get_data().get_number_of_sites());
         REQUIRE(data0.get_number_of_populations() == tree.get_data().get_number_of_populations());
         REQUIRE(data0.get_population_labels() == tree.get_data().get_population_labels());
         REQUIRE(data0.markers_are_dominant() == false);
+        REQUIRE(data0.get_locus_end_indices() == tree.get_data().get_locus_end_indices());
         REQUIRE(tree.get_data().markers_are_dominant() == false);
+
+        REQUIRE(io_data1.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data1.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(io_data1.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(io_data1.markers_are_dominant() == false);
+        REQUIRE(io_data1.get_locus_end_indices() == tree.get_data().get_locus_end_indices());
+        REQUIRE(io_data0.get_number_of_sites() == tree.get_data().get_number_of_sites());
+        REQUIRE(io_data0.get_number_of_populations() == tree.get_data().get_number_of_populations());
+        REQUIRE(io_data0.get_population_labels() == tree.get_data().get_population_labels());
+        REQUIRE(io_data0.markers_are_dominant() == false);
+        REQUIRE(io_data0.get_locus_end_indices() == tree.get_data().get_locus_end_indices());
 
         unsigned int singleton_count10 = 0;
         unsigned int singleton_count05 = 0;
         unsigned int singleton_count00 = 0;
+        unsigned int io_singleton_count10 = 0;
+        unsigned int io_singleton_count05 = 0;
+        unsigned int io_singleton_count00 = 0;
         RandomNumberGenerator rng10 = RandomNumberGenerator(123);
         RandomNumberGenerator rng05 = RandomNumberGenerator(123);
         RandomNumberGenerator rng00 = RandomNumberGenerator(123);
@@ -3139,6 +3453,56 @@ TEST_CASE("Testing singleton acquisition bias with charsets", "[ComparisonPopula
             BiallelicData data00 = tree.simulate_linked_biallelic_data_set(rng00, 0.0, false, true);
             BiallelicData data05 = tree.simulate_linked_biallelic_data_set(rng05, 0.5, false, true);
             BiallelicData data10 = tree.simulate_linked_biallelic_data_set(rng10, 1.0, false, true);
+            BiallelicData io_data00;
+            BiallelicData io_data05;
+            BiallelicData io_data10;
+
+            std::string io_nex_path00 = "data/tmp-data-test6-" + std::to_string(rep) + ".nex";
+            std::string io_nex_path05 = "data/tmp-data-test7-" + std::to_string(rep) + ".nex";
+            std::string io_nex_path10 = "data/tmp-data-test8-" + std::to_string(rep) + ".nex";
+            std::ofstream out00;
+            std::ofstream out05;
+            std::ofstream out10;
+            out00.open(io_nex_path00);
+            out05.open(io_nex_path05);
+            out10.open(io_nex_path10);
+            data00.write_nexus(out00, '-');
+            data05.write_nexus(out05, '-');
+            data10.write_nexus(out10, '-');
+            out00.close();
+            out05.close();
+            out10.close();
+            REQUIRE(path::exists(io_nex_path00));
+            REQUIRE(path::exists(io_nex_path05));
+            REQUIRE(path::exists(io_nex_path10));
+            io_data00 = BiallelicData(io_nex_path00,
+                    '-',   // pop name delimiter
+                    true,  // pop name is prefix
+                    false, // genotypes are diploid
+                    false, // markers are dominant
+                    true,  // validate
+                    true   // store seq loci info
+                    );
+            io_data05 = BiallelicData(io_nex_path05,
+                    '-',   // pop name delimiter
+                    true,  // pop name is prefix
+                    false, // genotypes are diploid
+                    false, // markers are dominant
+                    true,  // validate
+                    true   // store seq loci info
+                    );
+            io_data10 = BiallelicData(io_nex_path10,
+                    '-',   // pop name delimiter
+                    true,  // pop name is prefix
+                    false, // genotypes are diploid
+                    false, // markers are dominant
+                    true,  // validate
+                    true   // store seq loci info
+                    );
+            REQUIRE(data00.get_number_of_patterns() == io_data00.get_number_of_patterns());
+            REQUIRE(data05.get_number_of_patterns() == io_data05.get_number_of_patterns());
+            REQUIRE(data10.get_number_of_patterns() == io_data10.get_number_of_patterns());
+
             for (unsigned int i = 0; i < data00.get_number_of_patterns(); ++i) {
                 const std::vector<unsigned int>& red_allele_counts = data00.get_red_allele_counts(i);
                 const std::vector<unsigned int>& allele_counts = data00.get_allele_counts(i);
@@ -3150,6 +3514,18 @@ TEST_CASE("Testing singleton acquisition bias with charsets", "[ComparisonPopula
                 }
                 if ((nreds == 1) || (nreds == (nalleles - 1))) {
                     singleton_count00 += data00.get_pattern_weight(i);
+                }
+
+                const std::vector<unsigned int>& io_red_allele_counts = io_data00.get_red_allele_counts(i);
+                const std::vector<unsigned int>& io_allele_counts = io_data00.get_allele_counts(i);
+                unsigned int io_nreds = 0;
+                unsigned int io_nalleles = 0;
+                for (unsigned int j = 0; j < io_allele_counts.size(); ++j) {
+                    io_nreds += io_red_allele_counts.at(j);
+                    io_nalleles += io_allele_counts.at(j);
+                }
+                if ((io_nreds == 1) || (io_nreds == (io_nalleles - 1))) {
+                    io_singleton_count00 += io_data00.get_pattern_weight(i);
                 }
             }
             for (unsigned int i = 0; i < data05.get_number_of_patterns(); ++i) {
@@ -3164,6 +3540,18 @@ TEST_CASE("Testing singleton acquisition bias with charsets", "[ComparisonPopula
                 if ((nreds == 1) || (nreds == (nalleles - 1))) {
                     singleton_count05 += data05.get_pattern_weight(i);
                 }
+
+                const std::vector<unsigned int>& io_red_allele_counts = io_data05.get_red_allele_counts(i);
+                const std::vector<unsigned int>& io_allele_counts = io_data05.get_allele_counts(i);
+                unsigned int io_nreds = 0;
+                unsigned int io_nalleles = 0;
+                for (unsigned int j = 0; j < io_allele_counts.size(); ++j) {
+                    io_nreds += io_red_allele_counts.at(j);
+                    io_nalleles += io_allele_counts.at(j);
+                }
+                if ((io_nreds == 1) || (io_nreds == (io_nalleles - 1))) {
+                    io_singleton_count05 += io_data05.get_pattern_weight(i);
+                }
             }
             for (unsigned int i = 0; i < data10.get_number_of_patterns(); ++i) {
                 const std::vector<unsigned int>& red_allele_counts = data10.get_red_allele_counts(i);
@@ -3177,12 +3565,29 @@ TEST_CASE("Testing singleton acquisition bias with charsets", "[ComparisonPopula
                 if ((nreds == 1) || (nreds == (nalleles - 1))) {
                     singleton_count10 += data10.get_pattern_weight(i);
                 }
+
+                const std::vector<unsigned int>& io_red_allele_counts = io_data10.get_red_allele_counts(i);
+                const std::vector<unsigned int>& io_allele_counts = io_data10.get_allele_counts(i);
+                unsigned int io_nreds = 0;
+                unsigned int io_nalleles = 0;
+                for (unsigned int j = 0; j < io_allele_counts.size(); ++j) {
+                    io_nreds += io_red_allele_counts.at(j);
+                    io_nalleles += io_allele_counts.at(j);
+                }
+                if ((io_nreds == 1) || (io_nreds == (io_nalleles - 1))) {
+                    io_singleton_count10 += io_data10.get_pattern_weight(i);
+                }
             }
         }
         REQUIRE(singleton_count10 > 0);
         REQUIRE(singleton_count05 > 0);
         REQUIRE(singleton_count00 == 0);
         REQUIRE((double)singleton_count05 == Approx(singleton_count10 * 0.5).epsilon(0.05));
+
+        REQUIRE(io_singleton_count10 > 0);
+        REQUIRE(io_singleton_count05 > 0);
+        REQUIRE(io_singleton_count00 == 0);
+        REQUIRE((double)io_singleton_count05 == Approx(io_singleton_count10 * 0.5).epsilon(0.05));
     }
 }
 
@@ -3476,7 +3881,7 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
 }
 
 TEST_CASE("Testing scaling of simulation of one variable site per locus for singleton with charsets",
-        "[ComparisonPopulationTree]") {
+        "[xComparisonPopulationTree]") {
 
     SECTION("Testing one SNP per locus for fully fixed singleton") {
         unsigned int Ne = 100000;
@@ -3558,7 +3963,13 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
         // coalescence times), so we should under estimate diversity:
         REQUIRE(divergence2.mean() < (expected_mean - epsilon));
 
-        REQUIRE(data.has_seq_loci_info() == true);
+        REQUIRE(data.has_seq_loci_info() == false);
+        REQUIRE(data.get_contiguous_pattern_indices().size() == 0);
+        REQUIRE(data.get_locus_end_indices().size() == 0);
+
+
+        data = tree.simulate_linked_biallelic_data_set(rng, 1.0, false, true);
+
         std::vector<unsigned int> expected_locus_ends;
         unsigned int end_idx = 0;
         for (unsigned int i = 0; i < 100; ++i) {
@@ -3566,6 +3977,7 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
             expected_locus_ends.push_back(end_idx - 1);
         }
         REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
+        REQUIRE(data.get_locus_end_indices().size() == tree.get_data().get_locus_end_indices().size());
         REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
     }
 }

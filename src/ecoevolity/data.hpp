@@ -129,6 +129,7 @@ class BiallelicData {
         bool add_site(
                 const std::vector<unsigned int>& red_allele_counts,
                 const std::vector<unsigned int>& allele_counts,
+                bool filtering_constant_patterns = true,
                 bool end_of_locus = false);
 
         void update_pattern_booleans();
@@ -138,6 +139,8 @@ class BiallelicData {
         void write_nexus(
                 std::ostream& out,
                 char population_name_delimiter) const;
+        void write_charsets(
+                std::ostream& out) const;
         void write_alignment(
                 std::ostream& out,
                 char population_name_delimiter) const;
@@ -183,22 +186,6 @@ class BiallelicData {
             this->contiguous_pattern_indices_.clear();
             this->locus_end_indices_.clear();
             this->storing_seq_loci_info_ = false;
-        }
-        void start_filtering_constant_sites() {
-            if (! this->appendable_) {
-                throw EcoevolityBiallelicDataError(
-                        "Cannot toggle constant site filtering for a parsed dataset",
-                        this->path_);
-            }
-            this->constant_sites_removed_ = true;
-        }
-        void stop_filtering_constant_sites() {
-            if (! this->appendable_) {
-                throw EcoevolityBiallelicDataError(
-                        "Cannot toggle constant site filtering for a parsed dataset",
-                        this->path_);
-            }
-            this->constant_sites_removed_ = false; 
         }
         unsigned int get_pattern_index_for_site(unsigned int site_index) const {
             return this->contiguous_pattern_indices_.at(site_index);
