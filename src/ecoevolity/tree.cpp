@@ -886,6 +886,13 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
     ECOEVOLITY_ASSERT(this->data_.has_seq_loci_info());
     BiallelicData sim_data = this->data_.get_empty_copy();
     bool filtering_constant_sites = this->constant_sites_removed_;
+    if (filtering_constant_sites) {
+        // It doesn't make sense to simulate contiguous loci using a template
+        // dataset that had constant sites removed
+        throw EcoevolityBiallelicDataError(
+                "Cannot simulate contiguous loci from charsets when constant sites were removed",
+                this->data_.get_path());
+    }
     sim_data.start_storing_seq_loci_info();
     if (max_one_variable_site_per_locus) {
         filtering_constant_sites = true;
@@ -920,14 +927,14 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
                     allele_counts,
                     filtering_constant_sites,
                     end_of_locus);
-            if (site_added && filtering_constant_sites && max_one_variable_site_per_locus) {
+            if (site_added && max_one_variable_site_per_locus) {
                 site_idx = locus_end_indices.at(locus_idx);
             }
             ++site_idx;
         }
     }
     ECOEVOLITY_ASSERT(site_idx == this->data_.get_number_of_sites());
-    if ((! max_one_variable_site_per_locus) && (! filtering_constant_sites)) {
+    if (! max_one_variable_site_per_locus) {
         // Debugging output
         // std::cout << "\n";
         // std::cout << "Length of end indices: "
@@ -963,6 +970,13 @@ PopulationTree::simulate_complete_biallelic_data_set(
     ECOEVOLITY_ASSERT(locus_size > 0);
     BiallelicData sim_data = this->data_.get_empty_copy();
     const bool filtering_constant_sites = this->constant_sites_removed_;
+    if (filtering_constant_sites) {
+        // It doesn't make sense to simulate contiguous loci using a template
+        // dataset that had constant sites removed
+        throw EcoevolityBiallelicDataError(
+                "Cannot simulate contiguous loci when constant sites were removed",
+                this->data_.get_path());
+    }
     sim_data.start_storing_seq_loci_info();
     if (locus_size < 2) {
         sim_data.stop_storing_seq_loci_info();

@@ -2822,7 +2822,7 @@ TEST_CASE("Testing dataset simulation", "[ComparisonPopulationTree]") {
     }
 }
 
-TEST_CASE("Testing complete linked dataset simulation", "[xComparisonPopulationTree]") {
+TEST_CASE("Testing complete linked dataset simulation", "[ComparisonPopulationTree]") {
     SECTION("Testing simulate_complete_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -2912,7 +2912,7 @@ TEST_CASE("Testing complete linked dataset simulation", "[xComparisonPopulationT
     }
 }
 
-TEST_CASE("Testing complete linked dataset simulation one locus", "[xComparisonPopulationTree]") {
+TEST_CASE("Testing complete linked dataset simulation one locus", "[ComparisonPopulationTree]") {
     SECTION("Testing simulate_complete_biallelic_data_set for fully fixed pair") {
         std::string nex_path = "data/aflp_25.nex";
         // Need to keep constant characters to get expected
@@ -3881,7 +3881,7 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
 }
 
 TEST_CASE("Testing scaling of simulation of one variable site per locus for singleton with charsets",
-        "[xComparisonPopulationTree]") {
+        "[ComparisonPopulationTree]") {
 
     SECTION("Testing one SNP per locus for fully fixed singleton") {
         unsigned int Ne = 100000;
@@ -3900,7 +3900,7 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
                 true,   // population_name_is_prefix
                 false,  // diploid
                 false,  // dominant
-                true,   // constant sites removed
+                false,  // constant sites removed
                 true,   // validate
                 true,   // strict on constant
                 true,   // strict on missing
@@ -3979,6 +3979,59 @@ TEST_CASE("Testing scaling of simulation of one variable site per locus for sing
         REQUIRE(data.get_contiguous_pattern_indices().size() == tree.get_data().get_number_of_sites());
         REQUIRE(data.get_locus_end_indices().size() == tree.get_data().get_locus_end_indices().size());
         REQUIRE(data.get_locus_end_indices() == expected_locus_ends);
+    }
+}
+
+
+TEST_CASE("Testing errors when trying to sim loci with a template with constant characters removed",
+        "[ComparisonPopulationTree]") {
+
+    SECTION("Testing for fully fixed singleton") {
+        unsigned int Ne = 100000;
+        double mu = 1e-8;
+        double theta = 4 * Ne * mu;
+
+        unsigned int nlineages = 2;
+
+        // Two times the expected gene tree root height
+        double expected_mean = 2.0 * (theta * (1.0 - (1.0 / nlineages)));
+        double epsilon = 0.0001;
+
+        std::string nex_path = "data/dummy-singleton-n2-100k.nex";
+        // Need to keep constant characters
+        ComparisonPopulationTree tree(nex_path, '-',
+                true,   // population_name_is_prefix
+                false,  // diploid
+                false,  // dominant
+                true,   // constant sites removed
+                true,   // validate
+                true,   // strict on constant
+                true,   // strict on missing
+                true,   // strict on triallelic
+                2.0,    // ploidy
+                true    // store charset info
+                );
+        REQUIRE(tree.get_leaf_node_count() == 1);
+        tree.estimate_mutation_rate();
+
+        tree.set_root_population_size(Ne * mu);
+        tree.set_child_population_size(0, (Ne * mu));
+        tree.set_root_height(0.1);
+        tree.set_freq_1(0.5);
+        tree.set_mutation_rate(1.0);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(12345678);
+
+        // constant sites were removed, so all of these should fail
+        REQUIRE_THROWS_AS(tree.simulate_linked_biallelic_data_set(rng, 1.0, false, false), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(tree.simulate_linked_biallelic_data_set(rng, 1.0, true, true), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(tree.simulate_linked_biallelic_data_set(rng, 1.0, true, false), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(tree.simulate_linked_biallelic_data_set(rng, 1.0, false, true), EcoevolityBiallelicDataError &);
+
+        REQUIRE_THROWS_AS(tree.simulate_complete_biallelic_data_set(rng, 1, 1.0, true), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(tree.simulate_complete_biallelic_data_set(rng, 1, 1.0, false), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(tree.simulate_complete_biallelic_data_set(rng, 10, 1.0, true), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(tree.simulate_complete_biallelic_data_set(rng, 10, 1.0, false), EcoevolityBiallelicDataError &);
     }
 }
 

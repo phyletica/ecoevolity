@@ -1064,6 +1064,9 @@ void BiallelicData::validate() const {
     if (this->storing_seq_loci_info_) {
         if (this->contiguous_pattern_indices_.size() != (this->locus_end_indices_.back() + 1)) {
             // Debug output
+            // std::cout << "NUMBER of sites: "
+            //         << this->get_number_of_sites()
+            //         << "\n";
             // std::cout << "NUMBER of contiguous pattern indices: "
             //         << this->contiguous_pattern_indices_.size()
             //         << "\n";
