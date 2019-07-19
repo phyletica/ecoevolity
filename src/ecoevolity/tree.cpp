@@ -19,7 +19,7 @@
 
 #include "tree.hpp"
 
-PopulationTree::PopulationTree(
+BasePopulationTree::BasePopulationTree(
         std::string path, 
         char population_name_delimiter,
         bool population_name_is_prefix,
@@ -47,7 +47,7 @@ PopulationTree::PopulationTree(
                store_seq_loci_info);
 }
 
-PopulationTree::PopulationTree(
+BasePopulationTree::BasePopulationTree(
         std::shared_ptr<PopulationNode> root,
         unsigned int number_of_loci,
         unsigned int length_of_loci,
@@ -100,7 +100,7 @@ PopulationTree::PopulationTree(
     }
 }
 
-void PopulationTree::init(
+void BasePopulationTree::init(
         std::string path, 
         char population_name_delimiter,
         bool population_name_is_prefix,
@@ -128,7 +128,7 @@ void PopulationTree::init(
             validate,
             store_seq_loci_info);
     if (this->data_.get_number_of_populations() < 1) {
-        throw EcoevolityError("PopulationTree(); no populations were found");
+        throw EcoevolityError("BasePopulationTree(); no populations were found");
     }
     unsigned int number_of_missing_patterns_removed = this->data_.remove_missing_population_patterns();
     if (this->data_.has_recoded_triallelic_sites()) {
@@ -235,7 +235,7 @@ void PopulationTree::init(
     this->update_unique_allele_counts();
 }
 
-void PopulationTree::init_tree() {
+void BasePopulationTree::init_tree() {
     if (this->data_.get_number_of_populations() < 3) {
         this->root_ = std::make_shared<PopulationNode>(this->data_.get_number_of_populations(), 0.0);
         for (unsigned int pop_idx = 0;
@@ -284,7 +284,7 @@ void PopulationTree::init_tree() {
     this->root_ = ancestor;
 }
 
-void PopulationTree::set_data(const BiallelicData & data, bool constant_sites_removed) {
+void BasePopulationTree::set_data(const BiallelicData & data, bool constant_sites_removed) {
     const std::vector< std::shared_ptr<PopulationNode> >& leaves = this->root_->get_leaves();
     ECOEVOLITY_ASSERT(this->data_.get_number_of_populations() == leaves.size());
     for (unsigned int i = 0; i < leaves.size(); ++i) {
@@ -304,7 +304,7 @@ void PopulationTree::set_data(const BiallelicData & data, bool constant_sites_re
     this->likelihood_correction_was_calculated_ = false;
 }
 
-void PopulationTree::update_unique_allele_counts() {
+void BasePopulationTree::update_unique_allele_counts() {
     this->unique_allele_counts_.clear();
     this->unique_allele_count_weights_.clear();
     std::map<std::vector<unsigned int>, unsigned int> unique_allele_count_map = this->data_.get_unique_allele_counts();
@@ -314,7 +314,7 @@ void PopulationTree::update_unique_allele_counts() {
     }
 }
 
-void PopulationTree::calculate_likelihood_correction() {
+void BasePopulationTree::calculate_likelihood_correction() {
     double log_likelihood_correction = 0.0;
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->data_.get_number_of_patterns();
@@ -337,14 +337,14 @@ void PopulationTree::calculate_likelihood_correction() {
     // )
 }
 
-double PopulationTree::get_likelihood_correction(bool force) {
+double BasePopulationTree::get_likelihood_correction(bool force) {
     if ((! this->likelihood_correction_was_calculated_) || (force)) {
         this->calculate_likelihood_correction();
     }
     return this->log_likelihood_correction_.get_value();
 }
 
-double PopulationTree::calculate_log_binomial(
+double BasePopulationTree::calculate_log_binomial(
         unsigned int red_allele_count,
         unsigned int allele_count) const {
     if ((red_allele_count == 0) || (red_allele_count == allele_count)) {
@@ -357,21 +357,21 @@ double PopulationTree::calculate_log_binomial(
     return f;
 }
 
-// bool PopulationTree::constant_site_counts_were_provided() {
+// bool BasePopulationTree::constant_site_counts_were_provided() {
 //     if ((this->provided_number_of_constant_green_sites_ > -1) && (this->provided_number_of_constant_red_sites_ > -1)) {
 //         return true;
 //     }
 //     return false;
 // }
 
-double PopulationTree::get_log_likelihood_value() const {
+double BasePopulationTree::get_log_likelihood_value() const {
     return this->log_likelihood_.get_value();
 }
-double PopulationTree::get_stored_log_likelihood_value() const {
+double BasePopulationTree::get_stored_log_likelihood_value() const {
     return this->log_likelihood_.get_stored_value();
 }
 
-void PopulationTree::fold_patterns() {
+void BasePopulationTree::fold_patterns() {
     if (! this->state_frequencies_are_constrained()) {
         std::cerr << "WARNING: Site patterns are being folded when u/v rates are not constrained." << std::endl;
     }
@@ -379,107 +379,107 @@ void PopulationTree::fold_patterns() {
     this->make_dirty();
 }
 
-void PopulationTree::set_root_height(double height) {
+void BasePopulationTree::set_root_height(double height) {
     this->root_->set_height(height);
 }
-double PopulationTree::get_root_height() const {
+double BasePopulationTree::get_root_height() const {
     return this->root_->get_height();
 }
-void PopulationTree::store_root_height() {
+void BasePopulationTree::store_root_height() {
     this->root_->store_height();
 }
-void PopulationTree::restore_root_height() {
+void BasePopulationTree::restore_root_height() {
     this->root_->restore_height();
 }
-void PopulationTree::set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
+void BasePopulationTree::set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
     ECOEVOLITY_ASSERT(h->prior == this->node_height_prior_);
     this->root_->set_height_parameter(h);
 }
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter() const {
+std::shared_ptr<PositiveRealParameter> BasePopulationTree::get_root_height_parameter() const {
     return this->root_->get_height_parameter();
 }
 
-void PopulationTree::set_freq_1(double p) {
+void BasePopulationTree::set_freq_1(double p) {
     if (this->state_frequencies_are_fixed()) {
         return;
     }
     this->freq_1_->set_value(p);
     this->make_dirty();
 }
-double PopulationTree::get_freq_1() const {
+double BasePopulationTree::get_freq_1() const {
     return this->freq_1_->get_value();
 }
-double PopulationTree::get_freq_0() const {
+double BasePopulationTree::get_freq_0() const {
     return 1.0 - this->get_freq_1();
 }
-double PopulationTree::get_u() const {
+double BasePopulationTree::get_u() const {
     ECOEVOLITY_ASSERT(this->get_freq_1() > 0.0);
     return 1.0 / (2.0 * this->get_freq_1());
 }
-double PopulationTree::get_v() const {
+double BasePopulationTree::get_v() const {
     // double u = this->get_u();
     // return u / ((2.0 * u) - 1.0);
     ECOEVOLITY_ASSERT(this->get_freq_0() > 0.0);
     return 1.0 / (2.0 * this->get_freq_0());
 }
-void PopulationTree::store_freq_1() {
+void BasePopulationTree::store_freq_1() {
     this->freq_1_->store();
 }
-void PopulationTree::restore_freq_1() {
+void BasePopulationTree::restore_freq_1() {
     this->freq_1_->restore();
     this->make_dirty();
 }
 
-void PopulationTree::set_mutation_rate(double m) {
+void BasePopulationTree::set_mutation_rate(double m) {
     if (this->mutation_rate_is_fixed()) {
         return;
     }
     this->mutation_rate_->set_value(m);
     this->make_dirty();
 }
-double PopulationTree::get_mutation_rate() const {
+double BasePopulationTree::get_mutation_rate() const {
     return this->mutation_rate_->get_value();
 }
-void PopulationTree::store_mutation_rate() {
+void BasePopulationTree::store_mutation_rate() {
     this->mutation_rate_->store();
 }
-void PopulationTree::restore_mutation_rate() {
+void BasePopulationTree::restore_mutation_rate() {
     this->mutation_rate_->restore();
     this->make_dirty();
 }
 
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_freq_1_parameter() const {
+std::shared_ptr<PositiveRealParameter> BasePopulationTree::get_freq_1_parameter() const {
     return this->freq_1_;
 }
 
-void PopulationTree::set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h) {
+void BasePopulationTree::set_mutation_rate_parameter(std::shared_ptr<PositiveRealParameter> h) {
     this->mutation_rate_ = h;
     this->make_dirty();
 }
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_mutation_rate_parameter() const {
+std::shared_ptr<PositiveRealParameter> BasePopulationTree::get_mutation_rate_parameter() const {
     return this->mutation_rate_;
 }
 
-void PopulationTree::set_root_population_size(double size) {
+void BasePopulationTree::set_root_population_size(double size) {
     if (this->root_->population_size_is_fixed()) {
         return;
     }
     this->root_->set_population_size(size);
 }
-void PopulationTree::set_all_population_sizes(double size) {
+void BasePopulationTree::set_all_population_sizes(double size) {
     if (this->population_sizes_are_fixed()) {
         return;
     }
     this->root_->set_all_population_sizes(size);
 }
-unsigned int PopulationTree::scale_all_population_sizes(double scale) {
+unsigned int BasePopulationTree::scale_all_population_sizes(double scale) {
     if (this->population_sizes_are_fixed()) {
         return 0;
     }
     unsigned int number_of_free_parameters_scaled = this->root_->scale_all_population_sizes(scale);
     return number_of_free_parameters_scaled;
 }
-unsigned int PopulationTree::scale_root_population_size(double scale) {
+unsigned int BasePopulationTree::scale_root_population_size(double scale) {
     if (this->root_->population_size_is_fixed()) {
         return 0;
     }
@@ -487,14 +487,14 @@ unsigned int PopulationTree::scale_root_population_size(double scale) {
     return 1;
 }
 
-double PopulationTree::get_root_population_size() const {
+double BasePopulationTree::get_root_population_size() const {
     return this->root_->get_population_size();
 }
-std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_population_size_parameter() const {
+std::shared_ptr<PositiveRealParameter> BasePopulationTree::get_root_population_size_parameter() const {
     return this->root_->get_population_size_parameter();
 }
 
-void PopulationTree::set_population_sizes(
+void BasePopulationTree::set_population_sizes(
         std::shared_ptr<PopulationNode> node,
         const std::vector<double> & sizes) {
     node->set_population_size(sizes.at(node->get_population_index()));
@@ -503,7 +503,7 @@ void PopulationTree::set_population_sizes(
     }
 }
 
-void PopulationTree::get_population_sizes(
+void BasePopulationTree::get_population_sizes(
         std::shared_ptr<PopulationNode> node,
         std::vector<double> & sizes) const {
     sizes.at(node->get_population_index()) = node->get_population_size();
@@ -512,22 +512,19 @@ void PopulationTree::get_population_sizes(
     }
 }
 
-std::vector<double> PopulationTree::get_population_sizes() const {
+std::vector<double> BasePopulationTree::get_population_sizes() const {
     std::vector<double> sizes(this->get_node_count(), 0.0);
     this->get_population_sizes(this->root_, sizes);
     return sizes;
 }
 
-void PopulationTree::set_population_sizes(
+void BasePopulationTree::set_population_sizes(
         const std::vector<double> & sizes) {
-    if (this->population_size_multipliers_are_fixed()) {
-        return;
-    }
     ECOEVOLITY_ASSERT(sizes.size() == this->get_node_count());
     this->set_population_sizes(this->root_, sizes);
 }
 
-std::vector<double> PopulationTree::get_population_sizes_as_proportions() const {
+std::vector<double> BasePopulationTree::get_population_sizes_as_proportions() const {
     unsigned int num_nodes = this->get_node_count();
     std::vector<double> sizes(num_nodes, 0.0);
     this->get_population_sizes(this->root_, sizes);
@@ -538,7 +535,7 @@ std::vector<double> PopulationTree::get_population_sizes_as_proportions() const 
     return sizes;
 }
 
-std::vector<double> PopulationTree::get_population_sizes_as_multipliers() const {
+std::vector<double> BasePopulationTree::get_population_sizes_as_multipliers() const {
     unsigned int num_nodes = this->get_node_count();
     std::vector<double> sizes(num_nodes, 0.0);
     this->get_population_sizes(this->root_, sizes);
@@ -550,10 +547,7 @@ std::vector<double> PopulationTree::get_population_sizes_as_multipliers() const 
     return sizes;
 }
 
-void PopulationTree::set_population_sizes_as_proportions(const std::vector<double> & proportions) {
-    if (this->population_size_multipliers_are_fixed()) {
-        return;
-    }
+void BasePopulationTree::set_population_sizes_as_proportions(const std::vector<double> & proportions) {
     unsigned int nnodes = this->get_node_count();
     ECOEVOLITY_ASSERT(proportions.size() == nnodes);
     ECOEVOLITY_ASSERT_APPROX_EQUAL(
@@ -569,7 +563,7 @@ void PopulationTree::set_population_sizes_as_proportions(const std::vector<doubl
     this->set_population_sizes(new_sizes);
 }
 
-double PopulationTree::get_mean_population_size() const {
+double BasePopulationTree::get_mean_population_size() const {
     unsigned int num_nodes = this->get_node_count();
     std::vector<double> sizes(num_nodes, 0.0);
     this->get_population_sizes(this->root_, sizes);
@@ -577,7 +571,7 @@ double PopulationTree::get_mean_population_size() const {
     return sum_size / (double)num_nodes;
 }
 
-double PopulationTree::get_leaf_mean_population_size() const {
+double BasePopulationTree::get_leaf_mean_population_size() const {
     unsigned int num_nodes = this->get_node_count();
     std::vector<double> sizes(num_nodes, 0.0);
     this->get_population_sizes(this->root_, sizes);
@@ -589,88 +583,80 @@ double PopulationTree::get_leaf_mean_population_size() const {
     return sum_size / (double)nleaves;
 }
 
-void PopulationTree::set_mean_population_size(double size) {
-    if (this->mean_population_size_is_fixed()) {
-        return;
-    }
+void BasePopulationTree::set_mean_population_size(double size) {
     double scale = size / this->get_mean_population_size();
     this->scale_all_population_sizes(scale);
 }
 
-void PopulationTree::set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
-    this->population_size_multiplier_prior_ = prior;
-    this->make_dirty();
-}
 
-
-void PopulationTree::store_state() {
+void BasePopulationTree::store_state() {
     this->store_likelihood();
     this->store_prior_density();
     this->store_parameters();
 }
-void PopulationTree::store_likelihood() {
+void BasePopulationTree::store_likelihood() {
     this->log_likelihood_.store();
 }
-void PopulationTree::store_prior_density() {
+void BasePopulationTree::store_prior_density() {
     this->log_prior_density_.store();
 }
-void PopulationTree::store_parameters() {
+void BasePopulationTree::store_parameters() {
     this->store_freq_1();
     this->store_mutation_rate();
     this->store_all_population_sizes();
     this->store_all_heights();
 }
-void PopulationTree::store_all_population_sizes() {
+void BasePopulationTree::store_all_population_sizes() {
     this->root_->store_all_population_sizes();
 }
-void PopulationTree::store_all_heights() {
+void BasePopulationTree::store_all_heights() {
     this->root_->store_all_heights();
 }
 
-void PopulationTree::restore_state() {
+void BasePopulationTree::restore_state() {
     this->restore_likelihood();
     this->restore_prior_density();
     this->restore_parameters();
 }
-void PopulationTree::restore_likelihood() {
+void BasePopulationTree::restore_likelihood() {
     this->log_likelihood_.restore();
 }
-void PopulationTree::restore_prior_density() {
+void BasePopulationTree::restore_prior_density() {
     this->log_prior_density_.restore();
 }
-void PopulationTree::restore_parameters() {
+void BasePopulationTree::restore_parameters() {
     this->restore_freq_1();
     this->restore_mutation_rate();
     this->restore_all_population_sizes();
     this->restore_all_heights();
 }
-void PopulationTree::restore_all_population_sizes() {
+void BasePopulationTree::restore_all_population_sizes() {
     this->root_->restore_all_population_sizes();
 }
-void PopulationTree::restore_all_heights() {
+void BasePopulationTree::restore_all_heights() {
     this->root_->restore_all_heights();
 }
 
-void PopulationTree::set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+void BasePopulationTree::set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->node_height_prior_ = prior;
     this->root_->set_all_node_height_priors(prior);
 }
 
-void PopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+void BasePopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->population_size_prior_ = prior;
     this->root_->set_all_population_size_priors(prior);
 }
 
-void PopulationTree::set_freq_1_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+void BasePopulationTree::set_freq_1_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->freq_1_->set_prior(prior);
     this->make_dirty();
 }
-void PopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+void BasePopulationTree::set_mutation_rate_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->mutation_rate_->set_prior(prior);
     this->make_dirty();
 }
 
-double PopulationTree::compute_log_prior_density() {
+double BasePopulationTree::compute_log_prior_density() {
     double d = 0.0;
     d += this->compute_log_prior_density_of_state_frequencies();
     d += this->compute_log_prior_density_of_mutation_rate();
@@ -679,42 +665,42 @@ double PopulationTree::compute_log_prior_density() {
     this->log_prior_density_.set_value(d);
     return d;
 }
-double PopulationTree::compute_log_prior_density_of_state_frequencies() const {
+double BasePopulationTree::compute_log_prior_density_of_state_frequencies() const {
     return this->freq_1_->relative_prior_ln_pdf();
 }
-double PopulationTree::compute_log_prior_density_of_mutation_rate() const {
+double BasePopulationTree::compute_log_prior_density_of_mutation_rate() const {
     return this->mutation_rate_->relative_prior_ln_pdf();
 }
-double PopulationTree::compute_log_prior_density_of_node_heights() const {
+double BasePopulationTree::compute_log_prior_density_of_node_heights() const {
     return this->root_->calculate_ln_relative_node_height_prior_density();
 }
-double PopulationTree::compute_log_prior_density_of_population_sizes() const {
+double BasePopulationTree::compute_log_prior_density_of_population_sizes() const {
     return this->root_->calculate_ln_relative_population_size_prior_density();
 }
 
-double PopulationTree::get_log_prior_density_value() const {
+double BasePopulationTree::get_log_prior_density_value() const {
     return this->log_prior_density_.get_value();
 }
-double PopulationTree::get_stored_log_prior_density_value() const {
+double BasePopulationTree::get_stored_log_prior_density_value() const {
     return this->log_prior_density_.get_stored_value();
 }
 
-bool PopulationTree::is_dirty() const {
+bool BasePopulationTree::is_dirty() const {
     if (this->is_dirty_) {
         return true;
     }
     return this->root_->clade_has_dirt();
 }
 
-void PopulationTree::make_dirty() {
+void BasePopulationTree::make_dirty() {
     this->is_dirty_ = true;
 }
-void PopulationTree::make_clean() {
+void BasePopulationTree::make_clean() {
     this->is_dirty_ = false;
     this->root_->make_all_clean();
 }
 
-// void PopulationTree::provide_number_of_constant_sites(
+// void BasePopulationTree::provide_number_of_constant_sites(
 //                 unsigned int number_all_red,
 //                 unsigned int number_all_green) {
 //     if (! this->constant_sites_removed_) {
@@ -725,7 +711,7 @@ void PopulationTree::make_clean() {
 //     this->provided_number_of_constant_green_sites_ = number_all_green;
 // }
 
-void PopulationTree::simulate_gene_tree(
+void BasePopulationTree::simulate_gene_tree(
         const std::shared_ptr<PopulationNode> node,
         std::unordered_map<unsigned int, std::vector< std::shared_ptr<GeneTreeSimNode> > > & branch_lineages,
         const unsigned int pattern_index,
@@ -832,7 +818,7 @@ void PopulationTree::simulate_gene_tree(
     }
 }
 
-std::shared_ptr<GeneTreeSimNode> PopulationTree::simulate_gene_tree(
+std::shared_ptr<GeneTreeSimNode> BasePopulationTree::simulate_gene_tree(
         const unsigned int pattern_index,
         RandomNumberGenerator& rng,
         const bool use_max_allele_counts) const {
@@ -848,7 +834,7 @@ std::shared_ptr<GeneTreeSimNode> PopulationTree::simulate_gene_tree(
     return branch_lineages.at(this->root_->get_population_index()).at(0);
 }
 
-double PopulationTree::coalesce_in_branch(
+double BasePopulationTree::coalesce_in_branch(
         std::vector< std::shared_ptr<GeneTreeSimNode> >& lineages,
         double population_size,
         RandomNumberGenerator& rng,
@@ -887,7 +873,7 @@ double PopulationTree::coalesce_in_branch(
     return current_height;
 }
 
-bool PopulationTree::sample_pattern(
+bool BasePopulationTree::sample_pattern(
         RandomNumberGenerator& rng,
         const float singleton_sample_probability,
         const std::vector<unsigned int>& red_allele_counts,
@@ -918,7 +904,7 @@ bool PopulationTree::sample_pattern(
     return true;
 }
 
-BiallelicData PopulationTree::simulate_biallelic_data_set(
+BiallelicData BasePopulationTree::simulate_biallelic_data_set(
         RandomNumberGenerator& rng,
         float singleton_sample_probability,
         bool validate) const {
@@ -970,7 +956,7 @@ BiallelicData PopulationTree::simulate_biallelic_data_set(
     return sim_data;
 }
 
-BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
+BiallelicData BasePopulationTree::simulate_linked_biallelic_data_set(
         RandomNumberGenerator& rng,
         float singleton_sample_probability,
         bool max_one_variable_site_per_locus,
@@ -1054,7 +1040,7 @@ BiallelicData PopulationTree::simulate_linked_biallelic_data_set(
 }
 
 std::pair<BiallelicData, unsigned int>
-PopulationTree::simulate_complete_biallelic_data_set(
+BasePopulationTree::simulate_complete_biallelic_data_set(
         RandomNumberGenerator& rng,
         unsigned int locus_size,
         float singleton_sample_probability,
@@ -1131,7 +1117,7 @@ PopulationTree::simulate_complete_biallelic_data_set(
 }
 
 std::pair<BiallelicData, unsigned int>
-PopulationTree::simulate_data_set_max_one_variable_site_per_locus(
+BasePopulationTree::simulate_data_set_max_one_variable_site_per_locus(
         RandomNumberGenerator& rng,
         unsigned int locus_size,
         float singleton_sample_probability,
@@ -1206,7 +1192,7 @@ PopulationTree::simulate_data_set_max_one_variable_site_per_locus(
 std::pair<
         std::pair<std::vector<unsigned int>, std::vector<unsigned int> >,
         std::shared_ptr<GeneTreeSimNode> >
-PopulationTree::simulate_biallelic_site(
+BasePopulationTree::simulate_biallelic_site(
         const unsigned int pattern_idx,
         RandomNumberGenerator& rng,
         const bool use_max_allele_counts) const {
@@ -1247,7 +1233,7 @@ PopulationTree::simulate_biallelic_site(
 }
 
 std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
-PopulationTree::simulate_biallelic_site(
+BasePopulationTree::simulate_biallelic_site(
         std::shared_ptr<GeneTreeSimNode> gene_tree,
         RandomNumberGenerator& rng) const {
     gene_tree->compute_binary_transition_probabilities(this->get_u(), this->get_v());
@@ -1276,7 +1262,7 @@ PopulationTree::simulate_biallelic_site(
 }
 
 std::pair<std::vector<unsigned int>, std::vector<unsigned int> >
-PopulationTree::simulate_biallelic_site_sans_missing(
+BasePopulationTree::simulate_biallelic_site_sans_missing(
         std::shared_ptr<GeneTreeSimNode> gene_tree,
         const std::vector<unsigned int> & site_allele_counts,
         RandomNumberGenerator& rng) const {
@@ -1310,6 +1296,136 @@ PopulationTree::simulate_biallelic_site_sans_missing(
             std::make_pair(sampled_red_allele_counts, sampled_allele_counts);
     return sampled_pattern;
 }
+
+double BasePopulationTree::compute_log_likelihood(
+        unsigned int nthreads) {
+    if (this->ignoring_data()) {
+        this->log_likelihood_.set_value(0.0);
+        return 0.0;
+    }
+    double constant_pattern_lnl_correction = 0.0;
+    double log_likelihood = get_log_likelihood(
+            this->get_mutable_root(),
+            this->data_.get_red_allele_count_matrix(),
+            this->data_.get_allele_count_matrix(),
+            this->data_.get_pattern_weights(),
+            this->unique_allele_counts_,
+            this->unique_allele_count_weights_,
+            this->get_u(),
+            this->get_v(),
+            this->get_mutation_rate(),
+            this->get_ploidy(),
+            this->data_.markers_are_dominant(),
+            this->state_frequencies_are_constrained(),
+            this->constant_sites_removed(),
+            constant_pattern_lnl_correction,
+            nthreads);
+
+    if (this->constant_sites_removed()) {
+        //////////////////////////////////////////////////////////////////////
+        // No reason to use removed site counts. Simply leave constant sites in
+        // and calc likelihood without correction. This is better, because it
+        // doesn't treat all constant site patterns equally (i.e., it accounts
+        // for constant patterns with missing data).
+        // if (this->constant_site_counts_were_provided()) {
+        //     double constant_log_likelihood =
+        //             ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
+        //             ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
+        //     log_likelihood += constant_log_likelihood;
+        // }
+        // else if (this->use_removed_constant_site_counts_){
+        //     double constant_log_likelihood =
+        //             ((double)this->data_.get_number_of_constant_green_sites_removed() *
+        //             std::log(this->all_green_pattern_likelihood_.get_value())) +
+        //             ((double)this->data_.get_number_of_constant_red_sites_removed() *
+        //             std::log(this->all_red_pattern_likelihood_.get_value()));
+        //     log_likelihood += constant_log_likelihood;
+        // }
+        //////////////////////////////////////////////////////////////////////
+        // else {
+        if (constant_pattern_lnl_correction == -std::numeric_limits<double>::infinity()) {
+            // Rather than throw an error return -inf and let the MCMC machinery reject
+            // TODO: Is there a better way to handle this? Technically, the log likelihood
+            // would be inf or NAN (not -inf)
+            log_likelihood = -std::numeric_limits<double>::infinity();
+            double root_height = this->get_node_height_in_subs_per_site(this->get_root());
+            std::vector<double> pop_sizes = this->get_population_sizes();
+            std::ostringstream message;
+            message << "\n"
+                    << "\n#######################################################################\n"
+                    <<   "##############################  WARNING  ##############################\n"
+                    <<   "The probability of a variable character is zero for the current state\n"
+                    <<   "of the population-tree model for the data in:\n    \'"
+                    <<   this->data_.get_path() << "\'.\n"
+                    <<   "Correcting the likelihood for missing constant characters would thus\n"
+                    <<   "result an infinite likelihood for any character pattern.\n"
+                    <<   "This is likely due to the event time and population sizes being very\n"
+                    <<   "small. The current height of the root node in expected subsitutions\n"
+                    <<   "per site is:\n    "
+                    <<   root_height * this->get_mutation_rate() << "\n"
+                    <<   "The current population sizes (scaled by the mutation rate) are:\n    "
+                    <<   pop_sizes.at(0) * this->get_mutation_rate();
+            for (unsigned int i = 1; i < pop_sizes.size(); ++i) {
+                message << " " << pop_sizes.at(i) * this->get_mutation_rate();
+            }
+            message << "\n"
+                    << "This state will be rejected by the Metropolis-Hastings algorithm,\n"
+                    << "however, the MCMC exploring such parameter space could indicate a\n"
+                    << "larger problem, such as a prior specified in the wrong units\n"
+                    << "#######################################################################\n\n";
+            std::cerr << message.str();
+            // throw EcoevolityError(message.str());
+        }
+        else {
+            log_likelihood -= constant_pattern_lnl_correction;
+        }
+        // }
+    }
+
+    log_likelihood += this->get_likelihood_correction();
+
+    // ECOEVOLITY_DEBUG(
+    //     std::cerr << "compute_log_likelihood(): " << log_likelihood << std::endl;
+    // )
+    if (std::isnan(log_likelihood)) {
+        throw EcoevolityError("PopulationTree::compute_log_likelihood resulted in a NAN likelihood");
+    }
+
+    this->log_likelihood_.set_value(log_likelihood);
+    return log_likelihood;
+}
+
+
+
+
+void PopulationTree::set_population_size_multiplier_prior(std::shared_ptr<DirichletDistribution> prior) {
+    this->population_size_multiplier_prior_ = prior;
+    this->make_dirty();
+}
+
+void PopulationTree::set_population_sizes(
+        const std::vector<double> & sizes) {
+    if (this->population_size_multipliers_are_fixed()) {
+        return;
+    }
+    BasePopulationTree::set_population_sizes(sizes);
+}
+
+void PopulationTree::set_population_sizes_as_proportions(const std::vector<double> & proportions) {
+    if (this->population_size_multipliers_are_fixed()) {
+        return;
+    }
+    BasePopulationTree::set_population_sizes_as_proportions(proportions);
+}
+
+void PopulationTree::set_mean_population_size(double size) {
+    if (this->mean_population_size_is_fixed()) {
+        return;
+    }
+    BasePopulationTree::set_mean_population_size(size);
+}
+
+
 
 
 ComparisonPopulationTree::ComparisonPopulationTree(
@@ -1548,104 +1664,6 @@ void ComparisonPopulationTree::draw_from_prior(RandomNumberGenerator& rng) {
             }
         }
     }
-}
-
-double PopulationTree::compute_log_likelihood(
-        unsigned int nthreads) {
-    if (this->ignoring_data()) {
-        this->log_likelihood_.set_value(0.0);
-        return 0.0;
-    }
-    double constant_pattern_lnl_correction = 0.0;
-    double log_likelihood = get_log_likelihood(
-            this->get_mutable_root(),
-            this->data_.get_red_allele_count_matrix(),
-            this->data_.get_allele_count_matrix(),
-            this->data_.get_pattern_weights(),
-            this->unique_allele_counts_,
-            this->unique_allele_count_weights_,
-            this->get_u(),
-            this->get_v(),
-            this->get_mutation_rate(),
-            this->get_ploidy(),
-            this->data_.markers_are_dominant(),
-            this->state_frequencies_are_constrained(),
-            this->constant_sites_removed(),
-            constant_pattern_lnl_correction,
-            nthreads);
-
-    if (this->constant_sites_removed()) {
-        //////////////////////////////////////////////////////////////////////
-        // No reason to use removed site counts. Simply leave constant sites in
-        // and calc likelihood without correction. This is better, because it
-        // doesn't treat all constant site patterns equally (i.e., it accounts
-        // for constant patterns with missing data).
-        // if (this->constant_site_counts_were_provided()) {
-        //     double constant_log_likelihood =
-        //             ((double)this->get_provided_number_of_constant_green_sites() * std::log(all_green_pattern_prob)) +
-        //             ((double)this->get_provided_number_of_constant_red_sites() * std::log(all_red_pattern_prob));
-        //     log_likelihood += constant_log_likelihood;
-        // }
-        // else if (this->use_removed_constant_site_counts_){
-        //     double constant_log_likelihood =
-        //             ((double)this->data_.get_number_of_constant_green_sites_removed() *
-        //             std::log(this->all_green_pattern_likelihood_.get_value())) +
-        //             ((double)this->data_.get_number_of_constant_red_sites_removed() *
-        //             std::log(this->all_red_pattern_likelihood_.get_value()));
-        //     log_likelihood += constant_log_likelihood;
-        // }
-        //////////////////////////////////////////////////////////////////////
-        // else {
-        if (constant_pattern_lnl_correction == -std::numeric_limits<double>::infinity()) {
-            // Rather than throw an error return -inf and let the MCMC machinery reject
-            // TODO: Is there a better way to handle this? Technically, the log likelihood
-            // would be inf or NAN (not -inf)
-            log_likelihood = -std::numeric_limits<double>::infinity();
-            double root_height = this->get_node_height_in_subs_per_site(this->get_root());
-            std::vector<double> pop_sizes = this->get_population_sizes();
-            std::ostringstream message;
-            message << "\n"
-                    << "\n#######################################################################\n"
-                    <<   "##############################  WARNING  ##############################\n"
-                    <<   "The probability of a variable character is zero for the current state\n"
-                    <<   "of the population-tree model for the data in:\n    \'"
-                    <<   this->data_.get_path() << "\'.\n"
-                    <<   "Correcting the likelihood for missing constant characters would thus\n"
-                    <<   "result an infinite likelihood for any character pattern.\n"
-                    <<   "This is likely due to the event time and population sizes being very\n"
-                    <<   "small. The current height of the root node in expected subsitutions\n"
-                    <<   "per site is:\n    "
-                    <<   root_height * this->get_mutation_rate() << "\n"
-                    <<   "The current population sizes (scaled by the mutation rate) are:\n    "
-                    <<   pop_sizes.at(0) * this->get_mutation_rate();
-            for (unsigned int i = 1; i < pop_sizes.size(); ++i) {
-                message << " " << pop_sizes.at(i) * this->get_mutation_rate();
-            }
-            message << "\n"
-                    << "This state will be rejected by the Metropolis-Hastings algorithm,\n"
-                    << "however, the MCMC exploring such parameter space could indicate a\n"
-                    << "larger problem, such as a prior specified in the wrong units\n"
-                    << "#######################################################################\n\n";
-            std::cerr << message.str();
-            // throw EcoevolityError(message.str());
-        }
-        else {
-            log_likelihood -= constant_pattern_lnl_correction;
-        }
-        // }
-    }
-
-    log_likelihood += this->get_likelihood_correction();
-
-    // ECOEVOLITY_DEBUG(
-    //     std::cerr << "compute_log_likelihood(): " << log_likelihood << std::endl;
-    // )
-    if (std::isnan(log_likelihood)) {
-        throw EcoevolityError("PopulationTree::compute_log_likelihood resulted in a NAN likelihood");
-    }
-
-    this->log_likelihood_.set_value(log_likelihood);
-    return log_likelihood;
 }
 
 

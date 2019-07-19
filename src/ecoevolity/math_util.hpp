@@ -580,7 +580,7 @@ inline double log_multinomial_coefficient(const std::vector<unsigned int>& il) {
  *          RbStatistics::Normal::quantile
  *          (https://github.com/revbayes/revbayes)
  */
-double normal_quantile(double p) {
+inline double normal_quantile(double p) {
     
 	double a0 = -0.322232431088;
 	double a1 = -1.0;
@@ -598,6 +598,96 @@ double normal_quantile(double p) {
 	double y = std::sqrt( std::log(1.0/(p1*p1)) );   
 	double z = y + ((((y*a4+a3)*y+a2)*y+a1)*y+a0) / ((((y*b4+b3)*y+b2)*y+b1)*y+b0);
 	return ( p < 0.5 ? -z : z );
+}
+
+
+/*!
+ * Calculate the incomplete gamma integral.
+ *
+ * (1) series expansion     if (alpha>x || x<=1)
+ * (2) continued fraction   otherwise
+ * RATNEST FORTRAN by
+ * Bhattacharjee GP (1970) The incomplete gamma integral.  Applied Statistics,
+ * 19: 285-287 (AS32)
+ *
+ * @note    From revbayes (commit c8bf96ec786)
+ *          RbMath::incompleteGamma
+ *          (https://github.com/revbayes/revbayes)
+ */
+inline double incomplete_gamma(double x, double alpha, double scale) {
+    
+    double accurate = 1e-8, overflow = 1e30;
+    double factor, gin, rn, a, b, an, dif, term;
+    double pn0, pn1, pn2, pn3, pn4, pn5;
+    
+    if (x == 0.0) {
+        return 0.0;
+    }
+    if (x < 0.0 || alpha <= 0.0) 
+    {
+        std::ostringstream s;
+        s << "Cannot compute incomplete gamma function for x = " << x << ", alpha = " << alpha << "and scale = " << scale;
+        throw EcoevolityError(s.str());
+    }
+    
+    factor = std::exp(alpha * std::log(x) - x - scale);
+    
+    if (x > 1 && x >= alpha) {
+        // continued fraction
+        a = 1 - alpha;
+        b = a + x + 1;
+        term = 0;
+        pn0 = 1;
+        pn1 = x;
+        pn2 = x + 1;
+        pn3 = x * b;
+        gin = pn2 / pn3;
+        
+        do {
+            a++;
+            b += 2;
+            term++;
+            an = a * term;
+            pn4 = b * pn2 - an * pn0;
+            pn5 = b * pn3 - an * pn1;
+            
+            if (pn5 != 0) {
+                rn = pn4 / pn5;
+                dif = fabs(gin - rn);
+                if (dif <= accurate) {
+                    if (dif <= accurate * rn) {
+                        break;
+                    }
+                }
+                
+                gin = rn;
+            }
+            pn0 = pn2;
+            pn1 = pn3;
+            pn2 = pn4;
+            pn3 = pn5;
+            if (fabs(pn4) >= overflow) {
+                pn0 /= overflow;
+                pn1 /= overflow;
+                pn2 /= overflow;
+                pn3 /= overflow;
+            }
+        } while (true);
+        gin = 1 - factor * gin;
+    } else {
+        // series expansion
+        gin = 1;
+        term = 1;
+        rn = alpha;
+        do {
+            rn++;
+            term *= x / rn;
+            gin += term;
+        }
+        while (term > accurate);
+        gin *= factor / alpha;
+    }
+    return gin;
 }
 
 
@@ -679,96 +769,6 @@ inline double chi_square_quantile(double prob, double df)
 			goto l4;
     
 		return (ch);
-}
-
-/*!
- * Calculate the incomplete gamma integral.
- *
- * (1) series expansion     if (alpha>x || x<=1)
- * (2) continued fraction   otherwise
- * RATNEST FORTRAN by
- * Bhattacharjee GP (1970) The incomplete gamma integral.  Applied Statistics,
- * 19: 285-287 (AS32)
- *
- * @note    From revbayes (commit c8bf96ec786)
- *          RbMath::incompleteGamma
- *          (https://github.com/revbayes/revbayes)
- */
-double incomplete_gamma(double x, double alpha, double scale) {
-
-    
-    double accurate = 1e-8, overflow = 1e30;
-    double factor, gin, rn, a, b, an, dif, term;
-    double pn0, pn1, pn2, pn3, pn4, pn5;
-    
-    if (x == 0.0) {
-        return 0.0;
-    }
-    if (x < 0.0 || alpha <= 0.0) 
-    {
-        std::ostringstream s;
-        s << "Cannot compute incomplete gamma function for x = " << x << ", alpha = " << alpha << "and scale = " << scale;
-        throw EcoevolityError(s.str());
-    }
-    
-    factor = std::exp(alpha * std::log(x) - x - scale);
-    
-    if (x > 1 && x >= alpha) {
-        // continued fraction
-        a = 1 - alpha;
-        b = a + x + 1;
-        term = 0;
-        pn0 = 1;
-        pn1 = x;
-        pn2 = x + 1;
-        pn3 = x * b;
-        gin = pn2 / pn3;
-        
-        do {
-            a++;
-            b += 2;
-            term++;
-            an = a * term;
-            pn4 = b * pn2 - an * pn0;
-            pn5 = b * pn3 - an * pn1;
-            
-            if (pn5 != 0) {
-                rn = pn4 / pn5;
-                dif = fabs(gin - rn);
-                if (dif <= accurate) {
-                    if (dif <= accurate * rn) {
-                        break;
-                    }
-                }
-                
-                gin = rn;
-            }
-            pn0 = pn2;
-            pn1 = pn3;
-            pn2 = pn4;
-            pn3 = pn5;
-            if (fabs(pn4) >= overflow) {
-                pn0 /= overflow;
-                pn1 /= overflow;
-                pn2 /= overflow;
-                pn3 /= overflow;
-            }
-        } while (true);
-        gin = 1 - factor * gin;
-    } else {
-        // series expansion
-        gin = 1;
-        term = 1;
-        rn = alpha;
-        do {
-            rn++;
-            term *= x / rn;
-            gin += term;
-        }
-        while (term > accurate);
-        gin *= factor / alpha;
-    }
-    return gin;
 }
 
 
