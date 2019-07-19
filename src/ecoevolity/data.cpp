@@ -502,15 +502,17 @@ BiallelicData BiallelicData::get_empty_copy() const {
     copy.pop_label_to_index_map_ = this->pop_label_to_index_map_;
     copy.appendable_ = true;
     copy.storing_seq_loci_info_ = this->storing_seq_loci_info_;
-    copy.contiguous_pattern_indices_ = this->contiguous_pattern_indices_;
-    copy.locus_end_indices_ = this->locus_end_indices_;
+    // Do not want pattern indices or locus info to copy over
+    // copy.contiguous_pattern_indices_ = this->contiguous_pattern_indices_;
+    // copy.locus_end_indices_ = this->locus_end_indices_;
     return copy;
 }
 
 bool BiallelicData::add_site(
         const std::vector<unsigned int>& red_allele_counts,
         const std::vector<unsigned int>& allele_counts,
-        bool filtering_constant_patterns) {
+        bool filtering_constant_patterns,
+        bool end_of_locus) {
     if (! this->appendable_) {
         throw EcoevolityBiallelicDataError(
                 "Patterns cannot be added to a parsed dataset",
@@ -541,11 +543,23 @@ bool BiallelicData::add_site(
             allele_counts);
     if (pattern_exists) {
         ++this->pattern_weights_.at(pattern_index);
+        if (this->storing_seq_loci_info_) {
+            this->contiguous_pattern_indices_.push_back(pattern_index);
+            if (end_of_locus) {
+                this->locus_end_indices_.push_back(this->contiguous_pattern_indices_.size() - 1);
+            }
+        }
         return true;
     }
     this->red_allele_counts_.push_back(red_allele_counts);
     this->allele_counts_.push_back(allele_counts);
     this->pattern_weights_.push_back(1);
+    if (this->storing_seq_loci_info_) {
+        this->contiguous_pattern_indices_.push_back(this->pattern_weights_.size() - 1);
+        if (end_of_locus) {
+            this->locus_end_indices_.push_back(this->contiguous_pattern_indices_.size() - 1);
+        }
+    }
     return true;
 }
 
@@ -1122,6 +1136,19 @@ void BiallelicData::validate() const {
     }
     if (this->storing_seq_loci_info_) {
         if (this->contiguous_pattern_indices_.size() != (this->locus_end_indices_.back() + 1)) {
+            // Debug output
+            // std::cout << "NUMBER of sites: "
+            //         << this->get_number_of_sites()
+            //         << "\n";
+            // std::cout << "NUMBER of contiguous pattern indices: "
+            //         << this->contiguous_pattern_indices_.size()
+            //         << "\n";
+            // std::cout << "NUMBER of locus end indices: "
+            //         << this->locus_end_indices_.size()
+            //         << "\n";
+            // std::cout << "LAST locus end index: "
+            //         << this->locus_end_indices_.back()
+            //         << "\n";
             throw EcoevolityBiallelicDataError(
                     "The number of contiguous pattern indices does not match the end of the last locus",
                     this->path_);
@@ -1149,6 +1176,33 @@ std::vector< std::vector<std::string> > BiallelicData::get_alignment() const {
             row.push_back("");
         }
         alignment.push_back(row);
+    }
+    if (this->storing_seq_loci_info_) {
+        // Maintain the order of the site patterns
+        for (auto const &pattern_idx : this->contiguous_pattern_indices_) {
+            for (unsigned int pop_idx = 0; pop_idx < npops; ++pop_idx) {
+                int n_red_alleles = this->get_red_allele_count(pattern_idx, pop_idx);
+                int n_alleles = this->get_allele_count(pattern_idx, pop_idx);
+                int n_zero_alleles = n_alleles - n_red_alleles;
+                for (auto & row: alignment.at(pop_idx)) {
+                    if (n_zero_alleles > 0) {
+                        row += "0";
+                        --n_zero_alleles;
+                        --n_alleles;
+                    }
+                    else if (n_red_alleles > 0) {
+                        row += "1";
+                        --n_red_alleles;
+                        --n_alleles;
+                    }
+                    else {
+                        ECOEVOLITY_ASSERT(n_alleles == 0);
+                        row += "?";
+                    }
+                }
+            }
+        }
+        return alignment;
     }
     for (unsigned int pattern_idx = 0;
             pattern_idx < this->get_number_of_patterns();
@@ -1214,6 +1268,30 @@ void BiallelicData::write_nexus(
     this->write_alignment(out, population_name_delimiter);
     out << "    ;\n"
         << "End;\n";
+    if (this->storing_seq_loci_info_) {
+        out << "\n";
+        this->write_charsets(out);
+    }
+}
+
+void BiallelicData::write_charsets(
+        std::ostream& out) const {
+    out << "Begin sets;\n";
+    for (unsigned int locus_idx = 0;
+            locus_idx < this->locus_end_indices_.size();
+            ++locus_idx) {
+        out << "    Charset locus"
+            << locus_idx + 1
+            << "=";
+        if (locus_idx == 0) {
+            out << "1-";
+        }
+        else {
+            out << (this->locus_end_indices_.at(locus_idx - 1) + 2) << "-";
+        }
+        out << (this->locus_end_indices_.at(locus_idx) + 1) << ";\n";
+    }
+    out << "End;\n";
 }
 
 void BiallelicData::write_summary(
