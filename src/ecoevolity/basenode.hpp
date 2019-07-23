@@ -51,6 +51,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::weak_ptr<DerivedNodeT> parent_;
         std::string label_ = "";
         std::shared_ptr<PositiveRealParameter> height_ = std::make_shared<PositiveRealParameter>(0.0);
+        std::shared_ptr<PositiveRealParameter> stored_height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
 
         void add_ln_relative_node_height_prior_density(
@@ -96,7 +97,11 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         /* DerivedNodeT* clone() const { */
         /*     return new DerivedNodeT(static_cast<DerivedNodeT const &>(* this)); */
         /* } */
-        
+
+        bool operator< (const DerivedNodeT & other) const {
+            return this->get_height() < other.get_height();
+        }
+
         //Methods
         unsigned int degree() const {
             unsigned int d = children_.size();
@@ -260,6 +265,28 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->make_dirty();
             for (auto child_iter: this->children_) {
                 child_iter->restore_all_heights();
+            }
+        }
+
+        void store_height_pointer() {
+            this->stored_height_ = this->height_;
+        }
+        void store_all_height_pointers() {
+            this->stored_height_ = this->height_;
+            for (auto child_iter: this->children_) {
+                child_iter->store_all_height_pointers();
+            }
+        }
+
+        void restore_height_pointer() {
+            this->height_ = this->stored_height_;
+            this->make_all_dirty();
+        }
+        void restore_all_height_pointers() {
+            this->height_ = this->stored_height_;
+            this->make_dirty();
+            for (auto child_iter: this->children_) {
+                child_iter->restore_all_height_pointers();
             }
         }
 

@@ -18,19 +18,3 @@
 ******************************************************************************/
 
 #include "general_tree.hpp"
-
-void GeneralPopulationTree::init_node_heights() {
-    std::vector< std::shared_ptr<PopulationNode> > internal_nodes = this->root_->get_internal_nodes();
-    for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
-        bool exists = false;
-        // Check if we already have a pointer to the same place in memory
-        for (unsigned int j = 0; j < this->node_heights_.size(); ++j) {
-            if (internal_nodes.at(i)->get_height_parameter() == this->node_heights_.at(j)) {
-                exists = true;
-            }
-        }
-        if (! exists) {
-            this->node_heights_.push_back(internal_nodes.at(i)->get_height_parameter());
-        }
-    }
-}
