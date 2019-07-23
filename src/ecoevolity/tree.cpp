@@ -19,6 +19,41 @@
 
 #include "tree.hpp"
 
+
+template<class DerivedNodeType>
+void BaseTree<DerivedNodeType>::update_node_heights() {
+    this->node_heights_.clear();
+    std::vector< std::shared_ptr<DerivedNodeType> > internal_nodes = this->root_->get_internal_nodes();
+    for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
+        bool exists = false;
+        // Check if we already have a pointer to the same place in memory
+        for (unsigned int j = 0; j < this->node_heights_.size(); ++j) {
+            if (internal_nodes.at(i)->get_height_parameter() == this->node_heights_.at(j)) {
+                exists = true;
+            }
+        }
+        if (! exists) {
+            this->node_heights_.push_back(internal_nodes.at(i)->get_height_parameter());
+        }
+    }
+    this->sort_node_heights();
+}
+
+template<class DerivedNodeType>
+void BaseTree<DerivedNodeType>::sort_node_heights() {
+    std::sort(this->node_heights_.begin(), this->node_heights_.end());
+}
+
+template<class DerivedNodeType>
+std::vector<double> BaseTree<DerivedNodeType>::get_node_heights() const {
+    std::vector<double> heights (this->node_heights_.size());
+    for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+        heights.at(i) = this->node_heights_.at(i)->get_value();
+    }
+    return heights;
+}
+
+
 BasePopulationTree::BasePopulationTree(
         std::string path, 
         char population_name_delimiter,
@@ -45,6 +80,7 @@ BasePopulationTree::BasePopulationTree(
                strict_on_triallelic_sites,
                ploidy,
                store_seq_loci_info);
+    this->update_node_heights();
 }
 
 BasePopulationTree::BasePopulationTree(
@@ -98,6 +134,7 @@ BasePopulationTree::BasePopulationTree(
     if (validate_data) {
         this->data_.validate();
     }
+    this->update_node_heights();
 }
 
 void BasePopulationTree::init(
@@ -364,13 +401,6 @@ double BasePopulationTree::calculate_log_binomial(
 //     return false;
 // }
 
-double BasePopulationTree::get_log_likelihood_value() const {
-    return this->log_likelihood_.get_value();
-}
-double BasePopulationTree::get_stored_log_likelihood_value() const {
-    return this->log_likelihood_.get_stored_value();
-}
-
 void BasePopulationTree::fold_patterns() {
     if (! this->state_frequencies_are_constrained()) {
         std::cerr << "WARNING: Site patterns are being folded when u/v rates are not constrained." << std::endl;
@@ -589,42 +619,18 @@ void BasePopulationTree::set_mean_population_size(double size) {
 }
 
 
-void BasePopulationTree::store_state() {
-    this->store_likelihood();
-    this->store_prior_density();
-    this->store_parameters();
-}
-void BasePopulationTree::store_likelihood() {
-    this->log_likelihood_.store();
-}
-void BasePopulationTree::store_prior_density() {
-    this->log_prior_density_.store();
-}
 void BasePopulationTree::store_parameters() {
+    BaseTree::store_parameters();
     this->store_freq_1();
     this->store_mutation_rate();
     this->store_all_population_sizes();
-    this->store_all_heights();
 }
 void BasePopulationTree::store_all_population_sizes() {
     this->root_->store_all_population_sizes();
 }
-void BasePopulationTree::store_all_heights() {
-    this->root_->store_all_heights();
-}
 
-void BasePopulationTree::restore_state() {
-    this->restore_likelihood();
-    this->restore_prior_density();
-    this->restore_parameters();
-}
-void BasePopulationTree::restore_likelihood() {
-    this->log_likelihood_.restore();
-}
-void BasePopulationTree::restore_prior_density() {
-    this->log_prior_density_.restore();
-}
 void BasePopulationTree::restore_parameters() {
+    BaseTree::restore_parameters();
     this->restore_freq_1();
     this->restore_mutation_rate();
     this->restore_all_population_sizes();
@@ -632,9 +638,6 @@ void BasePopulationTree::restore_parameters() {
 }
 void BasePopulationTree::restore_all_population_sizes() {
     this->root_->restore_all_population_sizes();
-}
-void BasePopulationTree::restore_all_heights() {
-    this->root_->restore_all_heights();
 }
 
 void BasePopulationTree::set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
@@ -676,13 +679,6 @@ double BasePopulationTree::compute_log_prior_density_of_node_heights() const {
 }
 double BasePopulationTree::compute_log_prior_density_of_population_sizes() const {
     return this->root_->calculate_ln_relative_population_size_prior_density();
-}
-
-double BasePopulationTree::get_log_prior_density_value() const {
-    return this->log_prior_density_.get_value();
-}
-double BasePopulationTree::get_stored_log_prior_density_value() const {
-    return this->log_prior_density_.get_stored_value();
 }
 
 bool BasePopulationTree::is_dirty() const {
@@ -1423,6 +1419,20 @@ void PopulationTree::set_mean_population_size(double size) {
         return;
     }
     BasePopulationTree::set_mean_population_size(size);
+}
+
+void PopulationTree::store_parameters() {
+    this->store_freq_1();
+    this->store_mutation_rate();
+    this->store_all_population_sizes();
+    this->store_all_heights();
+}
+
+void PopulationTree::restore_parameters() {
+    this->restore_freq_1();
+    this->restore_mutation_rate();
+    this->restore_all_population_sizes();
+    this->restore_all_heights();
 }
 
 

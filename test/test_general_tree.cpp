@@ -43,10 +43,10 @@ TEST_CASE("Testing likelihood of GeneralPopulationTree with three-way polytomy a
         REQUIRE(tree0.get_number_of_node_heights() == 1);
         REQUIRE(tree1.get_number_of_node_heights() == 2);
 
-        const std::vector< std::shared_ptr<PositiveRealParameter> >& tree0_heights = tree0.get_node_height_parameters();
+        const std::vector< std::shared_ptr<PositiveRealParameter> >& tree0_heights = tree0.get_node_height_pointers();
         REQUIRE(tree0_heights.at(0) == root0->get_height_parameter());
 
-        const std::vector< std::shared_ptr<PositiveRealParameter> >& tree1_heights = tree1.get_node_height_parameters();
+        const std::vector< std::shared_ptr<PositiveRealParameter> >& tree1_heights = tree1.get_node_height_pointers();
         std::shared_ptr<PositiveRealParameter> ht = internal1->get_height_parameter();
         bool found = false;
         for (unsigned int i = 0; i < tree1_heights.size(); ++i) {

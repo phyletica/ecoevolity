@@ -26,11 +26,6 @@
 
 
 class GeneralPopulationTree : public BasePopulationTree {
-    protected:
-        std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
-
-        void init_node_heights();
-
     public:
         GeneralPopulationTree() { }
         GeneralPopulationTree(
@@ -58,9 +53,7 @@ class GeneralPopulationTree : public BasePopulationTree {
                     strict_on_missing_sites,
                     strict_on_triallelic_sites,
                     ploidy,
-                    store_seq_loci_info) {
-            this->init_node_heights();
-        }
+                    store_seq_loci_info) { }
 
         GeneralPopulationTree(
                 std::shared_ptr<PopulationNode> root,
@@ -71,25 +64,8 @@ class GeneralPopulationTree : public BasePopulationTree {
                     root,
                     number_of_loci,
                     length_of_loci,
-                    validate_data) {
-            this->init_node_heights();
-        }
+                    validate_data) { }
 
-        const std::vector< std::shared_ptr<PositiveRealParameter> >& get_node_height_parameters() const {
-            return this->node_heights_;
-        }
-
-        unsigned int get_number_of_node_heights() const {
-            return this->node_heights_.size();
-        }
-
-        std::vector<double> get_node_heights() const {
-            std::vector<double> heights (this->node_heights_.size());
-            for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
-                heights.at(i) = this->node_heights_.at(i)->get_value();
-            }
-            return heights;
-        }
 };
 
 #endif

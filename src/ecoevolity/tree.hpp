@@ -28,11 +28,163 @@
 #include "error.hpp"
 #include "assert.hpp"
 
+template<class DerivedNodeType>
+class BaseTree {
+    protected:
+        std::shared_ptr<DerivedNodeType> root_;
+        std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
+        LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
+        LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+        bool ignore_data_ = false;
+        unsigned int number_of_likelihood_calculations_ = 0;
 
-class BasePopulationTree {
+    public:
+        void update_node_heights();
+        void sort_node_heights();
+
+        const DerivedNodeType& get_root() const {return *this->root_;}
+        DerivedNodeType& get_mutable_root() const {return *this->root_;}
+
+        unsigned int get_degree_of_root() const {
+            return this->root_->degree();
+        }
+
+        unsigned int get_leaf_node_count() const {
+            return this->root_->get_leaf_node_count();
+        }
+        unsigned int get_node_count() const {
+            return this->root_->get_node_count();
+        }
+
+        unsigned int get_number_of_node_heights() const {
+            return this->node_heights_.size();
+        }
+
+        const std::vector< std::shared_ptr<PositiveRealParameter> >& get_node_height_pointers() const {
+            return this->node_heights_;
+        }
+        std::vector<double> get_node_heights() const;
+
+        void ignore_data() {
+            this->ignore_data_ = true;
+        }
+        void use_data() {
+            this->ignore_data_ = false;
+        }
+        bool ignoring_data() const {
+            return this->ignore_data_;
+        }
+
+        unsigned int get_number_of_likelihood_calculations() {
+            return this->number_of_likelihood_calculations_;
+        }
+
+        virtual void make_clean() {
+            this->root_->make_all_clean();
+        }
+
+        virtual void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
+            this->compute_log_likelihood(nthreads);
+            this->compute_log_prior_density();
+            this->make_clean();
+            return;
+        }
+
+        virtual double compute_log_likelihood(unsigned int nthreads = 1) {
+            ++this->number_of_likelihood_calculations_;
+            this->log_likelihood_.set_value(0.0);
+            return 0.0;
+        }
+
+        void set_log_likelihood_value(double value) {
+            this->log_likelihood_.set_value(value);
+        }
+        double get_log_likelihood_value() const {
+            return this->log_likelihood_.get_value();
+        }
+        double get_stored_log_likelihood_value() const {
+            return this->log_likelihood_.get_stored_value();
+        }
+
+        virtual double compute_log_prior_density() {
+            this->log_prior_density_.set_value(0.0);
+            return 0.0;
+        }
+        double get_log_prior_density_value() const {
+            return this->log_prior_density_.get_value();
+        }
+        double get_stored_log_prior_density_value() const {
+            return this->log_prior_density_.get_stored_value();
+        }
+
+        void store_state() {
+            this->store_likelihood();
+            this->store_prior_density();
+            this->store_parameters();
+        }
+        void store_likelihood() {
+            this->log_likelihood_.store();
+        }
+        void store_prior_density() {
+            this->log_prior_density_.store();
+        }
+        virtual void store_parameters() {
+            this->store_all_heights();
+            this->store_all_height_pointers();
+        }
+        virtual void store_all_heights() {
+            this->root_->store_all_heights();
+        }
+        virtual void store_all_height_pointers() {
+            this->root_->store_all_height_pointers();
+        }
+        void restore_state() {
+            this->restore_likelihood();
+            this->restore_prior_density();
+            this->restore_parameters();
+        }
+        void restore_likelihood() {
+            this->log_likelihood_.restore();
+        }
+        void restore_prior_density() {
+            this->log_prior_density_.restore();
+        }
+        virtual void restore_parameters() {
+            this->restore_all_height_pointers();
+            this->restore_all_heights();
+        }
+        virtual void restore_all_heights() {
+            this->root_->restore_all_heights();
+        }
+        virtual void restore_all_height_pointers() {
+            this->root_->restore_all_height_pointers();
+            this->update_node_heights();
+        }
+
+        virtual void write_state_log_header(std::ostream& out,
+                bool include_event_index,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("write_state_log_header called from base BaseTree class");
+        }
+        virtual void log_state(std::ostream& out,
+                unsigned int event_index,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("log_state called from base BaseTree class");
+        }
+        virtual void log_state(std::ostream& out,
+                const std::string& delimiter = "\t") const {
+            throw EcoevolityError("log_state called from base BaseTree class");
+        }
+
+        virtual void draw_from_prior(RandomNumberGenerator& rng) {
+            throw EcoevolityError("draw_from_prior called from base BaseTree class");
+        }
+};
+
+
+class BasePopulationTree : public BaseTree<PopulationNode> {
     protected:
         BiallelicData data_;
-        std::shared_ptr<PopulationNode> root_;
         std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
         double ploidy_ = 2.0;
@@ -42,9 +194,7 @@ class BasePopulationTree {
         std::shared_ptr<PositiveRealParameter> mutation_rate_ = std::make_shared<PositiveRealParameter>(
                 1.0,
                 true);
-        LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_likelihood_correction_ = LogProbabilityDensity(0.0);
-        LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         bool likelihood_correction_was_calculated_ = false;
         bool constant_sites_removed_ = true;
         // int provided_number_of_constant_red_sites_ = -1;
@@ -53,8 +203,6 @@ class BasePopulationTree {
         bool population_sizes_are_constrained_ = false;
         bool state_frequencies_are_constrained_ = false;
         bool is_dirty_ = true;
-        bool ignore_data_ = false;
-        unsigned int number_of_likelihood_calculations_ = 0;
 
         // Vectors for storing unique allele counts and associated weights.
         // These are used for calculating the likelihood correction term for
@@ -140,8 +288,6 @@ class BasePopulationTree {
         // }
 
         bool initialized() const {return (bool)this->root_;}
-        const PopulationNode& get_root() const {return *this->root_;}
-        PopulationNode& get_mutable_root() const {return *this->root_;}
         void set_root_height(double height);
         double get_root_height() const;
         void store_root_height();
@@ -149,10 +295,6 @@ class BasePopulationTree {
 
         void set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h);
         std::shared_ptr<PositiveRealParameter> get_root_height_parameter() const;
-
-        unsigned int get_degree_of_root() const {
-            return this->root_->degree();
-        }
 
         const std::vector<std::string>& get_population_labels() const {
             return this->data_.get_population_labels();
@@ -200,16 +342,6 @@ class BasePopulationTree {
         void make_dirty();
         void make_clean();
 
-        void ignore_data() {
-            this->ignore_data_ = true;
-        }
-        void use_data() {
-            this->ignore_data_ = false;
-        }
-        bool ignoring_data() const {
-            return this->ignore_data_;
-        }
-
         // void provide_number_of_constant_sites(
         //         unsigned int number_all_red,
         //         unsigned int number_all_green);
@@ -240,7 +372,7 @@ class BasePopulationTree {
 
         double get_likelihood_correction(bool force = false);
 
-        virtual void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
+        void compute_log_likelihood_and_prior(unsigned int nthreads = 1) {
             if (this->is_dirty()) {
                 this->compute_log_likelihood(nthreads);
                 ++this->number_of_likelihood_calculations_;
@@ -252,32 +384,16 @@ class BasePopulationTree {
 
         double compute_log_likelihood(unsigned int nthreads = 1);
 
-        void set_log_likelihood_value(double value) {
-            this->log_likelihood_.set_value(value);
-        }
-        double get_log_likelihood_value() const;
-        double get_stored_log_likelihood_value() const;
-
-        virtual double compute_log_prior_density();
+        double compute_log_prior_density();
         double compute_log_prior_density_of_state_frequencies() const;
         double compute_log_prior_density_of_mutation_rate() const;
         double compute_log_prior_density_of_node_heights() const;
         virtual double compute_log_prior_density_of_population_sizes() const;
-        double get_log_prior_density_value() const;
-        double get_stored_log_prior_density_value() const;
 
-        void store_state();
-        void store_likelihood();
-        void store_prior_density();
-        virtual void store_parameters();
+        void store_parameters();
         virtual void store_all_population_sizes();
-        virtual void store_all_heights();
-        void restore_state();
-        void restore_likelihood();
-        void restore_prior_density();
-        virtual void restore_parameters();
+        void restore_parameters();
         virtual void restore_all_population_sizes();
-        virtual void restore_all_heights();
 
         void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_prior() const {
@@ -352,16 +468,6 @@ class BasePopulationTree {
         }
         bool state_frequencies_are_constrained() const {
             return this->state_frequencies_are_constrained_;
-        }
-
-        unsigned int get_number_of_likelihood_calculations() {
-            return this->number_of_likelihood_calculations_;
-        }
-        unsigned int get_leaf_node_count() const {
-            return this->root_->get_leaf_node_count();
-        }
-        unsigned int get_node_count() const {
-            return this->root_->get_node_count();
         }
 
         void simulate_gene_tree(
@@ -439,25 +545,6 @@ class BasePopulationTree {
                 std::ostream& out,
                 unsigned int indent_level = 0) const {
             this->data_.write_summary(out, indent_level);
-        }
-
-        virtual void write_state_log_header(std::ostream& out,
-                bool include_event_index,
-                const std::string& delimiter = "\t") const {
-            throw EcoevolityError("write_state_log_header called from BasePopulationTree");
-        }
-        virtual void log_state(std::ostream& out,
-                unsigned int event_index,
-                const std::string& delimiter = "\t") const {
-            throw EcoevolityError("log_state called from BasePopulationTree");
-        }
-        virtual void log_state(std::ostream& out,
-                const std::string& delimiter = "\t") const {
-            throw EcoevolityError("log_state called from BasePopulationTree");
-        }
-
-        virtual void draw_from_prior(RandomNumberGenerator& rng) {
-            throw EcoevolityError("draw_from_prior called from BasePopulationTree");
         }
 
 };
@@ -580,6 +667,9 @@ class PopulationTree : public BasePopulationTree {
         void set_population_sizes_as_proportions(const std::vector<double> & proportions);
         
         void set_mean_population_size(double size);
+
+        void store_parameters();
+        void restore_parameters();
 
         // TODO: This PopulationTree hierarchy of classes is messy. The problem
         // is that each derived class has its own subset of methods in addition
