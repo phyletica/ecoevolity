@@ -53,6 +53,19 @@ std::vector<double> BaseTree<DerivedNodeType>::get_node_heights() const {
     return heights;
 }
 
+template<class DerivedNodeType>
+double BaseTree<DerivedNodeType>::compute_log_prior_density_of_node_heights() const {
+    double root_height = this->root_->get_height();
+    double d = 0.0;
+    d += this->root_node_height_prior_->relative_ln_pdf(root_height);
+    // prior prob density of non-root internal nodes = 1 / root_height, so on
+    // log scale = -log(root_height)
+    double internal_node_height_prior_density = -std::log(root_height);
+    d += internal_node_height_prior_density * this->get_number_of_node_heights();
+    return d;
+}
+
+
 
 BasePopulationTree::BasePopulationTree(
         std::string path, 
@@ -125,7 +138,7 @@ BasePopulationTree::BasePopulationTree(
     this->root_ = root;
     this->constant_sites_removed_ = false;
     this->root_->resize_all();
-    this->root_->set_all_node_height_priors(this->node_height_prior_);
+    this->root_->set_node_height_prior(this->root_node_height_prior_);
     this->root_->set_all_population_size_priors(this->population_size_prior_);
     this->update_unique_allele_counts();
     this->is_dirty_ = true;
@@ -409,26 +422,6 @@ void BasePopulationTree::fold_patterns() {
     this->make_dirty();
 }
 
-void BasePopulationTree::set_root_height(double height) {
-    this->root_->set_height(height);
-}
-double BasePopulationTree::get_root_height() const {
-    return this->root_->get_height();
-}
-void BasePopulationTree::store_root_height() {
-    this->root_->store_height();
-}
-void BasePopulationTree::restore_root_height() {
-    this->root_->restore_height();
-}
-void BasePopulationTree::set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
-    ECOEVOLITY_ASSERT(h->prior == this->node_height_prior_);
-    this->root_->set_height_parameter(h);
-}
-std::shared_ptr<PositiveRealParameter> BasePopulationTree::get_root_height_parameter() const {
-    return this->root_->get_height_parameter();
-}
-
 void BasePopulationTree::set_freq_1(double p) {
     if (this->state_frequencies_are_fixed()) {
         return;
@@ -640,11 +633,6 @@ void BasePopulationTree::restore_all_population_sizes() {
     this->root_->restore_all_population_sizes();
 }
 
-void BasePopulationTree::set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-    this->node_height_prior_ = prior;
-    this->root_->set_all_node_height_priors(prior);
-}
-
 void BasePopulationTree::set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
     this->population_size_prior_ = prior;
     this->root_->set_all_population_size_priors(prior);
@@ -673,9 +661,6 @@ double BasePopulationTree::compute_log_prior_density_of_state_frequencies() cons
 }
 double BasePopulationTree::compute_log_prior_density_of_mutation_rate() const {
     return this->mutation_rate_->relative_prior_ln_pdf();
-}
-double BasePopulationTree::compute_log_prior_density_of_node_heights() const {
-    return this->root_->calculate_ln_relative_node_height_prior_density();
 }
 double BasePopulationTree::compute_log_prior_density_of_population_sizes() const {
     return this->root_->calculate_ln_relative_population_size_prior_density();
@@ -1419,6 +1404,21 @@ void PopulationTree::set_mean_population_size(double size) {
         return;
     }
     BasePopulationTree::set_mean_population_size(size);
+}
+
+void PopulationTree::set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h) {
+    ECOEVOLITY_ASSERT(h->prior == this->root_node_height_prior_);
+    this->root_->set_height_parameter(h);
+}
+std::shared_ptr<PositiveRealParameter> PopulationTree::get_root_height_parameter() const {
+    return this->root_->get_height_parameter();
+}
+
+void PopulationTree::store_root_height() {
+    this->root_->store_height();
+}
+void PopulationTree::restore_root_height() {
+    this->root_->restore_height();
 }
 
 void PopulationTree::store_parameters() {

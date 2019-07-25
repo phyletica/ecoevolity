@@ -484,6 +484,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return true;
         }
 
+        double get_height_relative_prior_ln_density() const {
+            return this->height_->relative_prior_ln_pdf();
+        }
+
         double calculate_ln_relative_node_height_prior_density() const {
             double d = 0.0;
             std::vector< std::shared_ptr<PositiveRealParameter> > parameters;

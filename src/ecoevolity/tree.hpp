@@ -33,6 +33,7 @@ class BaseTree {
     protected:
         std::shared_ptr<DerivedNodeType> root_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         bool ignore_data_ = false;
@@ -44,6 +45,21 @@ class BaseTree {
 
         const DerivedNodeType& get_root() const {return *this->root_;}
         DerivedNodeType& get_mutable_root() const {return *this->root_;}
+
+        void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+            this->root_node_height_prior_ = prior;
+            this->root_->set_node_height_prior(prior);
+        }
+        std::shared_ptr<ContinuousProbabilityDistribution> get_root_node_height_prior() const {
+            return this->root_node_height_prior_;
+        }
+
+        void set_root_height(double height) {
+            this->root_->set_height(height);
+        }
+        double get_root_height() const {
+            return this->root_->get_height();
+        }
 
         unsigned int get_degree_of_root() const {
             return this->root_->degree();
@@ -107,9 +123,13 @@ class BaseTree {
         }
 
         virtual double compute_log_prior_density() {
-            this->log_prior_density_.set_value(0.0);
-            return 0.0;
+            double d = 0.0;
+            d += this->compute_log_prior_density_of_node_heights();
+            this->log_prior_density_.set_value(d);
+            return d;
         }
+        virtual double compute_log_prior_density_of_node_heights() const;
+
         double get_log_prior_density_value() const {
             return this->log_prior_density_.get_value();
         }
@@ -185,7 +205,6 @@ class BaseTree {
 class BasePopulationTree : public BaseTree<PopulationNode> {
     protected:
         BiallelicData data_;
-        std::shared_ptr<ContinuousProbabilityDistribution> node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<ContinuousProbabilityDistribution> population_size_prior_ = std::make_shared<GammaDistribution>(1.0, 0.001);
         double ploidy_ = 2.0;
         std::shared_ptr<PositiveRealParameter> freq_1_ = std::make_shared<PositiveRealParameter>(
@@ -288,13 +307,6 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         // }
 
         bool initialized() const {return (bool)this->root_;}
-        void set_root_height(double height);
-        double get_root_height() const;
-        void store_root_height();
-        void restore_root_height();
-
-        void set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h);
-        std::shared_ptr<PositiveRealParameter> get_root_height_parameter() const;
 
         const std::vector<std::string>& get_population_labels() const {
             return this->data_.get_population_labels();
@@ -387,18 +399,12 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         double compute_log_prior_density();
         double compute_log_prior_density_of_state_frequencies() const;
         double compute_log_prior_density_of_mutation_rate() const;
-        double compute_log_prior_density_of_node_heights() const;
         virtual double compute_log_prior_density_of_population_sizes() const;
 
         void store_parameters();
         virtual void store_all_population_sizes();
         void restore_parameters();
         virtual void restore_all_population_sizes();
-
-        void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
-        std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_prior() const {
-            return this->node_height_prior_;
-        }
 
         virtual void set_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior);
         virtual std::shared_ptr<ContinuousProbabilityDistribution> get_population_size_prior() const {
@@ -550,6 +556,11 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 };
 
 
+
+// TODO: PopulationTree is misnomer for this class and should be changed.
+// This name made sense when this class used to be at the very base of the tree
+// class hierarchy. Now it is an intermediate class in the hierarchy, an
+// intermediate leading to the comparison tree classes (only one or two tips).
 class PopulationTree : public BasePopulationTree {
 
     protected:
@@ -614,6 +625,20 @@ class PopulationTree : public BasePopulationTree {
         void fix_relative_root_population_size() { return; }
         void estimate_relative_root_population_size() { return; }
 
+
+        void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+            this->set_root_node_height_prior(prior);
+        }
+        std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_prior() const {
+            return this->get_root_node_height_prior();
+        }
+
+        void set_root_height_parameter(std::shared_ptr<PositiveRealParameter> h);
+        std::shared_ptr<PositiveRealParameter> get_root_height_parameter() const;
+
+
+        void store_root_height();
+        void restore_root_height();
 
         virtual void set_relative_root_population_size_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) { return; }
 
