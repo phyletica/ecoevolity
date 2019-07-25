@@ -138,7 +138,7 @@ BasePopulationTree::BasePopulationTree(
     this->root_ = root;
     this->constant_sites_removed_ = false;
     this->root_->resize_all();
-    this->root_->set_node_height_prior(this->root_node_height_prior_);
+    this->root_->set_all_node_height_priors(this->root_node_height_prior_);
     this->root_->set_all_population_size_priors(this->population_size_prior_);
     this->update_unique_allele_counts();
     this->is_dirty_ = true;
@@ -1433,6 +1433,10 @@ void PopulationTree::restore_parameters() {
     this->restore_mutation_rate();
     this->restore_all_population_sizes();
     this->restore_all_heights();
+}
+
+double PopulationTree::compute_log_prior_density_of_node_heights() const {
+    return this->root_->calculate_ln_relative_node_height_prior_density();
 }
 
 

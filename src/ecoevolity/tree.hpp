@@ -48,7 +48,7 @@ class BaseTree {
 
         void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->root_node_height_prior_ = prior;
-            this->root_->set_node_height_prior(prior);
+            this->root_->set_all_node_height_priors(prior);
         }
         std::shared_ptr<ContinuousProbabilityDistribution> get_root_node_height_prior() const {
             return this->root_node_height_prior_;
@@ -695,6 +695,9 @@ class PopulationTree : public BasePopulationTree {
 
         void store_parameters();
         void restore_parameters();
+
+        // Override this method to old node height prior behavior
+        double compute_log_prior_density_of_node_heights() const;
 
         // TODO: This PopulationTree hierarchy of classes is messy. The problem
         // is that each derived class has its own subset of methods in addition
