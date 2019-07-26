@@ -1062,6 +1062,10 @@ TEST_CASE("Testing nonstandardized partitions for get_dpp_log_prior_probability"
 }
 
 TEST_CASE("Testing stirling number functions", "[math_util]") {
+    SECTION("Testing overflow error") {
+        REQUIRE_THROWS_AS(stirling2_base<int>(100, 20), EcoevolityNumericLimitError &);
+        REQUIRE_THROWS_AS(stirling2_base<unsigned int>(100, 20), EcoevolityNumericLimitError &);
+    }
     SECTION("Testing stirling2") {
         REQUIRE(stirling2(1, 1) == 1);
         REQUIRE(stirling2(2, 1) == 1);
@@ -1101,6 +1105,14 @@ TEST_CASE("Testing stirling number functions", "[math_util]") {
 }
 
 TEST_CASE("Testing bell number functions", "[math_util]") {
+    SECTION("Testing overflow error") {
+        REQUIRE_THROWS_AS(bell_number_base<int>(26), EcoevolityNumericLimitError &);
+        REQUIRE_THROWS_AS(bell_number_base<unsigned int>(26), EcoevolityNumericLimitError &);
+        REQUIRE_THROWS_AS(bell_number_base<long>(26), EcoevolityNumericLimitError &);
+        REQUIRE_THROWS_AS(bell_number_base<long long>(26), EcoevolityNumericLimitError &);
+        REQUIRE_THROWS_AS(bell_number_base<double>(2230), EcoevolityNumericLimitError &);
+        REQUIRE_THROWS_AS(bell_number_base<long double>(2230), EcoevolityNumericLimitError &);
+    }
     SECTION("Testing bell_number") {
         REQUIRE(bell_number(1) == 1);
         REQUIRE(bell_number(2) == 2);
