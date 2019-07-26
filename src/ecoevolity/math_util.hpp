@@ -411,7 +411,14 @@ inline double get_wdp_log_prior_probability(
 
 template <typename T>
 inline T stirling2_base(int n, int k) {
-    ECOEVOLITY_ASSERT((n > 0) && (k > 0) && (n >= k));
+    ECOEVOLITY_ASSERT((n >= 0) && (k >= 0) && (n >= k));
+    if (k == 0) {
+        return 0;
+    }
+    if ((n == k) || (k == 1)) {
+        return 1;
+    }
+
     int maxj = n-k;
 
     std::vector<T> s_numbers (maxj + 1, 1);
