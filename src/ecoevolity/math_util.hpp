@@ -409,6 +409,7 @@ inline double get_wdp_log_prior_probability(
 //     return stirling2_recurse(n - 1, k - 1) + k * stirling2_recurse(n - 1, k);
 // }
 
+// TODO: Add check for overlow
 template <typename T>
 inline T stirling2_base(int n, int k) {
     ECOEVOLITY_ASSERT((n >= 0) && (k >= 0) && (n >= k));
@@ -440,6 +441,7 @@ inline long double stirling2_float(int n, int k) {
     return stirling2_base<long double>(n, k);
 }
 
+// TODO: Add check for overlow
 template <typename T>
 inline T bell_number_base(int n) {
     T b = 0;
