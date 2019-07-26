@@ -918,30 +918,47 @@ void BaseComparisonPopulationTreeCollection::draw_heights_from_prior(RandomNumbe
         }
         return;
     }
-    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
-        // Not aware of an "easy" way of uniformly sampling set partitions, so
-        // (hackily) using reversible jump MCMC to do so.
-        bool was_ignoring_data = this->ignoring_data();
-        this->ignore_data();
-        OperatorInterface& op = this->operator_schedule_.get_reversible_jump_operator();
-        for (unsigned int i = 0; i < (this->get_number_of_trees() * 2); ++i) {
-            op.operate(rng, this);
-        }
-        if (! was_ignoring_data) {
-            this->use_data();
-        }
-        for (unsigned int height_idx = 0;
-                height_idx < this->node_heights_.size();
-                ++height_idx) {
-            this->node_heights_.at(height_idx)->set_value(
-                    this->node_height_prior_->draw(rng));
-        }
-        return;
-    }
-    // Dealing with a process model prior
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    // No longer need to use rjMCMC to sample from the uniform prior on event
+    // models
+    //////////////////////////////////////////////////////////////////////////
+    // else if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+    //     // Not aware of an "easy" way of uniformly sampling set partitions, so
+    //     // (hackily) using reversible jump MCMC to do so.
+    //     bool was_ignoring_data = this->ignoring_data();
+    //     this->ignore_data();
+    //     OperatorInterface& op = this->operator_schedule_.get_reversible_jump_operator();
+    //     for (unsigned int i = 0; i < (this->get_number_of_trees() * 2); ++i) {
+    //         op.operate(rng, this);
+    //     }
+    //     if (! was_ignoring_data) {
+    //         this->use_data();
+    //     }
+    //     for (unsigned int height_idx = 0;
+    //             height_idx < this->node_heights_.size();
+    //             ++height_idx) {
+    //         this->node_heights_.at(height_idx)->set_value(
+    //                 this->node_height_prior_->draw(rng));
+    //     }
+    //     unsigned int num_heights = this->node_heights_.size();
+    //     unsigned int new_num_heights;
+    //     new_num_heights = rng.random_set_partition(
+    //             this->node_height_indices_,
+    //             this->get_concentration());
+    //     return;
+    // }
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
     unsigned int num_heights = this->node_heights_.size();
     unsigned int new_num_heights;
-    if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
+    if (this->model_prior_ == EcoevolityOptions::ModelPrior::uniform) {
+        new_num_heights = rng.random_set_partition(
+                this->node_height_indices_,
+                this->get_concentration() // concentration is co-opted for
+                );                        // split_weight
+    }
+    else if (this->model_prior_ == EcoevolityOptions::ModelPrior::pyp) {
         new_num_heights = rng.pitman_yor_process(
                 this->node_height_indices_,
                 this->get_concentration(),
