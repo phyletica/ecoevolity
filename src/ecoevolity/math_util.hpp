@@ -409,7 +409,6 @@ inline double get_wdp_log_prior_probability(
 //     return stirling2_recurse(n - 1, k - 1) + k * stirling2_recurse(n - 1, k);
 // }
 
-// TODO: Add check for overlow
 template <typename T>
 inline T stirling2_base(int n, int k) {
     ECOEVOLITY_ASSERT((n >= 0) && (k >= 0) && (n >= k));
@@ -426,7 +425,17 @@ inline T stirling2_base(int n, int k) {
 
     for (int i = 2; i <= k; ++i) {
         for(int j = 1; j <= maxj; ++j) {
-            s_numbers.at(j) += i * s_numbers.at(j-1);
+            // Check for multiplication overflow
+            if (s_numbers.at(j-1) > (std::numeric_limits<T>::max() / i)) {
+                throw EcoevolityNumericLimitError("Overflow during multiplication in stirling2_base");
+            }
+            // Check for addition overflow
+            T addend = i * s_numbers.at(j-1);
+            if ((addend > 0) &&
+                    (s_numbers.at(j) > (std::numeric_limits<T>::max() - addend))) {
+                throw EcoevolityNumericLimitError("Overflow during addition in stirling2_base");
+            }
+            s_numbers.at(j) += addend;
         }
     }
 
@@ -441,21 +450,39 @@ inline long double stirling2_float(int n, int k) {
     return stirling2_base<long double>(n, k);
 }
 
-// TODO: Add check for overlow
 template <typename T>
 inline T bell_number_base(int n) {
     T b = 0;
     for (int i = 0; i < n; ++i) {
-        b += stirling2_base<T>(n, (i + 1));
+        // Check for addition overflow
+        T addend = stirling2_base<T>(n, (i + 1));
+        if ((addend > 0) &&
+                (b > (std::numeric_limits<T>::max() - addend))) {
+            throw EcoevolityNumericLimitError("Overflow during addition in bell_number_base");
+        }
+        b += addend;
     }
     return b;
 }
 
 inline unsigned long long bell_number(int n) {
+    // max unsigned long long (and unsigned long): 18446744073709551615
+    // Bell number 25:                             4638590332229999353
+    // Bell number 26:                             49631246523618756274
     return bell_number_base<unsigned long long>(n);
 }
 
 inline long double bell_float(int n) {
+    // max double:      1.79769e+308
+    // max long double: 1.18973e+4932
+    // sage: SetPartitions(218).cardinality() > 1.79769e+308
+    // False
+    // sage: SetPartitions(219).cardinality() > 1.79769e+308
+    // True
+    // sage: SetPartitions(2228).cardinality() > 1.18973e+4932
+    // False
+    // sage: SetPartitions(2229).cardinality() > 1.18973e+4932
+    // True
     return bell_number_base<long double>(n);
 }
 

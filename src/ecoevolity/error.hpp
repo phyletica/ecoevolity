@@ -68,6 +68,13 @@ class EcoevolityError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityError", message) { }
 };
 
+class EcoevolityNumericLimitError: public EcoevolityBaseError {
+    public:
+        EcoevolityNumericLimitError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityNumericLimitError", message) { }
+};
+
 class EcoevolityNullPointerError: public EcoevolityBaseError {
     public:
         EcoevolityNullPointerError(
