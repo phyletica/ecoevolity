@@ -1197,6 +1197,231 @@ TEST_CASE("Testing vector return version of weighted_discount_process(3, 0.6, 0.
     }
 }
 
+TEST_CASE("Testing random_subsets(1, 1)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_subsets(1, 1)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector< std::vector<unsigned int> > subsets;
+        std::vector< std::vector<unsigned int> > expected_subsets;
+        expected_subsets.push_back({0});
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_subsets(1, 1);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_subsets(2, 1)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_subsets(2, 1)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector< std::vector<unsigned int> > subsets;
+        std::vector< std::vector<unsigned int> > expected_subsets;
+        expected_subsets.push_back({0, 1});
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_subsets(2, 1);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_subsets(2, 2)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_subsets(2, 2)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector< std::vector<unsigned int> > subsets;
+        std::vector< std::vector<unsigned int> > expected_subsets;
+        expected_subsets.push_back({0});
+        expected_subsets.push_back({1});
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_subsets(2, 2);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_subsets(3, 1)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_subsets(3, 1)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector< std::vector<unsigned int> > subsets;
+        std::vector< std::vector<unsigned int> > expected_subsets;
+        expected_subsets.push_back({0, 1, 2});
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_subsets(3, 1);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_subsets(3, 3)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_subsets(3, 3)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector< std::vector<unsigned int> > subsets;
+        std::vector< std::vector<unsigned int> > expected_subsets;
+        expected_subsets.push_back({0});
+        expected_subsets.push_back({1});
+        expected_subsets.push_back({2});
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_subsets(3, 3);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_subsets(3, 2)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_subsets(3, 2)") {
+        unsigned int nsamples = 500000;
+        RandomNumberGenerator rng(111);
+        std::vector< std::vector<unsigned int> > subsets;
+        std::vector< std::vector<unsigned int> > expected_subsets_1;
+        std::vector< std::vector<unsigned int> > expected_subsets_2;
+        std::vector< std::vector<unsigned int> > expected_subsets_3;
+        expected_subsets_1.push_back({0, 1});
+        expected_subsets_1.push_back({2});
+        expected_subsets_2.push_back({0, 2});
+        expected_subsets_2.push_back({1});
+        expected_subsets_3.push_back({0});
+        expected_subsets_3.push_back({1, 2});
+        unsigned int count_1 = 0;
+        unsigned int count_2 = 0;
+        unsigned int count_3 = 0;
+        unsigned int bad_count = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_subsets(3, 2);
+            if (subsets == expected_subsets_1) {
+                ++count_1;
+            }
+            else if (subsets == expected_subsets_2) {
+                ++count_2;
+            }
+            else if (subsets == expected_subsets_3) {
+                ++count_3;
+            }
+            else {
+                ++bad_count;
+            }
+        }
+        REQUIRE(bad_count == 0);
+        REQUIRE(count_1 + count_2 + count_3 == nsamples);
+        REQUIRE(count_1 / (double)nsamples == Approx(1.0/3.0).epsilon(0.001));
+        REQUIRE(count_2 / (double)nsamples == Approx(1.0/3.0).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing random_set_partition_with_k_subsets(1, 1)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition_with_k_subsets(1, 1)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector<unsigned int> subsets;
+        std::vector<unsigned int> expected_subsets = {0};
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_set_partition_with_k_subsets(1, 1);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition_with_k_subsets(2, 1)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition_with_k_subsets(2, 1)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector<unsigned int> subsets;
+        std::vector<unsigned int> expected_subsets = {0, 0};
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_set_partition_with_k_subsets(2, 1);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition_with_k_subsets(2, 2)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition_with_k_subsets(2, 2)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector<unsigned int> subsets;
+        std::vector<unsigned int> expected_subsets = {0, 1};
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_set_partition_with_k_subsets(2, 2);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition_with_k_subsets(3, 1)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition_with_k_subsets(3, 1)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector<unsigned int> subsets;
+        std::vector<unsigned int> expected_subsets = {0, 0, 0};
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_set_partition_with_k_subsets(3, 1);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+TEST_CASE("Testing random_set_partition_with_k_subsets(3, 3)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition_with_k_subsets(3, 3)") {
+        unsigned int nsamples = 50;
+        RandomNumberGenerator rng(123);
+        std::vector<unsigned int> subsets;
+        std::vector<unsigned int> expected_subsets = {0, 1, 2};
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_set_partition_with_k_subsets(3, 3);
+            REQUIRE(subsets == expected_subsets);
+        }
+    }
+}
+
+
+TEST_CASE("Testing random_set_partition_with_k_subsets(3, 2)",
+        "[RandomNumberGenerator]") {
+    SECTION("Testing random_set_partition_with_k_subsets(3, 2)") {
+        unsigned int nsamples = 500000;
+        RandomNumberGenerator rng(111);
+        std::vector<unsigned int> subsets;
+        std::vector<unsigned int> expected_subsets_1 = {0, 0, 1};
+        std::vector<unsigned int> expected_subsets_2 = {0, 1, 1};
+        std::vector<unsigned int> expected_subsets_3 = {0, 1, 0};
+        unsigned int count_1 = 0;
+        unsigned int count_2 = 0;
+        unsigned int count_3 = 0;
+        unsigned int bad_count = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            subsets = rng.random_set_partition_with_k_subsets(3, 2);
+            if (subsets == expected_subsets_1) {
+                ++count_1;
+            }
+            else if (subsets == expected_subsets_2) {
+                ++count_2;
+            }
+            else if (subsets == expected_subsets_3) {
+                ++count_3;
+            }
+            else {
+                ++bad_count;
+            }
+        }
+        REQUIRE(bad_count == 0);
+        REQUIRE(count_1 + count_2 + count_3 == nsamples);
+        REQUIRE(count_1 / (double)nsamples == Approx(1.0/3.0).epsilon(0.001));
+        REQUIRE(count_2 / (double)nsamples == Approx(1.0/3.0).epsilon(0.001));
+    }
+}
+
 TEST_CASE("Testing random_set_partition (1, 1.0)",
         "[RandomNumberGenerator]") {
     SECTION("Testing random_set_partition(1, 1.0)") {

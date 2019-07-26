@@ -386,21 +386,98 @@ class RandomNumberGenerator {
             return std::make_pair(num_subsets, elements);
         }
 
+        inline std::vector< std::vector<unsigned int> > random_subsets_rev(
+                std::vector< std::vector<unsigned int> > &subsets,
+                unsigned int N,
+                unsigned int k) {
+            if (N == 0) {
+                return subsets;
+            }
+            else if (N == 1){
+                subsets.push_back({0});
+                return subsets;
+            }
+            else if (
+                    (stirling2_base<long double>(N-1, k-1) /
+                     stirling2_base<long double>(N, k)) >
+                    this->uniform_real()) {
+                subsets.push_back({N-1});
+                std::vector< std::vector<unsigned int> > remaining_subsets;
+                remaining_subsets.reserve(k-1);
+                this->random_subsets_rev(remaining_subsets, N-1, k-1);
+                for (unsigned int subset_idx = 0;
+                        subset_idx < remaining_subsets.size();
+                        ++subset_idx) {
+                    subsets.push_back(remaining_subsets.at(subset_idx));
+                }
+
+                return subsets;
+            }
+            else {
+                this->random_subsets_rev(subsets, N-1, k);
+                subsets.at(this->uniform_positive_int(subsets.size() - 1)).push_back(N-1);
+
+                return subsets;
+            }
+
+        }
+
+        inline std::vector< std::vector<unsigned int> > random_subsets(
+                std::vector< std::vector<unsigned int> > &subsets,
+                unsigned int number_of_elements,
+                unsigned int number_of_subsets) {
+            this->random_subsets_rev(subsets,
+                    number_of_elements,
+                    number_of_subsets);
+            std::reverse(std::begin(subsets), std::end(subsets));
+            return subsets;
+        }
+
+        inline std::vector< std::vector<unsigned int> > random_subsets(
+                unsigned int number_of_elements,
+                unsigned int number_of_subsets) {
+            std::vector< std::vector<unsigned int> > subsets;
+            subsets.reserve(number_of_subsets);
+            this->random_subsets(subsets,
+                    number_of_elements,
+                    number_of_subsets);
+            return subsets;
+        }
+
+        inline std::vector<unsigned int> random_set_partition_with_k_subsets(
+                std::vector<unsigned int>& elements,
+                unsigned int number_of_subsets) {
+            std::vector< std::vector<unsigned int> > subsets;
+            subsets.reserve(number_of_subsets);
+            this->random_subsets(subsets,
+                    elements.size(),
+                    number_of_subsets);
+            for (unsigned int subset_idx = 0;
+                    subset_idx < subsets.size();
+                    ++subset_idx) {
+                for (auto element_idx : subsets.at(subset_idx)) {
+                    elements.at(element_idx) = subset_idx;
+                }
+            }
+            return elements;
+        }
+
+        inline std::vector<unsigned int> random_set_partition_with_k_subsets(
+                unsigned int number_of_elements,
+                unsigned int number_of_subsets) {
+            std::vector<unsigned int> elements(number_of_elements);
+            this->random_set_partition_with_k_subsets(
+                    elements,
+                    number_of_subsets);
+            return elements;
+        }
+
         /**
          * A function for generating a random set partition.
          */
         inline unsigned int random_set_partition(
                 std::vector<unsigned int>& elements,
                 double split_weight = 1.0) {
-            // This is very inefficent. It would be better to draw the sizes of
-            // the 'ncats' categories weighted by how many possible partitions
-            // there are for each (i.e., the sum of all possible set partitions
-            // for each possible integer partition with 'ncats' categories.
-            // NOTE: adding 'ncats' categories to random elements, and then
-            // randomly assigning the remaining elements to categories (or
-            // using shuffling) does NOT work. This produces a multinomial
-            // distribution over partitions, which is not uniform.
-
             ECOEVOLITY_ASSERT(split_weight > 0.0);
             unsigned int n = elements.size();
             ECOEVOLITY_ASSERT(n > 0);
@@ -429,23 +506,25 @@ class RandomNumberGenerator {
                 }
                 return ncats;
             }
-            std::unordered_map<unsigned int, unsigned int> standardizing_map;
-            standardizing_map.reserve(ncats);
-            while(true) {
-                standardizing_map.clear();
-                unsigned int next_idx = 0;
-                for (unsigned int i = 0; i < n; ++i) {
-                    unsigned int raw_idx = this->uniform_int(0, ncats-1);
-                    if (standardizing_map.count(raw_idx) == 0) {
-                        standardizing_map[raw_idx] = next_idx;
-                        ++next_idx;
-                    }
-                    elements.at(i) = standardizing_map.at(raw_idx);
-                }
-                if (next_idx == ncats) {
-                    break;
-                }
-            }
+            // No longer need rejection hack to uniformly sample set partitions
+            // std::unordered_map<unsigned int, unsigned int> standardizing_map;
+            // standardizing_map.reserve(ncats);
+            // while(true) {
+            //     standardizing_map.clear();
+            //     unsigned int next_idx = 0;
+            //     for (unsigned int i = 0; i < n; ++i) {
+            //         unsigned int raw_idx = this->uniform_int(0, ncats-1);
+            //         if (standardizing_map.count(raw_idx) == 0) {
+            //             standardizing_map[raw_idx] = next_idx;
+            //             ++next_idx;
+            //         }
+            //         elements.at(i) = standardizing_map.at(raw_idx);
+            //     }
+            //     if (next_idx == ncats) {
+            //         break;
+            //     }
+            // }
+            this->random_set_partition_with_k_subsets(elements, ncats);
             return ncats;
         }
 
