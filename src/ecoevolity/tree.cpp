@@ -20,53 +20,6 @@
 #include "tree.hpp"
 
 
-template<class DerivedNodeType>
-void BaseTree<DerivedNodeType>::update_node_heights() {
-    this->node_heights_.clear();
-    std::vector< std::shared_ptr<DerivedNodeType> > internal_nodes = this->root_->get_internal_nodes();
-    for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
-        bool exists = false;
-        // Check if we already have a pointer to the same place in memory
-        for (unsigned int j = 0; j < this->node_heights_.size(); ++j) {
-            if (internal_nodes.at(i)->get_height_parameter() == this->node_heights_.at(j)) {
-                exists = true;
-            }
-        }
-        if (! exists) {
-            this->node_heights_.push_back(internal_nodes.at(i)->get_height_parameter());
-        }
-    }
-    this->sort_node_heights();
-}
-
-template<class DerivedNodeType>
-void BaseTree<DerivedNodeType>::sort_node_heights() {
-    std::sort(this->node_heights_.begin(), this->node_heights_.end());
-}
-
-template<class DerivedNodeType>
-std::vector<double> BaseTree<DerivedNodeType>::get_node_heights() const {
-    std::vector<double> heights (this->node_heights_.size());
-    for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
-        heights.at(i) = this->node_heights_.at(i)->get_value();
-    }
-    return heights;
-}
-
-template<class DerivedNodeType>
-double BaseTree<DerivedNodeType>::compute_log_prior_density_of_node_heights() const {
-    double root_height = this->root_->get_height();
-    double d = 0.0;
-    d += this->root_node_height_prior_->relative_ln_pdf(root_height);
-    // prior prob density of non-root internal nodes = 1 / root_height, so on
-    // log scale = -log(root_height)
-    double internal_node_height_prior_density = -std::log(root_height);
-    d += internal_node_height_prior_density * this->get_number_of_node_heights();
-    return d;
-}
-
-
-
 BasePopulationTree::BasePopulationTree(
         std::string path, 
         char population_name_delimiter,
@@ -138,7 +91,8 @@ BasePopulationTree::BasePopulationTree(
     this->root_ = root;
     this->constant_sites_removed_ = false;
     this->root_->resize_all();
-    this->root_->set_all_node_height_priors(this->root_node_height_prior_);
+    std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<ExponentialDistribution>(100.0);
+    this->root_->set_all_node_height_priors(root_height_prior);
     this->root_->set_all_population_size_priors(this->population_size_prior_);
     this->update_unique_allele_counts();
     this->is_dirty_ = true;

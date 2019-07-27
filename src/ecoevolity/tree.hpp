@@ -28,30 +28,57 @@
 #include "error.hpp"
 #include "assert.hpp"
 
-template<class DerivedNodeType>
+template<class NodeType>
 class BaseTree {
     protected:
-        std::shared_ptr<DerivedNodeType> root_;
+        std::shared_ptr<NodeType> root_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
-        std::shared_ptr<ContinuousProbabilityDistribution> root_node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
     public:
-        void update_node_heights();
-        void sort_node_heights();
-
-        const DerivedNodeType& get_root() const {return *this->root_;}
-        DerivedNodeType& get_mutable_root() const {return *this->root_;}
-
-        void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
-            this->root_node_height_prior_ = prior;
-            this->root_->set_all_node_height_priors(prior);
+        BaseTree() { }
+        BaseTree(std::shared_ptr<NodeType> root) {
+            this->set_root(root);
         }
-        std::shared_ptr<ContinuousProbabilityDistribution> get_root_node_height_prior() const {
-            return this->root_node_height_prior_;
+
+        void update_node_heights() {
+            this->node_heights_.clear();
+            std::vector< std::shared_ptr<NodeType> > internal_nodes = this->root_->get_internal_nodes();
+            for (unsigned int i = 0; i < internal_nodes.size(); ++i) {
+                bool exists = false;
+                // Check if we already have a pointer to the same place in memory
+                for (unsigned int j = 0; j < this->node_heights_.size(); ++j) {
+                    if (internal_nodes.at(i)->get_height_parameter() == this->node_heights_.at(j)) {
+                        exists = true;
+                    }
+                }
+                if (! exists) {
+                    this->node_heights_.push_back(internal_nodes.at(i)->get_height_parameter());
+                }
+            }
+            this->sort_node_heights();
+        }
+
+        void sort_node_heights() {
+            std::sort(this->node_heights_.begin(), this->node_heights_.end(), PositiveRealParameter::sort_by_value);
+        }
+
+        void set_root(std::shared_ptr<NodeType> root) {
+            this->root_ = root;
+            this->update_node_heights();
+        }
+
+        const NodeType& get_root() const {return *this->root_;}
+        NodeType& get_mutable_root() const {return *this->root_;}
+
+        virtual void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+            this->root_->set_node_height_prior(prior);
+        }
+        virtual std::shared_ptr<ContinuousProbabilityDistribution> get_root_node_height_prior() const {
+            return this->root_->get_node_height_prior();
         }
 
         void set_root_height(double height) {
@@ -79,7 +106,14 @@ class BaseTree {
         const std::vector< std::shared_ptr<PositiveRealParameter> >& get_node_height_pointers() const {
             return this->node_heights_;
         }
-        std::vector<double> get_node_heights() const;
+
+        std::vector<double> get_node_heights() const {
+            std::vector<double> heights (this->node_heights_.size());
+            for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+                heights.at(i) = this->node_heights_.at(i)->get_value();
+            }
+            return heights;
+        }
 
         void ignore_data() {
             this->ignore_data_ = true;
@@ -128,7 +162,17 @@ class BaseTree {
             this->log_prior_density_.set_value(d);
             return d;
         }
-        virtual double compute_log_prior_density_of_node_heights() const;
+
+        virtual double compute_log_prior_density_of_node_heights() const {
+            double root_height = this->root_->get_height();
+            double d = 0.0;
+            d += this->root_->get_height_relative_prior_ln_pdf();
+            // prior prob density of non-root internal nodes = 1 / root_height, so on
+            // log scale = -log(root_height)
+            double internal_node_height_prior_density = -std::log(root_height);
+            d += internal_node_height_prior_density * this->get_number_of_node_heights();
+            return d;
+        }
 
         double get_log_prior_density_value() const {
             return this->log_prior_density_.get_value();
@@ -564,6 +608,7 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
 class PopulationTree : public BasePopulationTree {
 
     protected:
+        std::shared_ptr<ContinuousProbabilityDistribution> root_node_height_prior_ = std::make_shared<ExponentialDistribution>(100.0);
         std::shared_ptr<DirichletDistribution> population_size_multiplier_prior_;
         bool population_size_multipliers_are_fixed_ = false;
         bool mean_population_size_is_fixed_ = false;
@@ -626,6 +671,13 @@ class PopulationTree : public BasePopulationTree {
         void estimate_relative_root_population_size() { return; }
 
 
+        void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
+            this->root_node_height_prior_ = prior;
+            this->root_->set_all_node_height_priors(prior);
+        }
+        std::shared_ptr<ContinuousProbabilityDistribution> get_root_node_height_prior() const {
+            return this->root_node_height_prior_;
+        }
         void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->set_root_node_height_prior(prior);
         }

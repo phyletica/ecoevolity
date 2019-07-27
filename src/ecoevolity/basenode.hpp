@@ -437,6 +437,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return leaf_labels;
         }
 
+        std::shared_ptr<ContinuousProbabilityDistribution> get_node_height_prior() const {
+            return this->height_->get_prior();
+        }
         void set_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->height_->set_prior(prior);
             this->make_all_dirty();
@@ -484,7 +487,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return true;
         }
 
-        double get_height_relative_prior_ln_density() const {
+        double get_height_relative_prior_ln_pdf() const {
             return this->height_->relative_prior_ln_pdf();
         }
 

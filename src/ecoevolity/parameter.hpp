@@ -67,6 +67,17 @@ class Variable {
             this->is_fixed_ = p.is_fixed_;
             return * this;
         }
+        bool operator< (const DerivedClass & other) const {
+            return this->get_value() < other.get_value();
+        }
+        bool operator> (const DerivedClass & other) const {
+            return this->get_value() > other.get_value();
+        }
+        static bool sort_by_value(
+                const std::shared_ptr<DerivedClass>& v1,
+                const std::shared_ptr<DerivedClass>& v2) {
+            return v1->get_value() < v2->get_value();
+        }
 
         DerivedClass* clone() const {
             return new DerivedClass(static_cast<DerivedClass const &>(* this));
@@ -188,6 +199,9 @@ class RealParameter: public RealVariable {
             return * this;
         }
 
+        virtual std::shared_ptr<ContinuousProbabilityDistribution> get_prior() const {
+            return this->prior;
+        }
         virtual void set_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior_ptr) {
             this->prior = prior_ptr;
         }

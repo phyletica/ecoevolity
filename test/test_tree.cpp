@@ -3,6 +3,39 @@
 #include "ecoevolity/stats_util.hpp"
 
 
+TEST_CASE("Testing BaseTree", "[BaseTree]") {
+    SECTION("Testing three species") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.07);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.03);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        root->add_child(internal0);
+        root->add_child(internal1);
+        BaseTree<Node> tree(root);
+
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        REQUIRE(tree.get_leaf_node_count() == 4);
+        REQUIRE(tree.get_node_count() == 7);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        std::vector<double> expected_heights {0.03, 0.07, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+    }
+}
+
+
 TEST_CASE("Testing scaling of simulate_gene_tree for three species",
         "[PopulationTree]") {
 
