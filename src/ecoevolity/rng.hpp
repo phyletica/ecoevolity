@@ -386,16 +386,16 @@ class RandomNumberGenerator {
             return std::make_pair(num_subsets, elements);
         }
 
-        inline std::vector< std::vector<unsigned int> > random_subsets_rev(
+        inline void random_subsets_rev(
                 std::vector< std::vector<unsigned int> > &subsets,
                 unsigned int N,
                 unsigned int k) {
             if (N == 0) {
-                return subsets;
+                return;
             }
             else if (N == 1){
                 subsets.push_back({0});
-                return subsets;
+                return;
             }
             else if (
                     (stirling2_base<long double>(N-1, k-1) /
@@ -411,18 +411,16 @@ class RandomNumberGenerator {
                     subsets.push_back(remaining_subsets.at(subset_idx));
                 }
 
-                return subsets;
+                return;
             }
             else {
                 this->random_subsets_rev(subsets, N-1, k);
                 subsets.at(this->uniform_positive_int(subsets.size() - 1)).push_back(N-1);
-
-                return subsets;
             }
 
         }
 
-        inline std::vector< std::vector<unsigned int> > random_subsets(
+        inline void random_subsets(
                 std::vector< std::vector<unsigned int> > &subsets,
                 unsigned int number_of_elements,
                 unsigned int number_of_subsets) {
@@ -430,7 +428,6 @@ class RandomNumberGenerator {
                     number_of_elements,
                     number_of_subsets);
             std::reverse(std::begin(subsets), std::end(subsets));
-            return subsets;
         }
 
         inline std::vector< std::vector<unsigned int> > random_subsets(
@@ -444,7 +441,7 @@ class RandomNumberGenerator {
             return subsets;
         }
 
-        inline std::vector<unsigned int> random_set_partition_with_k_subsets(
+        inline void random_set_partition_with_k_subsets(
                 std::vector<unsigned int>& elements,
                 unsigned int number_of_subsets) {
             std::vector< std::vector<unsigned int> > subsets;
@@ -459,7 +456,7 @@ class RandomNumberGenerator {
                     elements.at(element_idx) = subset_idx;
                 }
             }
-            return elements;
+            return;
         }
 
         inline std::vector<unsigned int> random_set_partition_with_k_subsets(
@@ -472,28 +469,35 @@ class RandomNumberGenerator {
             return elements;
         }
 
+        inline unsigned int random_number_of_subsets(
+                unsigned int number_of_elements,
+                double split_weight = 1.0) {
+            ECOEVOLITY_ASSERT(split_weight > 0.0);
+            ECOEVOLITY_ASSERT(number_of_elements > 0);
+            std::vector<long double> ncat_probs;
+            ncat_probs.reserve(number_of_elements);
+            long double denom = 0.0;
+            long double p = 0.0;
+            for (unsigned int k = 1; k <= number_of_elements; ++k) {
+                p = stirling2_base<long double>(number_of_elements, k) * std::pow(split_weight, (k - 1));
+                ncat_probs.push_back(p);
+                denom += p;
+            }
+            for (unsigned int i = 0; i < number_of_elements; ++i) {
+                ncat_probs.at(i) = ncat_probs.at(i) / denom;
+            }
+            unsigned int ncats = this->weighted_index(ncat_probs) + 1;
+            return ncats;
+        }
+
         /**
          * A function for generating a random set partition.
          */
         inline unsigned int random_set_partition(
                 std::vector<unsigned int>& elements,
                 double split_weight = 1.0) {
-            ECOEVOLITY_ASSERT(split_weight > 0.0);
             unsigned int n = elements.size();
-            ECOEVOLITY_ASSERT(n > 0);
-            std::vector<long double> ncat_probs;
-            ncat_probs.reserve(n);
-            long double denom = 0.0;
-            long double p = 0.0;
-            for (unsigned int k = 1; k <= n; ++k) {
-                p = stirling2_base<long double>(n, k) * std::pow(split_weight, (k - 1));
-                ncat_probs.push_back(p);
-                denom += p;
-            }
-            for (unsigned int i = 0; i < n; ++i) {
-                ncat_probs.at(i) = ncat_probs.at(i) / denom;
-            }
-            unsigned int ncats = this->weighted_index(ncat_probs) + 1;
+            unsigned int ncats = random_number_of_subsets(n, split_weight);
             if (ncats == 1) {
                 for (unsigned int i = 0; i < n; ++i) {
                     elements.at(i) = 0;
@@ -534,6 +538,65 @@ class RandomNumberGenerator {
             std::vector<unsigned int> elements (number_of_elements, 0);
             unsigned int num_subsets = this->random_set_partition(elements, split_weight);
             return std::make_pair(num_subsets, elements);
+        }
+
+
+        /**
+         * A function for generating a random set partition.
+         */
+        inline unsigned int random_set_partition_as_subsets(
+                std::vector< std::vector<unsigned int> > &subsets,
+                unsigned int number_of_elements,
+                double split_weight = 1.0) {
+            unsigned int n = number_of_elements;
+            unsigned int ncats = random_number_of_subsets(n, split_weight);
+            subsets.reserve(ncats);
+            if (ncats == 1) {
+                std::vector<unsigned int> sset(number_of_elements);
+                for (unsigned int i = 0; i < n; ++i) {
+                    sset.at(i) = i;
+                }
+                subsets.push_back(sset);
+                return ncats;
+            }
+            if (ncats == n) {
+                for (unsigned int i = 0; i < n; ++i) {
+                    std::vector<unsigned int> sset = {i};
+                    subsets.push_back(sset);
+                }
+                return ncats;
+            }
+            // No longer need rejection hack to uniformly sample set partitions
+            // std::unordered_map<unsigned int, unsigned int> standardizing_map;
+            // standardizing_map.reserve(ncats);
+            // while(true) {
+            //     standardizing_map.clear();
+            //     unsigned int next_idx = 0;
+            //     for (unsigned int i = 0; i < n; ++i) {
+            //         unsigned int raw_idx = this->uniform_int(0, ncats-1);
+            //         if (standardizing_map.count(raw_idx) == 0) {
+            //             standardizing_map[raw_idx] = next_idx;
+            //             ++next_idx;
+            //         }
+            //         elements.at(i) = standardizing_map.at(raw_idx);
+            //     }
+            //     if (next_idx == ncats) {
+            //         break;
+            //     }
+            // }
+            this->random_subsets(subsets, n, ncats);
+            return ncats;
+        }
+
+        inline std::vector< std::vector<unsigned int> > random_set_partition_as_subsets(
+                unsigned int number_of_elements,
+                double split_weight = 1.0) {
+            std::vector< std::vector<unsigned int> > subsets;
+            unsigned int num_subsets = this->random_set_partition_as_subsets(
+                    subsets,
+                    number_of_elements,
+                    split_weight);
+            return subsets;
         }
 };
 
