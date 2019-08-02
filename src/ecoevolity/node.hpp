@@ -246,6 +246,7 @@ class PopulationNode: public BaseNode<PopulationNode>{
         PopulationNode() { }
         PopulationNode(std::string label) : BaseClass(label) { }
         PopulationNode(double height) : BaseClass(height) { }
+        PopulationNode(std::shared_ptr<PositiveRealParameter> height) : BaseClass(height) { }
         PopulationNode(std::string label, double height) :
             BaseClass(label, height)
             { }

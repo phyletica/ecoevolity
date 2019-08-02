@@ -38,6 +38,50 @@ class BaseTree {
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
+        void split_singleton_polytomy(
+                RandomNumberGenerator & rng,
+                std::shared_ptr<NodeType> polytomy_node,
+                std::shared_ptr<PositiveRealParameter> new_height_parameter,
+                bool refresh_node_heights = false) {
+            unsigned int n_children = polytomy_node->get_number_of_children();
+            std::vector< std::vector<unsigned int> > child_subsets;
+            // Need to avoid the partitions where all children are assigned to
+            // their own subset or they are all assigned to one subset. In
+            // these cases, there would be no split.
+            while ((child_subsets.size() == 0) ||
+                    (child_subsets.size() == 1) ||
+                    (child_subsets.size() == n_children)) {
+                child_subsets = rng.random_set_partition_as_subsets(
+                        n_children);
+            }
+            // Need to get the pointers to the children to split (can't
+            // work with child indices, because these will change as
+            // they are split off from polytomy
+            std::vector< std::vector< std::shared_ptr<NodeType> > > child_node_subsets;
+            for (auto child_subset : child_subsets) {
+                // Any singleton children remain at polytomy node
+                if (child_subset.size() < 2) {
+                    continue;
+                }
+                // Any groups of children are split from polytomy node
+                child_node_subsets.push_back(polytomy_node->get_children(child_subset));
+            }
+            for (unsigned int subset_index = 0;
+                    i < child_node_subsets.size();
+                    ++subset_index) {
+                polytomy_node->split_children_from_polytomy(
+                        child_node_subsets.at(i),
+                        new_height_parameter);
+            }
+            if (refresh_node_heights) {
+                this->update_node_heights();
+            }
+            else {
+                this->node_heights_.push_back(new_height_parameter);
+                this->sort_node_heights();
+            }
+        }
+
     public:
         BaseTree() { }
         BaseTree(std::shared_ptr<NodeType> root) {
@@ -110,7 +154,110 @@ class BaseTree {
 
         void split_node_height_down(
                 RandomNumberGenerator & rng,
-                unsigned int height_index);
+                unsigned int height_index,
+                bool refresh_node_heights = false) {
+            std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
+            if (mapped_nodes.size() < 1) {
+                return;
+            }
+            double max_height = this->node_heights_.at(height_index);
+            double min_height = 0.0;
+            if (height_index > 0) {
+                min_height = this->node_heights_.at(height_index - 1);
+            }
+            double new_height = rng.uniform_real(min_height, max_height);
+            std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(new_height);
+            if (mapped_nodes.size() == 1) {
+                // If we only have a single polytomy, we need to handle the
+                // splitting differently
+                ECOEVOLITY_ASSERT(mapped_nodes.at(0)->is_polytomy());
+                this->split_singleton_polytomy(rng, mapped_nodes.at(0),
+                        new_height_parameter,
+                        refresh_node_heights);
+                return;
+            }
+
+            std::vector< std::vector<unsigned int> > subsets = rng.random_subsets(
+                    mapped_nodes.size(), 2);
+
+            unsigned int move_subset_index = rng.uniform_positive_int(0, 1);
+
+            for (auto node_index : subsets.at(move_subset_index)) {
+                // If node is a polytomy, we need to deal with possibility of
+                // splitting it up
+                if (mapped_nodes.at(node_index)->is_polytomy()) {
+                    unsigned int n_children = mapped_nodes.at(node_index)->get_number_of_children();
+                    std::vector< std::vector<unsigned int> > child_subsets;
+                    // Need to avoid the partition where all children are
+                    // assigned to their own subset. This would result in the
+                    // no nodes being moved to the new height (i.e., the
+                    // polytomy remains as is), which complicates Hasting's
+                    // ratio, because then there are multiple ways polytomy
+                    // nodes are not included in the split (it can either not
+                    // be selected in the move pool, or selected, but all the
+                    // children are in singleton subsets and thus not split
+                    // off).
+                    while ((child_subsets.size() == 0) || (child_subsets.size() == n_children)) {
+                        child_subsets = rng.random_set_partition_as_subsets(
+                                n_children);
+                    }
+                    // Need to get the pointers to the children to split (can't
+                    // work with child indices, because these will change as
+                    // they are split off from polytomy
+                    std::vector< std::vector< std::shared_ptr<NodeType> > > child_node_subsets;
+                    for (auto child_subset : child_subsets) {
+                        // Any singleton children remain at polytomy node
+                        if (child_subset.size() < 2) {
+                            continue;
+                        }
+                        // Any groups of children are split from polytomy node
+                        child_node_subsets.push_back(mapped_nodes.at(node_index)->get_children(child_subset));
+                    }
+                    for (unsigned int subset_index = 0;
+                            i < child_node_subsets.size();
+                            ++subset_index) {
+                        mapped_nodes.at(node_index)->split_children_from_polytomy(
+                                child_node_subsets.at(i),
+                                new_height_parameter);
+                    }
+                }
+                // Node is not a polytomy, so we simply assign it to the new height
+                else {
+                    mapped_nodes.at(node_index)->set_height_parameter(new_height_parameter);
+                }
+            }
+            if (refresh_node_heights) {
+                this->update_node_heights();
+            }
+            else {
+                this->node_heights_.push_back(new_height_parameter);
+                this->sort_node_heights();
+            }
+        }
+
+        std::vector<unsigned int> get_indices_of_splittable_heights() const {
+            std::vector<unsigned int> splittable_heights;
+            for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+                if (this->height_is_splittable(i)) {
+                    splittable_heights.push_back(i);
+                }
+            }
+            return splittable_heights;
+        }
+
+        bool height_is_splittable(unsigned int height_index) {
+            unsigned int mapped_node_count = this->root_->get_mapped_node_count(
+                    this->node_heights_.at(height_index));
+            if (mapped_node_count > 1) {
+                return true;
+            }
+            unsigned int mapped_polytomy_node_count = this->root_->get_mapped_polytomy_node_count(
+                    this->node_heights_.at(height_index));
+            if (mapped_polytomy_node_count > 0) {
+                return true;
+            }
+            return false;
+        }
 
         void set_root(std::shared_ptr<NodeType> root) {
             this->root_ = root;

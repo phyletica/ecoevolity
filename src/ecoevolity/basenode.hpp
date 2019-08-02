@@ -86,6 +86,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->label_ = label;
             this->height_->set_value(height);
         }
+        BaseNode(std::shared_ptr<PositiveRealParameter> height) {
+            this->height_ = height;
+        }
         BaseNode(std::string label, std::shared_ptr<PositiveRealParameter> height) {
             this->label_ = label;
             this->height_ = height;
@@ -166,6 +169,25 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->remove_parent();
         }
 
+        void split_children_from_polytomy(
+                std::vector< std::shared_ptr<DerivedNodeT> >& children_to_split,
+                std::shared_ptr<PositiveRealParameter> new_height_parameter) {
+            ECOEVOLITY_ASSERT(child_nodes.size() > 1);
+            ECOEVOLITY_ASSERT(this->is_polytomy());
+            std::shared_ptr<DerivedNodeT> new_node(new_height_parameter);
+            for (auto child : children_to_split) {
+                child->remove_parent();
+                child->add_parent(new_node);
+            }
+            // If all children were assigned to the new node, we need to remove
+            // the old polytomy node that now has no children
+            if (! this->has_children()) {
+                this->get_parent()->add_child(new_node);
+                this->remove_parent();
+            }
+            this->add_child(new_node);
+        }
+
         bool has_children() const { return !this->children_.empty(); }
         bool is_leaf() const { return this->children_.empty(); }
 
@@ -182,6 +204,15 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 throw std::out_of_range("BaseNode::get_child() index out of range");
             }
             return this->children_.at(index);
+        }
+
+        std::vector< std::shared_ptr<DerivedNodeT> > get_children(
+                std::vector<unsigned int> indices) {
+            std::vector< std::shared_ptr<DerivedNodeT> > children_ptrs(indices.size());
+            for (unsigned int i = 0; i < indices.size(); ++i) {
+                children_ptrs.at(i) = this->get_child(indices.at(i));
+            }
+            return children_ptrs;
         }
 
         bool is_child(const std::shared_ptr<DerivedNodeT>& node) const {
