@@ -20,6 +20,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
 
         REQUIRE(n.is_leaf() == true);
         REQUIRE(n.is_root() == true);
+        REQUIRE(n.is_polytomy() == false);
         REQUIRE(n.get_node_count() == 1);
         REQUIRE(n.get_leaf_node_count() == 1);
         REQUIRE(n.get_internal_node_count() == 0);
@@ -239,6 +240,8 @@ TEST_CASE("Testing parent methods of Node", "[Node]") {
         REQUIRE(p->degree() == 0);
         REQUIRE(c->has_parent() == false);
         REQUIRE(c->get_number_of_parents() == 0);
+        REQUIRE(p->is_polytomy() == false);
+        REQUIRE(c->is_polytomy() == false);
 
         REQUIRE(c->get_parent() == nullptr);
         REQUIRE_THROWS_AS(p->get_child(0), std::out_of_range &);
@@ -252,6 +255,8 @@ TEST_CASE("Testing parent methods of Node", "[Node]") {
         REQUIRE(c->get_number_of_parents() == 1);
         REQUIRE(c->degree() == 1);
         REQUIRE(p->degree() == 1);
+        REQUIRE(p->is_polytomy() == false);
+        REQUIRE(c->is_polytomy() == false);
 
         std::shared_ptr<Node> r = c->remove_parent();
         REQUIRE(r != nullptr);
@@ -263,6 +268,8 @@ TEST_CASE("Testing parent methods of Node", "[Node]") {
         REQUIRE(c->get_number_of_parents() == 0);
         REQUIRE(c->degree() == 0);
         REQUIRE(p->degree() == 0);
+        REQUIRE(p->is_polytomy() == false);
+        REQUIRE(c->is_polytomy() == false);
     }
 }
 
@@ -338,13 +345,20 @@ TEST_CASE("Test simple tree building with Node", "[Node]") {
 
         root->add_child(root_child1);
         root->add_child(root_child2);
+        REQUIRE(root->is_polytomy() == false);
 
         leaf1->add_parent(root_child1);
+        REQUIRE(root_child1->is_polytomy() == false);
         leaf2->add_parent(root_child1);
+        REQUIRE(root_child1->is_polytomy() == false);
         leaf3->add_parent(root_child1);
+        REQUIRE(root_child1->is_polytomy() == true);
 
         leaf4->add_parent(root_child2);
         leaf5->add_parent(root_child2);
+        REQUIRE(root_child2->is_polytomy() == false);
+
+        REQUIRE(root->get_polytomy_node_count() == 1);
 
         REQUIRE(root->get_clade_length() == Approx(3.9));
 
@@ -2050,7 +2064,7 @@ TEST_CASE("Test population size setting and scaling", "[PopulationNode]") {
     }
 }
 
-TEST_CASE("Test get_leaves from one leaf", "[xNode]") {
+TEST_CASE("Test get_leaves from one leaf", "[Node]") {
 
     SECTION("Testing get_leaves") {
         std::shared_ptr<Node> n = std::make_shared<Node>("root", 1.0);
@@ -2060,7 +2074,7 @@ TEST_CASE("Test get_leaves from one leaf", "[xNode]") {
     }
 }
 
-TEST_CASE("Test get_leaves from root with one leaf", "[xNode]") {
+TEST_CASE("Test get_leaves from root with one leaf", "[Node]") {
 
     SECTION("Testing get_leaves") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
@@ -2076,7 +2090,7 @@ TEST_CASE("Test get_leaves from root with one leaf", "[xNode]") {
     }
 }
 
-TEST_CASE("Test get_leaves from root with multiple leaves", "[xNode]") {
+TEST_CASE("Test get_leaves from root with multiple leaves", "[Node]") {
 
     SECTION("Testing get_leaves") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
@@ -2115,7 +2129,7 @@ TEST_CASE("Test get_leaves from root with multiple leaves", "[xNode]") {
     }
 }
 
-TEST_CASE("Test get_leaves from root with multiple internal daughters", "[xNode]") {
+TEST_CASE("Test get_leaves from root with multiple internal daughters", "[Node]") {
 
     SECTION("Testing get_leaves") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
@@ -2145,7 +2159,7 @@ TEST_CASE("Test get_leaves from root with multiple internal daughters", "[xNode]
     }
 }
 
-TEST_CASE("Test get_leaf_labels from root with multiple internal daughters", "[xNode]") {
+TEST_CASE("Test get_leaf_labels from root with multiple internal daughters", "[Node]") {
 
     SECTION("Testing get_leaf_labels") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
@@ -2178,5 +2192,205 @@ TEST_CASE("Test get_leaf_labels from root with multiple internal daughters", "[x
         std::vector<std::string> leaf_labels = root->get_leaf_labels();
         REQUIRE(leaf_labels.size() == 5);
         REQUIRE(leaf_labels == expected_leaf_labels);
+    }
+}
+
+
+TEST_CASE("Test collapse Node to root", "[Node]") {
+    SECTION("Testing collapse to root") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> root_child1 = std::make_shared<Node>("root child 1", 0.8);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf 4");
+
+        root->add_child(root_child1);
+        root->add_child(leaf4);
+        REQUIRE(root->is_polytomy() == false);
+
+        leaf1->add_parent(root_child1);
+        REQUIRE(root_child1->is_polytomy() == false);
+        leaf2->add_parent(root_child1);
+        REQUIRE(root_child1->is_polytomy() == false);
+        leaf3->add_parent(root_child1);
+        REQUIRE(root_child1->is_polytomy() == true);
+
+        REQUIRE(root->get_node_count() == 6);
+        REQUIRE(root->get_internal_node_count() == 2);
+        REQUIRE(root->get_polytomy_node_count() == 1);
+        REQUIRE(root->get_leaf_node_count() == 4);
+        std::vector< std::shared_ptr<Node> > expected_nodes = {root_child1};
+        REQUIRE(root->get_polytomy_nodes() == expected_nodes);
+
+        root_child1->collapse();
+        REQUIRE(root->is_polytomy() == true);
+        REQUIRE(root->degree() == 4);
+        REQUIRE(root->get_number_of_children() == 4);
+        REQUIRE(root_child1->degree() == 0);
+        REQUIRE(root_child1->has_parent() == false);
+        REQUIRE(root_child1->has_children() == false);
+        REQUIRE(leaf1->get_parent() == root);
+        REQUIRE(leaf2->get_parent() == root);
+        REQUIRE(leaf3->get_parent() == root);
+        REQUIRE(leaf4->get_parent() == root);
+
+        REQUIRE(root->get_internal_node_count() == 1);
+        REQUIRE(root->get_polytomy_node_count() == 1);
+        REQUIRE(root->get_leaf_node_count() == 4);
+        REQUIRE(root->get_node_count() == 5);
+        expected_nodes = {root};
+        REQUIRE(root->get_polytomy_nodes() == expected_nodes);
+    }
+}
+
+TEST_CASE("Test collapse Node", "[Node]") {
+
+    SECTION("Testing collapse") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> root_child1 = std::make_shared<Node>("root child 1", 0.8);
+        std::shared_ptr<Node> child2 = std::make_shared<Node>("child 2", 0.3);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf 4");
+
+        root->add_child(root_child1);
+        root->add_child(leaf4);
+        REQUIRE(root->is_polytomy() == false);
+
+        root_child1->add_child(leaf1);
+        root_child1->add_child(child2);
+        REQUIRE(root_child1->is_polytomy() == false);
+
+        child2->add_child(leaf2);
+        child2->add_child(leaf3);
+        REQUIRE(child2->is_polytomy() == false);
+
+        REQUIRE(root->get_node_count() == 7);
+        REQUIRE(root->get_internal_node_count() == 3);
+        REQUIRE(root->get_polytomy_node_count() == 0);
+        REQUIRE(root->get_leaf_node_count() == 4);
+        REQUIRE(root->get_polytomy_nodes().size() == 0);
+
+        child2->collapse();
+        REQUIRE(child2->has_parent() == false);
+        REQUIRE(child2->has_children() == false);
+
+        REQUIRE(root_child1->is_polytomy() == true);
+        REQUIRE(root_child1->degree() == 4);
+        REQUIRE(root_child1->get_number_of_children() == 3);
+
+        REQUIRE(leaf1->get_parent() == root_child1);
+        REQUIRE(leaf2->get_parent() == root_child1);
+        REQUIRE(leaf3->get_parent() == root_child1);
+
+        REQUIRE(root->get_node_count() == 6);
+        REQUIRE(root->get_internal_node_count() == 2);
+        REQUIRE(root->get_polytomy_node_count() == 1);
+        REQUIRE(root->get_leaf_node_count() == 4);
+        std::vector< std::shared_ptr<Node> > expected_nodes = {root_child1};
+        REQUIRE(root->get_polytomy_nodes() == expected_nodes);
+    }
+}
+
+TEST_CASE("Test Node getters", "[Node]") {
+
+    SECTION("Testing node getter methods") {
+        std::shared_ptr<PositiveRealParameter> root_ht = std::make_shared<PositiveRealParameter>();
+        root_ht->set_value(1.0);
+        std::shared_ptr<PositiveRealParameter> int_ht = std::make_shared<PositiveRealParameter>();
+        int_ht->set_value(0.5);
+        std::shared_ptr<Node> root = std::make_shared<Node>("root");
+        root->set_height_parameter(root_ht);
+        std::shared_ptr<Node> root_child1 = std::make_shared<Node>("root child 1");
+        root_child1->set_height_parameter(int_ht);
+        std::shared_ptr<Node> root_child2 = std::make_shared<Node>("root child 2");
+        root_child2->set_height_parameter(int_ht);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf 4");
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf 5");
+
+        root->add_child(root_child1);
+        root->add_child(root_child2);
+        root_child1->add_child(leaf1);
+        root_child1->add_child(leaf2);
+        root_child2->add_child(leaf3);
+        root_child2->add_child(leaf4);
+
+        std::vector< std::shared_ptr<Node> > expected_mapped_nodes = {root_child1, root_child2};
+        std::vector< std::shared_ptr<Node> > mapped_nodes = root->get_mapped_nodes(int_ht);
+        REQUIRE(std::is_permutation(
+                    mapped_nodes.begin(), mapped_nodes.end(),
+                    expected_mapped_nodes.begin()));
+        REQUIRE(root->get_mapped_node_count(int_ht) == 2);
+
+        expected_mapped_nodes = {root};
+        mapped_nodes = root->get_mapped_nodes(root_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+        REQUIRE(root->get_mapped_node_count(root_ht) == 1);
+
+        REQUIRE(root->get_mapped_polytomy_node_count(int_ht) == 0);
+        REQUIRE(root->get_mapped_polytomy_node_count(root_ht) == 0);
+        REQUIRE(root->get_mapped_polytomy_nodes(int_ht).size() == 0);
+        REQUIRE(root->get_mapped_polytomy_nodes(root_ht).size() == 0);
+        REQUIRE(root->get_polytomy_nodes().size() == 0);
+
+
+        root_child2->add_child(leaf5);
+
+        expected_mapped_nodes = {root_child1, root_child2};
+        mapped_nodes = root->get_mapped_nodes(int_ht);
+        REQUIRE(std::is_permutation(
+                    mapped_nodes.begin(), mapped_nodes.end(),
+                    expected_mapped_nodes.begin()));
+        REQUIRE(root->get_mapped_node_count(int_ht) == 2);
+
+        expected_mapped_nodes = {root};
+        mapped_nodes = root->get_mapped_nodes(root_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+        REQUIRE(root->get_mapped_node_count(root_ht) == 1);
+
+        REQUIRE(root->get_mapped_polytomy_node_count(root_ht) == 0);
+        REQUIRE(root->get_mapped_polytomy_nodes(root_ht).size() == 0);
+        REQUIRE(root->get_mapped_polytomy_node_count(int_ht) == 1);
+        REQUIRE(root->get_mapped_polytomy_nodes(int_ht).size() == 1);
+        expected_mapped_nodes = {root_child2};
+        mapped_nodes = root->get_mapped_polytomy_nodes(int_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+        REQUIRE(root->get_polytomy_nodes() == expected_mapped_nodes);
+
+
+        root_child1->collapse();
+
+        expected_mapped_nodes = {root_child2};
+        mapped_nodes = root->get_mapped_nodes(int_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+        REQUIRE(root->get_mapped_node_count(int_ht) == 1);
+
+        expected_mapped_nodes = {root};
+        mapped_nodes = root->get_mapped_nodes(root_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+        REQUIRE(root->get_mapped_node_count(root_ht) == 1);
+
+        REQUIRE(root->get_mapped_polytomy_node_count(root_ht) == 1);
+        REQUIRE(root->get_mapped_polytomy_nodes(root_ht).size() == 1);
+        expected_mapped_nodes = {root};
+        mapped_nodes = root->get_mapped_polytomy_nodes(root_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+
+        REQUIRE(root->get_mapped_polytomy_node_count(int_ht) == 1);
+        REQUIRE(root->get_mapped_polytomy_nodes(int_ht).size() == 1);
+        expected_mapped_nodes = {root_child2};
+        mapped_nodes = root->get_mapped_polytomy_nodes(int_ht);
+        REQUIRE(mapped_nodes == expected_mapped_nodes);
+
+        expected_mapped_nodes = {root, root_child2};
+        mapped_nodes = root->get_polytomy_nodes();
+        REQUIRE(std::is_permutation(
+                    mapped_nodes.begin(), mapped_nodes.end(),
+                    expected_mapped_nodes.begin()));
     }
 }

@@ -153,6 +153,19 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return nullptr;
         }
 
+        void collapse() {
+            if (! this->has_parent()) {
+                throw EcoevolityError("BaseNode::collapse(), node has no parent");
+            }
+            std::shared_ptr<DerivedNodeT> grand_parent = this->get_parent();
+            while (this->has_children()) {
+                std::shared_ptr<DerivedNodeT> child = this->get_child(0);
+                child->remove_parent();
+                child->add_parent(grand_parent);
+            }
+            this->remove_parent();
+        }
+
         bool has_children() const { return !this->children_.empty(); }
         bool is_leaf() const { return this->children_.empty(); }
 
@@ -214,6 +227,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->children_.erase(this->children_.begin() + index);
             c->remove_parent();
             return c;
+        }
+
+        bool is_polytomy() const {
+            return (this->get_number_of_children() > 2);
         }
 
         double get_height() const {
@@ -379,6 +396,39 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
             return n;
         }
+        unsigned int get_polytomy_node_count() const {
+            if (this->is_polytomy()) {
+                return 1;
+            }
+            unsigned int n = 0;
+            for (auto child_iter: this->children_) {
+                n += child_iter->get_polytomy_node_count();
+            }
+            return n;
+        }
+        unsigned int get_mapped_node_count(
+                std::shared_ptr<PositiveRealParameter> node_height_pointer) const {
+            if (this->get_height_parameter() == node_height_pointer) {
+                return 1;
+            }
+            unsigned int n = 0;
+            for (auto child_iter: this->children_) {
+                n += child_iter->get_mapped_node_count(node_height_pointer);
+            }
+            return n;
+        }
+        unsigned int get_mapped_polytomy_node_count(
+                std::shared_ptr<PositiveRealParameter> node_height_pointer) const {
+            if ((this->get_height_parameter() == node_height_pointer) &&
+                    (this->is_polytomy())) {
+                return 1;
+            }
+            unsigned int n = 0;
+            for (auto child_iter: this->children_) {
+                n += child_iter->get_mapped_polytomy_node_count(node_height_pointer);
+            }
+            return n;
+        }
 
         void get_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& nodes) {
             nodes.push_back(this->shared_from_this());
@@ -405,6 +455,53 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             internal_nodes.reserve(this->get_internal_node_count());
             this->get_internal_nodes(internal_nodes);
             return internal_nodes;
+        }
+
+        void get_polytomy_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& polytomy_nodes) {
+            if (this->is_polytomy()) {
+                polytomy_nodes.push_back(this->shared_from_this());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_polytomy_nodes(polytomy_nodes);
+            }
+        }
+        std::vector< std::shared_ptr<DerivedNodeT> > get_polytomy_nodes() {
+            std::vector< std::shared_ptr<DerivedNodeT> > nodes;
+            this->get_polytomy_nodes(nodes);
+            return nodes;
+        }
+
+        void get_mapped_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& mapped_nodes,
+                std::shared_ptr<PositiveRealParameter> node_height_pointer) {
+            if (this->get_height_parameter() == node_height_pointer) {
+                mapped_nodes.push_back(this->shared_from_this());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_mapped_nodes(mapped_nodes, node_height_pointer);
+            }
+        }
+        std::vector< std::shared_ptr<DerivedNodeT> > get_mapped_nodes(
+                std::shared_ptr<PositiveRealParameter> node_height_pointer) {
+            std::vector< std::shared_ptr<DerivedNodeT> > mapped_nodes;
+            this->get_mapped_nodes(mapped_nodes, node_height_pointer);
+            return mapped_nodes;
+        }
+
+        void get_mapped_polytomy_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& mapped_nodes,
+                std::shared_ptr<PositiveRealParameter> node_height_pointer) {
+            if ((this->get_height_parameter() == node_height_pointer) &&
+                    (this->is_polytomy())) {
+                mapped_nodes.push_back(this->shared_from_this());
+            }
+            for (auto child_iter: this->children_) {
+                child_iter->get_mapped_polytomy_nodes(mapped_nodes, node_height_pointer);
+            }
+        }
+        std::vector< std::shared_ptr<DerivedNodeT> > get_mapped_polytomy_nodes(
+                std::shared_ptr<PositiveRealParameter> node_height_pointer) {
+            std::vector< std::shared_ptr<DerivedNodeT> > mapped_nodes;
+            this->get_mapped_polytomy_nodes(mapped_nodes, node_height_pointer);
+            return mapped_nodes;
         }
 
         void get_leaves(std::vector< std::shared_ptr<DerivedNodeT> >& leaves) {
