@@ -66,6 +66,52 @@ class BaseTree {
             std::sort(this->node_heights_.begin(), this->node_heights_.end(), PositiveRealParameter::sort_by_value);
         }
 
+        unsigned int get_node_height_index(std::shared_ptr<PositiveRealParameter> height) {
+            for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+                if (this->node_heights_.at(i) == height) {
+                    return i;
+                }
+            }
+            throw EcoevolityError("Node height does not exist");
+        }
+
+        std::vector< std::shared_ptr<NodeType> > get_mapped_nodes(unsigned int height_index) {
+            return this->root_->get_mapped_nodes(this->node_heights_.at(height_index));
+        }
+
+        std::vector< std::shared_ptr<NodeType> > get_mapped_polytomy_nodes(unsigned int height_index) {
+            return this->root_->get_mapped_polytomy_nodes(this->node_heights_.at(height_index));
+        }
+
+        void merge_node_height_up(unsigned int height_index,
+                bool refresh_node_heights = false) {
+            // Make sure we aren't dealing with the root node
+            ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
+
+            std::shared_ptr<NodeType> new_height = this->node_heights_.at(height_index + 1);
+            std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
+            for (unsigned int i = 0; i < mapped_nodes.size(); ++i) {
+                // If the parent of the node we are moving up is assigned to the next larger
+                // node height, we need to add the child to a polytomy
+                if (mapped_nodes.at(i)->get_parent()->get_height_parameter() == new_height) {
+                    mapped_nodes.at(i)->collapse();
+                }
+                else {
+                    mapped_nodes.at(i)->set_height_parameter(new_height);
+                }
+            }
+            if (refresh_node_heights) {
+                this->update_node_heights();
+            }
+            else {
+                this->node_heights_.erase(this->node_heights_.begin() + height_index);
+            }
+        }
+
+        void split_node_height_down(
+                RandomNumberGenerator & rng,
+                unsigned int height_index);
+
         void set_root(std::shared_ptr<NodeType> root) {
             this->root_ = root;
             this->update_node_heights();
