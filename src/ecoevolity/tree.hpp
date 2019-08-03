@@ -259,6 +259,101 @@ class BaseTree {
             return false;
         }
 
+        void slide_bump_height(unsigned int height_index,
+                double new_height) {
+            ECOEVOLITY_ASSERT(new_height >= 0.0);
+            std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
+                    height_index,
+                    new_height);
+            if (intervening_indices.size() < 1) {
+                // No intervening nodes to bump
+                this->node_heights_.at(height_index)->set_value(new_height);
+            }
+            if (height_index < intervening_indices.at(0)) {
+                // Older nodes to bump up
+                for (auto next_height_idx : intervening_indices) {
+                    this->node_heights_.at(next_height_idx - 1)->set_value(
+                            this->node_heights_.at(next_height_idx).get_value()
+                            );
+                }
+                this->node_heights_.at(intervening_indices.back())->set_value(new_height);
+            }
+            // Younger nodes to bump down
+            for (auto next_height_idx : intervening_indices) {
+                this->node_heights_.at(next_height_idx + 1)->set_value(
+                        this->node_heights_.at(next_height_idx).get_value()
+                        );
+            }
+            this->node_heights_.at(intervening_indices.back())->set_value(new_height);
+        }
+
+        void slide_bump_swap_height(
+                RandomNumberGenerator & rng,
+                unsigned int height_index,
+                double new_height) {
+            ECOEVOLITY_ASSERT(new_height >= 0.0);
+            std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
+                    height_index,
+                    new_height);
+            // TODO
+        }
+
+        std::vector<unsigned int> get_intervening_height_indices(
+                unsigned int height_index,
+                double value) {
+            std::vector<unsigned int> indices;
+            // value is larger than this height
+            if (this->get_height(height_index) < value) {
+                if (height_index == (this->get_number_of_node_heights() - 1)) {
+                    return indices;
+                }
+                for (unsigned int i = (height_index + 1);
+                        i < this->get_number_of_node_heights();
+                        ++i) {
+                    if (this->get_height(i) > value) {
+                        break;
+                    }
+                    indices.push_back(i);
+                }
+                return indices;
+            }
+            // value is less than this height
+            if (height_index == 0) {
+                return indices;
+            }
+            for (unsigned int i = (height_index - 1);
+                    i >= 0;
+                    --i) {
+                if (this->get_height(i) < value) {
+                    break;
+                }
+                indices.push_back(i);
+            }
+            return indices;
+        }
+
+        unsigned int get_nearest_height_index(double value) {
+            if (this->get_number_of_node_heights() < 2) {
+                return 0;
+            }
+            if (this->get_height(0) > value) {
+                return 0;
+            }
+            if (this->get_height(this->get_number_of_node_heights() - 1) < value) {
+                return this->get_number_of_node_heights() - 1;
+            }
+            double diff = fabs(this->get_height(0) - value);
+            double current_diff = diff;
+            for (unsigned int i = 1; i < this->node_heights_.size(); ++i) {
+                current_diff = fabs(this->get_height(i) - value);
+                if (current_diff > diff) {
+                    return i - 1;
+                }
+                diff = current_diff;
+            }
+            return this->get_number_of_node_heights() - 1;
+        }
+
         void set_root(std::shared_ptr<NodeType> root) {
             this->root_ = root;
             this->update_node_heights();
@@ -272,6 +367,10 @@ class BaseTree {
         }
         virtual std::shared_ptr<ContinuousProbabilityDistribution> get_root_node_height_prior() const {
             return this->root_->get_node_height_prior();
+        }
+
+        double get_height(unsigned int height_index) const {
+            return this->node_heights_.at(height_index)->get_value();
         }
 
         void set_root_height(double height) {
