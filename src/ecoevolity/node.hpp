@@ -43,6 +43,7 @@ class Node: public BaseNode<Node>{
         Node() { }
         Node(std::string label) : BaseClass(label) { }
         Node(double height) : BaseClass(height) { }
+        Node(std::shared_ptr<PositiveRealParameter> height) : BaseClass(height) { }
         Node(std::string label, double height) : BaseClass(label, height) { }
 };
 

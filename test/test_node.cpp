@@ -2394,3 +2394,101 @@ TEST_CASE("Test Node getters", "[Node]") {
                     expected_mapped_nodes.begin()));
     }
 }
+
+TEST_CASE("Test split root polytomy", "[Node]") {
+    SECTION("Testing split root polytomy") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf 4");
+
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+
+        REQUIRE(root->get_node_count() == 5);
+        REQUIRE(root->get_leaf_node_count() == 4);
+        REQUIRE(root->get_internal_node_count() == 1);
+        REQUIRE(root->degree() == 4);
+        
+        std::vector< std::shared_ptr<Node> > children_to_split = {leaf1, leaf2};
+        std::shared_ptr<PositiveRealParameter> new_height = std::make_shared<PositiveRealParameter>(0.5);
+
+        root->split_children_from_polytomy(children_to_split, new_height);
+
+        REQUIRE(root->get_node_count() == 6);
+        REQUIRE(root->get_leaf_node_count() == 4);
+        REQUIRE(root->get_internal_node_count() == 2);
+        REQUIRE(root->degree() == 3);
+
+        std::shared_ptr<Node> new_node;
+        for (unsigned int i = 0; i < root->get_number_of_children(); ++i) {
+            if (! root->get_child(i)->is_leaf()) {
+                new_node = root->get_child(i);
+            }
+        }
+
+        REQUIRE(new_node->degree() == 3);
+        REQUIRE(new_node->get_number_of_children() == 2);
+        REQUIRE(new_node->is_parent(root));
+        REQUIRE(new_node->is_child(leaf1));
+        REQUIRE(new_node->is_child(leaf2));
+        REQUIRE(new_node->get_height() == 0.5);
+        REQUIRE(root->get_height() == 1.0);
+    }
+}
+
+TEST_CASE("Test split nonroot polytomy", "[Node]") {
+    SECTION("Testing split nonroot polytomy") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 2.0);
+        std::shared_ptr<Node> root_child = std::make_shared<Node>("root child", 1.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf 4");
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf 5");
+
+        root_child->add_child(leaf1);
+        root_child->add_child(leaf2);
+        root_child->add_child(leaf3);
+        root_child->add_child(leaf4);
+
+        root->add_child(root_child);
+        root->add_child(leaf5);
+
+        REQUIRE(root->get_node_count() == 7);
+        REQUIRE(root->get_leaf_node_count() == 5);
+        REQUIRE(root->get_internal_node_count() == 2);
+        REQUIRE(root_child->degree() == 5);
+        
+        std::vector< std::shared_ptr<Node> > children_to_split = {leaf1, leaf2};
+        std::shared_ptr<PositiveRealParameter> new_height = std::make_shared<PositiveRealParameter>(0.5);
+
+        root_child->split_children_from_polytomy(children_to_split, new_height);
+
+        REQUIRE(root->get_node_count() == 8);
+        REQUIRE(root->get_leaf_node_count() == 5);
+        REQUIRE(root->get_internal_node_count() == 3);
+        REQUIRE(root->degree() == 2);
+        REQUIRE(root_child->degree() == 4);
+
+        std::shared_ptr<Node> new_node;
+        for (unsigned int i = 0; i < root_child->get_number_of_children(); ++i) {
+            if (! root_child->get_child(i)->is_leaf()) {
+                new_node = root_child->get_child(i);
+            }
+        }
+
+        REQUIRE(root_child->degree() == 4);
+        REQUIRE(new_node->degree() == 3);
+        REQUIRE(new_node->get_number_of_children() == 2);
+        REQUIRE(new_node->is_parent(root_child));
+        REQUIRE(new_node->is_child(leaf1));
+        REQUIRE(new_node->is_child(leaf2));
+        REQUIRE(new_node->get_height() == 0.5);
+        REQUIRE(root->get_height() == 2.0);
+        REQUIRE(root_child->get_height() == 1.0);
+    }
+}

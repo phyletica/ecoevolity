@@ -67,10 +67,10 @@ class BaseTree {
                 child_node_subsets.push_back(polytomy_node->get_children(child_subset));
             }
             for (unsigned int subset_index = 0;
-                    i < child_node_subsets.size();
+                    subset_index < child_node_subsets.size();
                     ++subset_index) {
                 polytomy_node->split_children_from_polytomy(
-                        child_node_subsets.at(i),
+                        child_node_subsets.at(subset_index),
                         new_height_parameter);
             }
             if (refresh_node_heights) {
@@ -214,10 +214,10 @@ class BaseTree {
                         child_node_subsets.push_back(mapped_nodes.at(node_index)->get_children(child_subset));
                     }
                     for (unsigned int subset_index = 0;
-                            i < child_node_subsets.size();
+                            subset_index < child_node_subsets.size();
                             ++subset_index) {
                         mapped_nodes.at(node_index)->split_children_from_polytomy(
-                                child_node_subsets.at(i),
+                                child_node_subsets.at(subset_index),
                                 new_height_parameter);
                     }
                 }

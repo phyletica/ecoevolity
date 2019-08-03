@@ -172,9 +172,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         void split_children_from_polytomy(
                 std::vector< std::shared_ptr<DerivedNodeT> >& children_to_split,
                 std::shared_ptr<PositiveRealParameter> new_height_parameter) {
-            ECOEVOLITY_ASSERT(child_nodes.size() > 1);
+            ECOEVOLITY_ASSERT(children_to_split.size() > 1);
             ECOEVOLITY_ASSERT(this->is_polytomy());
-            std::shared_ptr<DerivedNodeT> new_node(new_height_parameter);
+            std::shared_ptr<DerivedNodeT> new_node = std::make_shared<DerivedNodeT>(new_height_parameter);
             for (auto child : children_to_split) {
                 child->remove_parent();
                 child->add_parent(new_node);
