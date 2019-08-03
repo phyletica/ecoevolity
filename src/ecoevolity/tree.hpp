@@ -273,7 +273,7 @@ class BaseTree {
                 // Older nodes to bump up
                 for (auto next_height_idx : intervening_indices) {
                     this->node_heights_.at(next_height_idx - 1)->set_value(
-                            this->node_heights_.at(next_height_idx).get_value()
+                            this->node_heights_.at(next_height_idx)->get_value()
                             );
                 }
                 this->node_heights_.at(intervening_indices.back())->set_value(new_height);
@@ -281,7 +281,7 @@ class BaseTree {
             // Younger nodes to bump down
             for (auto next_height_idx : intervening_indices) {
                 this->node_heights_.at(next_height_idx + 1)->set_value(
-                        this->node_heights_.at(next_height_idx).get_value()
+                        this->node_heights_.at(next_height_idx)->get_value()
                         );
             }
             this->node_heights_.at(intervening_indices.back())->set_value(new_height);
@@ -321,9 +321,12 @@ class BaseTree {
             if (height_index == 0) {
                 return indices;
             }
-            for (unsigned int i = (height_index - 1);
-                    i >= 0;
-                    --i) {
+            // decrementing an unsigned int to zero is a bit tricky; this stops
+            // before we hit zero in the evaluation, but decrements before
+            // jumping into loop body
+            for (unsigned int i = height_index;
+                    i-- > 0;
+                ) {
                 if (this->get_height(i) < value) {
                     break;
                 }
@@ -451,6 +454,7 @@ class BaseTree {
         virtual double compute_log_prior_density() {
             double d = 0.0;
             d += this->compute_log_prior_density_of_node_heights();
+            d += this->compute_relative_log_prior_density_of_toplogy();
             this->log_prior_density_.set_value(d);
             return d;
         }
@@ -459,11 +463,15 @@ class BaseTree {
             double root_height = this->root_->get_height();
             double d = 0.0;
             d += this->root_->get_height_relative_prior_ln_pdf();
-            // prior prob density of non-root internal nodes = 1 / root_height, so on
-            // log scale = -log(root_height)
+            // prior prob density of non-root internal nodes = (1 / root_height)^n,
+            // where n = the number of non-root internal nodes, so on
+            // log scale = n * (log(1)-log(root_height)) = n * -log(root_height)
             double internal_node_height_prior_density = -std::log(root_height);
-            d += internal_node_height_prior_density * this->get_number_of_node_heights();
+            d += internal_node_height_prior_density * (this->get_number_of_node_heights() - 1);
             return d;
+        }
+        virtual double compute_relative_log_prior_density_of_toplogy() const {
+            return 0.0;
         }
 
         double get_log_prior_density_value() const {

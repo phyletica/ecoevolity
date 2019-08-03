@@ -35,6 +35,137 @@ TEST_CASE("Testing BaseTree", "[BaseTree]") {
     }
 }
 
+TEST_CASE("Testing BaseTree::get_nearest_height_index", "[BaseTree]") {
+    SECTION("Testing get_nearest_height_index") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.08);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.06);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.04);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf3->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal2->add_child(internal0);
+        internal2->add_child(internal1);
+        root->add_child(internal2);
+        root->add_child(leaf4);
+        BaseTree<Node> tree(root);
+
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        REQUIRE(tree.get_leaf_node_count() == 5);
+        REQUIRE(tree.get_node_count() == 9);
+        REQUIRE(tree.get_number_of_node_heights() == 4);
+        std::vector<double> expected_heights {0.04, 0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        REQUIRE(tree.get_nearest_height_index(0.0) == 0);
+        REQUIRE(tree.get_nearest_height_index(2.0) == 3);
+
+        // Tie break goes to larger node height
+        REQUIRE(tree.get_nearest_height_index(0.0499) == 0);
+        REQUIRE(tree.get_nearest_height_index(0.05) == 1);
+        REQUIRE(tree.get_nearest_height_index(0.0699) == 1);
+        REQUIRE(tree.get_nearest_height_index(0.07) == 2);
+        REQUIRE(tree.get_nearest_height_index(0.0899) == 2);
+        REQUIRE(tree.get_nearest_height_index(0.09000001) == 3);
+    }
+}
+
+TEST_CASE("Testing BaseTree::get_intervening_height_indices", "[BaseTree]") {
+    SECTION("Testing get_intervening_height_indices") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.08);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.06);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.04);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf3->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal2->add_child(internal0);
+        internal2->add_child(internal1);
+        root->add_child(internal2);
+        root->add_child(leaf4);
+        BaseTree<Node> tree(root);
+
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        REQUIRE(tree.get_leaf_node_count() == 5);
+        REQUIRE(tree.get_node_count() == 9);
+        REQUIRE(tree.get_number_of_node_heights() == 4);
+        std::vector<double> expected_heights {0.04, 0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        std::vector<unsigned int> expected_indices = {};
+        REQUIRE(tree.get_intervening_height_indices(0, 0.0) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(0, 0.0599) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(1, 0.041) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(1, 0.0799) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(2, 0.061) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(2, 0.0999) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(3, 0.081) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(3, 1.1) == expected_indices);
+
+        expected_indices = {0};
+        // if value is equal, height should be included
+        REQUIRE(tree.get_intervening_height_indices(1, 0.04) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(1, 0.039) == expected_indices);
+
+        expected_indices = {1};
+        REQUIRE(tree.get_intervening_height_indices(0, 0.06) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(0, 0.079) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(2, 0.06) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(2, 0.041) == expected_indices);
+
+        expected_indices = {2};
+        REQUIRE(tree.get_intervening_height_indices(1, 0.08) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(1, 0.099) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(3, 0.08) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(3, 0.061) == expected_indices);
+
+        expected_indices = {3};
+        REQUIRE(tree.get_intervening_height_indices(2, 1.0) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(2, 1.01) == expected_indices);
+
+        expected_indices = {1, 0};
+        REQUIRE(tree.get_intervening_height_indices(2, 0.04) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(2, 0.0) == expected_indices);
+
+        expected_indices = {1, 2};
+        REQUIRE(tree.get_intervening_height_indices(0, 0.08) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(0, 0.099) == expected_indices);
+        expected_indices = {2, 1};
+        REQUIRE(tree.get_intervening_height_indices(3, 0.06) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(3, 0.0401) == expected_indices);
+
+        expected_indices = {2, 3};
+        REQUIRE(tree.get_intervening_height_indices(1, 1.0) == expected_indices);
+        REQUIRE(tree.get_intervening_height_indices(1, 2.0) == expected_indices);
+    }
+}
+
 
 TEST_CASE("Testing scaling of simulate_gene_tree for three species",
         "[PopulationTree]") {
