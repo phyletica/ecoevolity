@@ -2492,3 +2492,168 @@ TEST_CASE("Test split nonroot polytomy", "[Node]") {
         REQUIRE(root_child->get_height() == 1.0);
     }
 }
+
+
+TEST_CASE("Test node_height_is_valid", "[Node]") {
+    SECTION("Testing node_height_is_valid") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> root_child = std::make_shared<Node>("root child", 1.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        root_child->add_child(leaf1);
+        root_child->add_child(leaf2);
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        root->add_child(root_child);
+        root->add_child(leaf3);
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        leaf3->set_height(1.1);
+
+        REQUIRE(! root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(! leaf3->node_height_is_valid());
+
+        leaf3->set_height(0.0);
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        leaf2->set_height(1.1);
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(! root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(! leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        leaf2->set_height(0.0);
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        root_child->set_height(1.1);
+
+        REQUIRE(! root->node_height_is_valid());
+        REQUIRE(! root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+
+        root_child->set_height(0.5);
+
+        REQUIRE(root->node_height_is_valid());
+        REQUIRE(root_child->node_height_is_valid());
+        REQUIRE(leaf1->node_height_is_valid());
+        REQUIRE(leaf2->node_height_is_valid());
+        REQUIRE(leaf3->node_height_is_valid());
+    }
+}
+
+TEST_CASE("Test node_heights_are_valid", "[Node]") {
+    SECTION("Testing node_heights_are_valid") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> root_child = std::make_shared<Node>("root child", 1.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+
+        REQUIRE(root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        root_child->add_child(leaf1);
+        root_child->add_child(leaf2);
+
+        REQUIRE(root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        root->add_child(root_child);
+        root->add_child(leaf3);
+
+        REQUIRE(root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        leaf3->set_height(1.1);
+
+        REQUIRE(! root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(! leaf3->node_heights_are_valid());
+
+        leaf3->set_height(0.0);
+
+        REQUIRE(root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        leaf2->set_height(1.1);
+
+        REQUIRE(! root->node_heights_are_valid());
+        REQUIRE(! root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(! leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        leaf2->set_height(0.0);
+
+        REQUIRE(root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        root_child->set_height(1.1);
+
+        REQUIRE(! root->node_heights_are_valid());
+        REQUIRE(! root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+
+        root_child->set_height(0.5);
+
+        REQUIRE(root->node_heights_are_valid());
+        REQUIRE(root_child->node_heights_are_valid());
+        REQUIRE(leaf1->node_heights_are_valid());
+        REQUIRE(leaf2->node_heights_are_valid());
+        REQUIRE(leaf3->node_heights_are_valid());
+    }
+}

@@ -358,6 +358,35 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return l;
         }
 
+        bool node_height_is_valid() const {
+            double height = this->get_height();
+            if (this->has_parent()) {
+                if (this->parent_.lock()->get_height() < height) {
+                    return false;
+                }
+            }
+            if (this->has_children()) {
+                for (unsigned int i = 0; i < this->get_number_of_children(); ++i) {
+                    if (this->get_child(i)->get_height() > height) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        bool node_heights_are_valid() const {
+            if (! this->node_height_is_valid()) {
+                return false;
+            }
+            for (auto child_iter: this->children_) {
+                if (! child_iter->node_heights_are_valid()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         const std::string& get_label() const {
             return this->label_;
         }
