@@ -176,12 +176,16 @@ class BaseTree {
             return this->root_->get_mapped_polytomy_nodes(this->node_heights_.at(height_index));
         }
 
+        std::vector< std::shared_ptr<NodeType> > get_polytomy_nodes() {
+            return this->root_->get_polytomy_nodes();
+        }
+
         void merge_node_height_up(const unsigned int height_index,
                 const bool refresh_node_heights = false) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
-            std::shared_ptr<NodeType> new_height = this->node_heights_.at(height_index + 1);
+            std::shared_ptr<PositiveRealParameter> new_height = this->node_heights_.at(height_index + 1);
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             for (unsigned int i = 0; i < mapped_nodes.size(); ++i) {
                 // If the parent of the node we are moving up is assigned to the next larger
@@ -209,10 +213,10 @@ class BaseTree {
             if (mapped_nodes.size() < 1) {
                 return;
             }
-            double max_height = this->node_heights_.at(height_index);
+            double max_height = this->node_heights_.at(height_index)->get_value();
             double min_height = 0.0;
             if (height_index > 0) {
-                min_height = this->node_heights_.at(height_index - 1);
+                min_height = this->node_heights_.at(height_index - 1)->get_value();
             }
             double new_height = rng.uniform_real(min_height, max_height);
             std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(new_height);
@@ -317,6 +321,7 @@ class BaseTree {
             if (intervening_indices.size() < 1) {
                 // No intervening nodes to bump
                 this->node_heights_.at(height_index)->set_value(new_height);
+                return;
             }
             if (height_index < intervening_indices.at(0)) {
                 // Older nodes to bump up
@@ -326,6 +331,7 @@ class BaseTree {
                             );
                 }
                 this->node_heights_.at(intervening_indices.back())->set_value(new_height);
+                return;
             }
             // Younger nodes to bump down
             for (auto next_height_idx : intervening_indices) {
@@ -334,6 +340,7 @@ class BaseTree {
                         );
             }
             this->node_heights_.at(intervening_indices.back())->set_value(new_height);
+            return;
         }
 
         void slide_bump_swap_height(
@@ -424,6 +431,10 @@ class BaseTree {
 
         double get_height(const unsigned int height_index) const {
             return this->node_heights_.at(height_index)->get_value();
+        }
+
+        std::shared_ptr<PositiveRealParameter> get_height_parameter(const unsigned int height_index) const {
+            return this->node_heights_.at(height_index);
         }
 
         void set_root_height(double height) {

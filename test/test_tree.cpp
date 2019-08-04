@@ -309,6 +309,497 @@ TEST_CASE("Testing BaseTree::get_indices_of_splittable_heights", "[BaseTree]") {
     }
 }
 
+TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
+    SECTION("Testing slide_bump_height") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.04);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.06);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.08);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal2->add_child(internal0);
+        internal2->add_child(internal1);
+        root->add_child(internal2);
+        root->add_child(leaf4);
+        root->add_child(leaf5);
+
+        internal0->set_height_parameter(internal1->get_height_parameter());
+
+        BaseTree<Node> tree(root);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(internal2));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(internal2->is_parent(root));
+        REQUIRE(internal2->is_child(internal1));
+        REQUIRE(internal2->is_child(internal0));
+        REQUIRE(internal1->is_parent(internal2));
+        REQUIRE(internal1->is_child(leaf2));
+        REQUIRE(internal1->is_child(leaf3));
+        REQUIRE(internal0->is_parent(internal2));
+        REQUIRE(internal0->is_child(leaf0));
+        REQUIRE(internal0->is_child(leaf1));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(internal0));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(internal0));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(internal1));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(internal1));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        std::vector<double> expected_heights = {0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(0, 0.07);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.07, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(0, 0.01);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.01, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(0, 0.2);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.2);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.08, 0.1, 0.2};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(2, 0.05);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.05, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(2, 0.11);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.11);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.05, 0.08, 0.11};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(2, 0.1);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.05, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(1, 0.07);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.05, 0.07, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(1, 0.09);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.05, 0.09, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(1, 0.11);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.11);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.05, 0.1, 0.11};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.slide_bump_height(1, 0.01);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.11);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        expected_heights = {0.01, 0.05, 0.11};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(internal2));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(internal2->is_parent(root));
+        REQUIRE(internal2->is_child(internal1));
+        REQUIRE(internal2->is_child(internal0));
+        REQUIRE(internal1->is_parent(internal2));
+        REQUIRE(internal1->is_child(leaf2));
+        REQUIRE(internal1->is_child(leaf3));
+        REQUIRE(internal0->is_parent(internal2));
+        REQUIRE(internal0->is_child(leaf0));
+        REQUIRE(internal0->is_child(leaf1));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(internal0));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(internal0));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(internal1));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(internal1));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+    }
+}
+
+TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
+    SECTION("Testing merge_node_height_up") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.04);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.06);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.08);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal2->add_child(internal0);
+        internal2->add_child(internal1);
+        root->add_child(internal2);
+        root->add_child(leaf4);
+        root->add_child(leaf5);
+
+        internal0->set_height_parameter(internal1->get_height_parameter());
+
+        BaseTree<Node> tree(root);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(internal2));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(internal2->is_parent(root));
+        REQUIRE(internal2->is_child(internal1));
+        REQUIRE(internal2->is_child(internal0));
+        REQUIRE(internal1->is_parent(internal2));
+        REQUIRE(internal1->is_child(leaf2));
+        REQUIRE(internal1->is_child(leaf3));
+        REQUIRE(internal0->is_parent(internal2));
+        REQUIRE(internal0->is_child(leaf0));
+        REQUIRE(internal0->is_child(leaf1));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(internal0));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(internal0));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(internal1));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(internal1));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        std::vector<double> expected_heights = {0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.merge_node_height_up(0);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(internal2));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(internal2->is_parent(root));
+        REQUIRE(internal2->is_child(leaf0));
+        REQUIRE(internal2->is_child(leaf1));
+        REQUIRE(internal2->is_child(leaf2));
+        REQUIRE(internal2->is_child(leaf3));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(internal2));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(internal2));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(internal2));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(internal2));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 8);
+        REQUIRE(tree.get_number_of_node_heights() == 2);
+        expected_heights = {0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        tree.merge_node_height_up(0);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(leaf0));
+        REQUIRE(root->is_child(leaf1));
+        REQUIRE(root->is_child(leaf2));
+        REQUIRE(root->is_child(leaf3));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(root));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(root));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(root));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(root));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 6);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 7);
+        REQUIRE(tree.get_number_of_node_heights() == 1);
+        expected_heights = {0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+    }
+}
+
+TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
+    SECTION("Testing split_node_height_down") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+        root->add_child(leaf5);
+
+        std::unordered_set< std::shared_ptr<Node> > existing_nodes;
+        existing_nodes.insert(root);
+        existing_nodes.insert(leaf0);
+        existing_nodes.insert(leaf1);
+        existing_nodes.insert(leaf2);
+        existing_nodes.insert(leaf3);
+        existing_nodes.insert(leaf4);
+        existing_nodes.insert(leaf5);
+
+        BaseTree<Node> tree(root);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(leaf0));
+        REQUIRE(root->is_child(leaf1));
+        REQUIRE(root->is_child(leaf2));
+        REQUIRE(root->is_child(leaf3));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(root));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(root));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(root));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(root));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+
+        REQUIRE(tree.tree_is_valid());
+        double expeced_root_height = 0.1;
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 6);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 7);
+        REQUIRE(tree.get_number_of_node_heights() == 1);
+        std::vector<double> expected_heights = {0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+
+        std::vector<unsigned int> splittable_heights;
+        splittable_heights = tree.get_indices_of_splittable_heights();
+        REQUIRE(splittable_heights.size() == 1);
+        REQUIRE(splittable_heights.at(0) == 0);
+
+        tree.split_node_height_down(rng, 0);
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() < 6);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() > 7);
+        unsigned int expected_number_of_node_heights = 2;
+        REQUIRE(tree.get_number_of_node_heights() == expected_number_of_node_heights);
+        std::shared_ptr<PositiveRealParameter> new_height;
+        bool new_height_set = false;
+        for (unsigned int i = 0; i < root->get_number_of_children(); ++i) {
+            if (existing_nodes.count(root->get_child(i)) < 1) {
+                existing_nodes.insert(root->get_child(i));
+                if (! new_height_set) {
+                    new_height = root->get_child(i)->get_height_parameter();
+                    new_height_set = true;
+                    REQUIRE(new_height->get_value() < root->get_height());
+                    expected_heights.push_back(new_height->get_value());
+                    std::sort(expected_heights.begin(), expected_heights.end());
+                }
+                else {
+                    REQUIRE(root->get_child(i)->get_height_parameter() == new_height);
+                }
+            }
+        }
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        std::vector< std::shared_ptr<Node> > mapped_nodes_new;
+        std::vector< std::shared_ptr<Node> > mapped_nodes_orig;
+        std::shared_ptr<PositiveRealParameter> orig_height;
+        while (true) {
+            splittable_heights = tree.get_indices_of_splittable_heights();
+            if (splittable_heights.size() < 1) {
+                break;
+            }
+            unsigned int splittable_ht = splittable_heights.at(0);
+            orig_height = tree.get_height_parameter(splittable_ht);
+            tree.split_node_height_down(rng, splittable_ht);
+            ++expected_number_of_node_heights;
+            mapped_nodes_orig = tree.get_mapped_nodes(splittable_ht + 1);
+            mapped_nodes_new = tree.get_mapped_nodes(splittable_ht);
+
+            REQUIRE(tree.tree_is_valid());
+            REQUIRE(tree.get_root_height() == 0.1);
+            REQUIRE(tree.get_leaf_node_count() == 6);
+            REQUIRE(tree.get_number_of_node_heights() == expected_number_of_node_heights);
+            bool new_height_set = false;
+            for (auto mapped_nd : mapped_nodes_new) {
+                if (existing_nodes.count(mapped_nd) < 1) {
+                    existing_nodes.insert(mapped_nd);
+                }
+                if (! new_height_set) {
+                    new_height = mapped_nd->get_height_parameter();
+                    new_height_set = true;
+                    REQUIRE(new_height->get_value() < orig_height->get_value());
+                    expected_heights.push_back(new_height->get_value());
+                    std::sort(expected_heights.begin(), expected_heights.end());
+                }
+                else {
+                    REQUIRE(mapped_nd->get_height_parameter() == new_height);
+                }
+            }
+            for (auto mapped_nd : mapped_nodes_orig) {
+                REQUIRE(existing_nodes.count(mapped_nd) > 0);
+                REQUIRE(mapped_nd->get_height_parameter() == orig_height);
+            }
+            REQUIRE(tree.get_node_heights() == expected_heights);
+        }
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 2);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 11);
+        REQUIRE(tree.get_number_of_node_heights() == 5);
+        REQUIRE(tree.get_node_heights() == expected_heights);
+    }
+}
+
 
 TEST_CASE("Testing scaling of simulate_gene_tree for three species",
         "[PopulationTree]") {
