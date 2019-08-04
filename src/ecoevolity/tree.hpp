@@ -42,7 +42,7 @@ class BaseTree {
                 RandomNumberGenerator & rng,
                 std::shared_ptr<NodeType> polytomy_node,
                 std::shared_ptr<PositiveRealParameter> new_height_parameter,
-                bool refresh_node_heights = false) {
+                const bool refresh_node_heights = false) {
             unsigned int n_children = polytomy_node->get_number_of_children();
             std::vector< std::vector<unsigned int> > child_subsets;
             // Need to avoid the partitions where all children are assigned to
@@ -110,7 +110,56 @@ class BaseTree {
             std::sort(this->node_heights_.begin(), this->node_heights_.end(), PositiveRealParameter::sort_by_value);
         }
 
-        unsigned int get_node_height_index(std::shared_ptr<PositiveRealParameter> height) {
+        bool root_has_parent() const {
+            if (this->root_->has_parent()) {
+                return true;
+            }
+            return false;
+        }
+        bool root_has_children() const {
+            if (this->root_->get_number_of_children() < 1) {
+                return false;
+            }
+            return true;
+        }
+        bool root_is_valid() const {
+            if (this->root_has_parent()) {
+                return false;
+            }
+            if (! this->root_has_children()) {
+                return false;
+            }
+            return true;
+        }
+        bool node_heights_are_valid() const {
+            return this->root_->node_heights_are_valid();
+        }
+        bool tree_is_valid() const {
+            if (! this->root_is_valid()) {
+                return false;
+            }
+            if (! this->node_heights_are_valid()) {
+                return false;
+            }
+            return true;
+        }
+
+        void vet_root() const {
+            if (this->root_has_parent()) {
+                throw EcoevolityError("Root has a parent");
+            }
+            if (! this->root_has_children()) {
+                throw EcoevolityError("Root has fewer than 2 children");
+            }
+        }
+        void vet_tree() const {
+            this->vet_root();
+            if (! this->node_heights_are_valid()) {
+                throw EcoevolityError("Node ages are not valid");
+            }
+        }
+
+        unsigned int get_node_height_index(const std::shared_ptr<PositiveRealParameter> height) {
             for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
                 if (this->node_heights_.at(i) == height) {
                     return i;
@@ -119,16 +168,16 @@ class BaseTree {
             throw EcoevolityError("Node height does not exist");
         }
 
-        std::vector< std::shared_ptr<NodeType> > get_mapped_nodes(unsigned int height_index) {
+        std::vector< std::shared_ptr<NodeType> > get_mapped_nodes(const unsigned int height_index) {
             return this->root_->get_mapped_nodes(this->node_heights_.at(height_index));
         }
 
-        std::vector< std::shared_ptr<NodeType> > get_mapped_polytomy_nodes(unsigned int height_index) {
+        std::vector< std::shared_ptr<NodeType> > get_mapped_polytomy_nodes(const unsigned int height_index) {
             return this->root_->get_mapped_polytomy_nodes(this->node_heights_.at(height_index));
         }
 
-        void merge_node_height_up(unsigned int height_index,
-                bool refresh_node_heights = false) {
+        void merge_node_height_up(const unsigned int height_index,
+                const bool refresh_node_heights = false) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
@@ -154,8 +203,8 @@ class BaseTree {
 
         void split_node_height_down(
                 RandomNumberGenerator & rng,
-                unsigned int height_index,
-                bool refresh_node_heights = false) {
+                const unsigned int height_index,
+                const bool refresh_node_heights = false) {
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             if (mapped_nodes.size() < 1) {
                 return;
@@ -245,7 +294,7 @@ class BaseTree {
             return splittable_heights;
         }
 
-        bool height_is_splittable(unsigned int height_index) {
+        bool height_is_splittable(const unsigned int height_index) const {
             unsigned int mapped_node_count = this->root_->get_mapped_node_count(
                     this->node_heights_.at(height_index));
             if (mapped_node_count > 1) {
@@ -259,8 +308,8 @@ class BaseTree {
             return false;
         }
 
-        void slide_bump_height(unsigned int height_index,
-                double new_height) {
+        void slide_bump_height(const unsigned int height_index,
+                const double new_height) {
             ECOEVOLITY_ASSERT(new_height >= 0.0);
             std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
                     height_index,
@@ -289,8 +338,8 @@ class BaseTree {
 
         void slide_bump_swap_height(
                 RandomNumberGenerator & rng,
-                unsigned int height_index,
-                double new_height) {
+                const unsigned int height_index,
+                const double new_height) {
             ECOEVOLITY_ASSERT(new_height >= 0.0);
             std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
                     height_index,
@@ -299,8 +348,8 @@ class BaseTree {
         }
 
         std::vector<unsigned int> get_intervening_height_indices(
-                unsigned int height_index,
-                double value) {
+                const unsigned int height_index,
+                const double value) {
             std::vector<unsigned int> indices;
             // value is larger than this height
             if (this->get_height(height_index) < value) {
@@ -335,7 +384,7 @@ class BaseTree {
             return indices;
         }
 
-        unsigned int get_nearest_height_index(double value) {
+        unsigned int get_nearest_height_index(const double value) {
             if (this->get_number_of_node_heights() < 2) {
                 return 0;
             }
@@ -359,6 +408,7 @@ class BaseTree {
 
         void set_root(std::shared_ptr<NodeType> root) {
             this->root_ = root;
+            this->vet_tree();
             this->update_node_heights();
         }
 
@@ -372,7 +422,7 @@ class BaseTree {
             return this->root_->get_node_height_prior();
         }
 
-        double get_height(unsigned int height_index) const {
+        double get_height(const unsigned int height_index) const {
             return this->node_heights_.at(height_index)->get_value();
         }
 
