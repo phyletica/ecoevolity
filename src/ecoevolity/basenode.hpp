@@ -215,6 +215,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return children_ptrs;
         }
 
+        const std::vector< std::shared_ptr<DerivedNodeT> >& get_all_children() {
+            return this->children_;
+        }
+
         bool is_child(const std::shared_ptr<DerivedNodeT>& node) const {
             for (auto child_iter: this->children_) {
                 if (child_iter == node) {
