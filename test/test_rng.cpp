@@ -3749,3 +3749,75 @@ TEST_CASE("Testing weighted_discount_process(3, 0.6, 0.9)", "[RandomNumberGenera
         }
     }
 }
+
+TEST_CASE("Testing shuffle with 2 ints", "[RandomNumberGenerator]") {
+
+    SECTION("Testing shuffle with 2 ints") {
+        unsigned int nsamples = 10000;
+        std::vector<int> v {0, 1};
+
+        std::map<std::string, int> counts;
+        counts["01"] = 0;
+        counts["10"] = 0;
+
+        RandomNumberGenerator rng(111);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            rng.shuffle<int>(v);
+            std::ostringstream stream;
+            for (auto e : v) {
+                stream << e;
+            }
+            std::string v_str = stream.str();
+            if (counts.count(v_str) < 1) {
+                counts[v_str] = 1;
+            }
+            else {
+                ++counts[v_str];
+            }
+        }
+        int total = 0;
+        for (auto const &kv: counts) {
+            total += kv.second;
+            REQUIRE((kv.second / (double)nsamples) == Approx(0.5).epsilon(0.001));
+        }
+        REQUIRE(total == nsamples);
+    }
+}
+
+TEST_CASE("Testing shuffle with 3 ints", "[RandomNumberGenerator]") {
+
+    SECTION("Testing shuffle with 3 ints") {
+        unsigned int nsamples = 500000;
+        std::vector<int> v {0, 1, 2};
+
+        std::map<std::string, int> counts;
+        counts["012"] = 0;
+        counts["021"] = 0;
+        counts["102"] = 0;
+        counts["120"] = 0;
+        counts["201"] = 0;
+        counts["210"] = 0;
+
+        RandomNumberGenerator rng(123);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            rng.shuffle<int>(v);
+            std::ostringstream stream;
+            for (auto e : v) {
+                stream << e;
+            }
+            std::string v_str = stream.str();
+            if (counts.count(v_str) < 1) {
+                counts[v_str] = 1;
+            }
+            else {
+                ++counts[v_str];
+            }
+        }
+        int total = 0;
+        for (auto const &kv: counts) {
+            total += kv.second;
+            REQUIRE((kv.second / (double)nsamples) == Approx(1.0/6.0).epsilon(0.001));
+        }
+        REQUIRE(total == nsamples);
+    }
+}

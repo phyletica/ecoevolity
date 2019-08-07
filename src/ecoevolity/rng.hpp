@@ -131,6 +131,11 @@ class RandomNumberGenerator {
             return x;
         }
 
+        template <typename T>
+        inline void shuffle(std::vector<T> & vec) {
+            std::shuffle(std::begin(vec), std::end(vec), this->engine_);
+        }
+
         inline unsigned int weighted_index(
                 const std::vector<double>& probabilities) {
             double u = this->uniform_real();
