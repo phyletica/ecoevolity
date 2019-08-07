@@ -312,8 +312,71 @@ class BaseTree {
             return false;
         }
 
-        void slide_bump_height(const unsigned int height_index,
-                const double new_height) {
+        std::vector< std::shared_ptr<NodeType> > get_collision_parents(
+                const unsigned int older_height_index,
+                const unsigned int younger_height_index) {
+            ECOEVOLITY_ASSERT(older_height_index == younger_height_index + 1);
+            std::vector< std::shared_ptr<NodeType> > collision_parents;
+            std::vector< std::shared_ptr<NodeType> > older_nodes = this->get_mapped_nodes(older_height_index);
+            std::vector< std::shared_ptr<NodeType> > younger_nodes = this->get_mapped_nodes(younger_height_index);
+            for (auto older_nd : older_nodes) {
+                for (auto younger_nd : younger_nodes) {
+                    if (older_nd->is_child(younger_nd)) {
+                        collision_parents.push_back(older_nd);
+                        break;
+                    }
+                }
+            }
+            return collision_parents;
+        }
+
+        void collision_node_swap(
+                RandomNumberGenerator & rng,
+                const unsigned int older_height_index,
+                const unsigned int younger_height_index) {
+            std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
+                    older_height_index,
+                    younger_height_index);
+            for (auto parent_nd : collision_parents) {
+                std::vector< std::shared_ptr<NodeType> > swap_node_pool;
+                std::vector< std::shared_ptr<NodeType> > child_colliding_nodes;
+                std::vector< std::shared_ptr<NodeType> > child_non_colliding_nodes;
+                for (auto child_nd : parent_nd->get_all_children()) {
+                    // Each colliding child contributes one randomgrandchild to
+                    // the swap pool
+                    if (this->get_node_height_index(child_nd->get_height_parameter()) == younger_height_index) {
+                        ECOEVOLITY_ASSERT(child_nd->has_children());
+                        child_colliding_nodes.push_back(child_nd);
+                        unsigned int random_child_index = rng.uniform_positive_int(child_nd->get_number_of_children() - 1);
+                        swap_node_pool.push_back(child_nd->get_child(random_child_index));
+                    }
+                    else {
+                        child_non_colliding_nodes.push_back(child_nd);
+                    }
+                }
+                // If parent node in collision has non-colliding descendants,
+                // it contributes one of these descendants (randomly)
+                unsigned int random_child_index = rng.uniform_positive_int(child_non_colliding_nodes.size() - 1);
+                swap_node_pool.push_back(child_non_colliding_nodes.at(random_child_index));
+                std::shuffle(std::begin(swap_node_pool), std::end(swap_node_pool), rng.engine_);
+                std::shared_ptr<NodeType> random_swap_node = swap_node_pool.back();
+                swap_node_pool.pop_back();
+                random_swap_node->remove_parent();
+                random_swap_node->add_parent(parent_nd);
+                for (auto child_colliding_nd : child_colliding_nodes) {
+                    random_swap_node = swap_node_pool.back();
+                    swap_node_pool.pop_back();
+                    random_swap_node->remove_parent();
+                    random_swap_node->add_parent(child_colliding_nd);
+                }
+            }
+        }
+
+        void slide_bump_height(
+                RandomNumberGenerator & rng,
+                const unsigned int height_index,
+                const double new_height,
+                bool collisions_swap_nodes = false) {
             ECOEVOLITY_ASSERT(new_height >= 0.0);
             std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
                     height_index,
@@ -329,6 +392,9 @@ class BaseTree {
                     this->node_heights_.at(next_height_idx - 1)->set_value(
                             this->node_heights_.at(next_height_idx)->get_value()
                             );
+                    if (collisions_swap_nodes) {
+                        this->collision_node_swap(rng, next_height_idx, next_height_idx - 1);
+                    }
                 }
                 this->node_heights_.at(intervening_indices.back())->set_value(new_height);
                 return;
@@ -338,20 +404,12 @@ class BaseTree {
                 this->node_heights_.at(next_height_idx + 1)->set_value(
                         this->node_heights_.at(next_height_idx)->get_value()
                         );
+                if (collisions_swap_nodes) {
+                    this->collision_node_swap(rng, next_height_idx + 1, next_height_idx);
+                }
             }
             this->node_heights_.at(intervening_indices.back())->set_value(new_height);
             return;
-        }
-
-        void slide_bump_swap_height(
-                RandomNumberGenerator & rng,
-                const unsigned int height_index,
-                const double new_height) {
-            ECOEVOLITY_ASSERT(new_height >= 0.0);
-            std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
-                    height_index,
-                    new_height);
-            // TODO
         }
 
         std::vector<unsigned int> get_intervening_height_indices(

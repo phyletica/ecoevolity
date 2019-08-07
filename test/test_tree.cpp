@@ -377,7 +377,9 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         std::vector<double> expected_heights = {0.06, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(0, 0.07);
+        RandomNumberGenerator rng(111);
+
+        tree.slide_bump_height(rng, 0, 0.07);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -388,7 +390,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.07, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(0, 0.01);
+        tree.slide_bump_height(rng, 0, 0.01);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -399,7 +401,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.01, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(0, 0.2);
+        tree.slide_bump_height(rng, 0, 0.2);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.2);
@@ -410,7 +412,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.08, 0.1, 0.2};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(2, 0.05);
+        tree.slide_bump_height(rng, 2, 0.05);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -421,7 +423,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.05, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(2, 0.11);
+        tree.slide_bump_height(rng, 2, 0.11);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.11);
@@ -432,7 +434,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.05, 0.08, 0.11};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(2, 0.1);
+        tree.slide_bump_height(rng, 2, 0.1);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -443,7 +445,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.05, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(1, 0.07);
+        tree.slide_bump_height(rng, 1, 0.07);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -454,7 +456,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.05, 0.07, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(1, 0.09);
+        tree.slide_bump_height(rng, 1, 0.09);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -465,7 +467,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.05, 0.09, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(1, 0.11);
+        tree.slide_bump_height(rng, 1, 0.11);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.11);
@@ -476,7 +478,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
         expected_heights = {0.05, 0.1, 0.11};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.slide_bump_height(1, 0.01);
+        tree.slide_bump_height(rng, 1, 0.01);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.11);
