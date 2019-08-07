@@ -215,6 +215,26 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return children_ptrs;
         }
 
+        std::vector< std::shared_ptr<DerivedNodeT> > get_leaf_children() {
+            std::vector< std::shared_ptr<DerivedNodeT> > children_ptrs;
+            for (auto child : this->children_) {
+                if (child->is_leaf()) {
+                    children_ptrs.push_back(child);
+                }
+            }
+            return children_ptrs;
+        }
+
+        std::vector< std::shared_ptr<DerivedNodeT> > get_internal_children() {
+            std::vector< std::shared_ptr<DerivedNodeT> > children_ptrs;
+            for (auto child : this->children_) {
+                if (! child->is_leaf()) {
+                    children_ptrs.push_back(child);
+                }
+            }
+            return children_ptrs;
+        }
+
         const std::vector< std::shared_ptr<DerivedNodeT> >& get_all_children() {
             return this->children_;
         }

@@ -802,6 +802,324 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
     }
 }
 
+TEST_CASE("Testing BaseTree::get_collision_parents", "[BaseTree]") {
+    SECTION("Testing get_collision_parents") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.04);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.06);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.08);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal2->add_child(internal0);
+        internal2->add_child(internal1);
+        root->add_child(internal2);
+        root->add_child(leaf4);
+        root->add_child(leaf5);
+
+        internal0->set_height_parameter(internal1->get_height_parameter());
+
+        BaseTree<Node> tree(root);
+
+        REQUIRE(root->is_root());
+        REQUIRE(root->is_child(internal2));
+        REQUIRE(root->is_child(leaf4));
+        REQUIRE(root->is_child(leaf5));
+        REQUIRE(internal2->is_parent(root));
+        REQUIRE(internal2->is_child(internal1));
+        REQUIRE(internal2->is_child(internal0));
+        REQUIRE(internal1->is_parent(internal2));
+        REQUIRE(internal1->is_child(leaf2));
+        REQUIRE(internal1->is_child(leaf3));
+        REQUIRE(internal0->is_parent(internal2));
+        REQUIRE(internal0->is_child(leaf0));
+        REQUIRE(internal0->is_child(leaf1));
+        REQUIRE(leaf0->is_leaf());
+        REQUIRE(leaf0->is_parent(internal0));
+        REQUIRE(leaf1->is_leaf());
+        REQUIRE(leaf1->is_parent(internal0));
+        REQUIRE(leaf2->is_leaf());
+        REQUIRE(leaf2->is_parent(internal1));
+        REQUIRE(leaf3->is_leaf());
+        REQUIRE(leaf3->is_parent(internal1));
+        REQUIRE(leaf4->is_leaf());
+        REQUIRE(leaf4->is_parent(root));
+        REQUIRE(leaf5->is_leaf());
+        REQUIRE(leaf5->is_parent(root));
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_root_height() == 0.1);
+        REQUIRE(tree.get_degree_of_root() == 3);
+        REQUIRE(tree.get_leaf_node_count() == 6);
+        REQUIRE(tree.get_node_count() == 10);
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        std::vector<double> expected_heights = {0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        std::vector< std::shared_ptr<Node> > expected_parents {root};
+        std::vector< std::shared_ptr<Node> > parents = tree.get_collision_parents(2, 1);
+        REQUIRE(parents == expected_parents);
+
+        expected_parents = {internal2};
+        parents = tree.get_collision_parents(1, 0);
+        REQUIRE(parents == expected_parents);
+    }
+}
+
+TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[xBaseTree]") {
+    SECTION("Testing collision_node_swap") {
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        unsigned int count_0_12 = 0;
+        unsigned int count_1_02 = 0;
+        unsigned int count_2_10 = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+            std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.5);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            leaf0->fix_node_height();
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            leaf1->fix_node_height();
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            leaf2->fix_node_height();
+
+            internal0->add_child(leaf0);
+            internal0->add_child(leaf1);
+            root->add_child(internal0);
+            root->add_child(leaf2);
+
+            BaseTree<Node> tree(root);
+
+            tree.collision_node_swap(rng, 1, 0);
+
+            REQUIRE(tree.tree_is_valid());
+            REQUIRE(root->get_number_of_children() == 2);
+            REQUIRE(internal0->get_number_of_children() == 2);
+            REQUIRE(leaf0->is_leaf());
+            REQUIRE(leaf1->is_leaf());
+            REQUIRE(leaf2->is_leaf());
+            std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2};
+            std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(std::is_permutation(
+                        leaves.begin(), leaves.end(),
+                        expected_leaves.begin()));
+            if (root->is_child(leaf0)) {
+                ++count_0_12;
+            }
+            if (root->is_child(leaf1)) {
+                ++count_1_02;
+            }
+            if (root->is_child(leaf2)) {
+                ++count_2_10;
+            }
+        }
+        REQUIRE(count_0_12 + count_1_02 + count_2_10 == nsamples);
+        double freq_0_12 = (count_0_12 / (double)nsamples);
+        double freq_1_02 = (count_1_02 / (double)nsamples);
+        double freq_2_10 = (count_2_10 / (double)nsamples);
+        std::cout << "freq of (0,(1,2)): " << freq_0_12 << "\n";
+        std::cout << "freq of (1,(0,2)): " << freq_1_02 << "\n";
+        std::cout << "freq of (2,(0,1)): " << freq_2_10 << "\n";
+
+        double eps = 0.005;
+        // p(0 in pool) * p(0 drawn) = 0.5*0.5
+        REQUIRE(freq_0_12 == Approx(0.25).epsilon(eps));
+        // p(1 in pool) * p(1 drawn) = 0.5*0.5
+        REQUIRE(freq_1_02 == Approx(0.25).epsilon(eps));
+        // p(2 in pool) * p(1 drawn) = 1.0*0.5
+        REQUIRE(freq_2_10 == Approx(0.5).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[xBaseTree]") {
+    SECTION("Testing collision_node_swap") {
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        unsigned int count_01 = 0;
+        unsigned int count_02 = 0;
+        unsigned int count_03 = 0;
+        unsigned int count_12 = 0;
+        unsigned int count_13 = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+            std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.5);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            leaf0->fix_node_height();
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            leaf1->fix_node_height();
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            leaf2->fix_node_height();
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+            leaf3->fix_node_height();
+
+            internal0->add_child(leaf0);
+            internal0->add_child(leaf1);
+            root->add_child(internal0);
+            root->add_child(leaf2);
+            root->add_child(leaf3);
+
+            BaseTree<Node> tree(root);
+
+            tree.collision_node_swap(rng, 1, 0);
+
+            REQUIRE(tree.tree_is_valid());
+            REQUIRE(root->get_number_of_children() == 3);
+            REQUIRE(internal0->get_number_of_children() == 2);
+            std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
+            std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(std::is_permutation(
+                        leaves.begin(), leaves.end(),
+                        expected_leaves.begin()));
+            if (internal0->is_child(leaf0) && internal0->is_child(leaf1)) {
+                ++count_01;
+            }
+            if (internal0->is_child(leaf0) && internal0->is_child(leaf2)) {
+                ++count_02;
+            }
+            if (internal0->is_child(leaf0) && internal0->is_child(leaf3)) {
+                ++count_03;
+            }
+            if (internal0->is_child(leaf1) && internal0->is_child(leaf2)) {
+                ++count_12;
+            }
+            if (internal0->is_child(leaf1) && internal0->is_child(leaf3)) {
+                ++count_13;
+            }
+        }
+        REQUIRE(count_01 + count_02 + count_03 + count_12 + count_13 == nsamples);
+        double freq_01 = (count_01 / (double)nsamples);
+        double freq_02 = (count_02 / (double)nsamples);
+        double freq_03 = (count_03 / (double)nsamples);
+        double freq_12 = (count_12 / (double)nsamples);
+        double freq_13 = (count_13 / (double)nsamples);
+        std::cout << "freq of (2,3(0,1)): " << freq_01 << "\n";
+        std::cout << "freq of (1,3(0,2)): " << freq_02 << "\n";
+        std::cout << "freq of (2,1(0,3)): " << freq_03 << "\n";
+        std::cout << "freq of (0,3(2,1)): " << freq_12 << "\n";
+        std::cout << "freq of (2,0(3,1)): " << freq_13 << "\n";
+
+        double eps = 0.005;
+        // (p(0 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(0 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(1 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(1 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // total = 0.5
+        REQUIRE(freq_01 == Approx(0.5).epsilon(eps));
+        // p(0 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
+        REQUIRE(freq_02 == Approx(0.125).epsilon(eps));
+        // p(0 and 3 in pool) * p(3 drawn) = 0.5^2*0.5
+        REQUIRE(freq_03 == Approx(0.125).epsilon(eps));
+        // p(1 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
+        REQUIRE(freq_12 == Approx(0.125).epsilon(eps));
+        // p(1 and 3 in pool) * p(3 drawn) = 0.5^5*0.5
+        REQUIRE(freq_13 == Approx(0.125).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTree]") {
+    SECTION("Testing collision_node_swap") {
+        unsigned int nsamples = 100000;
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        unsigned int count_01 = 0;
+        unsigned int count_02 = 0;
+        unsigned int count_03 = 0;
+        unsigned int count_12 = 0;
+        unsigned int count_13 = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+            std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.5);
+            std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.5);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            leaf0->fix_node_height();
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            leaf1->fix_node_height();
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            leaf2->fix_node_height();
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+            leaf3->fix_node_height();
+
+            internal0->add_child(leaf0);
+            internal0->add_child(leaf1);
+            internal1->add_child(leaf2);
+            internal1->add_child(leaf3);
+            root->add_child(internal0);
+            root->add_child(internal1);
+
+            internal0->set_height_parameter(internal1->get_height_parameter());
+
+            BaseTree<Node> tree(root);
+
+            tree.collision_node_swap(rng, 1, 0);
+
+            REQUIRE(tree.tree_is_valid());
+            REQUIRE(root->get_number_of_children() == 2);
+            REQUIRE(internal0->get_number_of_children() == 2);
+            REQUIRE(internal1->get_number_of_children() == 2);
+            std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3};
+            std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(std::is_permutation(
+                        leaves.begin(), leaves.end(),
+                        expected_leaves.begin()));
+            if (internal0->is_child(leaf0) && internal0->is_child(leaf1)) {
+                ++count_01;
+            }
+            if (internal0->is_child(leaf0) && internal0->is_child(leaf2)) {
+                ++count_02;
+            }
+            if (internal0->is_child(leaf0) && internal0->is_child(leaf3)) {
+                ++count_03;
+            }
+            if (internal0->is_child(leaf1) && internal0->is_child(leaf2)) {
+                ++count_12;
+            }
+            if (internal0->is_child(leaf1) && internal0->is_child(leaf3)) {
+                ++count_13;
+            }
+        }
+        REQUIRE(count_01 + count_02 + count_03 + count_12 + count_13 == nsamples);
+        double freq_01 = (count_01 / (double)nsamples);
+        double freq_02 = (count_02 / (double)nsamples);
+        double freq_03 = (count_03 / (double)nsamples);
+        double freq_12 = (count_12 / (double)nsamples);
+        double freq_13 = (count_13 / (double)nsamples);
+        std::cout << "freq of ((2,3),(0,1)): " << freq_01 << "\n";
+        std::cout << "freq of ((1,3),(0,2)): " << freq_02 << "\n";
+        std::cout << "freq of ((2,1),(0,3)): " << freq_03 << "\n";
+        std::cout << "freq of ((0,3),(2,1)): " << freq_12 << "\n";
+        std::cout << "freq of ((2,0),(3,1)): " << freq_13 << "\n";
+
+        double eps = 0.005;
+        // (p(0 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(0 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(1 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(1 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // total = 0.5
+        REQUIRE(freq_01 == Approx(0.5).epsilon(eps));
+        // p(0 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
+        REQUIRE(freq_02 == Approx(0.125).epsilon(eps));
+        // p(0 and 3 in pool) * p(3 drawn) = 0.5^2*0.5
+        REQUIRE(freq_03 == Approx(0.125).epsilon(eps));
+        // p(1 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
+        REQUIRE(freq_12 == Approx(0.125).epsilon(eps));
+        // p(1 and 3 in pool) * p(3 drawn) = 0.5^5*0.5
+        REQUIRE(freq_13 == Approx(0.125).epsilon(eps));
+    }
+}
+
 
 TEST_CASE("Testing scaling of simulate_gene_tree for three species",
         "[PopulationTree]") {
