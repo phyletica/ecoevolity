@@ -880,7 +880,7 @@ TEST_CASE("Testing BaseTree::get_collision_parents", "[BaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -945,7 +945,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap with 3 leaves", "[xBaseTree]") 
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -1030,7 +1030,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf polytomy", "[xBaseTree]"
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -1105,8 +1105,8 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTre
         double eps = 0.005;
         // (p(0 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
         // (p(0 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
-        // (p(1 and 2 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
-        // (p(1 and 3 in pool) * p(0 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(1 and 2 in pool) * p(1 drawn)) = 0.5^2 * 0.5 = 0.125
+        // (p(1 and 3 in pool) * p(1 drawn)) = 0.5^2 * 0.5 = 0.125
         // total = 0.5
         REQUIRE(freq_01 == Approx(0.5).epsilon(eps));
         // p(0 and 2 in pool) * p(2 drawn) = 0.5^2*0.5
@@ -1120,7 +1120,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 4 leaf 3 colliders", "[xBaseTre
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[BaseTree]") {
     SECTION("Testing collision_node_swap") {
         unsigned int nsamples = 100000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
@@ -1191,12 +1191,21 @@ TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[xBaseTre
                 ++count_05_21_43;
             }
             if (
+                    (
                     internal0->is_child(leaf0) &&
                     internal0->is_child(leaf5) &&
                     internal1->is_child(leaf2) &&
                     internal1->is_child(leaf3) &&
                     internal2->is_child(leaf4) &&
-                    internal2->is_child(leaf1)) {
+                    internal2->is_child(leaf1)) ||
+                    (
+                    internal2->is_child(leaf0) &&
+                    internal2->is_child(leaf5) &&
+                    internal1->is_child(leaf2) &&
+                    internal1->is_child(leaf3) &&
+                    internal0->is_child(leaf4) &&
+                    internal0->is_child(leaf1))
+                ) {
                 ++count_05_23_41;
             }
         }
@@ -1238,26 +1247,29 @@ TEST_CASE("Testing BaseTree::collision_node_swap 6 leaf 4 colliders", "[xBaseTre
         REQUIRE(freq_01_23_45 == Approx(1.0/6.0).epsilon(eps));
         // p(pool) * p(draws) = (1/2)^3 * (1/3!) = 1/8 * 1/6 = 1/48
         REQUIRE(freq_05_21_43 == Approx(1.0/48.0).epsilon(eps));
-        // p(pool) * p(draws) = (1/2)(1)(1/2) * (1/3!) = 
-        // 1*(1/2)^2 * (1/3!) = 1/4 * 1/6 = 1/24
-        REQUIRE(freq_05_23_41 == Approx(1.0/24.0).epsilon(eps));
+        // This swap is symmetric, so the 01 on clade can contribute either
+        // leaf (prob = 1), and then the 45 has to contribute the corresponding
+        // leaf for the swap (prob 1/2) [ or vice versa ]
+        // p(pool) * p(draws) = (1)(1)(1/2) * (1/3!) = 
+        // (1/2) * (1/3!) = 1/2 * 1/6 = 1/12
+        REQUIRE(freq_05_23_41 == Approx(1.0/12.0).epsilon(eps));
     }
 }
 
-TEST_CASE("Testing BaseTree::collision_node_swap 9 leaf 4 colliders", "[xBaseTree]") {
-    SECTION("Testing collision_node_swap") {
-        unsigned int nsamples = 500000;
+TEST_CASE("Testing BaseTree::collision_node_swap 9 leaf 4 colliders", "[BaseTree]") {
+    SECTION("Testing slide_bump_height with swapping") {
+        unsigned int nsamples = 1000000;
         RandomNumberGenerator rng = RandomNumberGenerator(111);
-        unsigned int count_01_234_5678 = 0; // no change
-        unsigned int count_04_238_5671 = 0; // every clade changes
-        unsigned int count_04_231_5678 = 0; // 4-leaf clade unchanged
-        unsigned int count_08_234_5671 = 0; // 3-leaf clade unchanged
-        unsigned int count_01_238_5674 = 0; // 2-leaf clade unchanged
+        unsigned int count_01_234_5678_9_10 = 0; // no change
+        unsigned int count_10_214_03_5_9678 = 0; // every clade changes on both bumps
+        unsigned int count_03_5_9678_214_10 = 0; // 2nd bump symmetric swap
         for (unsigned int i = 0; i < nsamples; ++i) {
-            std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.5);
             std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.5);
             std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.5);
             std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.5);
+            std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 1.0);
+            std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 1.0);
             std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
             leaf0->fix_node_height();
             std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
@@ -1276,33 +1288,57 @@ TEST_CASE("Testing BaseTree::collision_node_swap 9 leaf 4 colliders", "[xBaseTre
             leaf7->fix_node_height();
             std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
             leaf8->fix_node_height();
+            std::shared_ptr<Node> leaf9 = std::make_shared<Node>("leaf9", 0.0);
+            leaf9->fix_node_height();
+            std::shared_ptr<Node> leaf10 = std::make_shared<Node>("leaf10", 0.0);
+            leaf10->fix_node_height();
 
             internal0->add_child(leaf0);
             internal0->add_child(leaf1);
+
             internal1->add_child(leaf2);
             internal1->add_child(leaf3);
             internal1->add_child(leaf4);
+
             internal2->add_child(leaf5);
             internal2->add_child(leaf6);
             internal2->add_child(leaf7);
             internal2->add_child(leaf8);
-            root->add_child(internal0);
-            root->add_child(internal1);
-            root->add_child(internal2);
+
+            internal3->add_child(internal0);
+            internal3->add_child(internal1);
+
+            internal4->add_child(internal2);
+            internal4->add_child(leaf9);
+
+            root->add_child(internal3);
+            root->add_child(internal4);
+            root->add_child(leaf10);
 
             internal0->set_height_parameter(internal1->get_height_parameter());
             internal2->set_height_parameter(internal1->get_height_parameter());
 
+            internal3->set_height_parameter(internal4->get_height_parameter());
+
             BaseTree<Node> tree(root);
 
-            tree.collision_node_swap(rng, 1, 0);
+            REQUIRE(tree.get_number_of_node_heights() == 3);
 
+            tree.slide_bump_height(rng, 0, 2.0, true);
+
+            REQUIRE(tree.get_number_of_node_heights() == 3);
+
+            REQUIRE(tree.get_height(0) == 1.0);
+            REQUIRE(tree.get_height(1) == 1.5);
+            REQUIRE(tree.get_height(2) == 2.0);
             REQUIRE(tree.tree_is_valid());
             REQUIRE(root->get_number_of_children() == 3);
             REQUIRE(internal0->get_number_of_children() == 2);
             REQUIRE(internal1->get_number_of_children() == 3);
             REQUIRE(internal2->get_number_of_children() == 4);
-            std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8};
+            REQUIRE(internal3->get_number_of_children() == 2);
+            REQUIRE(internal4->get_number_of_children() == 2);
+            std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
             std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
             REQUIRE(std::is_permutation(
                         leaves.begin(), leaves.end(),
@@ -1316,70 +1352,84 @@ TEST_CASE("Testing BaseTree::collision_node_swap 9 leaf 4 colliders", "[xBaseTre
                     internal2->is_child(leaf5) &&
                     internal2->is_child(leaf6) &&
                     internal2->is_child(leaf7) &&
-                    internal2->is_child(leaf8)) {
-                ++count_01_234_5678;
+                    internal2->is_child(leaf8) &&
+                    internal3->is_child(internal0) &&
+                    internal3->is_child(internal1) &&
+                    internal4->is_child(internal2) &&
+                    internal4->is_child(leaf9) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(leaf10)
+                    ) {
+                ++count_01_234_5678_9_10;
             }
             if (
                     internal0->is_child(leaf0) &&
-                    internal0->is_child(leaf4) &&
+                    internal0->is_child(leaf3) &&
                     internal1->is_child(leaf2) &&
-                    internal1->is_child(leaf3) &&
-                    internal1->is_child(leaf8) &&
-                    internal2->is_child(leaf5) &&
-                    internal2->is_child(leaf6) &&
-                    internal2->is_child(leaf7) &&
-                    internal2->is_child(leaf1)) {
-                ++count_04_238_5671;
-            }
-            if (
-                    internal0->is_child(leaf0) &&
-                    internal0->is_child(leaf4) &&
-                    internal1->is_child(leaf2) &&
-                    internal1->is_child(leaf3) &&
                     internal1->is_child(leaf1) &&
-                    internal2->is_child(leaf5) &&
-                    internal2->is_child(leaf6) &&
-                    internal2->is_child(leaf7) &&
-                    internal2->is_child(leaf8)) {
-                ++count_04_231_5678;
-            }
-            if (
-                    internal0->is_child(leaf0) &&
-                    internal0->is_child(leaf8) &&
-                    internal1->is_child(leaf2) &&
-                    internal1->is_child(leaf3) &&
                     internal1->is_child(leaf4) &&
-                    internal2->is_child(leaf5) &&
+                    internal2->is_child(leaf9) &&
                     internal2->is_child(leaf6) &&
                     internal2->is_child(leaf7) &&
-                    internal2->is_child(leaf1)) {
-                ++count_08_234_5671;
+                    internal2->is_child(leaf8) &&
+                    internal3->is_child(leaf10) &&
+                    internal3->is_child(internal1) &&
+                    internal4->is_child(internal0) &&
+                    internal4->is_child(leaf5) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(internal2)
+                    ) {
+                ++count_10_214_03_5_9678;
             }
             if (
+                    (
                     internal0->is_child(leaf0) &&
-                    internal0->is_child(leaf1) &&
+                    internal0->is_child(leaf3) &&
                     internal1->is_child(leaf2) &&
-                    internal1->is_child(leaf3) &&
-                    internal1->is_child(leaf8) &&
-                    internal2->is_child(leaf5) &&
+                    internal1->is_child(leaf1) &&
+                    internal1->is_child(leaf4) &&
+                    internal2->is_child(leaf9) &&
                     internal2->is_child(leaf6) &&
                     internal2->is_child(leaf7) &&
-                    internal2->is_child(leaf4)) {
-                ++count_01_238_5674;
+                    internal2->is_child(leaf8) &&
+                    internal3->is_child(internal0) &&
+                    internal3->is_child(leaf5) &&
+                    internal4->is_child(internal2) &&
+                    internal4->is_child(internal1) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(leaf10)) ||
+                    (
+                    internal0->is_child(leaf0) &&
+                    internal0->is_child(leaf3) &&
+                    internal1->is_child(leaf2) &&
+                    internal1->is_child(leaf1) &&
+                    internal1->is_child(leaf4) &&
+                    internal2->is_child(leaf9) &&
+                    internal2->is_child(leaf6) &&
+                    internal2->is_child(leaf7) &&
+                    internal2->is_child(leaf8) &&
+                    internal4->is_child(internal0) &&
+                    internal4->is_child(leaf5) &&
+                    internal3->is_child(internal2) &&
+                    internal3->is_child(internal1) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(leaf10))
+                    ) {
+                ++count_03_5_9678_214_10;
             }
         }
-        double freq_01_234_5678 = (count_01_234_5678 / (double)nsamples);
-        double freq_04_238_5671 = (count_04_238_5671 / (double)nsamples);
-        double freq_04_231_5678 = (count_04_231_5678 / (double)nsamples);
-        double freq_08_234_5671 = (count_08_234_5671 / (double)nsamples);
-        double freq_01_238_5674 = (count_01_238_5674 / (double)nsamples);
-        std::cout << "freq of ((0,1),(2,3,4),(5,6,7,8)): " << freq_01_234_5678 << "\n";
-        std::cout << "freq of ((0,4),(2,3,8),(5,6,7,1)): " << freq_04_238_5671 << "\n";
-        std::cout << "freq of ((0,4),(2,3,1),(5,6,7,8)): " << freq_04_231_5678 << "\n";
-        std::cout << "freq of ((0,8),(2,3,4),(5,6,7,1)): " << freq_08_234_5671 << "\n";
-        std::cout << "freq of ((0,1),(2,3,8),(5,6,7,4)): " << freq_01_238_5674 << "\n";
+        double freq_01_234_5678_9_10 = (count_01_234_5678_9_10 / (double)nsamples);
+        double freq_10_214_03_5_9678 = (count_10_214_03_5_9678 / (double)nsamples);
+        double freq_03_5_9678_214_10 = (count_03_5_9678_214_10 / (double)nsamples);
+        std::cout << "freq of (((0,1),(2,3,4)),((5,6,7,8),9),10): " << freq_01_234_5678_9_10 << "\n";
+        std::cout << "freq of ((10,(2,1,4)),((0,3),5),(9,6,7,8)): " << freq_10_214_03_5_9678 << "\n";
+        std::cout << "freq of (((0,3),5),((9,6,7,8),(2,1,4)),10): " << freq_03_5_9678_214_10 << "\n";
 
-        double eps = 0.001;
+        double eps = 0.0001;
         ///////////////////////////////////////////////////////////////////////
         // How I like to think about the probability of any swap result.
         // First, once you have a pool of N nodes, the number of unique
@@ -1404,36 +1454,615 @@ TEST_CASE("Testing BaseTree::collision_node_swap 9 leaf 4 colliders", "[xBaseTre
         // outcome of an unchanged bump node.
         ///////////////////////////////////////////////////////////////////////
         //
+        // BUMP 1
+        // p(pool internal 3) * p(draws internal 3) = 1.0 * (1/2!) = 1/2
+        // p(pool internal 4) * p(draws internal 4) = 1.0 * (1/2!) = 1/2
+        // prob = 1/4
+        // All possible pools can lead to getting the same state back, so p(pool) = 1.0
+        // BUMP 2
         // p(pool) * p(draws) = 1.0 * (1/3!) = 1.0 * 1/6
         // All possible pools can lead to getting the same state back, so
         // p(pool) = 1.0
-        REQUIRE(freq_01_234_5678 == Approx(1.0/6.0).epsilon(eps));
+        // PROB of BOTH = 1/4 * 1/6 = 1/24
+        REQUIRE(freq_01_234_5678_9_10 == Approx(1.0/24.0).epsilon(eps*5));
 
-        // p(pool) = p(1 in pool) * p(4 in pool) * p(8 in pool)
-        //         = (1/2) * (1/3) * (1/4) = 1/24
-        // p(outcome) = p(pool) * p(draw) = 1/24 * 1/3!
-        //            = 1/24 * 1/6 = 1/144
-        REQUIRE(freq_04_238_5671 == Approx(1.0/144.0).epsilon(eps));
+        // BUMP 1
+        // p(pool) = p(1 in int 3 pool) * p(3 in int 3 pool) * p(5 in int 4 pool) * p(9 in int 4 pool)
+        //         = (1/2) * (1/3) * (1/4) * 1 = 1/24
+        // p(outcome) = p(pool) * p(draw) = 1/24 * ( (1/2!) * (1/2!) )
+        //            = 1/24 * 1/4 = 1/96
+        // BUMP 2
+        // p(pool) = p(clade 03 in pool) * p(clade 9678 in pool) * p(10 in pool)
+        //         = 1/2 * 1/2 * 1 = 1/4
+        // p(draws) = 1/3! = 1/6
+        // p(pool) * p(draws) = 1/4 * 1/6 = 1/24
+        // Prob of BOTH = 1/96 * 1/24 = 1/2304
+        REQUIRE(freq_10_214_03_5_9678 == Approx(1.0/2304.0).epsilon(eps));
 
-        // p(pool) = p(1 in pool) * p(4 in pool) * 1
-        //         = (1/2) * (1/3) * 1 = 1/6
-        // The "1" above, is because every pool is consistent with clade 5678
-        // being unchanged (see above explanation)
-        // p(outcome) = p(pool) * p(draw) = 1/6 * 1/3!
-        //            = 1/6 * 1/6 = 1/36
-        REQUIRE(freq_04_231_5678 == Approx(1.0/36.0).epsilon(eps));
+        // BUMP 1
+        // p(pool) = p(1 in int 3 pool) * p(3 in int 3 pool) * p(5 in int 4 pool) * p(9 in int 4 pool)
+        //         = (1/2) * (1/3) * (1/4) * 1 = 1/24
+        // p(outcome) = p(pool) * p(draw) = 1/24 * ( (1/2!) * (1/2!) )
+        //            = 1/24 * 1/4 = 1/96
+        // BUMP 2
+        // p(pool) = p(clade 03 or 214 in pool) * p(corresponding clade in pool) * p(10 in pool)
+        //         = 1 * 1/2 * 1 = 1/2
+        // p(draws) = 1/3! = 1/6
+        // p(pool) * p(draws) = 1/2 * 1/6 = 1/12
+        // Prob of BOTH = 1/96 * 1/12 = 1/1152
+        REQUIRE(freq_03_5_9678_214_10 == Approx(1.0/1152.0).epsilon(eps));
+    }
 
-        // p(pool) = p(1 in pool) * 1 * p(8 in pool)
-        //         = (1/2) * 1 * (1/4) = 1/8
-        // p(outcome) = p(pool) * p(draw) = 1/8 * 1/3!
-        //            = 1/8 * 1/6 = 1/48
-        REQUIRE(freq_08_234_5671 == Approx(1.0/48.0).epsilon(eps));
+    SECTION("Testing reverse slide_bump_height with swapping") {
+        unsigned int nsamples = 1000000;
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        unsigned int count_01_234_5678_9_10 = 0; // reverse move
+        unsigned int count_03_5_9678_214_10 = 0; // no move
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", 2.0);
+            std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 1.0);
+            std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 1.0);
+            std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 1.0);
+            std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 1.5);
+            std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 1.5);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            leaf0->fix_node_height();
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            leaf1->fix_node_height();
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            leaf2->fix_node_height();
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+            leaf3->fix_node_height();
+            std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+            leaf4->fix_node_height();
+            std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+            leaf5->fix_node_height();
+            std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+            leaf6->fix_node_height();
+            std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+            leaf7->fix_node_height();
+            std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
+            leaf8->fix_node_height();
+            std::shared_ptr<Node> leaf9 = std::make_shared<Node>("leaf9", 0.0);
+            leaf9->fix_node_height();
+            std::shared_ptr<Node> leaf10 = std::make_shared<Node>("leaf10", 0.0);
+            leaf10->fix_node_height();
 
-        // p(pool) = 1 * p(4 in pool) * p(8 in pool)
-        //         = 1 * (1/3) * (1/4) = 1/12
-        // p(outcome) = p(pool) * p(draw) = 1/12 * 1/3!
-        //            = 1/12 * 1/6 = 1/72
-        REQUIRE(freq_01_238_5674 == Approx(1.0/72.0).epsilon(eps));
+            internal0->add_child(leaf0);
+            internal0->add_child(leaf3);
+
+            internal1->add_child(leaf2);
+            internal1->add_child(leaf1);
+            internal1->add_child(leaf4);
+
+            internal2->add_child(leaf9);
+            internal2->add_child(leaf6);
+            internal2->add_child(leaf7);
+            internal2->add_child(leaf8);
+
+            internal3->add_child(internal0);
+            internal3->add_child(leaf5);
+
+            internal4->add_child(internal1);
+            internal4->add_child(internal2);
+
+            root->add_child(internal3);
+            root->add_child(internal4);
+            root->add_child(leaf10);
+
+            internal0->set_height_parameter(internal1->get_height_parameter());
+            internal2->set_height_parameter(internal1->get_height_parameter());
+
+            internal3->set_height_parameter(internal4->get_height_parameter());
+
+            BaseTree<Node> tree(root);
+
+            REQUIRE(tree.get_number_of_node_heights() == 3);
+
+            tree.slide_bump_height(rng, 2, 0.5, true);
+
+            REQUIRE(tree.get_number_of_node_heights() == 3);
+
+            REQUIRE(tree.get_height(0) == 0.5);
+            REQUIRE(tree.get_height(1) == 1.0);
+            REQUIRE(tree.get_height(2) == 1.5);
+
+            REQUIRE(tree.tree_is_valid());
+            REQUIRE(root->get_number_of_children() == 3);
+            REQUIRE(internal0->get_number_of_children() == 2);
+            REQUIRE(internal1->get_number_of_children() == 3);
+            REQUIRE(internal2->get_number_of_children() == 4);
+            REQUIRE(internal3->get_number_of_children() == 2);
+            REQUIRE(internal4->get_number_of_children() == 2);
+            std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
+            std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+            REQUIRE(std::is_permutation(
+                        leaves.begin(), leaves.end(),
+                        expected_leaves.begin()));
+            if (
+                    (
+                    internal0->is_child(leaf0) &&
+                    internal0->is_child(leaf1) &&
+                    internal1->is_child(leaf2) &&
+                    internal1->is_child(leaf3) &&
+                    internal1->is_child(leaf4) &&
+                    internal2->is_child(leaf5) &&
+                    internal2->is_child(leaf6) &&
+                    internal2->is_child(leaf7) &&
+                    internal2->is_child(leaf8) &&
+                    internal3->is_child(internal0) &&
+                    internal3->is_child(internal1) &&
+                    internal4->is_child(internal2) &&
+                    internal4->is_child(leaf9) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(leaf10)
+                    ) ||
+                    (
+                    internal0->is_child(leaf0) &&
+                    internal0->is_child(leaf1) &&
+                    internal1->is_child(leaf2) &&
+                    internal1->is_child(leaf3) &&
+                    internal1->is_child(leaf4) &&
+                    internal2->is_child(leaf5) &&
+                    internal2->is_child(leaf6) &&
+                    internal2->is_child(leaf7) &&
+                    internal2->is_child(leaf8) &&
+                    internal4->is_child(internal0) &&
+                    internal4->is_child(internal1) &&
+                    internal3->is_child(internal2) &&
+                    internal3->is_child(leaf9) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(leaf10)
+                    )
+                ) {
+                ++count_01_234_5678_9_10;
+            }
+            if (
+                    internal0->is_child(leaf0) &&
+                    internal0->is_child(leaf3) &&
+                    internal1->is_child(leaf2) &&
+                    internal1->is_child(leaf1) &&
+                    internal1->is_child(leaf4) &&
+                    internal2->is_child(leaf9) &&
+                    internal2->is_child(leaf6) &&
+                    internal2->is_child(leaf7) &&
+                    internal2->is_child(leaf8) &&
+                    internal3->is_child(internal0) &&
+                    internal3->is_child(leaf5) &&
+                    internal4->is_child(internal2) &&
+                    internal4->is_child(internal1) &&
+                    root->is_child(internal3) &&
+                    root->is_child(internal4) &&
+                    root->is_child(leaf10)
+                    ) {
+                ++count_03_5_9678_214_10;
+            }
+        }
+        double freq_01_234_5678_9_10 = (count_01_234_5678_9_10 / (double)nsamples);
+        double freq_03_5_9678_214_10 = (count_03_5_9678_214_10 / (double)nsamples);
+        std::cout << "freq of (((0,1),(2,3,4)),((5,6,7,8),9),10): " << freq_01_234_5678_9_10 << "\n";
+        std::cout << "freq of (((0,3),5),((9,6,7,8),(2,1,4)),10): " << freq_03_5_9678_214_10 << "\n";
+
+        double eps = 0.0001;
+        ///////////////////////////////////////////////////////////////////////
+        // How I like to think about the probability of any swap result.
+        // First, once you have a pool of N nodes, the number of unique
+        // ways to sample them without replacement is N!, and so each
+        // way of sampling the nodes in the pool has probability 1 / N!
+        //
+        // What differs between different outcomes is the probability of
+        // getting a pool of nodes that is consistent with the outcome.
+        // For a node that ends up with a different child, X, from the pool
+        // than it added to it, the probability of this is simpy
+        // (1 / the number of possible children X's parent could have contributed to the pool)
+        //
+        // For a node that ends up unchanged (i.e., it contributes a child to
+        // the pool, only to get it back), the probability of a pool consistent
+        // with that outcome is 1.0.
+        // This is because the parent node has to contribute a node to the
+        // pool, and no matter which one it contributes, it is always possible
+        // to sample it back out of the pool.
+        // For example, a bump node with children A and B, will add A with prob
+        // 1/2 and B with prob 1/2, but either way, it could sample A / B back
+        // out of the pool again, so every possible pool is consistent with an
+        // outcome of an unchanged bump node.
+        ///////////////////////////////////////////////////////////////////////
+        //
+        // BUMP 1
+        // p(pool) * p(draws) = 1.0 * (1/3!) = 1.0 * 1/6
+        // All possible pools can lead to getting the same state back, so
+        // p(pool) = 1.0
+        // BUMP 2
+        // p(pool internal 3) * p(draws internal 3) = 1.0 * (1/2!) = 1/2
+        // p(pool internal 4) * p(draws internal 4) = 1.0 * (1/2!) = 1/2
+        // prob = 1/4
+        // All possible pools can lead to getting the same state back, so p(pool) = 1.0
+        // PROB of BOTH = 1/4 * 1/6 = 1/24
+        REQUIRE(freq_03_5_9678_214_10 == Approx(1.0/24.0).epsilon(eps*5));
+
+        // BUMP 1
+        // p(pool) = p(clade 03 or 5 in pool) * p(corresponding clade in pool) * p(10 in pool)
+        //         = 1 * 1/2 * 1 = 1/2
+        // p(draws) = 1/3! = 1/6
+        // p(pool) * p(draws) = 1/2 * 1/6 = 1/12
+        // BUMP 2
+        // p(pool) = p(1 in pool) * p(3 in pool) * p(5 in pool) * p(9 in pool)
+        //         = (1/3) * (1/2) * 1 * (1/4) = 1/24
+        // p(draw) = 1/2! for both colliding nodes
+        // p(outcome) = p(pool) * p(draw) = 1/24 * ( (1/2!) * (1/2!) )
+        //            = 1/24 * 1/4 = 1/96
+        // Prob of BOTH = 1/96 * 1/12 = 1/1152
+        REQUIRE(freq_01_234_5678_9_10 == Approx(1.0/1152.0).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
+    SECTION("Testing store-restore of state") {
+        RandomNumberGenerator rng = RandomNumberGenerator(111);
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.5);
+        std::shared_ptr<ContinuousProbabilityDistribution> root_node_height_prior = std::make_shared<ExponentialDistribution>(10.0);
+        root->set_node_height_prior(root_node_height_prior);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.5);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.5);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.5);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 1.0);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 1.0);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        leaf0->fix_node_height();
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        leaf6->fix_node_height();
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        leaf7->fix_node_height();
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
+        leaf8->fix_node_height();
+        std::shared_ptr<Node> leaf9 = std::make_shared<Node>("leaf9", 0.0);
+        leaf9->fix_node_height();
+        std::shared_ptr<Node> leaf10 = std::make_shared<Node>("leaf10", 0.0);
+        leaf10->fix_node_height();
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        internal2->add_child(leaf7);
+        internal2->add_child(leaf8);
+
+        internal3->add_child(internal0);
+        internal3->add_child(internal1);
+
+        internal4->add_child(internal2);
+        internal4->add_child(leaf9);
+
+        root->add_child(internal3);
+        root->add_child(internal4);
+        root->add_child(leaf10);
+
+        internal0->set_height_parameter(internal1->get_height_parameter());
+        internal2->set_height_parameter(internal1->get_height_parameter());
+
+        internal3->set_height_parameter(internal4->get_height_parameter());
+
+        std::vector<double> expected_node_heights {0.5, 1.0, 1.5};
+        std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
+
+        BaseTree<Node> tree(root);
+
+        tree.compute_log_likelihood_and_prior();
+        double expected_lnl = tree.get_log_likelihood_value();
+        double expected_ln_prior = tree.get_log_prior_density_value();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        bool tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
+
+        tree.store_state();
+        tree.slide_bump_height(rng, 0, 2.0, true);
+        tree.compute_log_likelihood_and_prior();
+        tree.restore_state();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
+
+        tree.store_state();
+        tree.slide_bump_height(rng, 2, 0.1, true);
+        tree.compute_log_likelihood_and_prior();
+        tree.restore_state();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
+
+        tree.store_state();
+        tree.merge_node_height_up(0);
+        tree.compute_log_likelihood_and_prior();
+        tree.restore_state();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
+
+        tree.store_state();
+        tree.merge_node_height_up(1);
+        tree.compute_log_likelihood_and_prior();
+        tree.restore_state();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
+
+        tree.store_state();
+        tree.split_node_height_down(rng, 2);
+        tree.compute_log_likelihood_and_prior();
+        tree.restore_state();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
+
+        tree.store_state();
+        tree.split_node_height_down(rng, 1);
+        tree.compute_log_likelihood_and_prior();
+        tree.restore_state();
+
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_number_of_node_heights() == 3);
+        REQUIRE(tree.get_node_heights() == expected_node_heights);
+        REQUIRE(root->get_number_of_children() == 3);
+        REQUIRE(internal0->get_number_of_children() == 2);
+        REQUIRE(internal1->get_number_of_children() == 3);
+        REQUIRE(internal2->get_number_of_children() == 4);
+        REQUIRE(internal3->get_number_of_children() == 2);
+        REQUIRE(internal4->get_number_of_children() == 2);
+        leaves = root->get_leaves();
+        REQUIRE(std::is_permutation(
+                    leaves.begin(), leaves.end(),
+                    expected_leaves.begin()));
+        tree_equal = false;
+        if (
+                internal0->is_child(leaf0) &&
+                internal0->is_child(leaf1) &&
+                internal1->is_child(leaf2) &&
+                internal1->is_child(leaf3) &&
+                internal1->is_child(leaf4) &&
+                internal2->is_child(leaf5) &&
+                internal2->is_child(leaf6) &&
+                internal2->is_child(leaf7) &&
+                internal2->is_child(leaf8) &&
+                internal3->is_child(internal0) &&
+                internal3->is_child(internal1) &&
+                internal4->is_child(internal2) &&
+                internal4->is_child(leaf9) &&
+                root->is_child(internal3) &&
+                root->is_child(internal4) &&
+                root->is_child(leaf10)
+                ) {
+            tree_equal = true;
+        }
+        REQUIRE(tree_equal);
+        REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
+        REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
     }
 }
 
