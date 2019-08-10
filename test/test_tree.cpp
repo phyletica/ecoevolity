@@ -1764,6 +1764,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
 
         BaseTree<Node> tree(root);
 
+        std::cout << tree.to_parentheses() << "\n";
+
         tree.compute_log_likelihood_and_prior();
         double expected_lnl = tree.get_log_likelihood_value();
         double expected_ln_prior = tree.get_log_prior_density_value();
@@ -1811,6 +1813,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
+        std::cout << tree.to_parentheses() << "\n";
+
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
@@ -1853,6 +1857,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         tree.slide_bump_height(rng, 2, 0.1, true);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
+
+        std::cout << tree.to_parentheses() << "\n";
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
@@ -1897,6 +1903,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
+        std::cout << tree.to_parentheses() << "\n";
+
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
@@ -1939,6 +1947,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         tree.merge_node_height_up(1);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
+
+        std::cout << tree.to_parentheses() << "\n";
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
@@ -1983,6 +1993,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
+        std::cout << tree.to_parentheses() << "\n";
+
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
@@ -2025,6 +2037,8 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         tree.split_node_height_down(rng, 1);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
+
+        std::cout << tree.to_parentheses() << "\n";
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
