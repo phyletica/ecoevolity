@@ -32,6 +32,7 @@ template<class NodeType>
 class BaseTree {
     protected:
         std::shared_ptr<NodeType> root_;
+        std::shared_ptr<NodeType> stored_root_;
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
@@ -628,12 +629,16 @@ class BaseTree {
         virtual void store_parameters() {
             this->store_all_heights();
             this->store_all_height_pointers();
+            this->store_topology();
         }
         virtual void store_all_heights() {
             this->root_->store_all_heights();
         }
         virtual void store_all_height_pointers() {
             this->root_->store_all_height_pointers();
+        }
+        virtual void store_topology() {
+            this->stored_root_ = this->root_->get_copy();
         }
         void restore_state() {
             this->restore_likelihood();
@@ -647,6 +652,7 @@ class BaseTree {
             this->log_prior_density_.restore();
         }
         virtual void restore_parameters() {
+            this->restore_topology();
             this->restore_all_height_pointers();
             this->restore_all_heights();
         }
@@ -656,6 +662,13 @@ class BaseTree {
         virtual void restore_all_height_pointers() {
             this->root_->restore_all_height_pointers();
             this->update_node_heights();
+        }
+        virtual void restore_topology() {
+            this->root_ = this->stored_root_;
+        }
+
+        std::string to_parentheses() const {
+            return this->root_->to_parentheses();
         }
 
         virtual void write_state_log_header(std::ostream& out,

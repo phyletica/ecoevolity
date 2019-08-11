@@ -105,6 +105,27 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->get_height() < other.get_height();
         }
 
+        std::shared_ptr<DerivedNodeT> get_copy() const {
+            std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
+            c->label_ = this->label_;
+            // c->height = std::make_shared<PositiveRealParameter>(*this->height_);
+            // c->stored_height_ = std::make_shared<PositiveRealParameter>(*this->stored_height_);
+            // Keep height parameter copies "shallow"
+            c->height_ = this->height_;
+            c->stored_height_ = this->stored_height_;
+            c->is_dirty_ = this->is_dirty_;
+            // Copy from this node to leaves; do not copy parent
+            // if (this->has_parent()) {
+            //     c->add_parent(this->get_parent()->get_copy());
+            // }
+            if (this->has_children()) {
+                for (auto child : this->children_) {
+                    c->add_child(child->get_copy());
+                }
+            }
+            return c;
+        }
+
         //Methods
         unsigned int degree() const {
             unsigned int d = children_.size();
