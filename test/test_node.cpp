@@ -2657,3 +2657,50 @@ TEST_CASE("Test node_heights_are_valid", "[Node]") {
         REQUIRE(leaf3->node_heights_are_valid());
     }
 }
+
+TEST_CASE("Test get_copy", "[Node]") {
+    SECTION("Testing get_copy") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> root_child = std::make_shared<Node>("root child", 0.5);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf 1");
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf 2");
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf 3");
+
+        root_child->add_child(leaf1);
+        root_child->add_child(leaf2);
+
+        root->add_child(root_child);
+        root->add_child(leaf3);
+
+        std::shared_ptr<Node> root_copy = root->get_copy();
+        REQUIRE(root != root_copy);
+        REQUIRE(root->get_label() == root_copy->get_label());
+        REQUIRE(root->get_height() == root_copy->get_height());
+        // node height pointers are shallow copied
+        REQUIRE(root->get_height_parameter() == root_copy->get_height_parameter());
+
+        std::shared_ptr<Node> root_child_copy = root_copy->get_child(0);
+        REQUIRE(root_child->get_label() == root_child_copy->get_label());
+        REQUIRE(root_child->get_height() == root_child_copy->get_height());
+        REQUIRE(root_child->get_height_parameter() == root_child_copy->get_height_parameter());
+        REQUIRE(root_child != root_child_copy);
+
+        std::shared_ptr<Node> leaf1_copy = root_child_copy->get_child(0);
+        REQUIRE(leaf1->get_label() == leaf1_copy->get_label());
+        REQUIRE(leaf1->get_height() == leaf1_copy->get_height());
+        REQUIRE(leaf1->get_height_parameter() == leaf1_copy->get_height_parameter());
+        REQUIRE(leaf1 != leaf1_copy);
+
+        std::shared_ptr<Node> leaf2_copy = root_child_copy->get_child(1);
+        REQUIRE(leaf2->get_label() == leaf2_copy->get_label());
+        REQUIRE(leaf2->get_height() == leaf2_copy->get_height());
+        REQUIRE(leaf2->get_height_parameter() == leaf2_copy->get_height_parameter());
+        REQUIRE(leaf2 != leaf2_copy);
+
+        std::shared_ptr<Node> leaf3_copy = root_copy->get_child(1);
+        REQUIRE(leaf3->get_label() == leaf3_copy->get_label());
+        REQUIRE(leaf3->get_height() == leaf3_copy->get_height());
+        REQUIRE(leaf3->get_height_parameter() == leaf3_copy->get_height_parameter());
+        REQUIRE(leaf3 != leaf3_copy);
+    }
+}
