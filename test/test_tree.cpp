@@ -1760,9 +1760,13 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         internal3->set_height_parameter(internal4->get_height_parameter());
 
         std::vector<double> expected_node_heights {0.5, 1.0, 1.5};
-        std::vector< std::shared_ptr<Node> > expected_leaves {leaf0, leaf1, leaf2, leaf3, leaf4, leaf5, leaf6, leaf7, leaf8, leaf9, leaf10};
+        std::vector<double> expected_move_node_heights;
 
         BaseTree<Node> tree(root);
+
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() == &tree.get_root());
 
         std::string expected_tree_str = tree.to_parentheses();
 
@@ -1776,38 +1780,7 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        std::vector< std::shared_ptr<Node> > leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        bool tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -1816,48 +1789,24 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after slide_bump_height(rng, 0, 2.0, true):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        expected_move_node_heights = {1.0, 1.5, 2.0};
+        REQUIRE(tree.get_node_heights() == expected_move_node_heights);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -1866,48 +1815,24 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after slide_bump_height(rng, 2, 0.1, true):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        expected_move_node_heights = {0.1, 0.5, 1.0};
+        REQUIRE(tree.get_node_heights() == expected_move_node_heights);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -1916,48 +1841,24 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after merge_node_height_up(0):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        expected_move_node_heights = {1.0, 1.5};
+        REQUIRE(tree.get_node_heights() == expected_move_node_heights);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -1966,48 +1867,24 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after merge_node_height_up(1):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        expected_move_node_heights = {0.5, 1.5};
+        REQUIRE(tree.get_node_heights() == expected_move_node_heights);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -2016,48 +1893,27 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after split_node_height_down(rng, 2):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_node_heights().at(0) == 0.5);
+        REQUIRE(tree.get_node_heights().at(1) == 1.0);
+        REQUIRE(tree.get_node_heights().at(2) > 1.0);
+        REQUIRE(tree.get_node_heights().at(2) < 1.5);
+        REQUIRE(tree.get_node_heights().at(3) == 1.5);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -2066,48 +1922,27 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after split_node_height_down(rng, 1):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_node_heights().at(0) == 0.5);
+        REQUIRE(tree.get_node_heights().at(1) > 0.5);
+        REQUIRE(tree.get_node_heights().at(1) < 1.0);
+        REQUIRE(tree.get_node_heights().at(2) == 1.0);
+        REQUIRE(tree.get_node_heights().at(3) == 1.5);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
@@ -2116,48 +1951,26 @@ TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
         std::cout << "Tree after split_node_height_down(rng, 0):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
+        REQUIRE(tree.tree_is_valid());
+        REQUIRE(tree.get_node_heights().at(0) < 0.5);
+        REQUIRE(tree.get_node_heights().at(1) == 0.5);
+        REQUIRE(tree.get_node_heights().at(2) == 1.0);
+        REQUIRE(tree.get_node_heights().at(3) == 1.5);
         tree.compute_log_likelihood_and_prior();
         tree.restore_state();
 
         std::cout << "Tree after restore:\n";
         std::cout << tree.to_parentheses() << "\n";
-        REQUIRE(tree.to_parentheses() == expected_tree_str);
 
+        std::cout << root.get() << "\n";
+        std::cout << &tree.get_root() << "\n";
+        REQUIRE(root.get() != &tree.get_root());
+
+        REQUIRE(tree.to_parentheses() == expected_tree_str);
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_number_of_node_heights() == 3);
         REQUIRE(tree.get_node_heights() == expected_node_heights);
-        REQUIRE(root->get_number_of_children() == 3);
-        REQUIRE(internal0->get_number_of_children() == 2);
-        REQUIRE(internal1->get_number_of_children() == 3);
-        REQUIRE(internal2->get_number_of_children() == 4);
-        REQUIRE(internal3->get_number_of_children() == 2);
-        REQUIRE(internal4->get_number_of_children() == 2);
-        leaves = root->get_leaves();
-        REQUIRE(std::is_permutation(
-                    leaves.begin(), leaves.end(),
-                    expected_leaves.begin()));
-        tree_equal = false;
-        if (
-                internal0->is_child(leaf0) &&
-                internal0->is_child(leaf1) &&
-                internal1->is_child(leaf2) &&
-                internal1->is_child(leaf3) &&
-                internal1->is_child(leaf4) &&
-                internal2->is_child(leaf5) &&
-                internal2->is_child(leaf6) &&
-                internal2->is_child(leaf7) &&
-                internal2->is_child(leaf8) &&
-                internal3->is_child(internal0) &&
-                internal3->is_child(internal1) &&
-                internal4->is_child(internal2) &&
-                internal4->is_child(leaf9) &&
-                root->is_child(internal3) &&
-                root->is_child(internal4) &&
-                root->is_child(leaf10)
-                ) {
-            tree_equal = true;
-        }
-        REQUIRE(tree_equal);
+        REQUIRE(tree.get_root().get_number_of_children() == 3);
         REQUIRE(tree.get_log_likelihood_value() == expected_lnl);
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
     }
