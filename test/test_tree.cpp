@@ -1698,7 +1698,7 @@ TEST_CASE("Testing BaseTree::collision_node_swap 9 leaf 4 colliders", "[BaseTree
     }
 }
 
-TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
     SECTION("Testing store-restore of state") {
         RandomNumberGenerator rng = RandomNumberGenerator(111);
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.5);
