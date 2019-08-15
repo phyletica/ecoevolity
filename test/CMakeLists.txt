@@ -10,7 +10,6 @@ set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/matrix.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/likelihood.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/tree.cpp"
-    "${ECOEVOLITY_SOURCE_DIR}/general_tree.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/operator_schedule.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/operator.cpp"
     "${ECOEVOLITY_SOURCE_DIR}/collection.cpp"

@@ -26,14 +26,13 @@
 #include <limits>
 #include <memory>
 
-#include "tree.hpp"
+#include "basetree.hpp"
 #include "rng.hpp"
 #include "assert.hpp"
 #include "math_util.hpp"
 
 
-template<class NodeType>
-class GeneralTreeOperatorInterface {
+class BaseGeneralTreeOperatorTemplate {
     protected:
         double weight_ = 1.0;
 
@@ -45,12 +44,12 @@ class GeneralTreeOperatorInterface {
             rj_operator = 4,
         };
 
-        GeneralTreeOperatorInterface() { }
-        GeneralTreeOperatorInterface(double weight) {
+        BaseGeneralTreeOperatorTemplate() { }
+        BaseGeneralTreeOperatorTemplate(double weight) {
             this->set_weight(weight);
         }
 
-        virtual GeneralTreeOperatorInterface::OperatorTypeEnum get_type() const = 0;
+        virtual BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const = 0;
 
         double get_weight() const {
             return this->weight_;
@@ -61,40 +60,9 @@ class GeneralTreeOperatorInterface {
             this->weight_ = weight;
         }
 
-        virtual void call_store_methods(
-                BaseTree<NodeType> * tree) const {
-            tree->store_state();
-        }
-        virtual void call_restore_methods(
-                BaseTree<NodeType> * tree) const {
-            tree->restore_state();
-        }
-
         virtual std::string get_name() const = 0;
 
         virtual std::string target_parameter() const = 0;
-
-        virtual void perform_move(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads) = 0;
-
-        /**
-         * @brief   Propose a new state.
-         *
-         * @return  Log of Hastings Ratio.
-         */
-        virtual double propose(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads) = 0;
-
-        virtual void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) = 0;
-
-        void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< BaseGenTreeOperatorInterface<NodeType> > > node_height_operators,
-                unsigned int nthreads = 1) = 0;
 
         virtual void optimize(double log_alpha) = 0;
 
@@ -127,14 +95,54 @@ class GeneralTreeOperatorInterface {
 
 
 template<class NodeType>
-template<class OperatorType>
-class BaseGenTreeOperatorInterface : public GeneralTreeOperatorInterface<NodeType> {
+class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
+
+    public:
+        GeneralTreeOperatorTemplate() : BaseGeneralTreeOperatorTemplate() { }
+        GeneralTreeOperatorTemplate(double weight) : BaseGeneralTreeOperatorTemplate(weight) { }
+
+        virtual void call_store_methods(
+                BaseTree<NodeType> * tree) const {
+            tree->store_state();
+        }
+        virtual void call_restore_methods(
+                BaseTree<NodeType> * tree) const {
+            tree->restore_state();
+        }
+
+        virtual void perform_move(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads) = 0;
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        virtual double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads) = 0;
+
+        virtual void operate(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) = 0;
+
+        // void operate(RandomNumberGenerator& rng,
+        //         BaseTree<NodeType> * tree,
+        //         std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > node_height_operators,
+        //         unsigned int nthreads = 1) = 0;
+
+};
+
+
+template<class NodeType, class OperatorType>
+class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType> {
 
     public:
         OperatorType op_;
 
-        BaseGenTreeOperatorInterface() : GeneralTreeOperatorInterface<NodeType>() { }
-        BaseGenTreeOperatorInterface(double weight) : GeneralTreeOperatorInterface<NodeType>(weight) { }
+        GeneralTreeOperatorInterface() : GeneralTreeOperatorTemplate<NodeType>() { }
+        GeneralTreeOperatorInterface(double weight) : GeneralTreeOperatorTemplate<NodeType>(weight) { }
 
         void perform_move(
                 RandomNumberGenerator& rng,
@@ -146,11 +154,14 @@ class BaseGenTreeOperatorInterface : public GeneralTreeOperatorInterface<NodeTyp
             tree->compute_log_likelihood_and_prior(true);
         
             double likelihood_ratio = 
-                    tree->get_log_likelihood() -
-                    tree->get_stored_log_likelihood();
-            // The prior ratio is included in the hastings ratio
+                    tree->get_log_likelihood_value() -
+                    tree->get_stored_log_likelihood_value();
+            double prior_ratio = 
+                    tree->get_log_prior_density_value() -
+                    tree->get_stored_log_prior_density_value();
             double acceptance_probability =
                     likelihood_ratio + 
+                    prior_ratio +
                     hastings_ratio;
             double u = rng.uniform_real();
             if (u < std::exp(acceptance_probability)) {
@@ -170,12 +181,12 @@ class BaseGenTreeOperatorInterface : public GeneralTreeOperatorInterface<NodeTyp
             this->perform_move(rng, tree, nthreads);
         }
 
-        void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< BaseGenTreeOperatorInterface<NodeType> > > node_height_operators,
-                unsigned int nthreads = 1) {
-            this->operate(rng, tree, nthreads);
-        }
+        // virtual void operate(RandomNumberGenerator& rng,
+        //         BaseTree<NodeType> * tree,
+        //         std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType, OperatorType> > > node_height_operators,
+        //         unsigned int nthreads = 1) {
+        //     this->operate(rng, tree, nthreads);
+        // }
 
         virtual void optimize(double log_alpha) {
             this->op_.optimize(log_alpha);
@@ -224,6 +235,28 @@ class BaseGenTreeOperatorInterface : public GeneralTreeOperatorInterface<NodeTyp
         unsigned int get_number_accepted_for_correction() const {
             return this->op_.get_number_accepted_for_correction();
         }
+        unsigned int get_number_of_attempts() const {
+            return this->op_.get_number_of_attempts();
+        }
+        unsigned int get_number_of_attempts_for_correction() const {
+            return this->op_.get_number_of_attempts_for_correction();
+        }
+
+        unsigned int get_auto_optimize_delay() const {
+            return this->op_.get_auto_optimize_delay();
+        }
+        void set_auto_optimize_delay(unsigned int delay) {
+            this->op_.set_auto_optimize_delay(delay);
+        }
+        bool auto_optimizing() const {
+            return this->op_.auto_optimizing();
+        }
+        void turn_on_auto_optimize() {
+            this->op_.turn_on_auto_optimize();
+        }
+        void turn_off_auto_optimize() {
+            this->op_.turn_off_auto_optimize();
+        }
 
         std::string header_string() const {
             return "name\tnumber_accepted\tnumber_rejected\tweight\ttuning_parameter\n";
@@ -253,12 +286,12 @@ class BaseGenTreeOperatorInterface : public GeneralTreeOperatorInterface<NodeTyp
 // Operator base classes
 //////////////////////////////////////////////////////////////////////////////
 
-class Operator {
+class Op {
 
     public:
-        Operator(const bool auto_optimize = false) :
+        Op(const bool auto_optimize = false) :
             auto_optimize_(auto_optimize) { }
-        Operator(const unsigned int auto_optimize_delay,
+        Op(const unsigned int auto_optimize_delay,
                 const bool auto_optimize = false) :
             auto_optimize_delay_(auto_optimize_delay),
             auto_optimize_(auto_optimize) { }
@@ -279,9 +312,8 @@ class Operator {
         virtual double get_move_amount(RandomNumberGenerator& rng) const { return 0.0; }
 
         double calc_delta(double log_alpha) const {
-            if ((this->get_number_of_attempts() < this->get_auto_optimize_delay()) ||
+            if ((this->get_number_of_attempts() <= this->get_auto_optimize_delay()) ||
                     (! this->auto_optimize_)) {
-                ++this->auto_optimize_delay_count_;
                 return 0.0;
             }
             double target = this->get_target_acceptance_probability();
@@ -298,14 +330,14 @@ class Operator {
 
         void accept() {
             ++this->number_accepted_;
-            if (os.get_number_of_attempts() >= os.get_auto_optimize_delay()) {
+            if (this->get_number_of_attempts() > this->get_auto_optimize_delay()) {
                 ++this->number_accepted_for_correction_;
             }
         }
 
         void reject() {
             ++this->number_rejected_;
-            if (os.get_number_of_attempts() >= os.get_auto_optimize_delay()) {
+            if (this->get_number_of_attempts() > this->get_auto_optimize_delay()) {
                 ++this->number_rejected_for_correction_;
             }
         }
@@ -333,9 +365,12 @@ class Operator {
         unsigned int get_number_of_attempts() const {
             return this->number_rejected_ + this->number_accepted_;
         }
+        unsigned int get_number_of_attempts_for_correction() const {
+            return this->number_rejected_for_correction_ + this->number_accepted_for_correction_;
+        }
 
         unsigned int get_auto_optimize_delay() const {
-            return this->get_auto_optimize_delay_;
+            return this->auto_optimize_delay_;
         }
         void set_auto_optimize_delay(unsigned int delay) {
             this->auto_optimize_delay_ = delay;
@@ -361,25 +396,45 @@ class Operator {
 };
 
 
-class ScaleOperator : public Operator {
+class BaseOptimizingOp : public Op {
+
+    public:
+        BaseOptimizingOp(const bool auto_optimize = false) :
+            Op(auto_optimize) { }
+        BaseOptimizingOp(const unsigned int auto_optimize_delay,
+                const bool auto_optimize = false) :
+            Op(auto_optimize_delay, auto_optimize) { }
+
+        void optimize(double log_alpha) {
+            double delta = this->calc_delta(log_alpha);
+            if (delta == 0.0) {
+                return;
+            }
+            delta += std::log(this->get_coercable_parameter_value());
+            this->set_coercable_parameter_value(std::exp(delta));
+        }
+};
+
+
+class ScaleOp : public BaseOptimizingOp {
 
     protected:
         double scale_ = 0.5;
 
     public:
-        ScaleOperator(const bool auto_optimize = true) : Operator(auto_optimize) { }
-        ScaleOperator(const unsigned int auto_optimize_delay,
+        ScaleOp(const bool auto_optimize = true) : BaseOptimizingOp(auto_optimize) { }
+        ScaleOp(const unsigned int auto_optimize_delay,
                 const bool auto_optimize = true) :
-                Operator(auto_optimize_delay, auto_optimize) { }
-        ScaleOperator(double scale,
+                BaseOptimizingOp(auto_optimize_delay, auto_optimize) { }
+        ScaleOp(double scale,
                 const bool auto_optimize = true) :
-                Operator(auto_optimize) {
+                BaseOptimizingOp(auto_optimize) {
             this->set_scale(scale);
         }
-        ScaleOperator(double scale,
+        ScaleOp(double scale,
                 const unsigned int auto_optimize_delay,
                 const bool auto_optimize = true) :
-                Operator(auto_optimize_delay, auto_optimize) {
+                BaseOptimizingOp(auto_optimize_delay, auto_optimize) {
             this->set_scale(scale);
         }
 
@@ -405,12 +460,6 @@ class ScaleOperator : public Operator {
             return std::exp(this->scale_ * ((2.0 * rng.uniform_real()) - 1.0));
         }
 
-        void optimize(double log_alpha) {
-            double delta = this->calc_delta(log_alpha);
-            delta += std::log(this->scale_);
-            this->set_scale(std::exp(delta));
-        }
-
         double get_coercable_parameter_value() const {
             return this->scale_;
         }
@@ -421,25 +470,25 @@ class ScaleOperator : public Operator {
 };
 
 
-class WindowOperator : public Operator {
+class WindowOp : public BaseOptimizingOp {
 
     protected:
         double window_size_ = 0.1;
 
     public:
-        WindowOperator(const bool auto_optimize = true) : Operator(auto_optimize) { }
-        WindowOperator(const unsigned int auto_optimize_delay,
+        WindowOp(const bool auto_optimize = true) : BaseOptimizingOp(auto_optimize) { }
+        WindowOp(const unsigned int auto_optimize_delay,
                 const bool auto_optimize = true) :
-                Operator(auto_optimize_delay, auto_optimize) { }
-        WindowOperator(double window_size,
+                BaseOptimizingOp(auto_optimize_delay, auto_optimize) { }
+        WindowOp(double window_size,
                 const bool auto_optimize = true) :
-                Operator(auto_optimize) {
+                BaseOptimizingOp(auto_optimize) {
             this->set_window_size(window_size);
         }
-        WindowOperator(double window_size,
+        WindowOp(double window_size,
                 const unsigned int auto_optimize_delay,
                 const bool auto_optimize = true) :
-                Operator(auto_optimize_delay, auto_optimize) {
+                BaseOptimizingOp(auto_optimize_delay, auto_optimize) {
             this->set_window_size(window_size);
         }
 
@@ -464,12 +513,6 @@ class WindowOperator : public Operator {
             return (rng.uniform_real() * 2 * this->window_size_) - this->window_size_;
         }
 
-        void optimize(double log_alpha) {
-            double delta = this->calc_delta(log_alpha);
-            delta += std::log(this->window_size_);
-            this->set_window_size(std::exp(delta));
-        }
-
         double get_coercable_parameter_value() const {
             return this->window_size_;
         }
@@ -481,11 +524,14 @@ class WindowOperator : public Operator {
 
 
 template<class NodeType>
-class NodeHeightSlideBumpScaler : public BaseGenTreeOperatorInterface<NodeType><ScaleOperator> {
+class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+
+    protected:
+        bool collisions_swap_nodes_ = false;
 
     public:
-        NodeHeightSlideBumpScaler() : BaseGenTreeOperatorInterface<ScaleOperator>() { }
-        NodeHeightSlideBumpScaler(double weight) : BaseGenTreeOperatorInterface<ScaleOperator>(weight) { }
+        NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
+        NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpScaler";
@@ -495,8 +541,8 @@ class NodeHeightSlideBumpScaler : public BaseGenTreeOperatorInterface<NodeType><
             return "node heights";
         }
 
-        GeneralTreeOperatorInterface::OperatorTypeEnum get_type() const {
-            return GeneralTreeOperatorInterface::OperatorTypeEnum::node_height_operator;
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
         /**
@@ -507,21 +553,50 @@ class NodeHeightSlideBumpScaler : public BaseGenTreeOperatorInterface<NodeType><
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads) {
+            unsigned int max_height_index = tree->get_number_of_node_heights() - 1;
+            if (tree->root_height_is_fixed()) {
+                --max_height_index;
+            }
             unsigned int height_index = rng.uniform_int(0,
-                    tree->get_number_of_node_heights() - 1);
+                    max_height_index);
             double height = tree->get_height(height_index);
             double ln_multiplier;
-            this->update(rng, heigh, ln_multiplier);
+            this->update(rng, height, ln_multiplier);
+            bool move_happened = tree->slide_bump_height(rng,
+                    height_index,
+                    height,
+                    this->collisions_swap_nodes_);
+            if (! move_happened) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            return ln_multiplier;
         }
 };
 
 
 template<class NodeType>
-class SplitLumpNodesRevJumpSampler : public BaseGenTreeOperatorInterface<NodeType><Operator> {
+class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType> {
+    public:
+        // Turn on swapping in constructors
+        NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<NodeType>() {
+            this->collisions_swap_nodes_ = true;
+        }
+        NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) {
+            this->collisions_swap_nodes_ = true;
+        }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpSwapScaler";
+        }
+};
+
+
+template<class NodeType>
+class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeType, Op> {
 
     public:
-        SplitLumpNodesRevJumpSampler() : BaseGenTreeOperatorInterface<Operator>() { }
-        SplitLumpNodesRevJumpSampler(double weight) : BaseGenTreeOperatorInterface<Operator>(weight) { }
+        SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<NodeType, Op>() { }
+        SplitLumpNodesRevJumpSampler(double weight) : GeneralTreeOperatorInterface<NodeType, Op>(weight) { }
 
         std::string get_name() const {
             return "SplitLumpNodesRevJumpSampler";
@@ -531,21 +606,21 @@ class SplitLumpNodesRevJumpSampler : public BaseGenTreeOperatorInterface<NodeTyp
             return "topology";
         }
 
-        GeneralTreeOperatorInterface::OperatorTypeEnum get_type() const {
-            return GeneralTreeOperatorInterface::OperatorTypeEnum::rj_operator;
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::rj_operator;
         }
 
-        void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                std::vector< std::shared_ptr< BaseGenTreeOperatorInterface<NodeType> > > node_height_operators,
-                unsigned int nthreads = 1) {
-            this->perform_move(rng, tree, nthreads);
-        
-            // Perform sweep of univariate time moves
-            for (std::shared_ptr< BaseGenTreeOperatorInterface<NodeType> > time_op : node_height_operators) {
-                time_op->operate(rng, tree, nthreads);
-            }
-        }
+        // void operate(RandomNumberGenerator& rng,
+        //         BaseTree<NodeType> * tree,
+        //         std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > node_height_operators,
+        //         unsigned int nthreads = 1) {
+        //     this->perform_move(rng, tree, nthreads);
+        // 
+        //     // Perform sweep of univariate time moves
+        //     for (std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > time_op : node_height_operators) {
+        //         time_op->operate(rng, tree, nthreads);
+        //     }
+        // }
 
         /**
          * @brief   Propose a new state.
@@ -556,6 +631,7 @@ class SplitLumpNodesRevJumpSampler : public BaseGenTreeOperatorInterface<NodeTyp
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads) {
             // TODO
+            return 0.0;
         }
 };
 

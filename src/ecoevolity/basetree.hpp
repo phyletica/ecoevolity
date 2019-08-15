@@ -158,6 +158,10 @@ class BaseTree {
             }
         }
 
+        bool root_height_is_fixed() const {
+            return this->root_->node_height_is_fixed();
+        }
+
         unsigned int get_node_height_index(const std::shared_ptr<PositiveRealParameter> height) {
             for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
                 if (this->node_heights_.at(i) == height) {
@@ -385,19 +389,22 @@ class BaseTree {
             }
         }
 
-        void slide_bump_height(
+        bool slide_bump_height(
                 RandomNumberGenerator & rng,
                 const unsigned int height_index,
                 const double new_height,
                 bool collisions_swap_nodes = false) {
             ECOEVOLITY_ASSERT(new_height >= 0.0);
+            if (this->root_height_is_fixed() && (new_height > this->get_root_height())) {
+                return false;
+            }
             std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
                     height_index,
                     new_height);
             if (intervening_indices.size() < 1) {
                 // No intervening nodes to bump
                 this->node_heights_.at(height_index)->set_value(new_height);
-                return;
+                return true;
             }
             if (height_index < intervening_indices.at(0)) {
                 // Older nodes to bump up
@@ -410,7 +417,7 @@ class BaseTree {
                     }
                 }
                 this->node_heights_.at(intervening_indices.back())->set_value(new_height);
-                return;
+                return true;
             }
             // Younger nodes to bump down
             for (auto next_height_idx : intervening_indices) {
@@ -422,7 +429,7 @@ class BaseTree {
                 }
             }
             this->node_heights_.at(intervening_indices.back())->set_value(new_height);
-            return;
+            return true;
         }
 
         std::vector<unsigned int> get_intervening_height_indices(

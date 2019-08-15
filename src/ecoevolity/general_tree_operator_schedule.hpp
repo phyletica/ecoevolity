@@ -29,7 +29,6 @@
 #include "general_tree_operator.hpp"
 #include "rng.hpp"
 #include "assert.hpp"
-#include "settings.hpp"
 
 template<class NodeType>
 class GeneralTreeOperatorSchedule {
