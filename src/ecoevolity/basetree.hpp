@@ -161,6 +161,12 @@ class BaseTree {
         bool root_height_is_fixed() const {
             return this->root_->node_height_is_fixed();
         }
+        void fix_root_height() {
+            this->root_->fix_node_height();
+        }
+        void estimate_root_height() {
+            this->root_->estimate_node_height();
+        }
 
         unsigned int get_node_height_index(const std::shared_ptr<PositiveRealParameter> height) {
             for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
@@ -499,6 +505,8 @@ class BaseTree {
 
         const NodeType& get_root() const {return *this->root_;}
         NodeType& get_mutable_root() const {return *this->root_;}
+
+        std::shared_ptr<NodeType> get_root_ptr() const {return this->root_;}
 
         virtual void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->root_->set_node_height_prior(prior);

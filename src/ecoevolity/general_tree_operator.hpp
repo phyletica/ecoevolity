@@ -172,7 +172,9 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType
                 this->call_restore_methods(tree);
             }
             tree->make_clean();
-            this->optimize(acceptance_probability);
+            if (this->auto_optimizing()) {
+                this->optimize(acceptance_probability);
+            }
         }
 
         void operate(RandomNumberGenerator& rng,
@@ -587,6 +589,43 @@ class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType>
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapScaler";
+        }
+};
+
+
+template<class NodeType>
+class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op> {
+
+    public:
+        NeighborHeightNodeSwap() : GeneralTreeOperatorInterface<NodeType, Op>() { }
+        NeighborHeightNodeSwap(double weight) : GeneralTreeOperatorInterface<NodeType, Op>(weight) { }
+
+        std::string get_name() const {
+            return "NeighborHeightNodeSwap";
+        }
+
+        std::string target_parameter() const {
+            return "topology";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads) {
+            unsigned int height_index = rng.uniform_int(0,
+                    tree->get_number_of_node_heights() - 2);
+            tree->collision_node_swap(rng,
+                    height_index + 1,
+                    height_index);
+            return 0.0;
         }
 };
 

@@ -268,6 +268,14 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             }
             return false;
         }
+        bool is_child(const std::string& label) const {
+            for (auto child_iter: this->children_) {
+                if (child_iter->get_label() == label) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         void add_child(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
