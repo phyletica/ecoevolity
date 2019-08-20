@@ -1296,3 +1296,78 @@ TEST_CASE("Testing NodeHeightSlideBumpPermuteMover with 3 leaves, gamma root, an
         REQUIRE(freq_12 == Approx(1.0/3.0).epsilon(eps));
     }
 }
+
+
+TEST_CASE("Testing NodeHeightSlideBumpMover with 2 nested internals, fixed root, and optimizing",
+        "[NodeHeightSlideBumpMover]") {
+
+    SECTION("Testing 2 nested internals with fixed root and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(17);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.0);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.7);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.3);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(internal0);
+        internal1->add_child(leaf2);
+        root->add_child(internal1);
+        root->add_child(leaf3);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        NodeHeightSlideBumpMover<Node> op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> internal0_height_summary;
+        SampleSummarizer<double> internal1_height_summary;
+
+        unsigned int niterations = 200000;
+        unsigned int sample_freq = 5;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                internal0_height_summary.add_sample(tree.get_node("internal0")->get_height());
+                internal1_height_summary.add_sample(tree.get_node("internal1")->get_height());
+                REQUIRE(tree.get_height(2) == tree.get_root_height());
+                REQUIRE(tree.get_height(2) == 1.0);
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(internal0_height_summary.sample_size() == nsamples);
+        REQUIRE(internal1_height_summary.sample_size() == nsamples);
+        
+        UniformDistribution prior(0.0, 1.0);
+
+        std::cout << "internal0 mean: " << internal0_height_summary.mean() << "\n";
+        std::cout << "internal1 mean: " << internal1_height_summary.mean() << "\n";
+
+        // Because the nodes are nested they both cannot sample from the
+        // uniform prior
+        REQUIRE(internal0_height_summary.mean() < prior.get_mean());
+        REQUIRE(internal0_height_summary.variance() < prior.get_variance());
+        REQUIRE(internal1_height_summary.mean() > prior.get_mean());
+        REQUIRE(internal1_height_summary.variance() < prior.get_variance());
+    }
+}
