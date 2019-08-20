@@ -583,6 +583,10 @@ class BaseTree {
 
         std::shared_ptr<NodeType> get_root_ptr() const {return this->root_;}
 
+        std::shared_ptr<NodeType> get_node(std::string label) const {
+            return this->root_->get_node(label);
+        }
+
         virtual void set_root_node_height_prior(std::shared_ptr<ContinuousProbabilityDistribution> prior) {
             this->root_->set_node_height_prior(prior);
         }
