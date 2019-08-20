@@ -527,9 +527,16 @@ class WindowOp : public BaseOptimizingOp {
 
 template<class NodeType>
 class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
-
     protected:
-        bool collisions_swap_nodes_ = false;
+        virtual bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_height(rng,
+                    height_index,
+                    height);
+        }
 
     public:
         NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
@@ -564,10 +571,17 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
             double height = tree->get_height(height_index);
             double ln_multiplier;
             this->update(rng, height, ln_multiplier);
-            bool move_happened = tree->slide_bump_height(rng,
+            if (height < 0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (tree->root_height_is_fixed() && (height > tree->get_root_height())) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            bool move_happened = this->call_tree_method_(
+                    tree,
+                    rng,
                     height_index,
-                    height,
-                    this->collisions_swap_nodes_);
+                    height);
             if (! move_happened) {
                 return -std::numeric_limits<double>::infinity();
             }
@@ -577,18 +591,196 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
 
 
 template<class NodeType>
-class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType> {
+class NodeHeightSlideBumpPermuteScaler : public NodeHeightSlideBumpScaler<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_permute_height(rng,
+                    height_index,
+                    height);
+        }
+
     public:
-        // Turn on swapping in constructors
-        NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<NodeType>() {
-            this->collisions_swap_nodes_ = true;
+        NodeHeightSlideBumpPermuteScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
+        NodeHeightSlideBumpPermuteScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpPermuteScaler";
         }
-        NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) {
-            this->collisions_swap_nodes_ = true;
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpSwapScaler : public NodeHeightSlideBumpScaler<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_swap_height(rng,
+                    height_index,
+                    height);
         }
+
+    public:
+        NodeHeightSlideBumpSwapScaler() : NodeHeightSlideBumpScaler<NodeType>() { }
+        NodeHeightSlideBumpSwapScaler(double weight) : NodeHeightSlideBumpScaler<NodeType>(weight) { }
 
         std::string get_name() const {
             return "NodeHeightSlideBumpSwapScaler";
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+    protected:
+        virtual bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
+        NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpMover";
+        }
+
+        std::string target_parameter() const {
+            return "node heights";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads) {
+            unsigned int max_height_index = tree->get_number_of_node_heights() - 1;
+            if (tree->root_height_is_fixed()) {
+                --max_height_index;
+            }
+            unsigned int height_index = rng.uniform_int(0,
+                    max_height_index);
+            double height = tree->get_height(height_index);
+            double ln_hastings;
+            this->update(rng, height, ln_hastings);
+            if (height < 0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            if (tree->root_height_is_fixed() && (height > tree->get_root_height())) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            bool move_happened = this->call_tree_method_(
+                    tree,
+                    rng,
+                    height_index,
+                    height);
+            if (! move_happened) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            return ln_hastings;
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpPermuteMover : public NodeHeightSlideBumpMover<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_permute_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpPermuteMover() : NodeHeightSlideBumpMover<NodeType>() { }
+        NodeHeightSlideBumpPermuteMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpPermuteMover";
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightSlideBumpSwapMover : public NodeHeightSlideBumpMover<NodeType> {
+    protected:
+        bool call_tree_method_(
+                BaseTree<NodeType> * tree,
+                RandomNumberGenerator& rng,
+                unsigned int height_index,
+                double height) {
+            return tree->slide_bump_swap_height(rng,
+                    height_index,
+                    height);
+        }
+
+    public:
+        NodeHeightSlideBumpSwapMover() : NodeHeightSlideBumpMover<NodeType>() { }
+        NodeHeightSlideBumpSwapMover(double weight) : NodeHeightSlideBumpMover<NodeType>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightSlideBumpSwapMover";
+        }
+};
+
+
+
+template<class NodeType>
+class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<NodeType, Op> {
+
+    public:
+        NeighborHeightNodePermute() : GeneralTreeOperatorInterface<NodeType, Op>() { }
+        NeighborHeightNodePermute(double weight) : GeneralTreeOperatorInterface<NodeType, Op>(weight) { }
+
+        std::string get_name() const {
+            return "NeighborHeightNodePermute";
+        }
+
+        std::string target_parameter() const {
+            return "topology";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::topology_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads) {
+            unsigned int height_index = rng.uniform_int(0,
+                    tree->get_number_of_node_heights() - 2);
+            tree->collision_node_permute(rng,
+                    height_index + 1,
+                    height_index);
+            return 0.0;
         }
 };
 

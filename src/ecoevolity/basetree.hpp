@@ -81,6 +81,55 @@ class BaseTree {
             }
         }
 
+        bool slide_bump_height_(
+                RandomNumberGenerator & rng,
+                const unsigned int height_index,
+                const double new_height,
+                unsigned int collisions_swap_nodes = 0) {
+            ECOEVOLITY_ASSERT(new_height >= 0.0);
+            if (this->root_height_is_fixed() && (new_height > this->get_root_height())) {
+                return false;
+            }
+            std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
+                    height_index,
+                    new_height);
+            if (intervening_indices.size() < 1) {
+                // No intervening nodes to bump
+                this->node_heights_.at(height_index)->set_value(new_height);
+                return true;
+            }
+            if (height_index < intervening_indices.at(0)) {
+                // Older nodes to bump up
+                for (auto next_height_idx : intervening_indices) {
+                    this->node_heights_.at(next_height_idx - 1)->set_value(
+                            this->node_heights_.at(next_height_idx)->get_value()
+                            );
+                    if (collisions_swap_nodes == 1) {
+                        this->collision_node_permute(rng, next_height_idx, next_height_idx - 1);
+                    }
+                    else if (collisions_swap_nodes == 2) {
+                        this->collision_node_swap(rng, next_height_idx, next_height_idx - 1);
+                    }
+                }
+                this->node_heights_.at(intervening_indices.back())->set_value(new_height);
+                return true;
+            }
+            // Younger nodes to bump down
+            for (auto next_height_idx : intervening_indices) {
+                this->node_heights_.at(next_height_idx + 1)->set_value(
+                        this->node_heights_.at(next_height_idx)->get_value()
+                        );
+                if (collisions_swap_nodes == 1) {
+                    this->collision_node_permute(rng, next_height_idx + 1, next_height_idx);
+                }
+                else if (collisions_swap_nodes == 2) {
+                    this->collision_node_swap(rng, next_height_idx + 1, next_height_idx);
+                }
+            }
+            this->node_heights_.at(intervening_indices.back())->set_value(new_height);
+            return true;
+        }
+
     public:
         BaseTree() { }
         BaseTree(std::shared_ptr<NodeType> root) {
@@ -339,7 +388,7 @@ class BaseTree {
             return collision_parents;
         }
 
-        void collision_node_swap(
+        void collision_node_permute(
                 RandomNumberGenerator & rng,
                 const unsigned int older_height_index,
                 const unsigned int younger_height_index) {
@@ -395,47 +444,54 @@ class BaseTree {
             }
         }
 
-        bool slide_bump_height(
+        void collision_node_swap(
                 RandomNumberGenerator & rng,
-                const unsigned int height_index,
-                const double new_height,
-                bool collisions_swap_nodes = false) {
-            ECOEVOLITY_ASSERT(new_height >= 0.0);
-            if (this->root_height_is_fixed() && (new_height > this->get_root_height())) {
-                return false;
-            }
-            std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
-                    height_index,
-                    new_height);
-            if (intervening_indices.size() < 1) {
-                // No intervening nodes to bump
-                this->node_heights_.at(height_index)->set_value(new_height);
-                return true;
-            }
-            if (height_index < intervening_indices.at(0)) {
-                // Older nodes to bump up
-                for (auto next_height_idx : intervening_indices) {
-                    this->node_heights_.at(next_height_idx - 1)->set_value(
-                            this->node_heights_.at(next_height_idx)->get_value()
-                            );
-                    if (collisions_swap_nodes) {
-                        this->collision_node_swap(rng, next_height_idx, next_height_idx - 1);
+                const unsigned int older_height_index,
+                const unsigned int younger_height_index) {
+            std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
+                    older_height_index,
+                    younger_height_index);
+            for (auto parent_nd : collision_parents) {
+                std::vector< std::shared_ptr<NodeType> > swap_node_pool;
+                std::vector< std::shared_ptr<NodeType> > child_colliding_nodes;
+                std::vector< std::shared_ptr<NodeType> > child_non_colliding_nodes;
+                for (auto child_nd : parent_nd->get_all_children()) {
+                    // Each colliding child contributes one random grandchild to
+                    // the swap pool
+                    if ((! child_nd->is_leaf()) &&
+                            (this->get_node_height_index(child_nd->get_height_parameter()) ==
+                             younger_height_index)) {
+                        ECOEVOLITY_ASSERT(child_nd->has_children());
+                        child_colliding_nodes.push_back(child_nd);
+                        unsigned int random_child_index = rng.uniform_positive_int(child_nd->get_number_of_children() - 1);
+                        swap_node_pool.push_back(child_nd->get_child(random_child_index));
+                    }
+                    else {
+                        child_non_colliding_nodes.push_back(child_nd);
                     }
                 }
-                this->node_heights_.at(intervening_indices.back())->set_value(new_height);
-                return true;
-            }
-            // Younger nodes to bump down
-            for (auto next_height_idx : intervening_indices) {
-                this->node_heights_.at(next_height_idx + 1)->set_value(
-                        this->node_heights_.at(next_height_idx)->get_value()
-                        );
-                if (collisions_swap_nodes) {
-                    this->collision_node_swap(rng, next_height_idx + 1, next_height_idx);
+                // If parent node in collision has non-colliding descendants,
+                // it contributes one of these descendants (randomly) to the
+                // swap pool
+                if (child_non_colliding_nodes.size() > 0) {
+                    unsigned int random_child_index = rng.uniform_positive_int(child_non_colliding_nodes.size() - 1);
+                    swap_node_pool.push_back(child_non_colliding_nodes.at(random_child_index));
                 }
+
+                // Randomly pick two nodes to swap
+                std::vector<unsigned int> indices_of_nodes_to_swap = rng.random_subset_indices(
+                        swap_node_pool.size(),
+                        2);
+                ECOEVOLITY_ASSERT(indices_of_nodes_to_swap.size() == 2);
+                std::shared_ptr<NodeType> swap_node1 = swap_node_pool.at(indices_of_nodes_to_swap.at(0));
+                std::shared_ptr<NodeType> swap_node2 = swap_node_pool.at(indices_of_nodes_to_swap.at(1));
+                std::shared_ptr<NodeType> parent1 = swap_node1->get_parent();
+                std::shared_ptr<NodeType> parent2 = swap_node2->get_parent();
+                swap_node1->remove_parent();
+                swap_node2->remove_parent();
+                swap_node1->add_parent(parent2);
+                swap_node2->add_parent(parent1);
             }
-            this->node_heights_.at(intervening_indices.back())->set_value(new_height);
-            return true;
         }
 
         std::vector<unsigned int> get_intervening_height_indices(
@@ -495,6 +551,25 @@ class BaseTree {
                 diff = current_diff;
             }
             return this->get_number_of_node_heights() - 1;
+        }
+
+        bool slide_bump_height(
+                RandomNumberGenerator & rng,
+                const unsigned int height_index,
+                const double new_height) {
+            return this->slide_bump_height_(rng, height_index, new_height, 0);
+        }
+        bool slide_bump_permute_height(
+                RandomNumberGenerator & rng,
+                const unsigned int height_index,
+                const double new_height) {
+            return this->slide_bump_height_(rng, height_index, new_height, 1);
+        }
+        bool slide_bump_swap_height(
+                RandomNumberGenerator & rng,
+                const unsigned int height_index,
+                const double new_height) {
+            return this->slide_bump_height_(rng, height_index, new_height, 2);
         }
 
         void set_root(std::shared_ptr<NodeType> root) {
