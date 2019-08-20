@@ -37,6 +37,17 @@ class BaseTree {
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
+        // The case where a singleton polytomy is mapped to the height we are
+        // splitting; we have to handle this a little differently.
+        // Because there is only one node mapped to the height, we have to make
+        // sure we break the polytomy into 2 sets of nodes, because if we
+        // don't, we are not adding a new parameter to the model (we are simply
+        // sliding the node heightdown). So, we can't assign all the children
+        // to one subset.
+        // This CAN happen when there are 2 or more nodes mapped to the height,
+        // because we will always break them up into 2 subsets (which means we
+        // will always maintain the old node height AND end up with a new
+        // younger height).
         void split_singleton_polytomy(
                 RandomNumberGenerator & rng,
                 std::shared_ptr<NodeType> polytomy_node,
@@ -266,8 +277,13 @@ class BaseTree {
         void split_node_height_down(
                 RandomNumberGenerator & rng,
                 const unsigned int height_index,
+                double & new_height,
+                unsigned int & number_of_mapped_nodes,
+                std::vector<unsigned int> & mapped_polytomy_sizes,
                 const bool refresh_node_heights = false) {
+            mapped_polytomy_sizes.clear();
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
+            number_of_mapped_nodes = mapped_nodes.size();
             if (mapped_nodes.size() < 1) {
                 return;
             }
@@ -276,12 +292,13 @@ class BaseTree {
             if (height_index > 0) {
                 min_height = this->node_heights_.at(height_index - 1)->get_value();
             }
-            double new_height = rng.uniform_real(min_height, max_height);
+            new_height = rng.uniform_real(min_height, max_height);
             std::shared_ptr<PositiveRealParameter> new_height_parameter = std::make_shared<PositiveRealParameter>(new_height);
             if (mapped_nodes.size() == 1) {
                 // If we only have a single polytomy, we need to handle the
                 // splitting differently
                 ECOEVOLITY_ASSERT(mapped_nodes.at(0)->is_polytomy());
+                mapped_polytomy_sizes.push_back(mapped_nodes.at(0)->get_number_of_children());
                 this->split_singleton_polytomy(rng, mapped_nodes.at(0),
                         new_height_parameter,
                         refresh_node_heights);
@@ -298,6 +315,7 @@ class BaseTree {
                 // splitting it up
                 if (mapped_nodes.at(node_index)->is_polytomy()) {
                     unsigned int n_children = mapped_nodes.at(node_index)->get_number_of_children();
+                    mapped_polytomy_sizes.push_back(n_children);
                     std::vector< std::vector<unsigned int> > child_subsets;
                     // Need to avoid the partition where all children are
                     // assigned to their own subset. This would result in the
@@ -615,6 +633,9 @@ class BaseTree {
 
         unsigned int get_leaf_node_count() const {
             return this->root_->get_leaf_node_count();
+        }
+        unsigned int get_internal_node_count() const {
+            return this->root_->get_internal_node_count();
         }
         unsigned int get_node_count() const {
             return this->root_->get_node_count();

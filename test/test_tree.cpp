@@ -653,6 +653,10 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
 
 TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
     SECTION("Testing split_node_height_down") {
+        double new_height_value;
+        unsigned int number_of_mapped_nodes;
+        std::vector<unsigned int> mapped_polytomy_sizes;
+
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
         std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
         leaf0->fix_node_height();
@@ -722,7 +726,10 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
         REQUIRE(splittable_heights.size() == 1);
         REQUIRE(splittable_heights.at(0) == 0);
 
-        tree.split_node_height_down(rng, 0);
+        tree.split_node_height_down(rng, 0,
+                new_height_value,
+                number_of_mapped_nodes,
+                mapped_polytomy_sizes);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -760,7 +767,10 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
             }
             unsigned int splittable_ht = splittable_heights.at(0);
             orig_height = tree.get_height_parameter(splittable_ht);
-            tree.split_node_height_down(rng, splittable_ht);
+            tree.split_node_height_down(rng, splittable_ht,
+                    new_height_value,
+                    number_of_mapped_nodes,
+                    mapped_polytomy_sizes);
             ++expected_number_of_node_heights;
             mapped_nodes_orig = tree.get_mapped_nodes(splittable_ht + 1);
             mapped_nodes_new = tree.get_mapped_nodes(splittable_ht);
@@ -2456,6 +2466,10 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[BaseT
 
 TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
     SECTION("Testing store-restore of state") {
+        double new_height_value;
+        unsigned int number_of_mapped_nodes;
+        std::vector<unsigned int> mapped_polytomy_sizes;
+
         RandomNumberGenerator rng = RandomNumberGenerator(111);
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.5);
         std::shared_ptr<ContinuousProbabilityDistribution> root_node_height_prior = std::make_shared<ExponentialDistribution>(10.0);
@@ -2645,7 +2659,10 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.split_node_height_down(rng, 2);
+        tree.split_node_height_down(rng, 2,
+                new_height_value,
+                number_of_mapped_nodes,
+                mapped_polytomy_sizes);
         std::cout << "Tree after split_node_height_down(rng, 2):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2674,7 +2691,10 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.split_node_height_down(rng, 1);
+        tree.split_node_height_down(rng, 1,
+                new_height_value,
+                number_of_mapped_nodes,
+                mapped_polytomy_sizes);
         std::cout << "Tree after split_node_height_down(rng, 1):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2703,7 +2723,10 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.split_node_height_down(rng, 0);
+        tree.split_node_height_down(rng, 0,
+                new_height_value,
+                number_of_mapped_nodes,
+                mapped_polytomy_sizes);
         std::cout << "Tree after split_node_height_down(rng, 0):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
