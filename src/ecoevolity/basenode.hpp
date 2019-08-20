@@ -347,6 +347,16 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->make_all_dirty();
         }
 
+        std::shared_ptr<DerivedNodeT> get_node(std::string label) {
+            if (this->get_label() == label) {
+                return this->shared_from_this();
+            }
+            for (auto child_iter: this->children_) {
+                return child_iter->get_node(label);
+            }
+            return nullptr;
+        }
+
         void store_height() {
             this->height_->store();
         }

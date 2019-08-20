@@ -2704,3 +2704,30 @@ TEST_CASE("Test get_copy", "[Node]") {
         REQUIRE(leaf3 != leaf3_copy);
     }
 }
+
+TEST_CASE("Testing get_node(label)", "[xNode]") {
+
+    SECTION("Testing get_node(label)") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.07);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        std::shared_ptr<Node> returned_node;
+        returned_node = root->get_node("leaf0");
+        REQUIRE(returned_node == leaf0);
+        returned_node = root->get_node("internal0");
+        REQUIRE(returned_node == internal0);
+        returned_node = root->get_node("root");
+        REQUIRE(returned_node == root);
+
+        returned_node = root->get_node("does not exist");
+        REQUIRE(returned_node == nullptr);
+    }
+}
