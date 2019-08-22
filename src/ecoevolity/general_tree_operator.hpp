@@ -401,10 +401,10 @@ class Op {
 class BaseOptimizingOp : public Op {
 
     public:
-        BaseOptimizingOp(const bool auto_optimize = false) :
+        BaseOptimizingOp(const bool auto_optimize = true) :
             Op(auto_optimize) { }
         BaseOptimizingOp(const unsigned int auto_optimize_delay,
-                const bool auto_optimize = false) :
+                const bool auto_optimize = true) :
             Op(auto_optimize_delay, auto_optimize) { }
 
         void optimize(double log_alpha) {
@@ -824,6 +824,9 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op>
 
 template<class NodeType>
 class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeType, Op> {
+    protected:
+        std::map<unsigned int, double> ln_stirling2_numbers;
+        std::map<unsigned int, long double> bell_numbers;
 
     public:
         SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<NodeType, Op>() { }
@@ -841,9 +844,23 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::rj_operator;
         }
 
+        double get_ln_stirling2(unsigned int n) {
+            if (this->ln_stirling2_numbers.count(n) < 1) {
+                this->ln_stirling2_numbers.at(n) = std::log(
+                        stirling2_float(n, 2));
+            }
+            return this->ln_stirling2_numbers.at(n);
+        }
+
+        long double get_bell_number(unsigned int n) {
+            if (this->bell_numbers.count(n) < 1) {
+                this->bell_numbers.at(n) = bell_float(n);
+            }
+            return this->bell_numbers.at(n);
+        }
+
         // void operate(RandomNumberGenerator& rng,
         //         BaseTree<NodeType> * tree,
-        //         std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > node_height_operators,
         //         unsigned int nthreads = 1) {
         //     this->perform_move(rng, tree, nthreads);
         // 
@@ -861,6 +878,160 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads) {
+            const unsigned int num_heights = tree->get_number_of_node_heights();
+            const unsigned int num_internal_nodes = tree->get_internal_node_count();
+            const unsigned int num_leaves = tree->get_leaf_node_count();
+            ECOEVOLITY_ASSERT(num_leaves > 2);
+            const bool in_comb_state_before = (num_heights == 1);
+            const bool in_general_state_before = (num_heights == (num_leaves - 1));
+            const bool split_event = ((! in_general_state_before) &&
+                    (in_comb_state_before || (rng.uniform_real() < 0.5)));
+            if (split_event) {
+                std::vector<unsigned int> splittable_height_indices = tree->get_indices_of_splittable_heights();
+                const unsigned int number_of_splittable_heights = splittable_height_indices.size();
+                ECOEVOLITY_ASSERT(number_of_splittable_heights > 0);
+                unsigned int split_height_idx = rng.uniform_int(0, number_of_splittable_heights - 1);
+                double current_height = tree->get_height(split_height_idx);
+                double height_lower_bound = -1.0;
+                unsigned int number_of_mapped_nodes = 0;
+                std::vector<unsigned int> mapped_polytomy_sizes;
+                tree->split_node_height_down(rng,
+                        split_height_idx,
+                        height_lower_bound,
+                        number_of_mapped_nodes,
+                        mapped_polytomy_sizes,
+                        false);
+                ECOEVOLITY_ASSERT(number_of_mapped_nodes > 0);
+                double height_diff = current_height - height_lower_bound;
+                ECOEVOLITY_ASSERT(height_diff > 0.0);
+
+                // The probability of forward split move (just proposed) is the
+                // product of the probabilites of:
+                //   1) choosing the splittable height to split
+                //          = 1 / number of splittable heights
+                //   2) randomly splitting the subset out of the 'n' nodes
+                //      mapped to the height
+                //          = 1 / (2 * stirling2(n, 2))
+                //          = 1 / (2^n - 2)
+                //   3) drawing the new height uniformly between the height we
+                //      are splitting and the next younger height (or zero).
+                //          = 1 / (height - younger neighbor height)
+                //          = 1 / d
+                //      NOTE: This can also be thought of as the Jacobian term
+                //      for the reversible jump move.
+                //   4) randomly partitioning the children of each polytomy;
+                //      each subset with 2 or more children is split off as a
+                //      clade and mapped to the new, younger height. The prob
+                //      for each polytomy
+                //          = \prod 1 / (Bell(nchildren) - 1)
+                //      where Bell(n) is the Bell number, and 1 is subtracted,
+                //      because we reject the partition where every child is in
+                //      its own subset.  We reject this, because then the node
+                //      would node be split or moved to the new height. We have
+                //      to take the product of this over all polytomy nodes
+                //      that end up in the ``split'' subset of nodes.
+                //
+                //      In the special case where there is only one polytomy
+                //      mapped to the node we are splitting, this needs to be:
+                //          = 1 / (Bell(nchildren) - 2)
+                //      The minus 2 is because we now reject 2 possible
+                //      partitions: (1) where every child is in its own subset,
+                //      and (2) when all children end up together in one subst.
+                //      The second partition would result in the polytomy node
+                //      simply moving down to the new height (not getting split
+                //      up). This is normally OK, when other nodes are
+                //      remaining at the old height (this is guaranteed,
+                //      because we always split nodes into two non-empty
+                //      subsets), but in the singleton case that doesn't
+                //      happen.
+                //
+                // So the prob of the forward split move is
+                // p(split move) =  1 / (number of splittable heights *
+                //                       (2^n - 2) * d *
+                //                       \prod 1 / (Bell(nchildren) - X))
+                //               =  1 / (number of splittable heights * 
+                //                       2 * stirling2(n, 2) * d *
+                //                       \prod 1 / (Bell(nchildren) - X))
+                //
+                // The probability of the reverse move is simply the
+                // probability of randomly selecting the proposed (split)
+                // height from among all node heights except the root.
+                // p(reverse merge) = 1 / (number of heights before proposal + 1 - 1)
+                //                  = 1 / (number of heights before the proposal)
+                //
+                // So, the Hasting ratio for the proposed split move is:
+                // p(reverse merge) / p(proposed split) = 
+                //     (number of splittable heights * 2 * stirling2(n, 2) * d * \prod (Bell(n) - 1))
+                //     ----------------------------------------------------------------------------------
+                //          (number of heights before the proposal)
+                //
+                // EXCEPT for the case of a singleton polytomy, which is:
+                // p(reverse merge) / p(proposed split) = 
+                //     (number of splittable heights * d * (Bell(n) - 2))
+                //     --------------------------------------------------
+                //         (number of heights before the proposal)
+
+                double ln_hastings = 0.0;
+                if (number_of_mapped_nodes == 1) {
+                    // We have the special case of only a single polytomy
+                    ECOEVOLITY_ASSERT(mapped_polytomy_sizes.size() == 1);
+                    double ln_bell_num_minus_2 = std::log(
+                            this->get_bell_number(mapped_polytomy_sizes.at(0)) - 2.0);
+                    ln_hastings =
+                            std::log(number_of_splittable_heights) +
+                            std::log(height_diff) +
+                            ln_bell_num_minus_2 -
+                            std::log(num_heights);
+                }
+                else {
+                    // We have multiple nodes mapped to height
+                    double ln_stirling2 = this->get_ln_stirling2(number_of_mapped_nodes);
+                    double ln_bell_num_minus_1_sum = 0.0;
+                    for (auto polytomy_size : mapped_polytomy_sizes) {
+                        ln_bell_num_minus_1_sum += std::log(this->get_bell_number(polytomy_size) - 1.0);
+                    }
+                    ln_hastings =
+                            std::log(number_of_splittable_heights) +
+                            std::log(2.0) +
+                            ln_stirling2 +
+                            std::log(height_diff) +
+                            ln_bell_num_minus_1_sum -
+                            std::log(num_heights);
+                }
+
+                // For the Hastings ratio, we also have to consider the
+                // probability of proposing a split move versus a merge move.
+                // The ratio of the p(proposing reverse merge) / p(proposing
+                // this split) is 1.0, exept for two corner cases:
+                //  1. If we are in the comb state (nheights = 1) before
+                //     the move, and NOT in the general state (i.e.,
+                //     nheights = nleaves - 1) after the move, the ratio
+                //     is:
+                //
+                //     p(propose rev merge) / p(propose split)
+                //     = 0.5 / 1.0 = 0.5
+                //
+                //  2. If we are in general state (nheights = nleaves - 1)
+                //     AFTER the move, and NOT in the comb state (nheigths
+                //     = 1) BEFORE, the ratio is:
+                //     
+                //     p(propose rev merge) / p(propose split)
+                //     = 1.0 / 0.5 = 2.0
+                bool in_general_state_after = (tree->get_number_of_heights() ==
+                        (tree->get_leaf_node_count() - 1));
+
+                if (in_comb_state_before && (! in_general_state_after)) {
+                    ln_hastings -= std::log(2.0);
+                }
+                else if (in_general_state_after && (! in_comb_state_before)) {
+                    ln_hastings += std::log(2.0);
+                }
+                return ln_hastings;
+            }
+            // MERGE MOVE
+            //
+            // When merging, be sure to check if the reverse split move is
+            // the special case of splitting a singleton polytomy!!
             // TODO
             return 0.0;
         }

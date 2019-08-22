@@ -653,7 +653,7 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
 
 TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
     SECTION("Testing split_node_height_down") {
-        double new_height_value;
+        double height_lower_bound;
         unsigned int number_of_mapped_nodes;
         std::vector<unsigned int> mapped_polytomy_sizes;
 
@@ -727,7 +727,7 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
         REQUIRE(splittable_heights.at(0) == 0);
 
         tree.split_node_height_down(rng, 0,
-                new_height_value,
+                height_lower_bound,
                 number_of_mapped_nodes,
                 mapped_polytomy_sizes);
 
@@ -768,7 +768,7 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
             unsigned int splittable_ht = splittable_heights.at(0);
             orig_height = tree.get_height_parameter(splittable_ht);
             tree.split_node_height_down(rng, splittable_ht,
-                    new_height_value,
+                    height_lower_bound,
                     number_of_mapped_nodes,
                     mapped_polytomy_sizes);
             ++expected_number_of_node_heights;
@@ -2466,7 +2466,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[BaseT
 
 TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
     SECTION("Testing store-restore of state") {
-        double new_height_value;
+        double height_lower_bound;
         unsigned int number_of_mapped_nodes;
         std::vector<unsigned int> mapped_polytomy_sizes;
 
@@ -2660,7 +2660,7 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
 
         tree.store_state();
         tree.split_node_height_down(rng, 2,
-                new_height_value,
+                height_lower_bound,
                 number_of_mapped_nodes,
                 mapped_polytomy_sizes);
         std::cout << "Tree after split_node_height_down(rng, 2):\n";
@@ -2692,7 +2692,7 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
 
         tree.store_state();
         tree.split_node_height_down(rng, 1,
-                new_height_value,
+                height_lower_bound,
                 number_of_mapped_nodes,
                 mapped_polytomy_sizes);
         std::cout << "Tree after split_node_height_down(rng, 1):\n";
@@ -2724,7 +2724,7 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
 
         tree.store_state();
         tree.split_node_height_down(rng, 0,
-                new_height_value,
+                height_lower_bound,
                 number_of_mapped_nodes,
                 mapped_polytomy_sizes);
         std::cout << "Tree after split_node_height_down(rng, 0):\n";
