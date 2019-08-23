@@ -375,6 +375,16 @@ class BaseTree {
             return splittable_heights;
         }
 
+        unsigned int get_number_of_splittable_heights() const {
+            unsigned int num_splittable_heights = 0;
+            for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+                if (this->height_is_splittable(i)) {
+                    ++num_splittable_heights;
+                }
+            }
+            return num_splittable_heights;
+        }
+
         bool height_is_splittable(const unsigned int height_index) const {
             unsigned int mapped_node_count = this->root_->get_mapped_node_count(
                     this->node_heights_.at(height_index));
