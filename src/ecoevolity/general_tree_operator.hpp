@@ -1017,7 +1017,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 //     
                 //     p(propose rev merge) / p(propose split)
                 //     = 1.0 / 0.5 = 2.0
-                bool in_general_state_after = (tree->get_number_of_heights() ==
+                const bool in_general_state_after = (tree->get_number_of_heights() ==
                         (tree->get_leaf_node_count() - 1));
 
                 if (in_comb_state_before && (! in_general_state_after)) {
@@ -1143,12 +1143,29 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                         ln_bell_number_sum -
                         std::log(num_heights - 1);
             }
-            return 0.0;
-            /* const unsigned int num_heights = tree->get_number_of_node_heights(); */
-            /* const unsigned int num_internal_nodes = tree->get_internal_node_count(); */
-            /* const unsigned int num_leaves = tree->get_leaf_node_count(); */
-            /* const bool in_comb_state_before = (num_heights == 1); */
-            /* const bool in_general_state_before = (num_heights == (num_leaves - 1)); */
+
+            // For the hastings ratio we also have to include the ratio of the
+            // probability of choosing to split for the reverse move over the
+            // probability of choosing to merge. Normally, this cancels out,
+            // because we randomly choose (50/50) to try a merge or split move.
+            // However, there are two corner cases where this ratio is not
+            // equal to 1:
+            //  1) We are in the GENERAL state (nheights = nleaves - 1) BEFORE
+            //     the move and NOT in the COMB state (nheights = 1) AFTER
+            //     the move. Then this ratio is
+            //      = 0.5 / 1.0 = 0.5
+            //  2) We are in the COMB state AFTER the move and NOT in the
+            //     GENERAL state BEFORE the move. Then the ratio is
+            //      = 1.0 / 0.5 = 2.0
+
+            const bool in_comb_state_after = (tree->get_number_of_heights() == 1);
+            if (in_general_state_before && (! in_comb_state_after)) {
+                ln_hastings -= std::log(2.0);
+            }
+            else if (in_comb_state_after && (! in_general_state_before)) {
+                ln_hastings += std::log(2.0);
+            }
+            return ln_hastings;
         }
 };
 
