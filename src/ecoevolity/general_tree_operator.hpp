@@ -93,7 +93,6 @@ class BaseGeneralTreeOperatorTemplate {
         virtual std::string to_string() const = 0;
 };
 
-
 template<class NodeType>
 class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
 
@@ -127,10 +126,10 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) = 0;
 
-        // void operate(RandomNumberGenerator& rng,
-        //         BaseTree<NodeType> * tree,
-        //         std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > > node_height_operators,
-        //         unsigned int nthreads = 1) = 0;
+        virtual void operate_plus(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
+                unsigned int nthreads = 1) = 0;
 
 };
 
@@ -163,12 +162,18 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType
                     likelihood_ratio + 
                     prior_ratio +
                     hastings_ratio;
+            // std::cout << "ln(like ratio) = " << likelihood_ratio << "\n";
+            // std::cout << "ln(prior ratio) = " << prior_ratio << "\n";
+            // std::cout << "ln(hastings ratio) = " << hastings_ratio << "\n";
+            // std::cout << "ln(p(accept)) = " << acceptance_probability << "\n";
             double u = rng.uniform_real();
             if (u < std::exp(acceptance_probability)) {
                 this->accept();
+                // std::cout << "ACCEPT!\n";
             }
             else {
                 this->reject();
+                // std::cout << "REJECT!\n";
                 this->call_restore_methods(tree);
             }
             tree->make_clean();
@@ -183,12 +188,12 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType
             this->perform_move(rng, tree, nthreads);
         }
 
-        // virtual void operate(RandomNumberGenerator& rng,
-        //         BaseTree<NodeType> * tree,
-        //         std::vector< std::shared_ptr< GeneralTreeOperatorInterface<NodeType, OperatorType> > > node_height_operators,
-        //         unsigned int nthreads = 1) {
-        //     this->operate(rng, tree, nthreads);
-        // }
+        virtual void operate_plus(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
+                unsigned int nthreads = 1) {
+            this->operate(rng, tree, nthreads);
+        }
 
         virtual void optimize(double log_alpha) {
             this->op_.optimize(log_alpha);
@@ -554,6 +559,14 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
+        void operate(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
+                this->perform_move(rng, tree, nthreads);
+            }
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -663,6 +676,14 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
 
         BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
+        }
+
+        void operate(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
+                this->perform_move(rng, tree, nthreads);
+            }
         }
 
         /**
@@ -825,8 +846,8 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op>
 template<class NodeType>
 class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeType, Op> {
     protected:
-        std::map<unsigned int, double> ln_stirling2_numbers;
-        std::map<unsigned int, long double> bell_numbers;
+        std::unordered_map<unsigned int, double> ln_stirling2_numbers;
+        std::unordered_map<unsigned int, long double> bell_numbers;
 
     public:
         SplitLumpNodesRevJumpSampler() : GeneralTreeOperatorInterface<NodeType, Op>() { }
@@ -846,29 +867,38 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
 
         double get_ln_stirling2(unsigned int n) {
             if (this->ln_stirling2_numbers.count(n) < 1) {
-                this->ln_stirling2_numbers.at(n) = std::log(
+                this->ln_stirling2_numbers[n] = std::log(
                         stirling2_float(n, 2));
             }
-            return this->ln_stirling2_numbers.at(n);
+            return this->ln_stirling2_numbers[n];
         }
 
         long double get_bell_number(unsigned int n) {
             if (this->bell_numbers.count(n) < 1) {
-                this->bell_numbers.at(n) = bell_float(n);
+                this->bell_numbers[n] = bell_float(n);
             }
-            return this->bell_numbers.at(n);
+            return this->bell_numbers[n];
         }
 
-        // void operate(RandomNumberGenerator& rng,
-        //         BaseTree<NodeType> * tree,
-        //         unsigned int nthreads = 1) {
-        //     this->perform_move(rng, tree, nthreads);
-        // 
-        //     // Perform sweep of univariate time moves
-        //     for (std::shared_ptr< GeneralTreeOperatorInterface<NodeType> > time_op : node_height_operators) {
-        //         time_op->operate(rng, tree, nthreads);
-        //     }
-        // }
+        void operate(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
+                this->perform_move(rng, tree, nthreads);
+            }
+        }
+
+        void operate_plus(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
+                unsigned int nthreads = 1) {
+            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
+                this->perform_move(rng, tree, nthreads);
+                for (auto other_op : other_operators) {
+                    other_op->operate(rng, tree, nthreads);
+                }
+            }
+        }
 
         /**
          * @brief   Propose a new state.
@@ -887,6 +917,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             const bool split_event = ((! in_general_state_before) &&
                     (in_comb_state_before || (rng.uniform_real() < 0.5)));
             if (split_event) {
+                // std::cout << "Splitting...\n";
                 std::vector<unsigned int> splittable_height_indices = tree->get_indices_of_splittable_heights();
                 const unsigned int number_of_splittable_heights = splittable_height_indices.size();
                 ECOEVOLITY_ASSERT(number_of_splittable_heights > 0);
@@ -1017,7 +1048,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 //     
                 //     p(propose rev merge) / p(propose split)
                 //     = 1.0 / 0.5 = 2.0
-                const bool in_general_state_after = (tree->get_number_of_heights() ==
+                const bool in_general_state_after = (tree->get_number_of_node_heights() ==
                         (tree->get_leaf_node_count() - 1));
 
                 if (in_comb_state_before && (! in_general_state_after)) {
@@ -1093,24 +1124,28 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             //
             // The hastings ratio is then
             //
-            // = prob of forward merge / prob of reverse split
+            // = prob of reverse split / prob of forward merge 
             //
             // =
-            // (post-merge num of splittable heights * 2 * Stirling2(n, 2) * d * \prod bell(k) - 1)
-            // ------------------------------------------------------------------------------------
             //                 nheights after merge
+            // ------------------------------------------------------------------------------------
+            // (post-merge num of splittable heights * 2 * Stirling2(n, 2) * d * \prod bell(k) - 1)
             // 
             // EXCEPT if there is only one polytomy node mapped to the merged
             // height, in which case, the hastings ratio is:
             //
-            // (post-merge num of splittable heights * d * \prod bell(k) - 2)
-            // ---------------------------------------------------------------
             //                 nheights after merge
+            // ---------------------------------------------------------------
+            // (post-merge num of splittable heights * d * \prod bell(k) - 2)
 
+            // std::cout << "Merging...\n";
             unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
-            const double younger_height = tree->get_height(merge_height_idx);
             tree->merge_node_height_up(merge_height_idx);
             const double older_height = tree->get_height(merge_height_idx);
+            double younger_height = 0.0;
+            if (merge_height_idx > 0) {
+                younger_height = tree->get_height(merge_height_idx - 1);
+            }
             const double height_diff = older_height - younger_height;
             ECOEVOLITY_ASSERT(height_diff > 0.0);
             const unsigned int post_num_splittable_heights = tree->get_number_of_splittable_heights();
@@ -1122,11 +1157,10 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 const unsigned int num_polytomy_children = post_mapped_nodes.at(0)->get_number_of_children();
                 ECOEVOLITY_ASSERT(num_polytomy_children > 2);
                 ln_hastings =
-                        std::log(post_num_splittable_heights) +
+                        std::log(num_heights - 1) -
+                        (std::log(post_num_splittable_heights) +
                         std::log(height_diff) +
-                        std::log(this->get_bell_number(num_polytomy_children) - 2.0) -
-                        std::log(num_heights - 1);
-
+                        std::log(this->get_bell_number(num_polytomy_children) - 2.0));
             }
             else {
                 double ln_stirling2_num = this->get_ln_stirling2(post_num_mapped_nodes);
@@ -1136,12 +1170,12 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                             this->get_bell_number(poly_node->get_number_of_children()) - 1.0);
                 }
                 ln_hastings =
-                        std::log(post_num_splittable_heights) +
+                        std::log(num_heights - 1) -
+                        (std::log(post_num_splittable_heights) +
                         std::log(2.0) +
                         ln_stirling2_num +
                         std::log(height_diff) +
-                        ln_bell_number_sum -
-                        std::log(num_heights - 1);
+                        ln_bell_number_sum);
             }
 
             // For the hastings ratio we also have to include the ratio of the
@@ -1158,7 +1192,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             //     GENERAL state BEFORE the move. Then the ratio is
             //      = 1.0 / 0.5 = 2.0
 
-            const bool in_comb_state_after = (tree->get_number_of_heights() == 1);
+            const bool in_comb_state_after = (tree->get_number_of_node_heights() == 1);
             if (in_general_state_before && (! in_comb_state_after)) {
                 ln_hastings -= std::log(2.0);
             }
