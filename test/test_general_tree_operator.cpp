@@ -1412,7 +1412,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             // std::cout << tree.to_parentheses() << "\n";
-            op.perform_move(rng, &tree, 1);
+            op.operate(rng, &tree, 1);
             if ((i + 1) % sample_freq == 0) {
                 if (tree.get_root_ptr()->get_number_of_children() == 3) {
                     ++count_012;
@@ -1463,10 +1463,533 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
     }
 }
 
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and operate_plus",
+        "[xSplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing 3 leaves, fixed root and operate_plus") {
+        RandomNumberGenerator rng = RandomNumberGenerator(19191919);
+
+        double root_ht = 0.2;
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.1);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        root->add_child(internal0);
+        root->add_child(leaf2);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        SplitLumpNodesRevJumpSampler<Node> op;
+        std::shared_ptr< NodeHeightSlideBumpMover<Node> > node_height_op = std::make_shared<NodeHeightSlideBumpMover<Node> >();
+        std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<Node> > > other_ops;
+        other_ops.push_back(node_height_op);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int count_012 = 0;
+        unsigned int count_01 = 0;
+        unsigned int count_02 = 0;
+        unsigned int count_12 = 0;
+
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            // std::cout << tree.to_parentheses() << "\n";
+            op.operate_plus(rng, &tree, other_ops, 1, 2);
+            if ((i + 1) % sample_freq == 0) {
+                if (tree.get_root_ptr()->get_number_of_children() == 3) {
+                    ++count_012;
+                }
+                else {
+                    if (tree.get_root_ptr()->is_child("leaf0")) {
+                        ++count_12;
+                    }
+                    if (tree.get_root_ptr()->is_child("leaf1")) {
+                        ++count_02;
+                    }
+                    if (tree.get_root_ptr()->is_child("leaf2")) {
+                        ++count_01;
+                    }
+                    internal_height_summary.add_sample(tree.get_height(0));
+                }
+                REQUIRE(tree.get_root_height() == root_ht);
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+        std::cout << node_height_op->to_string();
+
+        REQUIRE((count_01 + count_02 + count_12 + count_012) == nsamples);
+        REQUIRE(internal_height_summary.sample_size() == (count_01 + count_02 + count_12));
+
+        double freq_012 = count_012 / (double)nsamples;
+        double freq_01 = count_01 / (double)nsamples;
+        double freq_02 = count_02 / (double)nsamples;
+        double freq_12 = count_12 / (double)nsamples;
+        std::cout << "Freq of (0,1,2): " << freq_012 << "\n";
+        std::cout << "Freq of ((0,1),2): " << freq_01 << "\n";
+        std::cout << "Freq of ((0,2),1): " << freq_02 << "\n";
+        std::cout << "Freq of ((1,2),0): " << freq_12 << "\n";
+
+        double eps = 0.001;
+
+        REQUIRE(freq_012 == Approx(0.25).epsilon(eps));
+        REQUIRE(freq_01 == Approx(0.25).epsilon(eps));
+        REQUIRE(freq_02 == Approx(0.25).epsilon(eps));
+        REQUIRE(freq_12 == Approx(0.25).epsilon(eps));
+        
+        UniformDistribution prior(0.0, root_ht);
+
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[SplitLumpNodesRevJumpSampler]") {
+        /* "[SplitLumpNodesRevJumpSampler]") { */
+        "[a1]") {
 
     SECTION("Testing 4 leaves with fixed root") {
+        RandomNumberGenerator rng = RandomNumberGenerator(18);
+
+        double root_ht = 0.5;
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        SplitLumpNodesRevJumpSampler<Node> op;
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> internal_height_summary;
+
+        unsigned int count_0123 = 0;
+        unsigned int count_0_ = 0;
+        unsigned int count_1_ = 0;
+        unsigned int count_2_ = 0;
+        unsigned int count_3_ = 0;
+        unsigned int count_01_ = 0;
+        unsigned int count_02_ = 0;
+        unsigned int count_03_ = 0;
+        unsigned int count_12_ = 0;
+        unsigned int count_13_ = 0;
+        unsigned int count_23_ = 0;
+        unsigned int count_01_23 = 0;
+        unsigned int count_02_13 = 0;
+        unsigned int count_03_12 = 0;
+        unsigned int count_gen_01_23 = 0;
+        unsigned int count_gen_02_13 = 0;
+        unsigned int count_gen_03_12 = 0;
+        unsigned int count_gen_01_2_3 = 0;
+        unsigned int count_gen_01_3_2 = 0;
+        unsigned int count_gen_02_1_3 = 0;
+        unsigned int count_gen_02_3_1 = 0;
+        unsigned int count_gen_03_1_2 = 0;
+        unsigned int count_gen_03_2_1 = 0;
+        unsigned int count_gen_12_0_3 = 0;
+        unsigned int count_gen_12_3_0 = 0;
+        unsigned int count_gen_13_0_2 = 0;
+        unsigned int count_gen_13_2_0 = 0;
+        unsigned int count_gen_23_0_1 = 0;
+        unsigned int count_gen_23_1_0 = 0;
+        unsigned int count_3_heights = 0;
+        unsigned int count_2_heights = 0;
+
+        unsigned int niterations = 2000000;
+        unsigned int sample_freq = 20;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                if (tree.get_number_of_node_heights() == 1) {
+                    ++count_0123;
+                    REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
+                }
+                else if (tree.get_number_of_node_heights() == 2) {
+                    ++count_2_heights;
+                    if (tree.get_root_ptr()->get_number_of_children() == 2) {
+                        if (tree.get_root_ptr()->get_child(0)->is_leaf() ||
+                                tree.get_root_ptr()->get_child(1)->is_leaf()) {
+                            if(tree.get_root_ptr()->is_child("leaf0")) {
+                                ++count_0_;
+                            }
+                            else if(tree.get_root_ptr()->is_child("leaf1")) {
+                                ++count_1_;
+                            }
+                            else if(tree.get_root_ptr()->is_child("leaf2")) {
+                                ++count_2_;
+                            }
+                            else if(tree.get_root_ptr()->is_child("leaf3")) {
+                                ++count_3_;
+                            }
+                        }
+                        else {
+                            if (
+                                    (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                                    tree.get_root_ptr()->get_child(0)->is_child("leaf1"))
+                                    ||
+                                    (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                                    tree.get_root_ptr()->get_child(1)->is_child("leaf1"))
+                               ) {
+                                ++count_01_23;
+                            }
+                            else if (
+                                    (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                                    tree.get_root_ptr()->get_child(0)->is_child("leaf2"))
+                                    ||
+                                    (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                                    tree.get_root_ptr()->get_child(1)->is_child("leaf2"))
+                               ) {
+                                ++count_02_13;
+                            }
+                            else if (
+                                    (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                                    tree.get_root_ptr()->get_child(0)->is_child("leaf3"))
+                                    ||
+                                    (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                                    tree.get_root_ptr()->get_child(1)->is_child("leaf3"))
+                               ) {
+                                ++count_03_12;
+                            }
+                            else {
+                                REQUIRE(0 == 1);
+                            }
+                        }
+                    }
+                    else if (tree.get_root_ptr()->get_number_of_children() == 3) {
+                        if (
+                                tree.get_root_ptr()->is_child("leaf0") &&
+                                tree.get_root_ptr()->is_child("leaf1")
+                            )
+                        {
+                            ++count_23_;
+
+                        }
+                        else if (
+                                tree.get_root_ptr()->is_child("leaf0") &&
+                                tree.get_root_ptr()->is_child("leaf2")
+                            )
+                        {
+                            ++count_13_;
+
+                        }
+                        else if (
+                                tree.get_root_ptr()->is_child("leaf0") &&
+                                tree.get_root_ptr()->is_child("leaf3")
+                            )
+                        {
+                            ++count_12_;
+
+                        }
+                        else if (
+                                tree.get_root_ptr()->is_child("leaf1") &&
+                                tree.get_root_ptr()->is_child("leaf2")
+                            )
+                        {
+                            ++count_03_;
+
+                        }
+                        else if (
+                                tree.get_root_ptr()->is_child("leaf1") &&
+                                tree.get_root_ptr()->is_child("leaf3")
+                            )
+                        {
+                            ++count_02_;
+
+                        }
+                        else if (
+                                tree.get_root_ptr()->is_child("leaf2") &&
+                                tree.get_root_ptr()->is_child("leaf3")
+                            )
+                        {
+                            ++count_01_;
+
+                        }
+                        else {
+                            REQUIRE(0 == 1);
+                        }
+                    }
+                    else {
+                        REQUIRE(0 == 1);
+                    }
+                }
+                else if (tree.get_number_of_node_heights() == 3) {
+                    ++count_3_heights;
+                    if ((! tree.get_root_ptr()->get_child(0)->is_leaf()) &&
+                        (! tree.get_root_ptr()->get_child(1)->is_leaf())) {
+                        if (
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                                tree.get_root_ptr()->get_child(0)->is_child("leaf1"))
+                                ||
+                                (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                                tree.get_root_ptr()->get_child(1)->is_child("leaf1"))
+                           ) {
+                            ++count_gen_01_23;
+                        }
+                        else if (
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                                tree.get_root_ptr()->get_child(0)->is_child("leaf2"))
+                                ||
+                                (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                                tree.get_root_ptr()->get_child(1)->is_child("leaf2"))
+                           ) {
+                            ++count_gen_02_13;
+                        }
+                        else if (
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                                tree.get_root_ptr()->get_child(0)->is_child("leaf3"))
+                                ||
+                                (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                                tree.get_root_ptr()->get_child(1)->is_child("leaf3"))
+                           ) {
+                            ++count_gen_03_12;
+                        }
+                        else {
+                            REQUIRE(0 == 1);
+                        }
+                    }
+                    else {
+                        // general ladderized topology
+                        if (tree.get_root_ptr()->is_child("leaf3") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf2") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf2"))
+                            )
+                        {
+                            ++count_gen_01_2_3;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf2") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf3") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf3"))
+                            )
+                        {
+                            ++count_gen_01_3_2;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf3") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf1") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf1"))
+                            )
+                        {
+                            ++count_gen_02_1_3;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf1") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf3") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf3"))
+                            )
+                        {
+                            ++count_gen_02_3_1;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf2") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf1") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf1"))
+                            )
+                        {
+                            ++count_gen_03_1_2;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf1") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf2") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf2"))
+                            )
+                        {
+                            ++count_gen_03_2_1;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf3") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf0") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf0"))
+                            )
+                        {
+                            ++count_gen_12_0_3;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf0") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf3") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf3"))
+                            )
+                        {
+                            ++count_gen_12_3_0;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf2") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf0") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf0"))
+                            )
+                        {
+                            ++count_gen_13_0_2;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf0") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf2") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf2"))
+                            )
+                        {
+                            ++count_gen_13_2_0;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf1") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf0") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf0"))
+                            )
+                        {
+                            ++count_gen_23_0_1;
+                        }
+                        else if (tree.get_root_ptr()->is_child("leaf0") && 
+                                (tree.get_root_ptr()->get_child(0)->is_child("leaf1") ||
+                                 tree.get_root_ptr()->get_child(1)->is_child("leaf1"))
+                            )
+                        {
+                            ++count_gen_23_1_0;
+                        }
+                    }
+                }
+                else {
+                    REQUIRE(0 == 1);
+                }
+                REQUIRE(tree.get_root_height() == root_ht);
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+
+        REQUIRE((count_0123 + count_2_heights + count_3_heights) == nsamples);
+        REQUIRE((count_01_23 +
+                count_02_13 +
+                count_03_12 +
+                count_0_ +
+                count_1_ +
+                count_2_ +
+                count_3_ +
+                count_01_ +
+                count_02_ +
+                count_03_ +
+                count_12_ +
+                count_13_ +
+                count_23_) == count_2_heights);
+        REQUIRE((count_gen_01_23 +
+                count_gen_02_13 +
+                count_gen_03_12 +
+                count_gen_01_2_3 +
+                count_gen_01_3_2 +
+                count_gen_02_1_3 +
+                count_gen_02_3_1 +
+                count_gen_03_1_2 +
+                count_gen_03_2_1 +
+                count_gen_12_0_3 +
+                count_gen_12_3_0 +
+                count_gen_13_0_2 +
+                count_gen_13_2_0 +
+                count_gen_23_0_1 +
+                count_gen_23_1_0) == count_3_heights);
+
+        double freq_2_heights = count_2_heights / (double)nsamples;
+        double freq_3_heights = count_3_heights / (double)nsamples;
+        double freq_0123 = count_0123 / (double)nsamples;
+        double freq_01_23 = count_01_23 / (double)nsamples;
+        double freq_02_13 = count_02_13 / (double)nsamples;
+        double freq_03_12 = count_03_12 / (double)nsamples;
+        double freq_gen_01_23 = count_gen_01_23 / (double)nsamples;
+        double freq_gen_02_13 = count_gen_02_13 / (double)nsamples;
+        double freq_gen_03_12 = count_gen_03_12 / (double)nsamples;
+        double freq_0_ = count_0_ / (double)nsamples;
+        double freq_1_ = count_1_ / (double)nsamples;
+        double freq_2_ = count_2_ / (double)nsamples;
+        double freq_3_ = count_3_ / (double)nsamples;
+        double freq_01_ = count_01_ / (double)nsamples;
+        double freq_02_ = count_02_ / (double)nsamples;
+        double freq_03_ = count_03_ / (double)nsamples;
+        double freq_12_ = count_12_ / (double)nsamples;
+        double freq_13_ = count_13_ / (double)nsamples;
+        double freq_23_ = count_23_ / (double)nsamples;
+        double freq_gen_01_2_3 = count_gen_01_2_3 / (double)nsamples;
+        double freq_gen_01_3_2 = count_gen_01_3_2 / (double)nsamples;
+        double freq_gen_02_1_3 = count_gen_02_1_3 / (double)nsamples;
+        double freq_gen_02_3_1 = count_gen_02_3_1 / (double)nsamples;
+        double freq_gen_03_1_2 = count_gen_03_1_2 / (double)nsamples;
+        double freq_gen_03_2_1 = count_gen_03_2_1 / (double)nsamples;
+        double freq_gen_12_0_3 = count_gen_12_0_3 / (double)nsamples;
+        double freq_gen_12_3_0 = count_gen_12_3_0 / (double)nsamples;
+        double freq_gen_13_0_2 = count_gen_13_0_2 / (double)nsamples;
+        double freq_gen_13_2_0 = count_gen_13_2_0 / (double)nsamples;
+        double freq_gen_23_0_1 = count_gen_23_0_1 / (double)nsamples;
+        double freq_gen_23_1_0 = count_gen_23_1_0 / (double)nsamples;
+
+        double exp_freq = 1.0/29.0;
+
+        std::cout << "Freq of (0,1,2,3): " << freq_0123 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of ((0,1),2,3): " << freq_01_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of ((0,2),1,3): " << freq_02_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of ((0,3),1,2): " << freq_03_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of ((1,2),0,3): " << freq_12_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of ((1,3),0,2): " << freq_13_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of ((2,3),0,1): " << freq_23_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of (0,(1,2,3)): " << freq_0_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of (1,(0,2,3)): " << freq_1_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of (2,(1,0,3)): " << freq_2_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of (3,(1,2,0)): " << freq_3_ << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of shared ((0,1),(2,3)): " << freq_01_23 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of shared ((0,2),(1,3)): " << freq_02_13 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of shared ((0,3),(1,2)): " << freq_03_12 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen ((0,1),(2,3)): " << freq_gen_01_23 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen ((0,2),(1,3)): " << freq_gen_02_13 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen ((0,3),(1,2)): " << freq_gen_03_12 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((0,1),2),3): " << freq_gen_01_2_3 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((0,1),3),2): " << freq_gen_01_3_2 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((0,2),1),3): " << freq_gen_02_1_3 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((0,2),3),1): " << freq_gen_02_3_1 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((0,3),1),2): " << freq_gen_03_1_2 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((0,3),2),1): " << freq_gen_03_2_1 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((1,2),0),3): " << freq_gen_12_0_3 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((1,2),3),0): " << freq_gen_12_3_0 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((1,3),0),2): " << freq_gen_13_0_2 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((1,3),2),0): " << freq_gen_13_2_0 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((2,3),0),1): " << freq_gen_23_0_1 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of gen (((2,3),1),0): " << freq_gen_23_1_0 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of 2 heights: " << freq_2_heights << " (expected " << 13 * exp_freq << ")\n";
+        std::cout << "Freq of 3 heights: " << freq_3_heights << " (expected " << 15 * exp_freq << ")\n";
+
+        double eps = 0.001;
+
+        REQUIRE(freq_2_heights == Approx(13 * exp_freq).epsilon(eps));
+        REQUIRE(freq_3_heights == Approx(15 * exp_freq).epsilon(eps));
+        REQUIRE(freq_0123 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_01_23 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_02_13 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_03_12 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_gen_01_23 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_gen_02_13 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_gen_03_12 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_0_ == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_1_ == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_2_ == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_3_ == Approx(exp_freq).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and operate_plus",
+        /* "[SplitLumpNodesRevJumpSampler]") { */
+        "[a2]") {
+
+    SECTION("Testing 4 leaves with fixed root and operate_plus") {
         RandomNumberGenerator rng = RandomNumberGenerator(18);
 
         double root_ht = 0.5;
@@ -1514,8 +2037,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         unsigned int sample_freq = 5;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
-            // std::cout << tree.to_parentheses() << "\n";
-            op.operate_plus(rng, &tree, other_ops, 1);
+            op.operate_plus(rng, &tree, other_ops, 1, 2);
             if ((i + 1) % sample_freq == 0) {
                 if (tree.get_number_of_node_heights() == 1) {
                     ++count_0123;
@@ -1603,6 +2125,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         }
         std::cout << op.header_string();
         std::cout << op.to_string();
+        std::cout << node_height_op->to_string();
 
 
         REQUIRE((count_01_23 + count_02_13 + count_03_12 + count_0_ + count_1_ + count_2_ + count_3_) == count_2_heights);
@@ -1620,22 +2143,27 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         double freq_gen_01_23 = count_gen_01_23 / (double)nsamples;
         double freq_gen_02_13 = count_gen_02_13 / (double)nsamples;
         double freq_gen_03_12 = count_gen_03_12 / (double)nsamples;
-        std::cout << "Freq of (0,1,2,4): " << freq_0123 << "\n";
+
+        double exp_freq = 1.0/23.0;
+
+        std::cout << "Freq of (0,1,2,3): " << freq_0123 << " (expected " << exp_freq << ")\n";
+        std::cout << "Freq of 2 heights: " << freq_2_heights << " (expected " << 7 * exp_freq << ")\n";
+        std::cout << "Freq of 3 heights: " << freq_3_heights << " (expected " << 15 * exp_freq << ")\n";
 
         double eps = 0.001;
 
-        REQUIRE(freq_2_heights == Approx(7.0/23.0).epsilon(eps));
-        REQUIRE(freq_3_heights == Approx(15.0/23.0).epsilon(eps));
-        REQUIRE(freq_0123 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_01_23 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_02_13 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_03_12 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_gen_01_23 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_gen_02_13 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_gen_03_12 == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_0_ == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_1_ == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_2_ == Approx(1.0/23.0).epsilon(eps));
-        REQUIRE(freq_3_ == Approx(1.0/23.0).epsilon(eps));
+        REQUIRE(freq_2_heights == Approx(7 * exp_freq).epsilon(eps));
+        REQUIRE(freq_3_heights == Approx(15 * exp_freq).epsilon(eps));
+        REQUIRE(freq_0123 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_01_23 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_02_13 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_03_12 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_gen_01_23 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_gen_02_13 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_gen_03_12 == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_0_ == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_1_ == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_2_ == Approx(exp_freq).epsilon(eps));
+        REQUIRE(freq_3_ == Approx(exp_freq).epsilon(eps));
     }
 }

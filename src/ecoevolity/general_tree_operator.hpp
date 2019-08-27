@@ -124,12 +124,15 @@ class GeneralTreeOperatorTemplate : public BaseGeneralTreeOperatorTemplate {
 
         virtual void operate(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) = 0;
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1) = 0;
 
         virtual void operate_plus(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
-                unsigned int nthreads = 1) = 0;
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1,
+                unsigned int other_op_number_of_moves = 1) = 0;
 
 };
 
@@ -184,15 +187,20 @@ class GeneralTreeOperatorInterface : public GeneralTreeOperatorTemplate<NodeType
 
         void operate(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) {
-            this->perform_move(rng, tree, nthreads);
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1) {
+            for (unsigned int i = 0; i < number_of_moves; ++i) {
+                this->perform_move(rng, tree, nthreads);
+            }
         }
 
         virtual void operate_plus(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
-                unsigned int nthreads = 1) {
-            this->operate(rng, tree, nthreads);
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1,
+                unsigned int other_op_number_of_moves = 1) {
+            this->operate(rng, tree, nthreads, number_of_moves);
         }
 
         virtual void optimize(double log_alpha) {
@@ -559,14 +567,6 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
-        void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) {
-            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
-                this->perform_move(rng, tree, nthreads);
-            }
-        }
-
         /**
          * @brief   Propose a new state.
          *
@@ -577,6 +577,12 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
                 unsigned int nthreads) {
             unsigned int max_height_index = tree->get_number_of_node_heights() - 1;
             if (tree->root_height_is_fixed()) {
+                if (max_height_index == 0) {
+                    // We are in comb state (nheights = 1) and the root height
+                    // is fixed. We can't do anything in this case, so force
+                    // rejection.
+                    return -std::numeric_limits<double>::infinity();
+                }
                 --max_height_index;
             }
             unsigned int height_index = rng.uniform_int(0,
@@ -678,14 +684,6 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
-        void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) {
-            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
-                this->perform_move(rng, tree, nthreads);
-            }
-        }
-
         /**
          * @brief   Propose a new state.
          *
@@ -696,6 +694,12 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
                 unsigned int nthreads) {
             unsigned int max_height_index = tree->get_number_of_node_heights() - 1;
             if (tree->root_height_is_fixed()) {
+                if (max_height_index == 0) {
+                    // We are in comb state (nheights = 1) and the root height
+                    // is fixed. We can't do anything in this case, so force
+                    // rejection.
+                    return -std::numeric_limits<double>::infinity();
+                }
                 --max_height_index;
             }
             unsigned int height_index = rng.uniform_int(0,
@@ -796,8 +800,13 @@ class NeighborHeightNodePermute : public GeneralTreeOperatorInterface<NodeType, 
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads) {
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
+            if (num_node_heights == 1) {
+                // In comb state, so nothing to do; force rejection
+                return -std::numeric_limits<double>::infinity();
+            }
             unsigned int height_index = rng.uniform_int(0,
-                    tree->get_number_of_node_heights() - 2);
+                    num_node_heights - 2);
             tree->collision_node_permute(rng,
                     height_index + 1,
                     height_index);
@@ -833,8 +842,13 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op>
         double propose(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads) {
+            unsigned int num_node_heights = tree->get_number_of_node_heights();
+            if (num_node_heights == 1) {
+                // In comb state, so nothing to do; force rejection
+                return -std::numeric_limits<double>::infinity();
+            }
             unsigned int height_index = rng.uniform_int(0,
-                    tree->get_number_of_node_heights() - 2);
+                    num_node_heights - 2);
             tree->collision_node_swap(rng,
                     height_index + 1,
                     height_index);
@@ -880,22 +894,16 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             return this->bell_numbers[n];
         }
 
-        void operate(RandomNumberGenerator& rng,
-                BaseTree<NodeType> * tree,
-                unsigned int nthreads = 1) {
-            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
-                this->perform_move(rng, tree, nthreads);
-            }
-        }
-
         void operate_plus(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
                 std::vector< std::shared_ptr< GeneralTreeOperatorTemplate<NodeType> > > other_operators,
-                unsigned int nthreads = 1) {
-            for (unsigned int i = 0; i < tree->get_number_of_node_heights(); ++i) {
+                unsigned int nthreads = 1,
+                unsigned int number_of_moves = 1,
+                unsigned int other_op_number_of_moves = 1) {
+            for (unsigned int i = 0; i < number_of_moves; ++i) {
                 this->perform_move(rng, tree, nthreads);
                 for (auto other_op : other_operators) {
-                    other_op->operate(rng, tree, nthreads);
+                    other_op->operate(rng, tree, nthreads, other_op_number_of_moves);
                 }
             }
         }
@@ -921,7 +929,8 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 std::vector<unsigned int> splittable_height_indices = tree->get_indices_of_splittable_heights();
                 const unsigned int number_of_splittable_heights = splittable_height_indices.size();
                 ECOEVOLITY_ASSERT(number_of_splittable_heights > 0);
-                unsigned int split_height_idx = rng.uniform_int(0, number_of_splittable_heights - 1);
+                unsigned int splittable_vector_idx = rng.uniform_int(0, number_of_splittable_heights - 1);
+                unsigned int split_height_idx = splittable_height_indices.at(splittable_vector_idx);
                 double current_height = tree->get_height(split_height_idx);
                 double height_lower_bound = -1.0;
                 unsigned int number_of_mapped_nodes = 0;
@@ -1151,7 +1160,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             const unsigned int post_num_splittable_heights = tree->get_number_of_splittable_heights();
             std::vector< std::shared_ptr<NodeType> > post_mapped_nodes = tree->get_mapped_nodes(merge_height_idx);
             std::vector< std::shared_ptr<NodeType> > post_mapped_poly_nodes = tree->get_mapped_polytomy_nodes(merge_height_idx);
-            const bool post_num_mapped_nodes = post_mapped_nodes.size();
+            const unsigned int post_num_mapped_nodes = post_mapped_nodes.size();
             double ln_hastings = 0.0;
             if (post_num_mapped_nodes == 1) {
                 const unsigned int num_polytomy_children = post_mapped_nodes.at(0)->get_number_of_children();

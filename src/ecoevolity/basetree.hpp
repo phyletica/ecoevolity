@@ -399,6 +399,13 @@ class BaseTree {
             return false;
         }
 
+        unsigned int get_mapped_node_count(const unsigned int height_index) const {
+            return this->root_->get_mapped_node_count(this->node_heights_.at(height_index));
+        }
+        unsigned int get_mapped_polytomy_node_count(const unsigned int height_index) const {
+            return this->root_->get_mapped_polytomy_node_count(this->node_heights_.at(height_index));
+        }
+
         std::vector< std::shared_ptr<NodeType> > get_collision_parents(
                 const unsigned int older_height_index,
                 const unsigned int younger_height_index) {
