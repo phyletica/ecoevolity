@@ -1561,7 +1561,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         "[a1]") {
 
     SECTION("Testing 4 leaves with fixed root") {
-        RandomNumberGenerator rng = RandomNumberGenerator(18);
+        RandomNumberGenerator rng = RandomNumberGenerator(20);
 
         double root_ht = 0.5;
         std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
@@ -1990,7 +1990,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
         "[a2]") {
 
     SECTION("Testing 4 leaves with fixed root and operate_plus") {
-        RandomNumberGenerator rng = RandomNumberGenerator(18);
+        RandomNumberGenerator rng = RandomNumberGenerator(21);
 
         double root_ht = 0.5;
         std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
@@ -2165,5 +2165,181 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
         REQUIRE(freq_1_ == Approx(exp_freq).epsilon(eps));
         REQUIRE(freq_2_ == Approx(exp_freq).epsilon(eps));
         REQUIRE(freq_3_ == Approx(exp_freq).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with 4 leaves",
+        /* "[SplitLumpNodesRevJumpSampler]") { */
+        "[a3]") {
+
+    SECTION("Testing merge with ladderized tree with 4") {
+        RandomNumberGenerator rng = RandomNumberGenerator(22);
+
+        for (unsigned int i = 0; i < 20; ++i) {
+            double root_ht = 0.3;
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+            std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+            std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.1);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+            internal0->add_child(leaf0);
+            internal0->add_child(leaf1);
+            internal1->add_child(leaf2);
+            internal1->add_child(internal0);
+            root->add_child(leaf3);
+            root->add_child(internal1);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+
+            double ln_hastings = op.propose_merge(rng,
+                    &tree,
+                    3,
+                    true);
+            double exp_ln_hastings = std::log(1.0 / (3.0 * 0.2));
+            if (tree.get_root_ptr()->get_number_of_children() == 2) {
+                REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            }
+            else if (tree.get_root_ptr()->get_number_of_children() == 3) {
+                REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            }
+            else {
+                REQUIRE(0 == 1);
+            }
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4 leaves",
+        /* "[SplitLumpNodesRevJumpSampler]") { */
+        "[a3]") {
+
+    SECTION("Testing split to ladderized tree with 4") {
+        RandomNumberGenerator rng = RandomNumberGenerator(23);
+
+        for (unsigned int i = 0; i < 20; ++i) {
+            double root_ht = 0.3;
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+            std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+            internal1->add_child(leaf0);
+            internal1->add_child(leaf1);
+            internal1->add_child(leaf2);
+            root->add_child(leaf3);
+            root->add_child(internal1);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+
+            double ln_hastings = op.propose_split(rng,
+                    &tree,
+                    2,
+                    false);
+            double exp_ln_hastings = std::log(3.0 * 0.2);
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to general tree with 4 leaves",
+        /* "[SplitLumpNodesRevJumpSampler]") { */
+        "[a3]") {
+
+    SECTION("Testing split to general tree with 4 leaves") {
+        RandomNumberGenerator rng = RandomNumberGenerator(23);
+
+        for (unsigned int i = 0; i < 20; ++i) {
+            double root_ht = 0.3;
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+            std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+            internal1->add_child(leaf0);
+            internal1->add_child(leaf1);
+            root->add_child(leaf2);
+            root->add_child(leaf3);
+            root->add_child(internal1);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+
+            double ln_hastings = op.propose_split(rng,
+                    &tree,
+                    2,
+                    false);
+            double exp_ln_hastings = std::log(3.0 * 0.1);
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
+        /* "[SplitLumpNodesRevJumpSampler]") { */
+        "[a3]") {
+
+    SECTION("Testing split from combe with 4 leaves") {
+        RandomNumberGenerator rng = RandomNumberGenerator(24);
+
+        for (unsigned int i = 0; i < 50; ++i) {
+            double root_ht = 0.3;
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+            std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+            root->add_child(leaf0);
+            root->add_child(leaf1);
+            root->add_child(leaf2);
+            root->add_child(leaf3);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+
+            double ln_hastings = op.propose_split(rng,
+                    &tree,
+                    1,
+                    true);
+            double exp_ln_hastings = std::log((13.0 * 0.3) / 2.0);
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+        }
     }
 }
