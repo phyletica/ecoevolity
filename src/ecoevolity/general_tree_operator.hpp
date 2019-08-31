@@ -1213,7 +1213,6 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
             const unsigned int num_heights = tree->get_number_of_node_heights();
-            const unsigned int num_internal_nodes = tree->get_internal_node_count();
             const unsigned int num_leaves = tree->get_leaf_node_count();
             ECOEVOLITY_ASSERT(num_leaves > 2);
             const bool in_comb_state_before = (num_heights == 1);
