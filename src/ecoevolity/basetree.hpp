@@ -719,7 +719,7 @@ class BaseTree {
         virtual double compute_log_prior_density() {
             double d = 0.0;
             d += this->compute_log_prior_density_of_node_heights();
-            d += this->compute_relative_log_prior_density_of_toplogy();
+            d += this->compute_relative_log_prior_density_of_topology();
             this->log_prior_density_.set_value(d);
             return d;
         }
@@ -735,7 +735,7 @@ class BaseTree {
             d += internal_node_height_prior_density * (this->get_number_of_node_heights() - 1);
             return d;
         }
-        virtual double compute_relative_log_prior_density_of_toplogy() const {
+        virtual double compute_relative_log_prior_density_of_topology() const {
             return 0.0;
         }
 
