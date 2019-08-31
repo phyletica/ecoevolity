@@ -1646,6 +1646,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
                             else if(tree.get_root_ptr()->is_child("leaf3")) {
                                 ++count_3_;
                             }
+                            else {
+                                REQUIRE(0 == 1);
+                            }
                         }
                         else {
                             if (
@@ -1857,6 +1860,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
                             )
                         {
                             ++count_gen_23_1_0;
+                        }
+                        else {
+                            REQUIRE(0 == 1);
                         }
                     }
                 }
@@ -2099,6 +2105,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
                             else if(tree.get_root_ptr()->is_child("leaf3")) {
                                 ++count_3_;
                             }
+                            else {
+                                REQUIRE(0 == 1);
+                            }
                         }
                         else {
                             if (
@@ -2310,6 +2319,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
                             )
                         {
                             ++count_gen_23_1_0;
+                        }
+                        else {
+                            REQUIRE(0 == 1);
                         }
                     }
                 }
