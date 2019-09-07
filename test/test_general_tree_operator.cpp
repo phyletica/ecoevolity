@@ -2471,12 +2471,35 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge with ladderized tree with 4") {
         RandomNumberGenerator rng = RandomNumberGenerator(22);
 
-        unsigned int nsamples = 1000;
+        // MOVE FROM: (((A:0.1,B:0.1):0.1,C:0.2):0.2,D:0.4)
+        // MOVE TO:   ((A:0.2,B:0.2,C:0.2):0.2,D:0.4)
+        //            OR
+        //            ((A:0.1,B:0.1):0.3,C:0.4,D:0.4)
+        //
+        // HR of move to ((A:0.2,B:0.2,C:0.2):0.2,D:0.4)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/0.2
+        //                  = 1/(6*0.2)
+        // HR = 1/(6*0.2) / 1/2 = 2/(6*0.2) = 1 / (3*0.2)
+        //
+        // HR of move to ((A:0.1,B:0.1):0.3,C:0.4,D:0.4)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/0.3
+        //                  = 1/(6*0.3)
+        // HR = 1/(6*0.3) / 1/2 = 2/(6*0.3) = 1 / (3*0.3)
+
+        unsigned int nsamples = 10000;
         unsigned int root_poly_count = 0;
         unsigned int internal_poly_count = 0;
         for (unsigned int i = 0; i < nsamples; ++i) {
@@ -2519,11 +2542,15 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
             if (tree.get_root_ptr()->get_number_of_children() == 2) {
                 double exp_ln_hastings = std::log(1.0 / (3.0 * 0.2));
                 REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+                REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
+                REQUIRE(! tree.get_root_ptr()->is_child("leaf2"));
                 ++internal_poly_count;
             }
             else if (tree.get_root_ptr()->get_number_of_children() == 3) {
                 double exp_ln_hastings = std::log(1.0 / (3.0 * 0.3));
                 REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+                REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
+                REQUIRE(tree.get_root_ptr()->is_child("leaf2"));
                 ++root_poly_count;
             }
             else {
@@ -2531,18 +2558,37 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
             }
         }
         REQUIRE(root_poly_count + internal_poly_count == nsamples);
-        REQUIRE(root_poly_count / (double)nsamples == Approx(0.5).epsilon(0.1));
-        REQUIRE(internal_poly_count / (double)nsamples == Approx(0.5).epsilon(0.1));
+        REQUIRE(root_poly_count / (double)nsamples == Approx(0.5).epsilon(0.01));
+        REQUIRE(internal_poly_count / (double)nsamples == Approx(0.5).epsilon(0.01));
     }
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split to ladderized tree with 4") {
         RandomNumberGenerator rng = RandomNumberGenerator(23);
 
-        for (unsigned int i = 0; i < 20; ++i) {
+        // MOVE FROM: ((A:0.2,B:0.2,C:0.2):0.1,D:0.3)
+        // MOVE TO:   (((A:<0.2,B:<0.2):?,C:0.2):0.1,D:0.3)
+        //            OR
+        //            (((A:<0.2,C:<0.2):?,B:0.2):0.1,D:0.3)
+        //            OR
+        //            (((B:<0.2,C:<0.2):?,A:0.2):0.1,D:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/(0.2)
+        //                  = 1/(6*0.2)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // HR = 1/2 / 1/(6*0.2) = (6*0.2) / 2 = (3*0.2)
+
+        unsigned int nsamples = 10000;
+        unsigned int count_01 = 0;
+        unsigned int count_02 = 0;
+        unsigned int count_12 = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.3;
             std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
             std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
@@ -2575,18 +2621,56 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
             REQUIRE(ln_hastings == Approx(exp_ln_hastings));
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
+            REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
+            REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
+            if (tree.get_root_ptr()->get_child(0)->is_child("leaf2") ||
+                tree.get_root_ptr()->get_child(1)->is_child("leaf2")) {
+                ++count_01;
+            }
+            else if (tree.get_root_ptr()->get_child(0)->is_child("leaf1") ||
+                     tree.get_root_ptr()->get_child(1)->is_child("leaf1")) {
+                ++count_02;
+            }
+            else if (tree.get_root_ptr()->get_child(0)->is_child("leaf0") ||
+                     tree.get_root_ptr()->get_child(1)->is_child("leaf0")) {
+                ++count_12;
+            }
+            else {
+                REQUIRE(0 == 1);
+            }
         }
+        double eps = 0.01;
+        REQUIRE(count_01 + count_02 + count_12 == nsamples);
+        REQUIRE(count_01 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+        REQUIRE(count_02 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+        REQUIRE(count_12 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
     }
 }
 
-TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to general tree with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general tree with 4 leaves",
+        "[xSplitLumpNodesRevJumpSampler]") {
 
-    SECTION("Testing split to general tree with 4 leaves") {
+    SECTION("Testing split from root poly to general tree with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(24);
 
-        unsigned int nsamples = 1000;
-        unsigned int ladder_count = 0;
+        // MOVE FROM: ((A:0.2,B:0.2):0.1,C:0.3,D:0.3)
+        // MOVE TO:   ((A:0.2,B:0.2):0.1,(C:0.2<x<0.3, D:0.2<x<0.3):<0.1)
+        //            OR
+        //            (((A:0.2,B:0.2):<0.1,C:<0.3),D:0.3)
+        //            OR
+        //            (((A:0.2,B:0.2):<0.1,D:<0.3),C:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/(0.3-0.2)
+        //                  = 1/(6*0.1)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // HR = 1/2 / 1/(6*0.1) = (6*0.1) / 2 = (3*0.1)
+
+        unsigned int nsamples = 10000;
+        unsigned int ladder_count_2 = 0;
+        unsigned int ladder_count_3 = 0;
         unsigned int balanced_count = 0;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.3;
@@ -2622,9 +2706,22 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to general tree with 4 le
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
+            REQUIRE(tree.get_height(0) == 0.2);
+            REQUIRE(tree.get_height(2) == 0.3);
+            REQUIRE(
+                    ((tree.get_height(1) < 0.3) && (tree.get_height(1) > 0.2))
+                    );
             if (tree.get_root_ptr()->get_child(0)->is_leaf() ||
                 tree.get_root_ptr()->get_child(1)->is_leaf()) {
-                ++ladder_count;
+                if (tree.get_root_ptr()->is_child("leaf2")) {
+                    ++ladder_count_2;
+                }
+                else if (tree.get_root_ptr()->is_child("leaf3")) {
+                    ++ladder_count_3;
+                }
+                else {
+                    REQUIRE(0 == 1);
+                }
             }
             else if ((! tree.get_root_ptr()->get_child(0)->is_leaf()) &&
                 (! tree.get_root_ptr()->get_child(1)->is_leaf())) {
@@ -2634,18 +2731,45 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to general tree with 4 le
                 REQUIRE(0 == 1);
             }
         }
-        double eps = 0.1;
-        REQUIRE(ladder_count + balanced_count == nsamples);
-        REQUIRE(ladder_count / (double)nsamples == Approx(0.5).epsilon(eps));
-        REQUIRE(balanced_count / (double)nsamples == Approx(0.5).epsilon(eps));
+        std::cout << "Freq of (((0,1),2),3): " << ladder_count_3 / (double)nsamples << "\n";
+        std::cout << "Freq of (((0,1),3),2): " << ladder_count_2 / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,1),(2,3)): " << balanced_count / (double)nsamples << "\n";
+        double eps = 0.01;
+        REQUIRE(ladder_count_2 + ladder_count_3 + balanced_count == nsamples);
+        REQUIRE(ladder_count_2 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+        REQUIRE(ladder_count_3 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+        REQUIRE(balanced_count / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
     }
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split from comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(25);
+
+        // MOVE FROM: (A:0.3,B:0.3,C:0.3,D:0.3)
+        // MOVE TO:   13 possible trees: 
+        //            (A:0.3,B:0.3,(C:<0.3,D:<0.3):<0.3)
+        //            (A:0.3,C:0.3,(B:<0.3,D:<0.3):<0.3)
+        //            (C:0.3,B:0.3,(A:<0.3,D:<0.3):<0.3)
+        //            (A:0.3,D:0.3,(B:<0.3,C:<0.3):<0.3)
+        //            (B:0.3,D:0.3,(A:<0.3,C:<0.3):<0.3)
+        //            (C:0.3,D:0.3,(A:<0.3,B:<0.3):<0.3)
+        //            (A:0.3,(B:<0.3,C:<0.3,D:<0.3):<0.3)
+        //            (B:0.3,(A:<0.3,C:<0.3,D:<0.3):<0.3)
+        //            (C:0.3,(B:<0.3,A:<0.3,D:<0.3):<0.3)
+        //            (D:0.3,(B:<0.3,C:<0.3,A:<0.3):<0.3)
+        //            ((A:<0.3,B:<0.3):<0.3,(C:<0.3,D:<0.3):<0.3)
+        //            ((A:<0.3,C:<0.3):<0.3,(B:<0.3,D:<0.3):<0.3)
+        //            ((A:<0.3,D:<0.3):<0.3,(C:<0.3,B:<0.3):<0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1 * 1 * 1/13 * 1/0.3
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1 = 1/2
+        // HR = 1/2 / 1 / (13*0.3) = (13*0.3) / 2
 
         unsigned int nsamples = 10000;
         unsigned int balanced_count = 0;
@@ -2705,6 +2829,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
 
         double eps = 0.01;
         REQUIRE(balanced_count + root_poly_count + internal_poly_count == nsamples);
+        // There are 3 balanced-shared node trees
+        //           6 trees with trichotomy at root
+        //           4 trees with trichotomy that is a child of the root
         REQUIRE(balanced_count / (double)nsamples == Approx(3.0/13.0).epsilon(eps));
         REQUIRE(root_poly_count / (double)nsamples == Approx(6.0/13.0).epsilon(eps));
         REQUIRE(internal_poly_count / (double)nsamples == Approx(4.0/13.0).epsilon(eps));
@@ -2712,10 +2839,21 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from balanced to comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(26);
+
+        // MOVE FROM: ((A:0.2,B:0.2):0.1,(C:0.2, D:0.2):0.1)
+        // MOVE TO:   (A:0.3,B:0.3,C:0.3,D:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1 * 1 * 1/13 * 1/0.3
+        //                  there are 13 ways to split up the root polytomy
+        // HR = 1/(13*0.3) / 1/2 = 2/(13*0.3)
 
         unsigned int nsamples = 20;
         for (unsigned int i = 0; i < nsamples; ++i) {
@@ -2747,6 +2885,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb wit
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_height(0) == 0.2);
+            REQUIRE(tree.get_height(1) == 0.3);
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
@@ -2757,15 +2897,27 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb wit
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
+            REQUIRE(tree.get_height(0) == 0.3);
         }
     }
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to comb with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from internal poly to comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(27);
+
+        // MOVE FROM: ((A:0.2,B:0.2,C:0.2):0.1,D:0.3)
+        // MOVE TO:   (A:0.3,B:0.3,C:0.3,D:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/3 * 1 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1 * 1 * 1/13 * 1/0.3
+        //                  there are 13 ways to split up the root polytomy
+        // HR = 1/(13*0.3) / 1/2 = 2/(13*0.3)
 
         unsigned int nsamples = 20;
         for (unsigned int i = 0; i < nsamples; ++i) {
@@ -2804,15 +2956,28 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to com
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
+            REQUIRE(tree.get_height(0) == 0.3);
         }
     }
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from root poly to comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(28);
+
+        // MOVE FROM: ((A:0.2,B:0.2):0.1,C:0.3,D:0.3)
+        // MOVE TO:   (A:0.3,B:0.3,C:0.3,D:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1 * 1 * 1/13 * 1/0.3
+        //                  There are 13 possible ways to break up the root polytomy
+        //                  = 1/(13*0.3)
+        // HR = 1/(13*0.3) / 1/2 = 2/(13*0.3)
 
         unsigned int nsamples = 20;
         for (unsigned int i = 0; i < nsamples; ++i) {
@@ -2851,19 +3016,32 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb wi
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
+            REQUIRE(tree.get_height(0) == 0.3);
         }
     }
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split from shared to balanced with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(29);
 
+        // MOVE FROM: ((A:0.2,B:0.2):0.1,(C:0.2, D:0.2):0.1)
+        // MOVE TO:   ((A:<0.2,B:<0.2):>0.1,(C:0.2, D:0.2):0.1)
+        //            OR
+        //            ((A:0.2,B:0.2):0.1,(C:<0.2, D:<0.2):>0.1)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/2 * 1/0.2
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // HR = 1/2 / 1/(4*0.2) = 2*0.2
+
         unsigned int split0_count = 0;
         unsigned int split1_count = 0;
-        unsigned int nsamples = 1000;
+        unsigned int nsamples = 10000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.3;
             std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
@@ -2903,6 +3081,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced w
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
+            REQUIRE(tree.get_height(2) == 0.3);
+            REQUIRE(tree.get_height(1) == 0.2);
+            REQUIRE(tree.get_height(0) < 0.2);
             if (tree.get_root_ptr()->get_child(0)->get_height() < 0.2) {
                 ++split0_count;
             }
@@ -2914,21 +3095,43 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced w
             }
         }
         REQUIRE(split0_count + split1_count == nsamples);
-        double eps = 0.1;
+        double eps = 0.01;
         REQUIRE(split0_count / (double)nsamples == Approx(0.5).epsilon(eps));
         REQUIRE(split1_count / (double)nsamples == Approx(0.5).epsilon(eps));
     }
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general with 4 leaves",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from balanced general with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(30);
 
+        // MOVE FROM: ((A:0.2,B:0.2):0.2,(C:0.1, D:0.1):0.3)
+        // MOVE TO:   ((A:0.2,B:0.2):0.2,(C:0.2, D:0.2):0.2)
+        //            OR
+        //            (A:0.4,B:0.4,(C:0.1, D:0.1):0.3)
+        //
+        // HR of move to ((A:0.2,B:0.2):0.2,(C:0.2, D:0.2):0.2)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/2 * 1/0.2
+        //                  = 1/(4*0.2)
+        // HR = 1/(4*0.2) / 1/2 = 2/(4*0.2) = 1 / (2*0.2)
+        //
+        // HR of move to ((A:0.4,B:0.4,(C:0.1, D:0.1):0.3)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/2 = 1/2
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/0.3
+        //                  = 1/(6*0.3)
+        // HR = 1/(6*0.3) / 1/2 = 2/(6*0.3) = 1 / (3*0.3)
         unsigned int balanced_count = 0;
         unsigned int root_poly_count = 0;
-        unsigned int nsamples = 1000;
+        unsigned int nsamples = 10000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.4;
             std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
@@ -2967,6 +3170,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
                 REQUIRE(ln_hastings == Approx(exp_ln_hastings));
                 REQUIRE(tree.get_number_of_node_heights() == 2);
                 REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(tree.get_height(0) == 0.1);
+                REQUIRE(tree.get_height(1) == 0.4);
                 ++root_poly_count;
             }
             else if (tree.get_root_ptr()->get_number_of_children() == 2) {
@@ -2978,6 +3183,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
                 REQUIRE(ln_hastings == Approx(exp_ln_hastings));
                 REQUIRE(tree.get_number_of_node_heights() == 2);
                 REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(tree.get_height(0) == 0.2);
+                REQUIRE(tree.get_height(1) == 0.4);
                 ++balanced_count;
             }
             else {
@@ -2985,7 +3192,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
             }
         }
         REQUIRE(root_poly_count + balanced_count == nsamples);
-        double eps = 0.1;
+        double eps = 0.01;
         REQUIRE(root_poly_count / (double)nsamples == Approx(0.5).epsilon(eps));
         REQUIRE(balanced_count / (double)nsamples == Approx(0.5).epsilon(eps));
     }
