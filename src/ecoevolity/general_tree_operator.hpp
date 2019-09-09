@@ -910,9 +910,9 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
 
         double propose_split(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
-                const unsigned int num_heights,
-                const bool in_comb_state_before,
                 unsigned int nthreads = 1) {
+            const unsigned int num_heights = tree->get_number_of_node_heights();
+            const bool in_comb_state_before = (num_heights == 1);
             std::vector<unsigned int> splittable_height_indices = tree->get_indices_of_splittable_heights();
             const unsigned int number_of_splittable_heights = splittable_height_indices.size();
             ECOEVOLITY_ASSERT(number_of_splittable_heights > 0);
@@ -1058,9 +1058,11 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
 
         double propose_merge(RandomNumberGenerator& rng,
                 BaseTree<NodeType> * tree,
-                const unsigned int num_heights,
                 const bool in_general_state_before,
                 unsigned int nthreads = 1) {
+            const unsigned int num_heights = tree->get_number_of_node_heights();
+            ECOEVOLITY_ASSERT(in_general_state_before ==
+                    (num_heights == tree->get_leaf_node_count() - 1));
             // MERGE MOVE
             //
             // For the merge move, we simply randomly select a height that
@@ -1222,13 +1224,10 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             if (split_event) {
                 return this->propose_split(rng,
                         tree,
-                        num_heights,
-                        in_comb_state_before,
                         nthreads);
             }
             return this->propose_merge(rng,
                     tree,
-                    num_heights,
                     in_general_state_before,
                     nthreads);
         }

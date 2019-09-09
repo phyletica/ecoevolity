@@ -1372,8 +1372,139 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 2 nested internals, fixed root,
     }
 }
 
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3 leaves",
+        "[xSplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing merge with 3 leaves") {
+        RandomNumberGenerator rng = RandomNumberGenerator(30);
+
+        // MOVE FROM: ((A:0.1,B:0.1):0.2,C:0.3)
+        // MOVE TO:   (A:0.3,B:0.3,C:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1 = 1
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1 * 1 * 1/3 * 1/0.3
+        //                  = 1/(3*0.3)
+        // HR = 1/(3*0.3) / 1 = 1/(3*0.3)
+        
+        unsigned int nsamples = 50;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            double root_ht = 0.3;
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+            std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.1);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+            internal0->add_child(leaf0);
+            internal0->add_child(leaf1);
+            root->add_child(internal0);
+            root->add_child(leaf2);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_number_of_node_heights() == 2);
+            REQUIRE(tree.get_number_of_splittable_heights() == 0);
+
+            double ln_hastings = op.propose(rng,
+                    &tree);
+            double exp_ln_hastings = std::log(1.0 / (3.0 * 0.3));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
+            REQUIRE(tree.get_number_of_node_heights() == 1);
+            REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_height(0) == 0.3);
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
+        "[xSplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing split with 3 leaves") {
+        RandomNumberGenerator rng = RandomNumberGenerator(30);
+
+        // MOVE FROM: (A:0.3,B:0.3,C:0.3)
+        // MOVE TO:   ((A:<0.3,B:<0.3):<0.3,C:0.3)
+        //            OR
+        // MOVE TO:   ((A:<0.3,C:<0.3):<0.3,B:0.3)
+        //            OR
+        // MOVE TO:   ((B:<0.3,C:<0.3):<0.3,C:0.3)
+        //
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choosing nodes to move down) * pr(new height)
+        //                  = 1 * 1 * 1/3 * 1/0.3
+        //                  = 1/(3*0.3)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1 = 1
+        // HR = 1 / 1/(3*0.3) = (3*0.3)
+        
+        unsigned int nsamples = 10000;
+        unsigned int count_01 = 0;
+        unsigned int count_02 = 0;
+        unsigned int count_12 = 0;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            double root_ht = 0.3;
+            std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+            std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+            std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+            std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+
+            root->add_child(leaf0);
+            root->add_child(leaf1);
+            root->add_child(leaf2);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_number_of_node_heights() == 1);
+            REQUIRE(tree.get_number_of_splittable_heights() == 1);
+
+            double ln_hastings = op.propose(rng,
+                    &tree);
+            double exp_ln_hastings = std::log(3.0 * 0.3);
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
+            REQUIRE(tree.get_number_of_node_heights() == 2);
+            REQUIRE(tree.get_number_of_splittable_heights() == 0);
+            REQUIRE(tree.get_height(1) == 0.3);
+            REQUIRE(tree.get_height(0) < 0.3);
+            if (tree.get_root_ptr()->is_child("leaf2")) {
+                ++count_01;
+            }
+            if (tree.get_root_ptr()->is_child("leaf1")) {
+                ++count_02;
+            }
+            if (tree.get_root_ptr()->is_child("leaf0")) {
+                ++count_12;
+            }
+        }
+        REQUIRE(count_01 + count_02 + count_12 == nsamples);
+        double eps = 0.01;
+        std::cout << "Freq of ((0,1),2): " << count_01 / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,2),1): " << count_02 / (double)nsamples << "\n";
+        std::cout << "Freq of ((1,2),0): " << count_12 / (double)nsamples << "\n";
+        REQUIRE(count_01 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+        REQUIRE(count_02 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+        REQUIRE(count_12 / (double)nsamples == Approx(1.0/3.0).epsilon(eps));
+    }
+}
+
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 3 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(18);
@@ -1557,8 +1688,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        /* "[SplitLumpNodesRevJumpSampler]") { */
-        "[a1]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);
@@ -2011,8 +2141,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and operate_plus",
-        /* "[SplitLumpNodesRevJumpSampler]") { */
-        "[a2]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root and operate_plus") {
         RandomNumberGenerator rng = RandomNumberGenerator(21);
@@ -2529,10 +2658,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
 
-            double ln_hastings = op.propose_merge(rng,
-                    &tree,
-                    3,
-                    true);
+            double ln_hastings = op.propose(rng,
+                    &tree);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             // Pr(forward move) = pr(merging) * pr(picking node) = 1 * 1/2 = 1/2
@@ -2541,14 +2668,14 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
             // HR = 1/6d / 1/2 = 2 / 6d = 1 / 3d
             if (tree.get_root_ptr()->get_number_of_children() == 2) {
                 double exp_ln_hastings = std::log(1.0 / (3.0 * 0.2));
-                REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+                REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
                 REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
                 REQUIRE(! tree.get_root_ptr()->is_child("leaf2"));
                 ++internal_poly_count;
             }
             else if (tree.get_root_ptr()->get_number_of_children() == 3) {
                 double exp_ln_hastings = std::log(1.0 / (3.0 * 0.3));
-                REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+                REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
                 REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
                 REQUIRE(tree.get_root_ptr()->is_child("leaf2"));
                 ++root_poly_count;
@@ -2614,11 +2741,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
             tree.compute_log_likelihood_and_prior(true);
 
             double ln_hastings = op.propose_split(rng,
-                    &tree,
-                    2,
-                    false);
+                    &tree);
             double exp_ln_hastings = std::log(3.0 * 0.2);
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
@@ -2698,11 +2823,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
             tree.compute_log_likelihood_and_prior(true);
 
             double ln_hastings = op.propose_split(rng,
-                    &tree,
-                    2,
-                    false);
+                    &tree);
             double exp_ln_hastings = std::log(3.0 * 0.1);
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
@@ -2771,10 +2894,20 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
         //                  =  1/2 * 1 = 1/2
         // HR = 1/2 / 1 / (13*0.3) = (13*0.3) / 2
 
-        unsigned int nsamples = 10000;
-        unsigned int balanced_count = 0;
-        unsigned int root_poly_count = 0;
-        unsigned int internal_poly_count = 0;
+        unsigned int nsamples = 100000;
+        unsigned int balanced_01_23_count = 0;
+        unsigned int balanced_02_13_count = 0;
+        unsigned int balanced_03_12_count = 0;
+        unsigned int root_poly_01_count = 0;
+        unsigned int root_poly_02_count = 0;
+        unsigned int root_poly_03_count = 0;
+        unsigned int root_poly_12_count = 0;
+        unsigned int root_poly_13_count = 0;
+        unsigned int root_poly_23_count = 0;
+        unsigned int internal_poly_0_count = 0;
+        unsigned int internal_poly_1_count = 0;
+        unsigned int internal_poly_2_count = 0;
+        unsigned int internal_poly_3_count = 0;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.3;
             std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
@@ -2798,25 +2931,92 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
 
-            double ln_hastings = op.propose_split(rng,
-                    &tree,
-                    1,
-                    true);
+            // Calling propose, because split should be only possibility
+            double ln_hastings = op.propose(rng,
+                    &tree);
             double exp_ln_hastings = std::log((13.0 * 0.3) / 2.0);
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_height(1) == root_ht);
+            REQUIRE(tree.get_height(0) < root_ht);
             if (tree.get_root_ptr()->get_number_of_children() == 3) {
-                ++root_poly_count;
+                if (tree.get_root_ptr()->is_child("leaf2") &&
+                    tree.get_root_ptr()->is_child("leaf3")) {
+                    ++root_poly_01_count;
+                }
+                else if (tree.get_root_ptr()->is_child("leaf1") &&
+                    tree.get_root_ptr()->is_child("leaf3")) {
+                    ++root_poly_02_count;
+                }
+                else if (tree.get_root_ptr()->is_child("leaf1") &&
+                    tree.get_root_ptr()->is_child("leaf2")) {
+                    ++root_poly_03_count;
+                }
+                else if (tree.get_root_ptr()->is_child("leaf0") &&
+                    tree.get_root_ptr()->is_child("leaf3")) {
+                    ++root_poly_12_count;
+                }
+                else if (tree.get_root_ptr()->is_child("leaf0") &&
+                    tree.get_root_ptr()->is_child("leaf2")) {
+                    ++root_poly_13_count;
+                }
+                else if (tree.get_root_ptr()->is_child("leaf0") &&
+                    tree.get_root_ptr()->is_child("leaf1")) {
+                    ++root_poly_23_count;
+                }
+                else {
+                    REQUIRE(0 == 1);
+                }
             }
             else if (tree.get_root_ptr()->get_number_of_children() == 2) {
                 if (tree.get_root_ptr()->get_child(0)->is_leaf() ||
                     tree.get_root_ptr()->get_child(1)->is_leaf()) {
-                    ++internal_poly_count;
+                    if (tree.get_root_ptr()->is_child("leaf0")) {
+                        ++internal_poly_0_count;
+                    }
+                    else if (tree.get_root_ptr()->is_child("leaf1")) {
+                        ++internal_poly_1_count;
+                    }
+                    else if (tree.get_root_ptr()->is_child("leaf2")) {
+                        ++internal_poly_2_count;
+                    }
+                    else if (tree.get_root_ptr()->is_child("leaf3")) {
+                        ++internal_poly_3_count;
+                    }
+                    else {
+                        REQUIRE(0 == 1);
+                    }
                 }
                 else if ((! tree.get_root_ptr()->get_child(0)->is_leaf()) &&
                     (! tree.get_root_ptr()->get_child(1)->is_leaf())) {
-                    ++balanced_count;
+                    if (
+                            (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                             tree.get_root_ptr()->get_child(0)->is_child("leaf1")) ||
+                            (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                             tree.get_root_ptr()->get_child(1)->is_child("leaf1"))
+                        ) {
+                        ++balanced_01_23_count;
+                    }
+                    else if (
+                            (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                             tree.get_root_ptr()->get_child(0)->is_child("leaf2")) ||
+                            (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                             tree.get_root_ptr()->get_child(1)->is_child("leaf2"))
+                        ) {
+                        ++balanced_02_13_count;
+                    }
+                    else if (
+                            (tree.get_root_ptr()->get_child(0)->is_child("leaf0") &&
+                             tree.get_root_ptr()->get_child(0)->is_child("leaf3")) ||
+                            (tree.get_root_ptr()->get_child(1)->is_child("leaf0") &&
+                             tree.get_root_ptr()->get_child(1)->is_child("leaf3"))
+                        ) {
+                        ++balanced_03_12_count;
+                    }
+                    else {
+                        REQUIRE(0 == 1);
+                    }
                 }
                 else {
                     REQUIRE(0 == 1);
@@ -2827,14 +3027,49 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
             }
         }
 
-        double eps = 0.01;
-        REQUIRE(balanced_count + root_poly_count + internal_poly_count == nsamples);
+        double eps = 0.003;
+        REQUIRE(balanced_01_23_count +
+                balanced_02_13_count +
+                balanced_03_12_count +
+                internal_poly_0_count +
+                internal_poly_1_count +
+                internal_poly_2_count +
+                internal_poly_3_count +
+                root_poly_01_count +
+                root_poly_02_count +
+                root_poly_03_count +
+                root_poly_12_count +
+                root_poly_13_count +
+                root_poly_23_count == nsamples);
         // There are 3 balanced-shared node trees
         //           6 trees with trichotomy at root
         //           4 trees with trichotomy that is a child of the root
-        REQUIRE(balanced_count / (double)nsamples == Approx(3.0/13.0).epsilon(eps));
-        REQUIRE(root_poly_count / (double)nsamples == Approx(6.0/13.0).epsilon(eps));
-        REQUIRE(internal_poly_count / (double)nsamples == Approx(4.0/13.0).epsilon(eps));
+        std::cout << "Freq of ((0,1),(2,3)): " << balanced_01_23_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,2),(1,3)): " << balanced_02_13_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,3),(1,2)): " << balanced_03_12_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,1,2),3): "   << internal_poly_3_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,1,3),2): "   << internal_poly_2_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,3,2),1): "   << internal_poly_1_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((3,1,2),0): "   << internal_poly_0_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,1),2,3): "   << root_poly_01_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,2),1,3): "   << root_poly_02_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((0,3),2,1): "   << root_poly_03_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((1,2),0,3): "   << root_poly_12_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((1,3),0,2): "   << root_poly_13_count / (double)nsamples << "\n";
+        std::cout << "Freq of ((2,3),0,1): "   << root_poly_23_count / (double)nsamples << "\n";
+        REQUIRE(balanced_01_23_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(balanced_02_13_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(balanced_03_12_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(internal_poly_0_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(internal_poly_1_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(internal_poly_2_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(internal_poly_3_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(root_poly_01_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(root_poly_02_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(root_poly_03_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(root_poly_12_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(root_poly_13_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
+        REQUIRE(root_poly_23_count / (double)nsamples == Approx(1.0/13.0).epsilon(eps));
     }
 }
 
@@ -2890,10 +3125,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb wit
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
-                    2,
                     false);
             double exp_ln_hastings = std::log(2.0 / (13.0 * 0.3));
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
@@ -2949,10 +3183,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to com
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
-                    2,
                     false);
             double exp_ln_hastings = std::log(2.0 / (13.0 * 0.3));
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
@@ -3009,10 +3242,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb wi
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
-                    2,
                     false);
             double exp_ln_hastings = std::log(2.0 / (13.0 * 0.3));
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
@@ -3073,11 +3305,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced w
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
 
             double ln_hastings = op.propose_split(rng,
-                    &tree,
-                    2,
-                    false);
+                    &tree);
             double exp_ln_hastings = std::log(2.0 * 0.2);
-            REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+            REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
@@ -3161,13 +3391,11 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
 
-            double ln_hastings = op.propose_merge(rng,
-                    &tree,
-                    3,
-                    true);
+            double ln_hastings = op.propose(rng,
+                    &tree);
             if (tree.get_root_ptr()->get_number_of_children() == 3) {
                 double exp_ln_hastings = std::log(1.0 / (3.0 * 0.3));
-                REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+                REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
                 REQUIRE(tree.get_number_of_node_heights() == 2);
                 REQUIRE(tree.get_number_of_splittable_heights() == 1);
                 REQUIRE(tree.get_height(0) == 0.1);
@@ -3180,7 +3408,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
                 //             = 1/2 * 1 * 1/2 * 1/d = 1/4d
                 // HR = 1/4d / 1/2 = 2/4d = 1/2d
                 double exp_ln_hastings = std::log(1.0 / (2.0 * 0.2));
-                REQUIRE(ln_hastings == Approx(exp_ln_hastings));
+                REQUIRE(ln_hastings == Approx(exp_ln_hastings).epsilon(1e-8));
                 REQUIRE(tree.get_number_of_node_heights() == 2);
                 REQUIRE(tree.get_number_of_splittable_heights() == 1);
                 REQUIRE(tree.get_height(0) == 0.2);
