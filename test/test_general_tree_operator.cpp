@@ -1414,6 +1414,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3 leaves",
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose(rng,
                     &tree);
@@ -1422,6 +1423,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3 leaves",
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_height(0) == 0.3);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 0))).epsilon(1e-8));
         }
     }
 }
@@ -1473,6 +1476,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 1);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 0))).epsilon(1e-8));
 
             double ln_hastings = op.propose(rng,
                     &tree);
@@ -1482,6 +1486,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_height(1) == 0.3);
             REQUIRE(tree.get_height(0) < 0.3);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
             if (tree.get_root_ptr()->is_child("leaf2")) {
                 ++count_01;
             }
@@ -1504,7 +1510,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 3 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(18);
@@ -1688,7 +1694,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);
@@ -2657,11 +2663,14 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
 
             double ln_hastings = op.propose(rng,
                     &tree);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
             // Pr(forward move) = pr(merging) * pr(picking node) = 1 * 1/2 = 1/2
             // Pr(reverse move) = pr(splitting) * pr(picking node) * pr(paritioning nodes) * pr(new height)
             // = 1/2 * 1 * 1/3 * 1/height diff = 1/6d
@@ -2739,6 +2748,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose_split(rng,
                     &tree);
@@ -2748,6 +2758,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
             REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
             if (tree.get_root_ptr()->get_child(0)->is_child("leaf2") ||
                 tree.get_root_ptr()->get_child(1)->is_child("leaf2")) {
                 ++count_01;
@@ -2821,6 +2833,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose_split(rng,
                     &tree);
@@ -2834,6 +2847,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
             REQUIRE(
                     ((tree.get_height(1) < 0.3) && (tree.get_height(1) > 0.2))
                     );
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
             if (tree.get_root_ptr()->get_child(0)->is_leaf() ||
                 tree.get_root_ptr()->get_child(1)->is_leaf()) {
                 if (tree.get_root_ptr()->is_child("leaf2")) {
@@ -2930,6 +2945,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 0))).epsilon(1e-8));
 
             // Calling propose, because split should be only possibility
             double ln_hastings = op.propose(rng,
@@ -2940,6 +2956,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_height(1) == root_ht);
             REQUIRE(tree.get_height(0) < root_ht);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
             if (tree.get_root_ptr()->get_number_of_children() == 3) {
                 if (tree.get_root_ptr()->is_child("leaf2") &&
                     tree.get_root_ptr()->is_child("leaf3")) {
@@ -3122,6 +3140,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb wit
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_height(0) == 0.2);
             REQUIRE(tree.get_height(1) == 0.3);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
@@ -3132,6 +3151,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb wit
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
             REQUIRE(tree.get_height(0) == 0.3);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 0))).epsilon(1e-8));
         }
     }
 }
@@ -3180,6 +3201,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to com
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
@@ -3190,6 +3212,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to com
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
             REQUIRE(tree.get_height(0) == 0.3);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 0))).epsilon(1e-8));
         }
     }
 }
@@ -3239,6 +3263,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb wi
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose_merge(rng,
                     &tree,
@@ -3249,6 +3274,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb wi
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
             REQUIRE(tree.get_height(0) == 0.3);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 0))).epsilon(1e-8));
         }
     }
 }
@@ -3303,6 +3330,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced w
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
 
             double ln_hastings = op.propose_split(rng,
                     &tree);
@@ -3314,6 +3342,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced w
             REQUIRE(tree.get_height(2) == 0.3);
             REQUIRE(tree.get_height(1) == 0.2);
             REQUIRE(tree.get_height(0) < 0.2);
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
             if (tree.get_root_ptr()->get_child(0)->get_height() < 0.2) {
                 ++split0_count;
             }
@@ -3390,6 +3420,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
             tree.compute_log_likelihood_and_prior(true);
             REQUIRE(tree.get_number_of_node_heights() == 3);
             REQUIRE(tree.get_number_of_splittable_heights() == 0);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
 
             double ln_hastings = op.propose(rng,
                     &tree);
@@ -3418,6 +3449,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
             else {
                 REQUIRE(0 == 1);
             }
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
         }
         REQUIRE(root_poly_count + balanced_count == nsamples);
         double eps = 0.01;
