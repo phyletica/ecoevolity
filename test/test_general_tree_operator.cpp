@@ -1373,7 +1373,7 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 2 nested internals, fixed root,
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge with 3 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(30);
@@ -1430,7 +1430,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3 leaves",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split with 3 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(30);
@@ -1755,7 +1755,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         unsigned int count_3_heights = 0;
         unsigned int count_2_heights = 0;
 
-        unsigned int niterations = 2000000;
+        unsigned int niterations = 5000000;
         unsigned int sample_freq = 20;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
@@ -2213,8 +2213,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
         unsigned int count_3_heights = 0;
         unsigned int count_2_heights = 0;
 
-        unsigned int niterations = 500000;
-        unsigned int sample_freq = 5;
+        unsigned int niterations = 1000000;
+        unsigned int sample_freq = 10;
         unsigned int nsamples = niterations / sample_freq;
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate_plus(rng, &tree, other_ops, 1, 2, 2);
@@ -2606,7 +2606,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge with ladderized tree with 4") {
         RandomNumberGenerator rng = RandomNumberGenerator(22);
@@ -2663,14 +2663,17 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
-            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.4) *
+                            (1.0 / 0.2)
+                            )).epsilon(1e-8));
 
             double ln_hastings = op.propose(rng,
                     &tree);
             REQUIRE(tree.get_number_of_node_heights() == 2);
             REQUIRE(tree.get_number_of_splittable_heights() == 1);
             tree.compute_log_likelihood_and_prior(true);
-            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / root_ht)).epsilon(1e-8));
             // Pr(forward move) = pr(merging) * pr(picking node) = 1 * 1/2 = 1/2
             // Pr(reverse move) = pr(splitting) * pr(picking node) * pr(paritioning nodes) * pr(new height)
             // = 1/2 * 1 * 1/3 * 1/height diff = 1/6d
@@ -2700,7 +2703,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with ladderized tree with
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split to ladderized tree with 4") {
         RandomNumberGenerator rng = RandomNumberGenerator(23);
@@ -2748,7 +2751,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
-            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / root_ht)).epsilon(1e-8));
 
             double ln_hastings = op.propose_split(rng,
                     &tree);
@@ -2759,7 +2762,10 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
             REQUIRE(tree.get_root_ptr()->is_child("leaf3"));
             REQUIRE(tree.get_root_ptr()->get_number_of_children() == 2);
             tree.compute_log_likelihood_and_prior(true);
-            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / root_ht) *
+                            (1.0 / 0.2)
+                            )).epsilon(1e-8));
             if (tree.get_root_ptr()->get_child(0)->is_child("leaf2") ||
                 tree.get_root_ptr()->get_child(1)->is_child("leaf2")) {
                 ++count_01;
@@ -2785,7 +2791,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split to ladderized tree with 4
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general tree with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split from root poly to general tree with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(24);
@@ -2833,7 +2839,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
 
             // Initialize prior probs
             tree.compute_log_likelihood_and_prior(true);
-            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 1))).epsilon(1e-8));
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / root_ht)).epsilon(1e-8));
 
             double ln_hastings = op.propose_split(rng,
                     &tree);
@@ -2848,7 +2854,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
                     ((tree.get_height(1) < 0.3) && (tree.get_height(1) > 0.2))
                     );
             tree.compute_log_likelihood_and_prior(true);
-            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(1.0 / pow(root_ht, 2))).epsilon(1e-8));
             if (tree.get_root_ptr()->get_child(0)->is_leaf() ||
                 tree.get_root_ptr()->get_child(1)->is_leaf()) {
                 if (tree.get_root_ptr()->is_child("leaf2")) {
@@ -2860,10 +2865,18 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
                 else {
                     REQUIRE(0 == 1);
                 }
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                                (1.0 / root_ht) *
+                                (1.0 / tree.get_height(1))
+                                )).epsilon(1e-8));
             }
             else if ((! tree.get_root_ptr()->get_child(0)->is_leaf()) &&
                 (! tree.get_root_ptr()->get_child(1)->is_leaf())) {
                 ++balanced_count;
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                                (1.0 / root_ht) *
+                                (1.0 / root_ht)
+                                )).epsilon(1e-8));
             }
             else {
                 REQUIRE(0 == 1);
@@ -2881,7 +2894,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from root poly to general
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split from comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(25);
@@ -3092,7 +3105,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from comb with 4 leaves",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from balanced to comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(26);
@@ -3158,7 +3171,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced to comb wit
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to comb with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from internal poly to comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(27);
@@ -3219,7 +3232,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from internal poly to com
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from root poly to comb with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(28);
@@ -3281,7 +3294,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from root poly to comb wi
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing split from shared to balanced with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(29);
@@ -3362,7 +3375,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split from shared to balanced w
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general with 4 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge from balanced general with 4 leaves") {
         RandomNumberGenerator rng = RandomNumberGenerator(30);

@@ -228,7 +228,7 @@ class BaseTree {
             this->root_->estimate_node_height();
         }
 
-        unsigned int get_node_height_index(const std::shared_ptr<PositiveRealParameter> height) {
+        unsigned int get_node_height_index(const std::shared_ptr<PositiveRealParameter> height) const {
             for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
                 if (this->node_heights_.at(i) == height) {
                     return i;
@@ -237,11 +237,11 @@ class BaseTree {
             throw EcoevolityError("Node height does not exist");
         }
 
-        std::vector< std::shared_ptr<NodeType> > get_mapped_nodes(const unsigned int height_index) {
+        std::vector< std::shared_ptr<NodeType> > get_mapped_nodes(const unsigned int height_index) const {
             return this->root_->get_mapped_nodes(this->node_heights_.at(height_index));
         }
 
-        std::vector< std::shared_ptr<NodeType> > get_mapped_polytomy_nodes(const unsigned int height_index) {
+        std::vector< std::shared_ptr<NodeType> > get_mapped_polytomy_nodes(const unsigned int height_index) const {
             return this->root_->get_mapped_polytomy_nodes(this->node_heights_.at(height_index));
         }
 
@@ -634,6 +634,20 @@ class BaseTree {
             return this->node_heights_.at(height_index)->get_value();
         }
 
+        double get_height_index_of_youngest_parent(const unsigned int height_index) const {
+            if (height_index == (this->node_heights_.size() - 1)) {
+                throw EcoevolityError("called get_height_index_of_youngest_parent with root index");
+            }
+            std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
+            std::shared_ptr<NodeType> youngest_parent = mapped_nodes.at(0)->get_parent();
+            for (unsigned int i = 1; i < mapped_nodes.size(); ++i) {
+                if (mapped_nodes.at(i)->get_parent()->get_height() < youngest_parent->get_height()) {
+                    youngest_parent = mapped_nodes.at(i)->get_parent();
+                }
+            }
+            return this->get_node_height_index(youngest_parent->get_height_parameter());
+        }
+
         std::shared_ptr<PositiveRealParameter> get_height_parameter(const unsigned int height_index) const {
             return this->node_heights_.at(height_index);
         }
@@ -728,13 +742,41 @@ class BaseTree {
             double root_height = this->root_->get_height();
             double d = 0.0;
             d += this->root_->get_height_relative_prior_ln_pdf();
-            // prior prob density of non-root internal nodes = (1 / root_height)^n,
-            // where n = the number of non-root internal nodes, so on
-            // log scale = n * (log(1)-log(root_height)) = n * -log(root_height)
-            double internal_node_height_prior_density = -std::log(root_height);
-            d += internal_node_height_prior_density * (this->get_number_of_node_heights() - 1);
+            // I was using a Uniform(0, root_height) on all unique node
+            // heights, but this caused a problem. Basically, heights mapped ot
+            // nodes that descend from a non-root internal node were higher
+            // order statistics that could not sample from their support
+            // interval.
+            // A Dirichlet distribution on unique heights doesn't fix this
+            // either, because this causes problems with non-nested nodes
+            // (e.g., a Dirichlet is not a good distribution for a balanced,
+            // bifurcating, 4-tipped tree with independent node heights).
+            // Kishino, Thorne, and Bruno (2001) had a solution for this, but
+            // it's not easy to adapt to cases of shared node heights across
+            // the tree.
+            // The solution below is a bit of a hack, but works for 4-tipped
+            // trees (and hopefully beyond).
+            // We assume that each unique node height is uniformly distributed
+            // between zero and the height of the youngest parent of node
+            // mapped to the height.
+            // This makes both nested and balanced tree shapes coherent.
+            // This distribution is funky, but if we used scaled betas rather
+            // than uniform, and put a hyper prior on the alpha shape parameter
+            // of the betas, it would make it flexible.
+            //
+            // Old uniform(0, root_height) code:
+            //     // prior prob density of non-root internal nodes = (1 / root_height)^n,
+            //     // where n = the number of non-root internal nodes, so on
+            //     // log scale = n * (log(1)-log(root_height)) = n * -log(root_height)
+            //     double internal_node_height_prior_density = -std::log(root_height);
+            //     d += internal_node_height_prior_density * (this->get_number_of_node_heights() - 1);
+            // The conditional uniform solution (uniform(0, youngest parent)):
+            for (unsigned int i = 0; i < this->get_number_of_node_heights() - 1; ++i) {
+                d += std::log(1.0 / this->node_heights_.at(this->get_height_index_of_youngest_parent(i))->get_value());
+            }
             return d;
         }
+
         virtual double compute_relative_log_prior_density_of_topology() const {
             return 0.0;
         }
