@@ -1694,7 +1694,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);
@@ -2147,7 +2147,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and operate_plus",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xxSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root and operate_plus") {
         RandomNumberGenerator rng = RandomNumberGenerator(21);
@@ -2219,6 +2219,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and o
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate_plus(rng, &tree, other_ops, 1, 2, 2);
             if ((i + 1) % sample_freq == 0) {
+                /* std::cout << "prior: " << tree.get_log_prior_density_value() << "\n"; */
                 if (tree.get_number_of_node_heights() == 1) {
                     ++count_0123;
                     REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);

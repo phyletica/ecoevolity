@@ -14526,3 +14526,138 @@ TEST_CASE("Testing missing gene copies (6 of 10 and 8 of 10) with relative root"
         }
     }
 }
+
+TEST_CASE("Testing BaseTree::get_height_of_youngest_parent()", "[BaseTree]") {
+    SECTION("Testing get_height_of_youngest_parent") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.08);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.06);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 0.04);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 0.04);
+        internal4->set_height_parameter(internal3->get_height_parameter());
+        std::shared_ptr<Node> internal5 = std::make_shared<Node>("internal5", 0.02);
+        std::shared_ptr<Node> internal6 = std::make_shared<Node>("internal6", 0.02);
+        internal6->set_height_parameter(internal5->get_height_parameter());
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        leaf6->fix_node_height();
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        leaf7->fix_node_height();
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
+        leaf8->fix_node_height();
+
+        internal3->add_child(leaf1);
+        internal3->add_child(leaf2);
+        internal4->add_child(leaf3);
+        internal4->add_child(leaf4);
+        internal5->add_child(leaf5);
+        internal5->add_child(leaf6);
+        internal6->add_child(leaf7);
+        internal6->add_child(leaf8);
+
+        internal1->add_child(internal5);
+        internal1->add_child(internal3);
+        internal2->add_child(internal6);
+        internal2->add_child(internal4);
+
+        root->add_child(internal1);
+        root->add_child(internal2);
+        BaseTree<Node> tree(root);
+
+        REQUIRE(tree.get_leaf_node_count() == 8);
+        REQUIRE(tree.get_node_count() == 15);
+        REQUIRE(tree.get_number_of_node_heights() == 5);
+        std::vector<double> expected_heights {0.02, 0.04, 0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        REQUIRE_THROWS_AS(tree.get_youngest_parent(4), EcoevolityError &);
+        REQUIRE_THROWS_AS(tree.get_height_of_youngest_parent(4), EcoevolityError &);
+        REQUIRE_THROWS_AS(tree.get_index_of_youngest_parent(4), EcoevolityError &);
+        REQUIRE(tree.get_youngest_parent(0)->get_height() == 0.06);
+        REQUIRE(tree.get_height_of_youngest_parent(0) == 0.06);
+        REQUIRE(tree.get_index_of_youngest_parent(0) == 2);
+        REQUIRE(tree.get_youngest_parent(1)->get_height() == 0.06);
+        REQUIRE(tree.get_height_of_youngest_parent(1) == 0.06);
+        REQUIRE(tree.get_index_of_youngest_parent(1) == 2);
+        REQUIRE(tree.get_youngest_parent(2)->get_height() == 0.1);
+        REQUIRE(tree.get_height_of_youngest_parent(2) == 0.1);
+        REQUIRE(tree.get_index_of_youngest_parent(2) == 4);
+        REQUIRE(tree.get_youngest_parent(3)->get_height() == 0.1);
+        REQUIRE(tree.get_height_of_youngest_parent(3) == 0.1);
+        REQUIRE(tree.get_index_of_youngest_parent(3) == 4);
+    }
+}
+
+TEST_CASE("Testing BaseTree::get_height_of_oldest_child()", "[BaseTree]") {
+    SECTION("Testing get_height_of_oldest_child") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.08);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.06);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>("internal3", 0.04);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>("internal4", 0.04);
+        internal4->set_height_parameter(internal3->get_height_parameter());
+        std::shared_ptr<Node> internal5 = std::make_shared<Node>("internal5", 0.02);
+        std::shared_ptr<Node> internal6 = std::make_shared<Node>("internal6", 0.02);
+        internal6->set_height_parameter(internal5->get_height_parameter());
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        leaf5->fix_node_height();
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        leaf6->fix_node_height();
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        leaf7->fix_node_height();
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>("leaf8", 0.0);
+        leaf8->fix_node_height();
+
+        internal3->add_child(leaf1);
+        internal3->add_child(leaf2);
+        internal4->add_child(leaf3);
+        internal4->add_child(leaf4);
+        internal5->add_child(leaf5);
+        internal5->add_child(leaf6);
+        internal6->add_child(leaf7);
+        internal6->add_child(leaf8);
+
+        internal1->add_child(internal5);
+        internal1->add_child(internal3);
+        internal2->add_child(internal6);
+        internal2->add_child(internal4);
+
+        root->add_child(internal1);
+        root->add_child(internal2);
+        BaseTree<Node> tree(root);
+
+        REQUIRE(tree.get_leaf_node_count() == 8);
+        REQUIRE(tree.get_node_count() == 15);
+        REQUIRE(tree.get_number_of_node_heights() == 5);
+        std::vector<double> expected_heights {0.02, 0.04, 0.06, 0.08, 0.1};
+        REQUIRE(tree.get_node_heights() == expected_heights);
+
+        REQUIRE(tree.get_oldest_child(0)->get_height() == 0.0);
+        REQUIRE(tree.get_height_of_oldest_child(0) == 0.0);
+        REQUIRE(tree.get_oldest_child(1)->get_height() == 0.0);
+        REQUIRE(tree.get_height_of_oldest_child(1) == 0.0);
+        REQUIRE(tree.get_oldest_child(2)->get_height() == 0.04);
+        REQUIRE(tree.get_height_of_oldest_child(2) == 0.04);
+        REQUIRE(tree.get_oldest_child(3)->get_height() == 0.04);
+        REQUIRE(tree.get_height_of_oldest_child(3) == 0.04);
+        REQUIRE(tree.get_oldest_child(4)->get_height() == 0.08);
+        REQUIRE(tree.get_height_of_oldest_child(4) == 0.08);
+    }
+}
