@@ -227,6 +227,19 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return this->children_.at(index);
         }
 
+        std::shared_ptr<DerivedNodeT> get_oldest_child() {
+            if (this->is_leaf()) {
+                throw EcoevolityError("called BaseNode::get_oldest_child() on a leaf");
+            }
+            std::shared_ptr<DerivedNodeT> oldest_child = this->children_.at(0);
+            for (unsigned int i = 1; i < this->children_.size(); ++i) {
+                if (this->children_.at(i)->get_height() > oldest_child->get_height()) {
+                    oldest_child = this->children_.at(i);
+                }
+            }
+            return oldest_child;
+        }
+
         std::vector< std::shared_ptr<DerivedNodeT> > get_children(
                 std::vector<unsigned int> indices) {
             std::vector< std::shared_ptr<DerivedNodeT> > children_ptrs(indices.size());
