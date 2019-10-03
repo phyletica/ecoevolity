@@ -756,7 +756,7 @@ inline double chi_square_quantile(double prob, double df)
 	c = xx - 1.0;
 	if (df >= -1.24 * std::log(p))
 		goto l1;
-	ch = std::pow((p * xx * exp(g + xx * aa)), 1.0/xx);
+	ch = std::pow((p * xx * std::exp(g + xx * aa)), 1.0/xx);
 	if (ch-e < 0) 
 		return (ch);
 	goto l4;
@@ -770,7 +770,7 @@ inline double chi_square_quantile(double prob, double df)
 		p1 = 1.0+ch*(4.67+ch);  
 		p2 = ch*(6.73+ch*(6.66+ch));
 		t = -0.5+(4.67+2.0*ch)/p1 - (6.73+ch*(13.32+3.0*ch))/p2;
-		ch -= (1.0-exp(a+g+0.5*ch+c*aa)*p2/p1)/t;
+		ch -= (1.0-std::exp(a+g+0.5*ch+c*aa)*p2/p1)/t;
 		if (fabs(q/ch-1.0)-0.01 <= 0.0) 
 			goto l4;
 		else                       
