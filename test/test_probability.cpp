@@ -353,6 +353,98 @@ TEST_CASE("Testing BetaDistribution", "[BetaDistribution]") {
     }
 }
 
+inline double trapezoidal_integration(
+        const BetaDistribution & beta_dist,
+        double scale_parameter = 1.0,
+        unsigned int number_of_steps = 10000) {
+    double step_size = scale_parameter / number_of_steps;
+    double position = 0.0;
+    unsigned int n = 0;
+    std::vector<double> left_ln_densities;
+    std::vector<double> right_ln_densities;
+    std::vector<double> step_sizes;
+    while (position < scale_parameter) {
+        if ((position + step_size) > scale_parameter) {
+            step_size = scale_parameter - position;
+        }
+        double midpoint = position + (step_size / 2.0);
+        double left_ln_dens = beta_dist.ln_pdf(position);
+        double right_ln_dens = beta_dist.ln_pdf(position + step_size);
+        if (scale_parameter != 1.0) {
+            left_ln_dens = beta_dist.scaled_ln_pdf(position, scale_parameter);
+            right_ln_dens = beta_dist.scaled_ln_pdf(position + step_size, scale_parameter);
+        }
+        left_ln_densities.push_back(left_ln_dens);
+        right_ln_densities.push_back(right_ln_dens);
+        step_sizes.push_back(step_size);
+        n++;
+        position += step_size;
+    }
+    double ml = 0.0;
+    for (unsigned int i = 0; i < step_sizes.size(); ++i) {
+        double mean_density = ((
+                std::exp(left_ln_densities.at(i)) +
+                std::exp(right_ln_densities.at(i))) / 2.0);
+        ml += mean_density * step_sizes.at(i);
+    }
+    return ml;
+}
+
+TEST_CASE("Testing BetaDistribution::scaled_ln_pdf", "[BetaDistribution]") {
+
+    SECTION("Testing BetaDistribution(1, 1)") {
+        double a = 1.0;
+        double b = 1.0;
+
+        BetaDistribution f = BetaDistribution(a, b);
+        double marg = trapezoidal_integration(f);
+        double marg_scaled1 = trapezoidal_integration(f, 2.0);
+        double marg_scaled2 = trapezoidal_integration(f, 0.5);
+        double marg_scaled3 = trapezoidal_integration(f, 10.0);
+        double marg_scaled4 = trapezoidal_integration(f, 0.01);
+        REQUIRE(marg == Approx(1.0).epsilon(0.0001));
+        REQUIRE(marg == Approx(marg_scaled1));
+        REQUIRE(marg == Approx(marg_scaled2));
+        REQUIRE(marg == Approx(marg_scaled3));
+        REQUIRE(marg == Approx(marg_scaled4));
+    }
+
+    SECTION("Testing BetaDistribution(2, 1)") {
+        double a = 2.0;
+        double b = 1.0;
+
+        BetaDistribution f = BetaDistribution(a, b);
+        double marg = trapezoidal_integration(f);
+        double marg_scaled1 = trapezoidal_integration(f, 2.0);
+        double marg_scaled2 = trapezoidal_integration(f, 0.5);
+        double marg_scaled3 = trapezoidal_integration(f, 10.0);
+        double marg_scaled4 = trapezoidal_integration(f, 0.01);
+        REQUIRE(marg == Approx(1.0).epsilon(0.0001));
+        REQUIRE(marg == Approx(marg_scaled1));
+        REQUIRE(marg == Approx(marg_scaled2));
+        REQUIRE(marg == Approx(marg_scaled3));
+        REQUIRE(marg == Approx(marg_scaled4));
+    }
+
+    SECTION("Testing BetaDistribution(1, 2)") {
+        double a = 1.0;
+        double b = 2.0;
+
+        BetaDistribution f = BetaDistribution(a, b);
+        double marg = trapezoidal_integration(f);
+        double marg_scaled1 = trapezoidal_integration(f, 2.0);
+        double marg_scaled2 = trapezoidal_integration(f, 0.5);
+        double marg_scaled3 = trapezoidal_integration(f, 10.0);
+        double marg_scaled4 = trapezoidal_integration(f, 0.01);
+        REQUIRE(marg == Approx(1.0).epsilon(0.0001));
+        REQUIRE(marg == Approx(marg_scaled1));
+        REQUIRE(marg == Approx(marg_scaled2));
+        REQUIRE(marg == Approx(marg_scaled3));
+        REQUIRE(marg == Approx(marg_scaled4));
+    }
+}
+
+
 TEST_CASE("Testing OffsetGammaDistribution", "[OffsetGammaDistribution]") {
     SECTION("Testing bare constructor") {
         OffsetGammaDistribution f = OffsetGammaDistribution();

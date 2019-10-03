@@ -235,6 +235,14 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
 		    return lnp;
         }
 
+        double scaled_ln_pdf(double x, double scale_parameter) const {
+            double unscaled_x = x / scale_parameter;
+            double lnp = this->ln_pdf(unscaled_x);
+            lnp -= std::log(scale_parameter);
+
+		    return lnp;
+        }
+
         double relative_ln_pdf(double x) const {
             return this->ln_pdf(x);
         }
