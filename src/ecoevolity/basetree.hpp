@@ -567,6 +567,61 @@ class BaseTree {
             return indices;
         }
 
+        std::vector<unsigned int> get_indices_of_intervening_nodes(
+                const unsigned int height_index,
+                const double value) {
+            std::vector<unsigned int> indices;
+            // value is larger than this height
+            if (this->get_height(height_index) < value) {
+                if (height_index == (this->get_number_of_node_heights() - 1)) {
+                    return indices;
+                }
+                for (unsigned int i = (height_index + 1);
+                        i < this->get_number_of_node_heights();
+                        ++i) {
+                    if (this->get_height(i) > value) {
+                        break;
+                    }
+                    if (this->maps_ancestors_of(height_index, i)) {
+                        indices.push_back(i);
+                        continue;
+                    }
+                    for (auto idx : indices) {
+                        if (this->maps_ancestors_of(idx, i)) {
+                            indices.push_back(i);
+                            break;
+                        }
+                    }
+                }
+                return indices;
+            }
+            // value is less than this height
+            if (height_index == 0) {
+                return indices;
+            }
+            // decrementing an unsigned int to zero is a bit tricky; this stops
+            // before we hit zero in the evaluation, but decrements before
+            // jumping into loop body
+            for (unsigned int i = height_index;
+                    i-- > 0;
+                ) {
+                if (this->get_height(i) < value) {
+                    break;
+                }
+                if (this->maps_ancestors_of(i, height_index)) {
+                    indices.push_back(i);
+                    continue;
+                }
+                for (auto idx : indices) {
+                    if (this->maps_ancestors_of(i, idx)) {
+                        indices.push_back(i);
+                        break;
+                    }
+                }
+            }
+            return indices;
+        }
+
         unsigned int get_nearest_height_index(const double value) {
             if (this->get_number_of_node_heights() < 2) {
                 return 0;
@@ -658,6 +713,21 @@ class BaseTree {
 
         unsigned int get_index_of_youngest_parent(const unsigned int height_index) const {
             return this->get_node_height_index(this->get_youngest_parent(height_index)->get_height_parameter());
+        }
+
+        bool maps_ancestors_of(const unsigned int younger_index,
+                const unsigned int older_index) {
+            ECOEVOLITY_ASSERT(younger_index < older_index);
+            std::vector< std::shared_ptr<NodeType> > older_nodes = this->get_mapped_nodes(older_index);
+            std::vector< std::shared_ptr<NodeType> > younger_nodes = this->get_mapped_nodes(younger_index);
+            for (auto young_node: younger_nodes) {
+                for (auto old_node : older_nodes) {
+                    if (young_node->is_ancestor(old_node)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         std::shared_ptr<NodeType> get_oldest_child(const unsigned int height_index) const {
