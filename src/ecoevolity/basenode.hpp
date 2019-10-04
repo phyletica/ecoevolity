@@ -154,6 +154,16 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return false;
         }
 
+        bool is_ancestor(const std::shared_ptr<DerivedNodeT>& node) const {
+            if (this->is_root()) {
+                return false;
+            }
+            if (this->is_parent(node)) {
+                return true;
+            }
+            return (this->parent_.lock()->is_ancestor(node));
+        }
+
         void add_parent(std::shared_ptr<DerivedNodeT> node) {
             if (!node) {
                 throw EcoevolityNullPointerError("BaseNode::add_parent(), empty node given");
@@ -269,7 +279,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return children_ptrs;
         }
 
-        const std::vector< std::shared_ptr<DerivedNodeT> >& get_all_children() {
+        const std::vector< std::shared_ptr<DerivedNodeT> >& get_all_children() const {
             return this->children_;
         }
 

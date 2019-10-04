@@ -2732,14 +2732,14 @@ TEST_CASE("Testing get_node(label)", "[Node]") {
     }
 }
 
-TEST_CASE("Testing Node::get_oldest_child with leaf", "[xNode]") {
+TEST_CASE("Testing Node::get_oldest_child with leaf", "[Node]") {
     SECTION("Testing Node::get_oldest_child with leaf") {
         Node n = Node(0.03);
         REQUIRE_THROWS_AS(n.get_oldest_child(), EcoevolityError &);
     }
 }
 
-TEST_CASE("Testing Node::get_oldest_child with one child", "[xNode]") {
+TEST_CASE("Testing Node::get_oldest_child with one child", "[Node]") {
     SECTION("Testing Node::get_oldest_child with one child") {
         std::shared_ptr<Node> n = std::make_shared<Node>("node", 0.3);
         std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
@@ -2748,7 +2748,7 @@ TEST_CASE("Testing Node::get_oldest_child with one child", "[xNode]") {
     }
 }
 
-TEST_CASE("Testing Node::get_oldest_child with multiple children", "[xNode]") {
+TEST_CASE("Testing Node::get_oldest_child with multiple children", "[Node]") {
     SECTION("Testing Node::get_oldest_child with multiple children") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
         std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
@@ -2775,5 +2775,57 @@ TEST_CASE("Testing Node::get_oldest_child with multiple children", "[xNode]") {
         root->add_child(n2);
         REQUIRE(n1->get_oldest_child() == internal1);
         REQUIRE(root->get_oldest_child() == n2);
+    }
+}
+
+TEST_CASE("Testing Node::is_ancestor", "[xNode]") {
+    SECTION("Testing Node::is_ancestor") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root->add_child(n1);
+        root->add_child(n2);
+        REQUIRE(leaf1->is_ancestor(n2));
+        REQUIRE(leaf1->is_ancestor(root));
+        REQUIRE(! leaf1->is_ancestor(internal1));
+        REQUIRE(! leaf1->is_ancestor(internal2));
+        REQUIRE(! leaf1->is_ancestor(n1));
+        REQUIRE(! leaf3->is_ancestor(n2));
+        REQUIRE(leaf3->is_ancestor(internal1));
+        REQUIRE(leaf3->is_ancestor(n1));
+        REQUIRE(leaf3->is_ancestor(root));
+        REQUIRE(! n1->is_ancestor(n2));
+        REQUIRE(! n2->is_ancestor(n1));
+        REQUIRE(! n1->is_ancestor(internal1));
+        REQUIRE(internal1->is_ancestor(n1));
+        REQUIRE(! n1->is_ancestor(internal2));
+        REQUIRE(internal2->is_ancestor(n1));
+        REQUIRE(! n2->is_ancestor(internal1));
+        REQUIRE(! internal1->is_ancestor(n2));
+        REQUIRE(! n2->is_ancestor(internal2));
+        REQUIRE(! internal2->is_ancestor(n2));
+        REQUIRE(n2->is_ancestor(root));
+        REQUIRE(n1->is_ancestor(root));
+        REQUIRE(internal1->is_ancestor(root));
+        REQUIRE(internal2->is_ancestor(root));
+        REQUIRE(! internal1->is_ancestor(leaf3));
     }
 }
