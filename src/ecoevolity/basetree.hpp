@@ -101,44 +101,68 @@ class BaseTree {
             if (this->root_height_is_fixed() && (new_height > this->get_root_height())) {
                 return false;
             }
-            std::vector<unsigned int> intervening_indices = this->get_intervening_height_indices(
-                    height_index,
-                    new_height);
-            if (intervening_indices.size() < 1) {
-                // No intervening nodes to bump
-                this->node_heights_.at(height_index)->set_value(new_height);
-                return true;
+            bool getting_older = true;
+            if (this->get_height(height_index) > new_height) {
+                getting_older = false;
             }
-            if (height_index < intervening_indices.at(0)) {
-                // Older nodes to bump up
-                for (auto next_height_idx : intervening_indices) {
-                    this->node_heights_.at(next_height_idx - 1)->set_value(
+            unsigned int current_idx = height_index;
+            unsigned int next_height_idx;
+            if (getting_older) {
+                while (true) {
+                    if (current_idx == (this->get_number_of_node_heights() - 1)) {
+                        this->node_heights_.at(current_idx)->set_value(new_height);
+                        this->sort_node_heights();
+                        return true;
+                    }
+                    next_height_idx = this->get_index_of_youngest_parent(current_idx);
+                    if (this->get_height(next_height_idx) > new_height) {
+                        this->node_heights_.at(current_idx)->set_value(new_height);
+                        this->sort_node_heights();
+                        return true;
+                    }
+                    this->node_heights_.at(current_idx)->set_value(
                             this->node_heights_.at(next_height_idx)->get_value()
                             );
                     if (collisions_swap_nodes == 1) {
-                        this->collision_node_permute(rng, next_height_idx, next_height_idx - 1);
+                        this->collision_node_permute(rng, next_height_idx, current_idx);
                     }
                     else if (collisions_swap_nodes == 2) {
-                        this->collision_node_swap(rng, next_height_idx, next_height_idx - 1);
+                        this->collision_node_swap(rng, next_height_idx, current_idx);
                     }
+                    current_idx = next_height_idx;
                 }
-                this->node_heights_.at(intervening_indices.back())->set_value(new_height);
-                return true;
             }
             // Younger nodes to bump down
-            for (auto next_height_idx : intervening_indices) {
-                this->node_heights_.at(next_height_idx + 1)->set_value(
+            while (true) {
+                if (current_idx == 0) {
+                    this->node_heights_.at(current_idx)->set_value(new_height);
+                    this->sort_node_heights();
+                    return true;
+                }
+                std::shared_ptr<NodeType> oldest_child = this->get_oldest_child(current_idx);
+                if (oldest_child->is_leaf()) {
+                    this->node_heights_.at(current_idx)->set_value(new_height);
+                    this->sort_node_heights();
+                    return true;
+                }
+                next_height_idx = this->get_node_height_index(
+                        oldest_child->get_height_parameter());
+                if (this->get_height(next_height_idx) < new_height) {
+                    this->node_heights_.at(current_idx)->set_value(new_height);
+                    this->sort_node_heights();
+                    return true;
+                }
+                this->node_heights_.at(current_idx)->set_value(
                         this->node_heights_.at(next_height_idx)->get_value()
                         );
                 if (collisions_swap_nodes == 1) {
-                    this->collision_node_permute(rng, next_height_idx + 1, next_height_idx);
+                    this->collision_node_permute(rng, current_idx, next_height_idx);
                 }
                 else if (collisions_swap_nodes == 2) {
-                    this->collision_node_swap(rng, next_height_idx + 1, next_height_idx);
+                    this->collision_node_swap(rng, current_idx, next_height_idx);
                 }
+                current_idx = next_height_idx;
             }
-            this->node_heights_.at(intervening_indices.back())->set_value(new_height);
-            return true;
         }
 
     public:
