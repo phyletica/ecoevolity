@@ -713,6 +713,22 @@ class BaseTree {
             return this->node_heights_.at(height_index)->get_value();
         }
 
+        void set_height(const unsigned int height_index, double height) {
+            double youngest_parent = std::numeric_limits<double>::infinity();
+            if (height_index < (this->node_heights_.size() - 1)) {
+                youngest_parent = this->get_height_of_youngest_parent(height_index);
+            }
+            double oldest_child = this->get_height_of_oldest_child(height_index);
+            ECOEVOLITY_ASSERT(height < youngest_parent);
+            ECOEVOLITY_ASSERT(height > oldest_child);
+            this->node_heights_.at(height_index)->set_value(height);
+            this->sort_node_heights();
+        }
+
+        double get_relative_height(const unsigned int height_index) const {
+            return this->get_height(height_index) / this->get_root_height();
+        }
+
         std::shared_ptr<PositiveRealParameter> get_height_parameter(const unsigned int height_index) const {
             return this->node_heights_.at(height_index);
         }
@@ -733,6 +749,10 @@ class BaseTree {
 
         double get_height_of_youngest_parent(const unsigned int height_index) const {
             return this->get_youngest_parent(height_index)->get_height();
+        }
+
+        double get_relative_height_of_youngest_parent(const unsigned int height_index) const {
+            return this->get_height_of_youngest_parent(height_index) / this->get_root_height();
         }
 
         unsigned int get_index_of_youngest_parent(const unsigned int height_index) const {
@@ -769,11 +789,24 @@ class BaseTree {
             return this->get_oldest_child(height_index)->get_height();
         }
 
+        double get_relative_height_of_oldest_child(const unsigned int height_index) const {
+            return this->get_height_of_oldest_child(height_index) / this->get_root_height();
+        }
+
         void set_root_height(double height) {
             this->root_->set_height(height);
         }
         double get_root_height() const {
             return this->root_->get_height();
+        }
+
+        void scale_tree(double multiplier) {
+            ECOEVOLITY_ASSERT(multiplier >= 0.0);
+            ECOEVOLITY_ASSERT(! this->root_height_is_fixed());
+            for (unsigned int i = 0; i < this->node_heights_.size(); ++i) {
+                this->node_heights_.at(i)->set_value(
+                        multiplier * this->node_heights_.at(i)->get_value());
+            }
         }
 
         unsigned int get_degree_of_root() const {
@@ -889,11 +922,14 @@ class BaseTree {
             //     d += internal_node_height_prior_density * (this->get_number_of_node_heights() - 1);
             // The conditional uniform solution (uniform(0, youngest parent)):
             for (unsigned int i = 0; i < this->get_number_of_node_heights() - 1; ++i) {
-                double youngest_parent_height = this->get_height_of_youngest_parent(i);
-                /* double oldest_child_height = this->get_height_of_oldest_child(i); */
-                /* ECOEVOLITY_ASSERT(youngest_parent_height > oldest_child_height); */
-                /* d -= std::log(youngest_parent_height - oldest_child_height); */
-                d -= std::log(youngest_parent_height);
+                ///////////////////////////////////////////////////////////////
+                // Prior on the absolute ages of non-root internal nodes
+                // double youngest_parent_height = this->get_height_of_youngest_parent(i);
+                // d -= std::log(youngest_parent_height);
+                ///////////////////////////////////////////////////////////////
+                // Prior on the relative ages of non-root internal nodes
+                double youngest_parent_rel_height = this->get_relative_height_of_youngest_parent(i);
+                d -= std::log(youngest_parent_rel_height);
             }
             return d;
         }
