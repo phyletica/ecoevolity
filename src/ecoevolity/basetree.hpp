@@ -985,13 +985,13 @@ class BaseTree {
             this->restore_topology();
             this->restore_all_height_pointers();
             this->restore_all_heights();
+            this->update_node_heights();
         }
         virtual void restore_all_heights() {
             this->root_->restore_all_heights();
         }
         virtual void restore_all_height_pointers() {
             this->root_->restore_all_height_pointers();
-            this->update_node_heights();
         }
         virtual void restore_topology() {
             this->root_ = this->stored_root_;
