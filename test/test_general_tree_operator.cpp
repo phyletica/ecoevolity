@@ -304,7 +304,7 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, gamma root, and opti
     }
 }
 
-TEST_CASE("Testing RootHeightScaler with 3 leaves, gamma root, optimizing, and fixed internals",
+TEST_CASE("Testing RootHeightScaler with 3 leaves, gamma root, and optimizing",
         "[RootHeightScaler]") {
 
     SECTION("Testing 3 leaves with variable root and optimizing") {
@@ -460,6 +460,85 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, fixed root, and opti
 }
 
 
+TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, balanced, fixed root, and optimizing",
+        "[xNodeHeightSlideBumpScaler]") {
+
+    SECTION("Testing balanced 4 leaves with fixed root and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(54709754);
+        /* RandomNumberGenerator rng = RandomNumberGenerator(111); */
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.25);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.15);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+        internal1->add_child(leaf0);
+        internal1->add_child(leaf1);
+        internal0->add_child(leaf2);
+        internal0->add_child(leaf3);
+        root->add_child(internal0);
+        root->add_child(internal1);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        NodeHeightSlideBumpScaler<Node> op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> internal_height_0_summary;
+        SampleSummarizer<double> internal_height_1_summary;
+
+        unsigned int niterations = 200000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                internal_height_0_summary.add_sample(tree.get_node("internal0")->get_height());
+                internal_height_1_summary.add_sample(tree.get_node("internal1")->get_height());
+                REQUIRE(tree.get_height(2) == tree.get_root_height());
+                REQUIRE(tree.get_height(2) == 0.4);
+                REQUIRE(tree.get_height_of_youngest_parent(0) == 0.4);
+                REQUIRE(tree.get_height_of_youngest_parent(1) == 0.4);
+                REQUIRE(tree.get_height(0) < tree.get_height(1));
+                REQUIRE(tree.get_node("internal0")->get_height() != tree.get_node("internal1")->get_height());
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(internal_height_0_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_1_summary.sample_size() == nsamples);
+        
+        UniformDistribution prior(0.0, 0.4);
+
+        double eps = 0.001;
+        std::cout << "int0 mean: " << internal_height_0_summary.mean() << "\n";
+        std::cout << "int1 mean: " << internal_height_1_summary.mean() << "\n";
+        REQUIRE(internal_height_0_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_0_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_height_1_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_1_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
+
 TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, gamma root, and optimizing",
         "[xNodeHeightSlideBumpScaler]") {
 
@@ -553,7 +632,106 @@ TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, gamma root, and opti
     }
 }
 
-TEST_CASE("Testing RootHeightScaler with 4 leaves, gamma root, optimizing, fixed internals",
+
+TEST_CASE("Testing NodeHeightSlideBumpScaler with 4 leaves, balanced, gamma root, and optimizing",
+        "[xNodeHeightSlideBumpScaler]") {
+
+    SECTION("Testing balanced 4 leaves with variable root and optimizing") {
+        RandomNumberGenerator rng = RandomNumberGenerator(4723445);
+
+        double root_height_shape = 10.0;
+        double root_height_scale = 0.08;
+        std::shared_ptr<ContinuousProbabilityDistribution> root_height_prior = std::make_shared<GammaDistribution>(
+                root_height_shape,
+                root_height_scale);
+
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.125);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.25);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+
+        internal0->add_child(leaf0);
+        internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
+        root->add_child(internal1);
+        root->add_child(internal0);
+
+        BaseTree<Node> tree(root);
+        tree.set_root_node_height_prior(root_height_prior);
+
+        tree.ignore_data();
+        tree.estimate_root_height();
+
+        RootHeightScaler<Node> rop;
+        rop.turn_on_auto_optimize();
+        rop.set_auto_optimize_delay(100);
+
+        NodeHeightSlideBumpScaler<Node> op;
+        op.turn_on_auto_optimize();
+        op.set_auto_optimize_delay(100);
+
+        REQUIRE(rop.auto_optimizing());
+        REQUIRE(rop.get_auto_optimize_delay() == 100);
+        REQUIRE(op.auto_optimizing());
+        REQUIRE(op.get_auto_optimize_delay() == 100);
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        SampleSummarizer<double> root_height_summary;
+        SampleSummarizer<double> internal_height_0_summary;
+        SampleSummarizer<double> internal_height_1_summary;
+
+        unsigned int niterations = 800000;
+        unsigned int sample_freq = 10;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            rop.operate(rng, &tree, 1);
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                internal_height_0_summary.add_sample(tree.get_node("internal0")->get_height() / tree.get_root_height());
+                internal_height_1_summary.add_sample(tree.get_node("internal1")->get_height() / tree.get_root_height());
+                root_height_summary.add_sample(tree.get_root_height());
+                REQUIRE(tree.get_height(2) == tree.get_root_height());
+                REQUIRE(tree.get_height_of_youngest_parent(0) == tree.get_root_height());
+                REQUIRE(tree.get_height_of_youngest_parent(1) == tree.get_root_height());
+                REQUIRE(tree.get_height(0) < tree.get_height(1));
+                REQUIRE(tree.get_node("internal0")->get_height() != tree.get_node("internal1")->get_height());
+            }
+        }
+        std::cout << rop.header_string();
+        std::cout << rop.to_string();
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(rop.get_number_of_attempts() == niterations);
+        REQUIRE(rop.get_number_of_attempts_for_correction() == (niterations - 100));
+        REQUIRE(op.get_number_of_attempts() == niterations);
+        REQUIRE(op.get_number_of_attempts_for_correction() == (niterations - 100));
+
+        REQUIRE(root_height_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_0_summary.sample_size() == nsamples);
+        REQUIRE(internal_height_1_summary.sample_size() == nsamples);
+        
+        UniformDistribution prior(0.0, 1.0);
+
+        double eps = 0.001;
+        std::cout << "int0 mean: " << internal_height_0_summary.mean() << "\n";
+        std::cout << "int1 mean: " << internal_height_1_summary.mean() << "\n";
+        REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
+        REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
+        REQUIRE(internal_height_0_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_0_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+        REQUIRE(internal_height_1_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_1_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing RootHeightScaler with 4 leaves, gamma root, and optimizing",
         "[RootHeightScaler]") {
 
     SECTION("Testing 4 leaves with variable root and optimizing") {
