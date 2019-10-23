@@ -108,8 +108,6 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::shared_ptr<DerivedNodeT> get_copy() const {
             std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
             c->label_ = this->label_;
-            // c->height = std::make_shared<PositiveRealParameter>(*this->height_);
-            // c->stored_height_ = std::make_shared<PositiveRealParameter>(*this->stored_height_);
             // Keep height parameter copies "shallow"
             c->height_ = this->height_;
             c->stored_height_ = this->stored_height_;
@@ -121,6 +119,21 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             if (this->has_children()) {
                 for (auto child : this->children_) {
                     c->add_child(child->get_copy());
+                }
+            }
+            return c;
+        }
+
+        std::shared_ptr<DerivedNodeT> get_deep_copy() const {
+            std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
+            c->label_ = this->label_;
+            c->height_ = std::make_shared<PositiveRealParameter>(*this->height_);
+            c->stored_height_ = std::make_shared<PositiveRealParameter>(*this->stored_height_);
+            c->is_dirty_ = this->is_dirty_;
+            // Copy from this node to leaves; do not copy parent
+            if (this->has_children()) {
+                for (auto child : this->children_) {
+                    c->add_child(child->get_deep_copy());
                 }
             }
             return c;
@@ -370,14 +383,27 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             this->make_all_dirty();
         }
 
-        std::shared_ptr<DerivedNodeT> get_node(std::string label) {
-            if (this->get_label() == label) {
-                return this->shared_from_this();
+        void get_node(const std::string& label,
+                std::shared_ptr<DerivedNodeT>& node_ptr) {
+            if (node_ptr != nullptr) {
+                return;
+            }
+            if (this->is_label(label)) {
+                node_ptr = this->shared_from_this();
+                return;
             }
             for (auto child_iter: this->children_) {
-                return child_iter->get_node(label);
+                if (child_iter->is_label(label)) {
+                    node_ptr = child_iter;
+                    return;
+                }
+                child_iter->get_node(label, node_ptr);
             }
-            return nullptr;
+        }
+        std::shared_ptr<DerivedNodeT> get_node(const std::string& label) {
+            std::shared_ptr<DerivedNodeT> node_ptr = nullptr;
+            this->get_node(label, node_ptr);
+            return node_ptr;
         }
 
         void store_height() {
@@ -478,6 +504,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
         void set_label(std::string label) {
             this->label_ = label;
+        }
+        bool is_label(const std::string& label) {
+            return (this->label_ == label);
         }
 
         bool is_dirty() const {
