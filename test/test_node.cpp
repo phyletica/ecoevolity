@@ -2705,30 +2705,48 @@ TEST_CASE("Test get_copy", "[Node]") {
     }
 }
 
-TEST_CASE("Testing get_node(label)", "[Node]") {
+TEST_CASE("Testing get_node(label)", "[xNode]") {
 
     SECTION("Testing get_node(label)") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
         std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.07);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.05);
         std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
         std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
         std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
 
         internal0->add_child(leaf0);
         internal0->add_child(leaf1);
+        internal1->add_child(leaf2);
+        internal1->add_child(leaf3);
         root->add_child(internal0);
-        root->add_child(leaf2);
+        root->add_child(internal1);
+        root->add_child(leaf4);
 
         std::shared_ptr<Node> returned_node;
+
+        returned_node = root->get_node("does not exist");
+        REQUIRE(returned_node == nullptr);
+
+        returned_node = leaf2->get_node("leaf2");
+        REQUIRE(returned_node == leaf2);
+        returned_node = internal1->get_node("leaf2");
+        REQUIRE(returned_node == leaf2);
+
         returned_node = root->get_node("leaf0");
         REQUIRE(returned_node == leaf0);
         returned_node = root->get_node("internal0");
         REQUIRE(returned_node == internal0);
+        returned_node = root->get_node("internal1");
+        REQUIRE(returned_node == internal1);
+        returned_node = root->get_node("leaf2");
+        REQUIRE(returned_node == leaf2);
+        returned_node = root->get_node("leaf4");
+        REQUIRE(returned_node == leaf4);
         returned_node = root->get_node("root");
         REQUIRE(returned_node == root);
-
-        returned_node = root->get_node("does not exist");
-        REQUIRE(returned_node == nullptr);
     }
 }
 
@@ -2778,7 +2796,7 @@ TEST_CASE("Testing Node::get_oldest_child with multiple children", "[Node]") {
     }
 }
 
-TEST_CASE("Testing Node::is_ancestor", "[xNode]") {
+TEST_CASE("Testing Node::is_ancestor", "[Node]") {
     SECTION("Testing Node::is_ancestor") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
         std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
