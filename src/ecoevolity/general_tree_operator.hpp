@@ -613,12 +613,14 @@ class NodeHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> 
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
-            double height = tree->get_height(height_index);
-            double root_height = tree->get_root_height();
-            double relative_height = height / root_height;
+            double new_height = tree->get_height(height_index);
+            // double height = tree->get_height(height_index);
+            // double root_height = tree->get_root_height();
+            // double relative_height = height / root_height;
             double ln_multiplier;
-            this->update(rng, relative_height, ln_multiplier);
-            double new_height = relative_height * root_height;
+            // this->update(rng, relative_height, ln_multiplier);
+            this->update(rng, new_height, ln_multiplier);
+            // double new_height = relative_height * root_height;
             if ((new_height < tree->get_height_of_oldest_child(height_index)) ||
                     (new_height > tree->get_height_of_youngest_parent(height_index))) {
                 return -std::numeric_limits<double>::infinity();
@@ -669,15 +671,16 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> 
             tree->set_height(height_index, height);
             int num_scaled = 1;
             int num_inv_scaled = num_heights - 1;
+            ///////////////////////////////////////////////////////////////////
             // Because the non-root internal ages are relative to the root age,
             // they are all being scaled by 1/x when the root is scaled by x.
-            double ln_hastings = ln_multiplier * (num_scaled - num_inv_scaled);
-            return ln_hastings;
+            // double ln_hastings = ln_multiplier * (num_scaled - num_inv_scaled);
+            // return ln_hastings;
             ///////////////////////////////////////////////////////////////////
             // If the non-root internal ages are parameterized as absolute ages
             // (i.e., not relative to the root), only the root age changes and
             // so the hastings ratio is simply the multiplier:
-            // return ln_multiplier;
+            return ln_multiplier;
         }
 };
 
@@ -727,12 +730,14 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
-            double height = tree->get_height(height_index);
-            double root_height = tree->get_root_height();
-            double relative_height = height / root_height;
+            double new_height = tree->get_height(height_index);
+            // double height = tree->get_height(height_index);
+            // double root_height = tree->get_root_height();
+            // double relative_height = height / root_height;
             double ln_multiplier;
-            this->update(rng, relative_height, ln_multiplier);
-            double new_height = relative_height * root_height;
+            this->update(rng, new_height, ln_multiplier);
+            // this->update(rng, relative_height, ln_multiplier);
+            // double new_height = relative_height * root_height;
             if (new_height < 0) {
                 return -std::numeric_limits<double>::infinity();
             }
@@ -832,19 +837,21 @@ class NodeHeightMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> 
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
-            double height = tree->get_height(height_index);
-            double root_height = tree->get_root_height();
-            double relative_height = height / root_height;
+            double new_height = tree->get_height(height_index);
+            // double height = tree->get_height(height_index);
+            // double root_height = tree->get_root_height();
+            // double relative_height = height / root_height;
             double ln_hastings;
-            this->update(rng, relative_height, ln_hastings);
-            double new_height = relative_height * root_height;
+            this->update(rng, new_height, ln_hastings);
+            // this->update(rng, relative_height, ln_hastings);
+            // double new_height = relative_height * root_height;
             if (new_height < tree->get_height_of_oldest_child(height_index)) {
                 return -std::numeric_limits<double>::infinity();
             }
             if (new_height > tree->get_height_of_youngest_parent(height_index)) {
                 return -std::numeric_limits<double>::infinity();
             }
-            tree->set_height(height_index, height);
+            tree->set_height(height_index, new_height);
             return ln_hastings;
         }
 };
@@ -895,12 +902,14 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
             unsigned int max_height_index = num_heights - 2;
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
-            double height = tree->get_height(height_index);
-            double root_height = tree->get_root_height();
-            double relative_height = height / root_height;
+            double new_height = tree->get_height(height_index);
+            // double height = tree->get_height(height_index);
+            // double root_height = tree->get_root_height();
+            // double relative_height = height / root_height;
             double ln_hastings;
-            this->update(rng, relative_height, ln_hastings);
-            double new_height = relative_height * root_height;
+            this->update(rng, new_height, ln_hastings);
+            // this->update(rng, relative_height, ln_hastings);
+            // double new_height = relative_height * root_height;
             if (new_height < 0) {
                 return -std::numeric_limits<double>::infinity();
             }

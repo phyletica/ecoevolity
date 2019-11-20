@@ -924,12 +924,12 @@ class BaseTree {
             for (unsigned int i = 0; i < this->get_number_of_node_heights() - 1; ++i) {
                 ///////////////////////////////////////////////////////////////
                 // Prior on the absolute ages of non-root internal nodes
-                // double youngest_parent_height = this->get_height_of_youngest_parent(i);
-                // d -= std::log(youngest_parent_height);
+                double youngest_parent_height = this->get_height_of_youngest_parent(i);
+                d -= std::log(youngest_parent_height);
                 ///////////////////////////////////////////////////////////////
                 // Prior on the relative ages of non-root internal nodes
-                double youngest_parent_rel_height = this->get_relative_height_of_youngest_parent(i);
-                d -= std::log(youngest_parent_rel_height);
+                // double youngest_parent_rel_height = this->get_relative_height_of_youngest_parent(i);
+                // d -= std::log(youngest_parent_rel_height);
             }
             return d;
         }

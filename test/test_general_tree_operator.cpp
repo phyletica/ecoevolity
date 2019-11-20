@@ -1096,18 +1096,11 @@ TEST_CASE("Testing NodeHeightSlideBumpMover with 3 leaves, gamma root, and optim
         
         UniformDistribution prior(0.0, 1.0);
 
-        SampleSummarizer<double> expected_summary;
-        for (unsigned int i = 0; i < niterations; ++i) {
-            double root_ht = root_height_prior->draw(rng);
-            double sample = rng.uniform_real(0.0, root_ht);
-            expected_summary.add_sample(sample);
-        }
-
         double eps = 0.001;
         REQUIRE(root_height_summary.mean() == Approx(root_height_prior->get_mean()).epsilon(eps));
         REQUIRE(root_height_summary.variance() == Approx(root_height_prior->get_variance()).epsilon(eps));
-        REQUIRE(internal_height_summary.mean() == Approx(expected_summary.mean()).epsilon(eps * 5));
-        REQUIRE(internal_height_summary.variance() == Approx(expected_summary.variance()).epsilon(eps * 5));
+        REQUIRE(internal_height_summary.mean() == Approx(prior.get_mean()).epsilon(eps));
+        REQUIRE(internal_height_summary.variance() == Approx(prior.get_variance()).epsilon(eps));
     }
 }
 
@@ -2222,7 +2215,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[xxSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);
@@ -2675,7 +2668,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves, fixed root, and operate_plus",
-        "[xxSplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root and operate_plus") {
         RandomNumberGenerator rng = RandomNumberGenerator(21);
