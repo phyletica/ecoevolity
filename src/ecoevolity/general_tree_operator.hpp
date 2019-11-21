@@ -698,6 +698,8 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
                     height);
         }
 
+        bool operate_on_root_ = false;
+
     public:
         NodeHeightSlideBumpScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
         NodeHeightSlideBumpScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
@@ -714,6 +716,10 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
+        virtual void set_operate_on_root(bool operate_on_root) {
+            this->operate_on_root_ = operate_on_root;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -723,11 +729,14 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if (num_heights < 2) {
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
                 // No non-root heights to operate on
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int max_height_index = num_heights - 2;
+            if (this->operate_on_root_) {
+                max_height_index = num_heights - 1;
+            }
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
             double new_height = tree->get_height(height_index);
@@ -742,7 +751,9 @@ class NodeHeightSlideBumpScaler : public GeneralTreeOperatorInterface<NodeType, 
                 return -std::numeric_limits<double>::infinity();
             }
             if (new_height > tree->get_root_height()) {
-                return -std::numeric_limits<double>::infinity();
+                if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
             }
             bool move_happened = this->call_tree_method_(
                     tree,
@@ -870,6 +881,8 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
                     height);
         }
 
+        bool operate_on_root_ = false;
+
     public:
         NodeHeightSlideBumpMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
         NodeHeightSlideBumpMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
@@ -886,6 +899,10 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_operator;
         }
 
+        virtual void set_operate_on_root(bool operate_on_root) {
+            this->operate_on_root_ = operate_on_root;
+        }
+
         /**
          * @brief   Propose a new state.
          *
@@ -895,11 +912,14 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
                 BaseTree<NodeType> * tree,
                 unsigned int nthreads = 1) {
             unsigned int num_heights = tree->get_number_of_node_heights();
-            if (num_heights < 2) {
+            if ((! this->operate_on_root_) && (num_heights < 2)) {
                 // No non-root heights to operate on
                 return -std::numeric_limits<double>::infinity();
             }
             unsigned int max_height_index = num_heights - 2;
+            if (this->operate_on_root_) {
+                max_height_index = num_heights - 1;
+            }
             unsigned int height_index = rng.uniform_int(0,
                     max_height_index);
             double new_height = tree->get_height(height_index);
@@ -913,8 +933,10 @@ class NodeHeightSlideBumpMover : public GeneralTreeOperatorInterface<NodeType, W
             if (new_height < 0) {
                 return -std::numeric_limits<double>::infinity();
             }
-            if (tree->root_height_is_fixed() && (new_height > tree->get_root_height())) {
-                return -std::numeric_limits<double>::infinity();
+            if (new_height > tree->get_root_height()) {
+                if (tree->root_height_is_fixed() || (! this->operate_on_root_)) {
+                    return -std::numeric_limits<double>::infinity();
+                }
             }
             bool move_happened = this->call_tree_method_(
                     tree,
