@@ -37,6 +37,9 @@ class BaseTree {
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
+        std::vector< std::shared_ptr<NodeType> > pre_ordered_nodes_;
+        std::vector< std::shared_ptr<NodeType> > level_ordered_nodes_;
+
         // The case where a singleton polytomy is mapped to the height we are
         // splitting; we have to handle this a little differently.
         // Because there is only one node mapped to the height, we have to make
@@ -52,7 +55,8 @@ class BaseTree {
                 RandomNumberGenerator & rng,
                 std::shared_ptr<NodeType> polytomy_node,
                 std::shared_ptr<PositiveRealParameter> new_height_parameter,
-                const bool refresh_node_heights = false) {
+                const bool refresh_node_heights = false,
+                const bool refresh_node_ordering = true) {
             unsigned int n_children = polytomy_node->get_number_of_children();
             std::vector< std::vector<unsigned int> > child_subsets;
             // Need to avoid the partitions where all children are assigned to
@@ -89,6 +93,9 @@ class BaseTree {
             else {
                 this->node_heights_.push_back(new_height_parameter);
                 this->sort_node_heights();
+            }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
             }
         }
 
@@ -169,6 +176,19 @@ class BaseTree {
         BaseTree() { }
         BaseTree(std::shared_ptr<NodeType> root) {
             this->set_root(root);
+        }
+
+        void refresh_pre_ordered_nodes() {
+            this->root_->pre_order(this->pre_ordered_nodes_);
+        }
+        void refresh_level_ordered_nodes() {
+            this->root_->level_order(this->level_ordered_nodes_);
+        }
+        void refresh_ordered_nodes() {
+            this->refresh_pre_ordered_nodes();
+            this->refresh_level_ordered_nodes();
+        }
+        void store_splits(std::set<Split> & split_set) {
         }
 
         void update_node_heights() {
@@ -304,7 +324,8 @@ class BaseTree {
                 double & height_lower_bound,
                 unsigned int & number_of_mapped_nodes,
                 std::vector<unsigned int> & mapped_polytomy_sizes,
-                const bool refresh_node_heights = false) {
+                const bool refresh_node_heights = false,
+                const bool refresh_node_ordering = true) {
             mapped_polytomy_sizes.clear();
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             number_of_mapped_nodes = mapped_nodes.size();
@@ -387,6 +408,9 @@ class BaseTree {
                 this->node_heights_.push_back(new_height_parameter);
                 this->sort_node_heights();
             }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
+            }
         }
 
         std::vector<unsigned int> get_indices_of_splittable_heights() const {
@@ -451,7 +475,8 @@ class BaseTree {
         void collision_node_permute(
                 RandomNumberGenerator & rng,
                 const unsigned int older_height_index,
-                const unsigned int younger_height_index) {
+                const unsigned int younger_height_index,
+                const bool refresh_node_ordering = true) {
             std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
                     older_height_index,
                     younger_height_index);
@@ -502,12 +527,16 @@ class BaseTree {
                 }
                 ECOEVOLITY_ASSERT(swap_node_pool.size() == 0);
             }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
+            }
         }
 
         void collision_node_swap(
                 RandomNumberGenerator & rng,
                 const unsigned int older_height_index,
-                const unsigned int younger_height_index) {
+                const unsigned int younger_height_index,
+                const bool refresh_node_ordering =  true) {
             std::vector< std::shared_ptr<NodeType> > collision_parents = this->get_collision_parents(
                     older_height_index,
                     younger_height_index);
@@ -551,6 +580,9 @@ class BaseTree {
                 swap_node2->remove_parent();
                 swap_node1->add_parent(parent2);
                 swap_node2->add_parent(parent1);
+            }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
             }
         }
 
@@ -691,6 +723,8 @@ class BaseTree {
             this->root_ = root;
             this->vet_tree();
             this->update_node_heights();
+            this->refresh_ordered_nodes();
+            this->root_->resize_splits(this->get_leaf_node_count());
         }
 
         const NodeType& get_root() const {return *this->root_;}
@@ -995,6 +1029,7 @@ class BaseTree {
         }
         virtual void restore_topology() {
             this->root_ = this->stored_root_;
+            this->refresh_ordered_nodes();
         }
 
         std::string to_parentheses() const {
@@ -1019,6 +1054,32 @@ class BaseTree {
         virtual void draw_from_prior(RandomNumberGenerator& rng) {
             throw EcoevolityError("draw_from_prior called from base BaseTree class");
         }
+
+        void store_splits(std::set< std::pair<unsigned int, Split> > & split_set,
+                bool resize_splits = false) {
+            if (resize_splits) {
+                this->root_->resize_splits(this->get_leaf_node_count());
+            }
+            for (auto node = this->pre_ordered_nodes_.rbegin();
+                    node != this->pre_ordered_nodes_.rend();
+                    ++node) {
+                if (! (*node)->is_leaf()) { 
+                    // add this internal node's split to split set
+                    split_set.insert(std::make_pair(
+                            this->get_node_height_index((*node)->get_height_parameter()),
+                            (*node)->split_
+                            ));
+                }
+                else {
+                    // Set bit for this leaf node's index
+                    (*node)->split_.set_leaf_bit((*node)->get_index());
+                }
+                if ((*node)->has_parent()) {
+                    (*node)->get_parent()->split_.add_split((*node)->split_);
+                }
+            }
+        }
+
 };
 
 #endif

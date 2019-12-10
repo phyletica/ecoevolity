@@ -71,12 +71,13 @@ class Split {
         void set_leaf_bit(const unsigned int leaf_index);
         void add_split(const Split & other);
 
-        bool is_equivalent(const Split & other, bool strict_root = true) const;
+        bool is_equivalent(const Split & other,
+                const bool strict_root = true) const;
         bool is_compatible(const Split & other) const;
         bool conflicts_with(const Split & other) const;
 
         std::string as_string(const char unset_char = '0',
-                const char set_char = '1');
+                const char set_char = '1') const;
         split_metrics_t get_split_metrics() const;
 
     private:
@@ -148,7 +149,7 @@ inline void Split::set_leaf_bit(const unsigned int leaf_index) {
     unsigned int bit_index = leaf_index - unit_index * this->bits_per_unit_;
     split_unit_t unity = 1;
     split_unit_t bit_to_set = unity << bit_index;
-    this->bits_ |= bit_to_set;
+    this->bits_.at(unit_index) |= bit_to_set;
 }
 
 inline Split::split_unit_t Split::get_bits(const unsigned int unit_index) const {
@@ -174,28 +175,29 @@ inline void Split::add_split(const Split & other) {
 
 inline std::string Split::as_string(
         const char unset_char,
-        const char set_char) {
-    std::string s;
+        const char set_char) const {
+    std::ostringstream ss;
     unsigned int nleaves_added = 0;
     for (unsigned int i = 0; i < this->bits_.size(); ++i) {
         for (unsigned int j = 0; j < this->bits_per_unit_; ++j) {
             split_unit_t bitmask = ((split_unit_t)1 << j);
-            bool bit_is_set = ((this->bits>.at(i) & bitmask) > (split_unit_t)0);
+            bool bit_is_set = ((this->bits_.at(i) & bitmask) > (split_unit_t)0);
             if (bit_is_set) {
-                s += set_char;
+                ss << set_char;
             }
             else {
-                s += unset_char;
+                ss << unset_char;
             }
             if (++nleaves_added == this->number_of_leaves_) {
                 break;
             }
         }
     }
-    return s;
+    return ss.str();
 }
 
-inline bool Split::is_equivalent(const Split & other, bool strict_root) const {
+inline bool Split::is_equivalent(const Split & other,
+        const bool strict_root) const {
     if (strict_root) {
         return (this->bits_ == other.bits_);
     }
@@ -221,7 +223,7 @@ inline bool Split::is_equivalent(const Split & other, bool strict_root) const {
                     polarity = 1;
                 }
                 else {
-                    polority = 2;
+                    polarity = 2;
                 }
             }
             else {

@@ -41,10 +41,15 @@ class Node: public BaseNode<Node>{
 
     public:
         Node() { }
+        Node(int index) : BaseClass(index) { }
         Node(std::string label) : BaseClass(label) { }
+        Node(int index, std::string label) : BaseClass(index, label) { }
         Node(double height) : BaseClass(height) { }
+        Node(int index, double height) : BaseClass(index, height) { }
         Node(std::shared_ptr<PositiveRealParameter> height) : BaseClass(height) { }
+        Node(int index, std::shared_ptr<PositiveRealParameter> height) : BaseClass(index, height) { }
         Node(std::string label, double height) : BaseClass(label, height) { }
+        Node(int index, std::string label, double height) : BaseClass(index, label, height) { }
 };
 
 class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {

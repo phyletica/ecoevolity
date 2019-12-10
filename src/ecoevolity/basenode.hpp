@@ -34,6 +34,7 @@
 #include "debug.hpp"
 #include "assert.hpp"
 #include "error.hpp"
+#include "split.hpp"
 
 /**
  * Base class for a node of a phylogenetic tree.
@@ -76,6 +77,8 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         }
 
     public:
+        Split split_;
+
         // Constructors
         BaseNode() { }
         BaseNode(int index) {
@@ -136,6 +139,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
             c->label_ = this->label_;
             c->index_ = this->index_;
+            c->split_ = this->split_;
             // Keep height parameter copies "shallow"
             c->height_ = this->height_;
             c->stored_height_ = this->stored_height_;
@@ -156,6 +160,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
             c->label_ = this->label_;
             c->index_ = this->index_;
+            c->split_ = this->split_;
             c->height_ = std::make_shared<PositiveRealParameter>(*this->height_);
             c->stored_height_ = std::make_shared<PositiveRealParameter>(*this->stored_height_);
             c->is_dirty_ = this->is_dirty_;
@@ -175,6 +180,13 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 d += 1;
             }
             return d;
+        }
+
+        void resize_splits(unsigned int number_of_leaves) {
+            this->split_.resize(number_of_leaves);
+            for (auto child_iter: this->children_) {
+                child_iter->resize_splits(number_of_leaves);
+            }
         }
 
         bool has_parent() const { return this->parent_.expired() ? false : true; }

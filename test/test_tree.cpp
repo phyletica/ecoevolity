@@ -14851,3 +14851,60 @@ TEST_CASE("Testing BaseTree::get_height_of_oldest_child()", "[BaseTree]") {
         REQUIRE(tree.get_height_of_oldest_child(4) == 0.08);
     }
 }
+
+TEST_CASE("Testing BaseTree::store_splits()", "[xBaseTree]") {
+    SECTION("Testing store_splits") {
+        std::shared_ptr<Node> root = std::make_shared<Node>(14, "root", 0.1);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>(12, "internal1", 0.08);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>(13, "internal2", 0.06);
+        std::shared_ptr<Node> internal3 = std::make_shared<Node>(8, "internal3", 0.04);
+        std::shared_ptr<Node> internal4 = std::make_shared<Node>(9, "internal4", 0.04);
+        internal4->set_height_parameter(internal3->get_height_parameter());
+        std::shared_ptr<Node> internal5 = std::make_shared<Node>(10, "internal5", 0.02);
+        std::shared_ptr<Node> internal6 = std::make_shared<Node>(11, "internal6", 0.02);
+        internal6->set_height_parameter(internal5->get_height_parameter());
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(0, "leaf1", 0.0);
+        leaf1->fix_node_height();
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(1, "leaf2", 0.0);
+        leaf2->fix_node_height();
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(2, "leaf3", 0.0);
+        leaf3->fix_node_height();
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(3, "leaf4", 0.0);
+        leaf4->fix_node_height();
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>(4, "leaf5", 0.0);
+        leaf5->fix_node_height();
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>(5, "leaf6", 0.0);
+        leaf6->fix_node_height();
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>(6, "leaf7", 0.0);
+        leaf7->fix_node_height();
+        std::shared_ptr<Node> leaf8 = std::make_shared<Node>(7, "leaf8", 0.0);
+        leaf8->fix_node_height();
+
+        internal3->add_child(leaf1);
+        internal3->add_child(leaf2);
+        internal4->add_child(leaf3);
+        internal4->add_child(leaf4);
+        internal5->add_child(leaf5);
+        internal5->add_child(leaf6);
+        internal6->add_child(leaf7);
+        internal6->add_child(leaf8);
+
+        internal1->add_child(internal5);
+        internal1->add_child(internal3);
+        internal2->add_child(internal6);
+        internal2->add_child(internal4);
+
+        root->add_child(internal1);
+        root->add_child(internal2);
+        BaseTree<Node> tree(root);
+
+        std::set< std::pair< unsigned int, Split> > split_set;
+        tree.store_splits(split_set);
+        for (auto split_pair : split_set) {
+            std::cout << split_pair.first
+                << ": "
+                << split_pair.second.as_string() <<
+                "\n";
+        }
+    }
+}
