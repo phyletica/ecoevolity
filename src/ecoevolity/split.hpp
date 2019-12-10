@@ -47,6 +47,7 @@
 class Split {
     public:
         Split();
+        Split(unsigned int number_of_leaves);
         Split(const Split & other);
         ~Split();
 
@@ -90,6 +91,10 @@ inline Split::Split() {
     this->number_of_leaves_ = 0;
     this->bits_per_unit_ = (CHAR_BIT)*sizeof(Split::split_unit_t);
     this->clear();
+}
+
+inline Split::Split(unsigned int number_of_leaves) : Split::Split() {
+    this->resize(number_of_leaves);
 }
 
 inline Split::Split(const Split & other) {
