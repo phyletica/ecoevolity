@@ -26,6 +26,7 @@
 #include <vector>
 #include <memory>
 #include <stdexcept>
+#include <queue>
 
 #include "matrix.hpp"
 #include "parameter.hpp"
@@ -647,6 +648,27 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             std::vector< std::shared_ptr<DerivedNodeT> > nodes;
             this->get_nodes(nodes);
             return nodes;
+        }
+
+        void pre_order(std::vector< std::shared_ptr<DerivedNodeT> >& nodes) {
+            nodes.clear();
+            this->get_nodes(nodes);
+        }
+
+        void level_order(std::vector< std::shared_ptr<DerivedNodeT> >& nodes) {
+            nodes.clear();
+            std::queue< std::shared_ptr<DerivedNodeT> > q;
+            std::shared_ptr<DerivedNodeT> nd = this->shared_from_this();
+            q.push(nd);
+            while(! q.empty()) {
+                nd = q.front(); q.pop();
+                nodes.push_back(nd);
+                if (! nd->is_leaf()) {
+                    for (auto child : nd->children_) {
+                        q.push(child);
+                    }
+                }
+            }
         }
 
         void get_internal_nodes(std::vector< std::shared_ptr<DerivedNodeT> >& internal_nodes) {

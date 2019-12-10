@@ -2705,7 +2705,7 @@ TEST_CASE("Test get_copy", "[Node]") {
     }
 }
 
-TEST_CASE("Testing get_node(label)", "[xNode]") {
+TEST_CASE("Testing get_node(label)", "[Node]") {
 
     SECTION("Testing get_node(label)") {
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
@@ -2845,5 +2845,127 @@ TEST_CASE("Testing Node::is_ancestor", "[Node]") {
         REQUIRE(internal1->is_ancestor(root));
         REQUIRE(internal2->is_ancestor(root));
         REQUIRE(! internal1->is_ancestor(leaf3));
+    }
+}
+
+TEST_CASE("Testing Node::pre_order", "[xNode]") {
+    SECTION("Testing Node::pre_order") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root->add_child(n1);
+        root->add_child(n2);
+
+        std::vector< std::shared_ptr<Node> > expected_nodes = {
+            root,
+            n1,
+            internal1,
+            leaf3,
+            leaf4,
+            internal2,
+            leaf5,
+            leaf6,
+            leaf7,
+            n2,
+            leaf1,
+            leaf2
+        };
+        std::vector< std::shared_ptr<Node> > slightly_wrong_nodes = {
+            root,
+            n1,
+            internal1,
+            leaf3,
+            leaf4,
+            internal2,
+            leaf5,
+            leaf6,
+            leaf7,
+            n2,
+            leaf2,
+            leaf1
+        };
+        std::vector< std::shared_ptr<Node> > nodes;
+        root->pre_order(nodes);
+        REQUIRE(nodes == expected_nodes);
+        REQUIRE(nodes != slightly_wrong_nodes);
+    }
+}
+
+TEST_CASE("Testing Node::level_order", "[xNode]") {
+    SECTION("Testing Node::level_order") {
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.5);
+        std::shared_ptr<Node> n1 = std::make_shared<Node>("node1", 0.3);
+        std::shared_ptr<Node> n2 = std::make_shared<Node>("node2", 0.4);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.2);
+        std::shared_ptr<Node> internal2 = std::make_shared<Node>("internal2", 0.1);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>("leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>("leaf6", 0.0);
+        std::shared_ptr<Node> leaf7 = std::make_shared<Node>("leaf7", 0.0);
+        n2->add_child(leaf1);
+        n2->add_child(leaf2);
+        internal1->add_child(leaf3);
+        internal1->add_child(leaf4);
+        internal2->add_child(leaf5);
+        internal2->add_child(leaf6);
+        n1->add_child(internal1);
+        n1->add_child(internal2);
+        n1->add_child(leaf7);
+        root->add_child(n1);
+        root->add_child(n2);
+
+        std::vector< std::shared_ptr<Node> > expected_nodes = {
+            root,
+            n1,
+            n2,
+            internal1,
+            internal2,
+            leaf7,
+            leaf1,
+            leaf2,
+            leaf3,
+            leaf4,
+            leaf5,
+            leaf6
+        };
+        std::vector< std::shared_ptr<Node> > slightly_wrong_nodes = {
+            root,
+            n1,
+            n2,
+            internal1,
+            internal2,
+            leaf7,
+            leaf1,
+            leaf2,
+            leaf3,
+            leaf4,
+            leaf6,
+            leaf5
+        };
+        std::vector< std::shared_ptr<Node> > nodes;
+        root->level_order(nodes);
+        REQUIRE(nodes == expected_nodes);
+        REQUIRE(nodes != slightly_wrong_nodes);
     }
 }
