@@ -50,6 +50,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::vector< std::shared_ptr<DerivedNodeT> > children_;
         std::weak_ptr<DerivedNodeT> parent_;
         std::string label_ = "";
+        int index_ = -1;
         std::shared_ptr<PositiveRealParameter> height_ = std::make_shared<PositiveRealParameter>(0.0);
         std::shared_ptr<PositiveRealParameter> stored_height_ = std::make_shared<PositiveRealParameter>(0.0);
         bool is_dirty_ = true;
@@ -76,20 +77,45 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
     public:
         // Constructors
         BaseNode() { }
+        BaseNode(int index) {
+            this->index_ = index;
+        }
         BaseNode(std::string label) {
             this->label_ = label;
         }
+        BaseNode(int index, std::string label) {
+            this->index_ = index;
+            this->label_ = label;
+        }
         BaseNode(double height) {
+            this->height_->set_value(height);
+        }
+        BaseNode(int index, double height) {
+            this->index_ = index;
             this->height_->set_value(height);
         }
         BaseNode(std::string label, double height) {
             this->label_ = label;
             this->height_->set_value(height);
         }
+        BaseNode(int index, std::string label, double height) {
+            this->index_ = index;
+            this->label_ = label;
+            this->height_->set_value(height);
+        }
         BaseNode(std::shared_ptr<PositiveRealParameter> height) {
             this->height_ = height;
         }
+        BaseNode(int index, std::shared_ptr<PositiveRealParameter> height) {
+            this->index_ = index;
+            this->height_ = height;
+        }
         BaseNode(std::string label, std::shared_ptr<PositiveRealParameter> height) {
+            this->label_ = label;
+            this->height_ = height;
+        }
+        BaseNode(int index, std::string label, std::shared_ptr<PositiveRealParameter> height) {
+            this->index_ = index;
             this->label_ = label;
             this->height_ = height;
         }
@@ -108,6 +134,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::shared_ptr<DerivedNodeT> get_copy() const {
             std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
             c->label_ = this->label_;
+            c->index_ = this->index_;
             // Keep height parameter copies "shallow"
             c->height_ = this->height_;
             c->stored_height_ = this->stored_height_;
@@ -127,6 +154,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
         std::shared_ptr<DerivedNodeT> get_deep_copy() const {
             std::shared_ptr<DerivedNodeT> c = std::make_shared<DerivedNodeT>();
             c->label_ = this->label_;
+            c->index_ = this->index_;
             c->height_ = std::make_shared<PositiveRealParameter>(*this->height_);
             c->stored_height_ = std::make_shared<PositiveRealParameter>(*this->stored_height_);
             c->is_dirty_ = this->is_dirty_;
@@ -499,6 +527,10 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return true;
         }
 
+        virtual int get_index() const {
+            ECOEVOLITY_ASSERT(this->index_ > -1);
+            return this->index_;
+        }
         const std::string& get_label() const {
             return this->label_;
         }

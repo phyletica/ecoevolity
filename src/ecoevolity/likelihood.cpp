@@ -195,8 +195,8 @@ void compute_pattern_partials(
     if (node.is_leaf()) {
         compute_leaf_partials(
                 node,
-                red_allele_counts.at(node.get_population_index()),
-                allele_counts.at(node.get_population_index()),
+                red_allele_counts.at(node.get_index()),
+                allele_counts.at(node.get_index()),
                 markers_are_dominant);
         return;
     }

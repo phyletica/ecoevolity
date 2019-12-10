@@ -51,29 +51,29 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
     private:
         typedef BaseNode<GeneTreeSimNode> BaseClass;
         int character_state_ = -1;
-        unsigned int population_index_ = 0;
+        int population_index_ = -1;
         double p[2][2];
 
     public:
         GeneTreeSimNode() { }
         GeneTreeSimNode(std::string label) : BaseClass(label) { }
         GeneTreeSimNode(double height) : BaseClass(height) { }
-        GeneTreeSimNode(unsigned int population_index) :
+        GeneTreeSimNode(int population_index) :
             BaseClass(),
             population_index_(population_index)
             { }
         GeneTreeSimNode(std::string label, double height) :
             BaseClass(label, height)
             { }
-        GeneTreeSimNode(unsigned int population_index, double height) :
+        GeneTreeSimNode(int population_index, double height) :
             BaseClass(height),
             population_index_(population_index)
             { }
-        GeneTreeSimNode(unsigned int population_index, std::string label) :
+        GeneTreeSimNode(int population_index, std::string label) :
             BaseClass(label),
             population_index_(population_index)
             { }
-        GeneTreeSimNode(unsigned int population_index, std::string label,
+        GeneTreeSimNode(int population_index, std::string label,
                 double height) :
             BaseClass(label, height),
             population_index_(population_index)
@@ -85,10 +85,22 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
         void set_character_state(int state) {
             this->character_state_ = state;
         }
-        unsigned int get_population_index() const {
+
+        /**
+         * Sanity check to make sure we don't use get_index() on accident in
+         * place of get_population_index(). Currently, get_index() is not used
+         * for GeneTreeSimNode, but if this changes, this sanity check
+         * can be removed.
+         */
+        int get_index() const {
+            throw EcoevolityError(
+                    "Called get_index() from a GeneTreeSimNode instance");
+        }
+        int get_population_index() const {
+            ECOEVOLITY_ASSERT(this->population_index_ > -1);
             return this->population_index_;
         }
-        void set_population_index(unsigned int index) {
+        void set_population_index(int index) {
             this->population_index_ = index;
         }
 
@@ -151,7 +163,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 std::vector<unsigned int>& allele_counts,
                 std::vector<unsigned int>& red_allele_counts) const {
             if (this->is_leaf()) {
-                unsigned int pop_idx = this->get_population_index();
+                int pop_idx = this->get_population_index();
                 ++allele_counts.at(pop_idx);
                 if (this->get_character_state() == 1) {
                     ++red_allele_counts.at(pop_idx);
@@ -169,7 +181,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
                 std::vector<unsigned int>& red_allele_counts,
                 std::vector<int>& last_allele) const {
             if (this->is_leaf()) {
-                unsigned int pop_idx = this->get_population_index();
+                int pop_idx = this->get_population_index();
                 if (last_allele.at(pop_idx) < 0) {
                     last_allele.at(pop_idx) = this->get_character_state();
                     return;
@@ -193,7 +205,7 @@ class GeneTreeSimNode : public BaseNode<GeneTreeSimNode> {
 class PopulationNode: public BaseNode<PopulationNode>{
     private:
         typedef BaseNode<PopulationNode> BaseClass;
-        unsigned int population_index_ = 0;
+        int population_index_ = -1;
         BiallelicPatternProbabilityMatrix bottom_pattern_probs_;
         BiallelicPatternProbabilityMatrix top_pattern_probs_;
         std::shared_ptr<PositiveRealParameter> population_size_ = std::make_shared<PositiveRealParameter>(0.001);
@@ -276,38 +288,32 @@ class PopulationNode: public BaseNode<PopulationNode>{
             this->top_pattern_probs_.resize(allele_count);
         }
         PopulationNode(
-                unsigned int population_index,
+                int population_index,
                 double height) :
-            BaseClass(height)
-        {
-            this->population_index_ = population_index;
-        }
+            BaseClass(population_index, height)
+        { }
         PopulationNode(
-                unsigned int population_index,
+                int population_index,
                 std::string label,
                 double height) :
-            BaseClass(label, height)
-        {
-            this->population_index_ = population_index;
-        }
+            BaseClass(population_index, label, height)
+        { }
         PopulationNode(
-                unsigned int population_index,
+                int population_index,
                 std::string label,
                 double height,
                 unsigned int allele_count) :
-            BaseClass(label, height)
+            BaseClass(population_index, label, height)
         {
             this->bottom_pattern_probs_.resize(allele_count);
             this->top_pattern_probs_.resize(allele_count);
-            this->population_index_ = population_index;
         }
         PopulationNode(const PopulationNode& node) :
-            BaseClass(node.label_, node.height_)
+            BaseClass(node.index_, node.label_, node.height_)
         {
             this->population_size_ = node.population_size_;
             this->bottom_pattern_probs_ = node.bottom_pattern_probs_;
             this->top_pattern_probs_ = node.top_pattern_probs_;
-            this->population_index_ = node.population_index_;
         }
 
         // overload copy operator
@@ -321,10 +327,6 @@ class PopulationNode: public BaseNode<PopulationNode>{
         //     this->top_pattern_probs_ = node.top_pattern_probs_;
         //     return * this;
         // }
-
-        unsigned int get_population_index() const {
-            return this->population_index_;
-        }
 
         // methods for accessing/changing pattern probabilities
         unsigned int get_allele_count() const {
@@ -590,9 +592,9 @@ class PopulationNode: public BaseNode<PopulationNode>{
         void get_node_indices(std::vector<unsigned int> & internal_indices,
                 std::vector<unsigned int> & leaf_indices) {
             if (this->is_leaf()) {
-                leaf_indices.push_back(this->get_population_index());
+                leaf_indices.push_back(this->get_index());
             } else {
-                internal_indices.push_back(this->get_population_index());
+                internal_indices.push_back(this->get_index());
             }
             for (auto child_iter: this->children_) {
                 child_iter->get_node_indices(internal_indices, leaf_indices);

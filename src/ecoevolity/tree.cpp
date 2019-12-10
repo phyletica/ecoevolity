@@ -292,11 +292,11 @@ void BasePopulationTree::set_data(const BiallelicData & data, bool constant_site
     const std::vector< std::shared_ptr<PopulationNode> >& leaves = this->root_->get_leaves();
     ECOEVOLITY_ASSERT(this->data_.get_number_of_populations() == leaves.size());
     for (unsigned int i = 0; i < leaves.size(); ++i) {
-        if (leaves.at(i)->get_allele_count() != data.get_max_allele_count(leaves.at(i)->get_population_index())) {
-            leaves.at(i)->resize(data.get_max_allele_count(leaves.at(i)->get_population_index()));
+        if (leaves.at(i)->get_allele_count() != data.get_max_allele_count(leaves.at(i)->get_index())) {
+            leaves.at(i)->resize(data.get_max_allele_count(leaves.at(i)->get_index()));
         }
-        if (leaves.at(i)->get_label() != data.get_population_label(leaves.at(i)->get_population_index())) {
-            leaves.at(i)->set_label(data.get_population_label(leaves.at(i)->get_population_index()));
+        if (leaves.at(i)->get_label() != data.get_population_label(leaves.at(i)->get_index())) {
+            leaves.at(i)->set_label(data.get_population_label(leaves.at(i)->get_index()));
         }
     }
     this->root_->resize_all();
@@ -474,7 +474,7 @@ std::shared_ptr<PositiveRealParameter> BasePopulationTree::get_root_population_s
 void BasePopulationTree::set_population_sizes(
         std::shared_ptr<PopulationNode> node,
         const std::vector<double> & sizes) {
-    node->set_population_size(sizes.at(node->get_population_index()));
+    node->set_population_size(sizes.at(node->get_index()));
     for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
         this->set_population_sizes(node->get_child(i), sizes);
     }
@@ -483,7 +483,7 @@ void BasePopulationTree::set_population_sizes(
 void BasePopulationTree::get_population_sizes(
         std::shared_ptr<PopulationNode> node,
         std::vector<double> & sizes) const {
-    sizes.at(node->get_population_index()) = node->get_population_size();
+    sizes.at(node->get_index()) = node->get_population_size();
     for (unsigned int i = 0; i < node->get_number_of_children(); ++i) {
         this->get_population_sizes(node->get_child(i), sizes);
     }
@@ -654,7 +654,7 @@ void BasePopulationTree::simulate_gene_tree(
         const bool use_max_allele_counts) const {
 
     // std::cout << "Top of simulate_gene_tree\n";
-    // std::cout << "node index: " << node->get_population_index() << "\n";
+    // std::cout << "node index: " << node->get_index() << "\n";
     // std::cout << "node label: " << node->get_label() << "\n";
     std::vector< std::shared_ptr<GeneTreeSimNode> > lineages;
     if (node->has_children()) {
@@ -664,7 +664,7 @@ void BasePopulationTree::simulate_gene_tree(
                 i < node->get_number_of_children();
                 ++i) {
             std::shared_ptr<PopulationNode> child = node->get_child(i);
-            unsigned int child_idx = child->get_population_index();
+            unsigned int child_idx = child->get_index();
             // std::cout << "child has index: " << "\n";
             // std::cout << "child has nlineages: " << branch_lineages.count(child_idx) << "\n";
             // ECOEVOLITY_ASSERT(child_idx >= 0);
@@ -684,7 +684,7 @@ void BasePopulationTree::simulate_gene_tree(
             // At root node: coalesce until 1 gene lineage and return
             // std::cout << "At root!\n";
             if (lineages.size() < 2) {
-                branch_lineages[node->get_population_index()] = lineages;
+                branch_lineages[node->get_index()] = lineages;
                 return;
             }
             double node_height = this->get_node_height_in_subs_per_site(*node);
@@ -694,9 +694,9 @@ void BasePopulationTree::simulate_gene_tree(
                     rng,
                     node_height,
                     std::numeric_limits<double>::infinity(),
-                    node->get_population_index()
+                    node->get_index()
                     );
-            branch_lineages[node->get_population_index()] = lineages;
+            branch_lineages[node->get_index()] = lineages;
             return;
         }
         // Internal branch that is not the root: Coalesce from bottom to top of
@@ -710,9 +710,9 @@ void BasePopulationTree::simulate_gene_tree(
                 rng,
                 node_height,
                 node_height + node_length,
-                node->get_population_index()
+                node->get_index()
                 );
-        branch_lineages[node->get_population_index()] = lineages;
+        branch_lineages[node->get_index()] = lineages;
     } else {
         // Handle terminal branch: create genealogy tips and coalesce to top of
         // branch
@@ -720,12 +720,12 @@ void BasePopulationTree::simulate_gene_tree(
         unsigned int allele_count;
         if (use_max_allele_counts) {
             allele_count = this->data_.get_max_allele_count(
-                    node->get_population_index());
+                    node->get_index());
         }
         else {
             allele_count = this->data_.get_allele_count(
                     pattern_index,
-                    node->get_population_index());
+                    node->get_index());
         }
         if (this->data_.markers_are_dominant()) {
             allele_count *= 2;
@@ -733,7 +733,7 @@ void BasePopulationTree::simulate_gene_tree(
         lineages.reserve(allele_count);
         for (unsigned int tip_idx = 0; tip_idx < allele_count; ++tip_idx) {
             std::shared_ptr<GeneTreeSimNode> tip = std::make_shared<GeneTreeSimNode>(
-                        node->get_population_index(),
+                        node->get_index(),
                         0.0);
                 tip->fix_node_height();
                 lineages.push_back(tip);
@@ -747,9 +747,9 @@ void BasePopulationTree::simulate_gene_tree(
                 rng,
                 node_height,
                 node_height + node_length,
-                node->get_population_index()
+                node->get_index()
                 );
-        branch_lineages[node->get_population_index()] = lineages;
+        branch_lineages[node->get_index()] = lineages;
     }
 }
 
@@ -765,8 +765,8 @@ std::shared_ptr<GeneTreeSimNode> BasePopulationTree::simulate_gene_tree(
             pattern_index,
             rng,
             use_max_allele_counts);
-    ECOEVOLITY_ASSERT(branch_lineages.at(this->root_->get_population_index()).size() == 1);
-    return branch_lineages.at(this->root_->get_population_index()).at(0);
+    ECOEVOLITY_ASSERT(branch_lineages.at(this->root_->get_index()).size() == 1);
+    return branch_lineages.at(this->root_->get_index()).at(0);
 }
 
 double BasePopulationTree::coalesce_in_branch(
