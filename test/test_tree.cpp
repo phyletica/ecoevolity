@@ -14900,11 +14900,66 @@ TEST_CASE("Testing BaseTree::store_splits()", "[xBaseTree]") {
 
         std::set< std::pair< unsigned int, Split> > split_set;
         tree.store_splits(split_set);
+        std::cout << "split set:\n";
         for (auto split_pair : split_set) {
             std::cout << split_pair.first
                 << ": "
                 << split_pair.second.as_string() <<
                 "\n";
         }
+
+        Split s;
+        s.resize(8);
+        std::set< std::pair< unsigned int, Split> > expected_set;
+        for (unsigned int i = 0; i < 8; ++i) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(4, s));
+
+        s.clear();
+        for (auto i : {0, 1, 4, 5}) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(3, s));
+
+        s.clear();
+        for (auto i : {2, 3, 6, 7}) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(2, s));
+
+        s.clear();
+        for (auto i : {0, 1}) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {2, 3}) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {4, 5}) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(0, s));
+
+        s.clear();
+        for (auto i : {6, 7}) {
+            s.set_leaf_bit(i);
+        }
+        expected_set.insert(std::make_pair(0, s));
+
+        std::cout << "expected split set:\n";
+        for (auto split_pair : expected_set) {
+            std::cout << split_pair.first
+                << ": "
+                << split_pair.second.as_string() <<
+                "\n";
+        }
+
+        REQUIRE(split_set == expected_set);
     }
 }
