@@ -47,12 +47,12 @@
 class Split {
     public:
         Split();
-        Split(unsigned int number_of_leaves);
         Split(const Split & other);
         ~Split();
 
         Split & operator=(const Split & other);
         bool operator==(const Split & other) const;
+        bool operator!=(const Split & other) const;
         bool operator<(const Split & other) const;
 
         void clear();
@@ -94,10 +94,6 @@ inline Split::Split() {
     this->clear();
 }
 
-inline Split::Split(unsigned int number_of_leaves) : Split::Split() {
-    this->resize(number_of_leaves);
-}
-
 inline Split::Split(const Split & other) {
     this->mask_ = other.mask_;
     this->number_of_leaves_ = other.number_of_leaves_;
@@ -121,6 +117,10 @@ inline Split & Split::operator=(const Split & other) {
 
 inline bool Split::operator==(const Split & other) const {
     return (this->bits_ == other.bits_);
+}
+
+inline bool Split::operator!=(const Split & other) const {
+    return (! (*this == other));
 }
 
 inline bool Split::operator<(const Split & other) const {
