@@ -14961,5 +14961,95 @@ TEST_CASE("Testing BaseTree::store_splits()", "[xBaseTree]") {
         }
 
         REQUIRE(split_set == expected_set);
+
+        // What if a height index is off?
+        std::set< std::pair< unsigned int, Split> > index_off_set;
+        for (unsigned int i = 0; i < 8; ++i) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(4, s));
+
+        s.clear();
+        for (auto i : {0, 1, 4, 5}) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(3, s));
+
+        s.clear();
+        for (auto i : {2, 3, 6, 7}) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(2, s));
+
+        s.clear();
+        for (auto i : {0, 1}) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {2, 3}) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {4, 5}) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {6, 7}) {
+            s.set_leaf_bit(i);
+        }
+        index_off_set.insert(std::make_pair(0, s));
+
+        REQUIRE(split_set != index_off_set);
+
+        // What if one leaf index is off?
+        std::set< std::pair< unsigned int, Split> > one_leaf_off_set;
+        for (unsigned int i = 0; i < 8; ++i) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(4, s));
+
+        s.clear();
+        for (auto i : {0, 1, 4, 5}) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(3, s));
+
+        s.clear();
+        for (auto i : {2, 3, 6, 7}) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(2, s));
+
+        s.clear();
+        for (auto i : {0, 4}) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {2, 3}) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(1, s));
+
+        s.clear();
+        for (auto i : {1, 5}) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(0, s));
+
+        s.clear();
+        for (auto i : {6, 7}) {
+            s.set_leaf_bit(i);
+        }
+        one_leaf_off_set.insert(std::make_pair(0, s));
+
+        REQUIRE(split_set != one_leaf_off_set);
     }
 }

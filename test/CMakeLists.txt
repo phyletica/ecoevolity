@@ -3,7 +3,11 @@ set(CMAKE_BUILD_TYPE Debug)
 
 include_directories("${SOURCE_DIR}" "${YAML_CPP_INCLUDE_DIR}" "${EXTERNAL_PROJECT_DIR}")
 
-file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
+# file(GLOB ECOEVOLITY_TEST_SOURCES "test_*.cpp")
+set(ECOEVOLITY_TEST_SOURCES
+    # "test_general_tree_operator.cpp")
+    # "test_split.cpp")
+    "test_tree.cpp")
 
 set(ECOEVOLITY_SOURCES
     "${ECOEVOLITY_SOURCE_DIR}/error.cpp"
