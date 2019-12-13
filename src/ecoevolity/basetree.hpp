@@ -20,7 +20,9 @@
 #ifndef ECOEVOLITY_BASETREE_HPP
 #define ECOEVOLITY_BASETREE_HPP
 
-#include "node.hpp"
+#include <ncl/nxsmultiformat.h>
+
+#include "split.hpp"
 #include "parameter.hpp"
 #include "probability.hpp"
 #include "error.hpp"
@@ -172,10 +174,68 @@ class BaseTree {
             }
         }
 
+        // Descendant classes can modify this method to get the node data
+        // needed for NodeType
+        /* virtual void extract_data_from_node_comments(  ) { */
+        /*     this->extract_height_indices_from_node_comments(   ); */
+        /* } */
+        /* void extract_height_indices_from_node_comments( ) { */
+        /* } */
+        /* void build_from_newick(std::istream & newick_tree_stream, */
+        /*         const bool rooted) { */
+        /* } */
+        void build_from_stream_(std::istream & tree_stream,
+                const std::string & ncl_file_format = "relaxedphyliptree") {
+            MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
+            try {
+                nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
+            }
+            catch(...) {
+                nexus_reader.DeleteBlocksFromFactories();
+                throw;
+            }
+            unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
+            std::cout << "Number of taxa blocks: " << num_taxa_blocks << "\n";
+            NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
+            // std::string taxa_block_title = taxa_block->GetTitle();
+
+            unsigned int num_tree_blocks = nexus_reader.GetNumTreesBlocks(taxa_block);
+            std::cout << "Number of tree blocks: " << num_tree_blocks << "\n";
+
+            NxsTreesBlock * tree_block = nexus_reader.GetTreesBlock(taxa_block, 0);
+            unsigned int num_trees = tree_block->GetNumTrees();
+            std::cout << "Number of trees: " << num_trees << "\n";
+
+            const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(0);
+            std::cout << "Tree is processed: " << tree_description.IsProcessed() << "\n";
+            std::cout << "Tree is rooted: " << tree_description.IsRooted() << "\n";
+
+            nexus_reader.DeleteBlocksFromFactories();
+        }
+
     public:
         BaseTree() { }
         BaseTree(std::shared_ptr<NodeType> root) {
             this->set_root(root);
+        }
+        BaseTree(std::istream & tree_stream,
+                const std::string & ncl_file_format) : BaseTree() {
+            this->build_from_stream_(tree_stream, ncl_file_format);
+        }
+        BaseTree(const std::string & path,
+                const std::string & ncl_file_format) : BaseTree() {
+            std::ifstream in_stream;
+            in_stream.open(path);
+            if (! in_stream.is_open()) {
+                throw EcoevolityParsingError(
+                        "Could not open tree file",
+                        path);
+            }
+            this->build_from_stream_(in_stream, ncl_file_format);
+        }
+        BaseTree(const std::string & newick_tree_string) : BaseTree() {
+            std::istringstream tree_stream(newick_tree_string);
+            this->build_from_stream_(tree_stream, "relaxedphyliptree");
         }
 
         void refresh_pre_ordered_nodes() {
