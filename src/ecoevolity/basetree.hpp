@@ -210,6 +210,57 @@ class BaseTree {
             std::cout << "Tree is processed: " << tree_description.IsProcessed() << "\n";
             std::cout << "Tree is rooted: " << tree_description.IsRooted() << "\n";
 
+            // Tree must be processed to create the NxsSimpleTree
+            int default_int_edge_length = 0;
+            double default_double_edge_length = 0.0;
+            NxsSimpleTree simple_tree(tree_description,
+                    default_int_edge_length,
+                    default_double_edge_length);
+            const std::vector<NxsSimpleNode *> & leaves = simple_tree.GetLeavesRef();
+            unsigned int num_leaves = leaves.size();
+            std::cout << "Number of leaves: " << num_leaves << "\n";
+            std::vector<std::string> leaf_labels;
+            leaf_labels.reserve(num_leaves);
+            for (auto leaf_node : leaves) {
+                NxsString label = taxa_block->GetTaxonLabel(leaf_node->GetTaxonIndex());
+                leaf_labels.push_back(label);
+            }
+            // Sort labels to ensure we always give the same label the same
+            // leaf node index
+            std::sort(leaf_labels.begin(), leaf_labels.end());
+            // Create map of labels to node indices
+            std::unordered_map<std::string, unsigned int> leaf_label_to_index_map;
+            leaf_label_to_index_map.reserve(num_leaves);
+            for (unsigned int i = 0; i < num_leaves; ++i) {
+                ECOEVOLITY_ASSERT(leaf_label_to_index_map.count(leaf_labels.at(i)) == 0);
+                leaf_label_to_index_map[leaf_labels.at(i)] = i;
+            }
+            const NxsSimpleNode * root = simple_tree.GetRootConst();
+            NxsSimpleEdge root_edge = root->GetEdgeToParent();
+            for (auto nxs_comment : root_edge.GetUnprocessedComments()) {
+                std::cout << "Root comment: " << nxs_comment.GetText() << "\n";
+            }
+            // Preferably, we want to get the node heights and node height
+            // indices from the metadata in the comments.
+            // We can check the root if this information exists.
+            // If so, we shoud throw an error if any other nodes lacks these
+            // data.
+            // If the root does not have these data, we could still parse the
+            // tree and calculate heights from the edge lengths; without height
+            // indices, the resulting tree would have no shared node heights.
+            bool getting_heights_from_comments = false;
+            for (auto simple_node : simple_tree.GetPreorderTraversal()) {
+                if (! simple_node->GetFirstChild()) {
+                   // No children; this is a leaf
+                    NxsString leaf_label = taxa_block->GetTaxonLabel(simple_node->GetTaxonIndex());
+                    std::cout << leaf_label << "\n";
+                    std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>("leaf1", 0.0);
+                }
+                for (auto nxs_comment : simple_node->GetEdgeToParent().GetUnprocessedComments()) {
+                    std::cout << nxs_comment.GetText() << "\n";
+                }
+            }
+
             nexus_reader.DeleteBlocksFromFactories();
         }
 
