@@ -23,6 +23,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <map>
 
 #include "assert.hpp"
 
@@ -118,6 +119,30 @@ inline bool startswith(
                 match.begin(),
                 match.end(),
                 s.begin()));
+}
+
+inline void parse_map(
+        const std::string &s,
+        std::map<std::string, std::string> & key_value_map,
+        char item_delimiter = ',',
+        char key_value_delimiter = '=') {
+    std::vector<std::string> map_items;
+    split(s, item_delimiter, map_items);
+    for (auto item : map_items) {
+        std::vector<std::string> key_value_pair;
+        split(item, key_value_delimiter, key_value_pair);
+        ECOEVOLITY_ASSERT(key_value_pair.size() == 2);
+        key_value_map[strip(key_value_pair.at(0))] = strip(key_value_pair.at(1));
+    }
+}
+
+inline std::map<std::string, std::string> parse_map(
+        const std::string &s,
+        char item_delimiter = ',',
+        char key_value_delimiter = '=') {
+    std::map<std::string, std::string> key_value_map;
+    parse_map(s, key_value_map, item_delimiter, key_value_delimiter);
+    return key_value_map;
 }
 
 } // namespace string_util

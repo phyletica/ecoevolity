@@ -186,3 +186,26 @@ TEST_CASE("Testing startswith", "[string_util]") {
         REQUIRE(string_util::startswith("amalie", "eden") == false);
     }
 }
+
+TEST_CASE("Testing parse_map", "[string_util]") {
+    SECTION("Testing parse_map") {
+        std::string s = "a=1,b=2.00,foo=bar,key with spaces=value with spaces";
+        std::map<std::string, std::string> expected_map;
+        expected_map["a"] = "1";
+        expected_map["b"] = "2.00";
+        expected_map["foo"] = "bar";
+        expected_map["key with spaces"] = "value with spaces";
+        std::map<std::string, std::string> returned_map = string_util::parse_map(s, ',', '=');
+        REQUIRE(returned_map == expected_map);
+    }
+    SECTION("Testing parse_map with spaces") {
+        std::string s = "  a = 1,   b     =    2.00  ,  foo = bar,key with spaces   =   value with spaces    ";
+        std::map<std::string, std::string> expected_map;
+        expected_map["a"] = "1";
+        expected_map["b"] = "2.00";
+        expected_map["foo"] = "bar";
+        expected_map["key with spaces"] = "value with spaces";
+        std::map<std::string, std::string> returned_map = string_util::parse_map(s, ',', '=');
+        REQUIRE(returned_map == expected_map);
+    }
+}
