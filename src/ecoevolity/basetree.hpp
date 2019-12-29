@@ -218,6 +218,7 @@ class BaseTree {
                     default_double_edge_length);
             const std::vector<NxsSimpleNode *> & leaves = simple_tree.GetLeavesRef();
             unsigned int num_leaves = leaves.size();
+            int num_leaves_int = leaves.size();
             std::cout << "Number of leaves: " << num_leaves << "\n";
             std::vector<std::string> leaf_labels;
             leaf_labels.reserve(num_leaves);
@@ -229,16 +230,26 @@ class BaseTree {
             // leaf node index
             std::sort(leaf_labels.begin(), leaf_labels.end());
             // Create map of labels to node indices
-            std::unordered_map<std::string, unsigned int> leaf_label_to_index_map;
+            std::unordered_map<std::string, int> leaf_label_to_index_map;
             leaf_label_to_index_map.reserve(num_leaves);
-            for (unsigned int i = 0; i < num_leaves; ++i) {
+            for (int i = 0; i < num_leaves_int; ++i) {
                 ECOEVOLITY_ASSERT(leaf_label_to_index_map.count(leaf_labels.at(i)) == 0);
                 leaf_label_to_index_map[leaf_labels.at(i)] = i;
             }
             const NxsSimpleNode * root = simple_tree.GetRootConst();
             NxsSimpleEdge root_edge = root->GetEdgeToParent();
+            std::map<std::string, std::string> root_info;
             for (auto nxs_comment : root_edge.GetUnprocessedComments()) {
                 std::cout << "Root comment: " << nxs_comment.GetText() << "\n";
+                std::string comment = string_util::strip(nxs_comment.GetText());
+                if (string_util::startswith(comment, "&")) {
+                    std::string root_info_str = comment.substr(1);
+                    string_util::parse_map(
+                            root_info_str,
+                            root_info,
+                            ',',
+                            '=');
+                }
             }
             // Preferably, we want to get the node heights and node height
             // indices from the metadata in the comments.
@@ -248,13 +259,24 @@ class BaseTree {
             // If the root does not have these data, we could still parse the
             // tree and calculate heights from the edge lengths; without height
             // indices, the resulting tree would have no shared node heights.
-            bool getting_heights_from_comments = false;
+            bool using_comments = false;
+            if (root_info.count("height_index") > 0) {
+                using_comments = true;
+            }
+            // For storing heights so they can be shared; only needed if using
+            // comments
+            std::map<std::string, std::shared_ptr<PositiveRealParameter> > indices_to_heights;
+            int next_internal_index = num_leaves;
             for (auto simple_node : simple_tree.GetPreorderTraversal()) {
                 if (! simple_node->GetFirstChild()) {
                    // No children; this is a leaf
                     NxsString leaf_label = taxa_block->GetTaxonLabel(simple_node->GetTaxonIndex());
                     std::cout << leaf_label << "\n";
-                    std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>("leaf1", 0.0);
+                    std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>(
+                            leaf_label_to_index_map[leaf_label],
+                            leaf_label,
+                            0.0);
+                    leaf->fix_node_height();
                 }
                 for (auto nxs_comment : simple_node->GetEdgeToParent().GetUnprocessedComments()) {
                     std::cout << nxs_comment.GetText() << "\n";
