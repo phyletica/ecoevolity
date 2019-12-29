@@ -199,13 +199,30 @@ TEST_CASE("Testing parse_map", "[string_util]") {
         REQUIRE(returned_map == expected_map);
     }
     SECTION("Testing parse_map with spaces") {
-        std::string s = "  a = 1,   b     =    2.00  ,  foo = bar,key with spaces   =   value with spaces    ";
+        std::string s = "  a = 1,   b     =    2.00  ,  foo = bar,key with spaces \t = \t  value with spaces    ";
         std::map<std::string, std::string> expected_map;
         expected_map["a"] = "1";
         expected_map["b"] = "2.00";
         expected_map["foo"] = "bar";
         expected_map["key with spaces"] = "value with spaces";
         std::map<std::string, std::string> returned_map = string_util::parse_map(s, ',', '=');
+        REQUIRE(returned_map == expected_map);
+    }
+    SECTION("Testing parse_map with adding to map") {
+        std::vector<std::string> v = {
+                "  a = 1   , b     =    2.00  ",
+                " foo = bar",
+                "\tkey with spaces   \t =  \t value with spaces  \t  "
+        };
+        std::map<std::string, std::string> expected_map;
+        expected_map["a"] = "1";
+        expected_map["b"] = "2.00";
+        expected_map["foo"] = "bar";
+        expected_map["key with spaces"] = "value with spaces";
+        std::map<std::string, std::string> returned_map;
+        for (auto s : v) {
+            string_util::parse_map(s, returned_map, ',', '=');
+        }
         REQUIRE(returned_map == expected_map);
     }
 }
