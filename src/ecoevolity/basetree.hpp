@@ -174,18 +174,9 @@ class BaseTree {
             }
         }
 
-        // Descendant classes can modify this method to get the node data
-        // needed for NodeType
-        /* virtual void extract_data_from_node_comments(  ) { */
-        /*     this->extract_height_indices_from_node_comments(   ); */
-        /* } */
-        /* void extract_height_indices_from_node_comments( ) { */
-        /* } */
-        /* void build_from_newick(std::istream & newick_tree_stream, */
-        /*         const bool rooted) { */
-        /* } */
         void build_from_stream_(std::istream & tree_stream,
-                const std::string & ncl_file_format = "relaxedphyliptree") {
+                const std::string & ncl_file_format = "relaxedphyliptree",
+                double ultrametricity_tolerance = 1e-8) {
             MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
             try {
                 nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
@@ -216,6 +207,12 @@ class BaseTree {
             NxsSimpleTree simple_tree(tree_description,
                     default_int_edge_length,
                     default_double_edge_length);
+            bool tree_is_ultrametric = this->parsed_tree_is_ultrametric_(
+                    simple_tree,
+                    ultrametricity_tolerance);
+            if (! tree_is_ultrametric) {
+                throw EcoevolityError("Input tree not ultrametric");
+            }
             const std::vector<NxsSimpleNode *> & leaves = simple_tree.GetLeavesRef();
             unsigned int num_leaves = leaves.size();
             int num_leaves_int = leaves.size();
@@ -236,8 +233,8 @@ class BaseTree {
                 ECOEVOLITY_ASSERT(leaf_label_to_index_map.count(leaf_labels.at(i)) == 0);
                 leaf_label_to_index_map[leaf_labels.at(i)] = i;
             }
-            const NxsSimpleNode * root = simple_tree.GetRootConst();
-            NxsSimpleEdge root_edge = root->GetEdgeToParent();
+            const NxsSimpleNode * simple_root = simple_tree.GetRootConst();
+            NxsSimpleEdge root_edge = simple_root->GetEdgeToParent();
             std::map<std::string, std::string> root_info;
             for (auto nxs_comment : root_edge.GetUnprocessedComments()) {
                 std::cout << "Root comment: " << nxs_comment.GetText() << "\n";
@@ -259,32 +256,175 @@ class BaseTree {
             // If the root does not have these data, we could still parse the
             // tree and calculate heights from the edge lengths; without height
             // indices, the resulting tree would have no shared node heights.
-            bool using_comments = false;
+            bool using_height_comments = false;
             if (root_info.count("height_index") > 0) {
-                using_comments = true;
+                using_height_comments = true;
             }
             // For storing heights so they can be shared; only needed if using
             // comments
             std::map<std::string, std::shared_ptr<PositiveRealParameter> > indices_to_heights;
             int next_internal_index = num_leaves;
-            for (auto simple_node : simple_tree.GetPreorderTraversal()) {
-                if (! simple_node->GetFirstChild()) {
-                   // No children; this is a leaf
-                    NxsString leaf_label = taxa_block->GetTaxonLabel(simple_node->GetTaxonIndex());
-                    std::cout << leaf_label << "\n";
-                    std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>(
-                            leaf_label_to_index_map[leaf_label],
-                            leaf_label,
-                            0.0);
-                    leaf->fix_node_height();
-                }
-                for (auto nxs_comment : simple_node->GetEdgeToParent().GetUnprocessedComments()) {
-                    std::cout << nxs_comment.GetText() << "\n";
-                }
-            }
+
+            // Make the root node
+            std::shared_ptr<NodeType> root = this->create_internal_node_(
+                    simple_root,
+                    indices_to_heights,
+                    using_height_comments,
+                    next_internal_index);
+            ++next_internal_index;
+
+            // Recursively add nodes down the tree toward the leaves
+            this->add_child_nodes_(simple_root,
+                    root,
+                    next_internal_index,
+                    indices_to_heights,
+                    using_height_comments);
+
+            this->set_root(root);
 
             nexus_reader.DeleteBlocksFromFactories();
         }
+
+        bool parsed_tree_is_ultrametric_(const NxsSimpleTree & simple_tree,
+                double tolerance = 1e-8) {
+            std::vector< std::vector<double> > pairwise_dists = simple_tree->GetDblPathDistances(true);
+            unsigned int num_leaves = pairwise_dists.size();
+            ECOEVOLITY_ASSERT(pairwise_dists.at(0).size() == num_leaves);
+            for (unsigned int i = 0; i < num_leaves - 1; ++i) {
+                for (unsigned int j = i + 1; j < num_leaves; ++j) {
+                    double height_diff = fabs(pairwise_dists.at(i).at(j) - pairwise_dists.at(j).at(i));
+                    if (height_diff > tolerance) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        void add_child_nodes_(const NxsSimpleNode * parent_ncl_node,
+                std::shared_ptr<NodeType> parent_node,
+                int & next_internal_index,
+                std::map<std::string, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
+                const bool using_height_comments) {
+            for (auto child_ncl_node : parent_ncl_node->GetChildren()) {
+                if (! child_ncl_node->GetFirstChild()) {
+                   // No children; this is a leaf
+                    std::shared_ptr<NodeType> leaf = this->create_leaf_node_(child_ncl_node);
+                    parent_node->add_child(leaf);
+                }
+                else {
+                    std::shared_ptr<NodeType> node = this->create_internal_node_(child_ncl_node,
+                            indices_to_heights,
+                            using_height_comments,
+                            next_internal_index);
+                    ++next_internal_index;
+                    parent_node->add_child(node);
+                    // Need to continue to recurse down the tree, toward the
+                    // tips
+                    this->add_child_nodes_(child_ncl_node, node,
+                            next_internal_index,
+                            indices_to_heights,
+                            using_height_comments);
+                }
+            }
+        }
+
+        void parse_node_comments_(
+                const NxsSimpleNode * ncl_node,
+                std::map<std::string, std::string> & comment_map) {
+            NxsSimpleEdge ncl_edge = ncl_node->GetEdgeToParent();
+            for (auto nxs_comment : ncl_edge.GetUnprocessedComments()) {
+                std::string raw_comment = string_util::strip(nxs_comment.GetText());
+                if (string_util::startswith(raw_comment, "&")) {
+                    std::string comment = raw_comment.substr(1);
+                    string_util::parse_map(
+                            comment,
+                            comment_map,
+                            ',',
+                            '=');
+                }
+            }
+        }
+
+        std::shared_ptr<NodeType> create_leaf_node_(
+                const NxsSimpleNode * ncl_node) {
+            ECOEVOLITY_ASSERT(! ncl_node->GetFirstChild());
+            std::map<std::string, std::string> comment_map;
+            this->parse_node_comments_(ncl_node, comment_map);
+            NxsString leaf_label = taxa_block->GetTaxonLabel(ncl_node->GetTaxonIndex());
+            std::cout << leaf_label << "\n";
+            std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>(
+                    leaf_label_to_index_map[leaf_label],
+                    leaf_label,
+                    0.0);
+            leaf->fix_node_height();
+            this->extract_node_data_from_comments_(leaf, comment_map);
+            return leaf;
+        }
+
+        std::shared_ptr<NodeType> create_internal_node_(
+                const NxsSimpleNode * ncl_node,
+                std::map<std::string, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
+                const bool using_height_comments,
+                const unsigned int internal_index) {
+            ECOEVOLITY_ASSERT(ncl_node->GetFirstChild());
+            std::map<std::string, std::string> comment_map;
+            this->parse_node_comments_(ncl_node, comment_map);
+            double height;
+            unsigned int height_index;
+            if (using_height_comments) {
+                std::stringstream h_converter(comment_map["height"]);
+                if (! (h_converter >> height)) {
+                    throw EcoevolitytError("could not convert node height \'" +
+                            h_converter.str() + "\'");
+                }
+                std::stringstream i_converter(comment_map["height_index"]);
+                if (! (i_converter >> height_index)) {
+                    throw EcoevolitytError("could not convert node height index \'" +
+                            i_converter.str() + "\'");
+                }
+            }
+            else {
+                // Need to get height from edge lengths
+                height = this->get_simple_node_height_(ncl_node);
+            }
+            std::shared_ptr<NodeType> node = std::make_shared<NodeType>(
+                    internal_index,
+                    height);
+            if (using_height_comments) {
+                if (indices_to_heights.count(height_index) > 0) {
+                    node->set_height_parameter(indices_to_heights[height_index]);
+                }
+                else {
+                    indices_to_heights[height_index] = node->get_height_parameter();
+                }
+            }
+            this->extract_node_data_from_comments_(node, comment_map);
+            return node;
+        }
+        
+        double get_simple_node_height_(const NxsSimpleNode * node) {
+            double height = 0.0
+            NxsSimpleNode * child = node->GetFirstChild();
+            while (child) {
+                height += child->GetEdgeToParent().GetDblEdgeLen();
+                child = child->GetFirstChild();
+            }
+            return height;
+        }
+
+        void add_edge_length(const NxsSimpleNode * node, double & height) {
+            double l = node->GetEdgeToParent().GetDblEdgeLen();
+            height += l;
+        }
+
+        // Descendant classes can override this method to populate additional
+        // node data (in addition to height) needed for NodeType (e.g.,
+        // population size)
+        virtual void extract_node_data_from_comments_(
+                std::shared_ptr<NodeType> node,
+                std::map<std::string, std::string> comment_map) { }
+
 
     public:
         BaseTree() { }
