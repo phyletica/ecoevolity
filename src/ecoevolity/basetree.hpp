@@ -176,7 +176,7 @@ class BaseTree {
 
         void build_from_stream_(std::istream & tree_stream,
                 const std::string & ncl_file_format = "relaxedphyliptree",
-                double ultrametricity_tolerance = 1e-8) {
+                double ultrametricity_tolerance = 1e-6) {
             MultiFormatReader nexus_reader(-1, NxsReader::WARNINGS_TO_STDERR);
             try {
                 nexus_reader.ReadStream(tree_stream, ncl_file_format.c_str());
@@ -262,7 +262,7 @@ class BaseTree {
             }
             // For storing heights so they can be shared; only needed if using
             // comments
-            std::map<std::string, std::shared_ptr<PositiveRealParameter> > indices_to_heights;
+            std::map<unsigned int, std::shared_ptr<PositiveRealParameter> > indices_to_heights;
             int next_internal_index = num_leaves;
 
             // Make the root node
@@ -275,9 +275,11 @@ class BaseTree {
 
             // Recursively add nodes down the tree toward the leaves
             this->add_child_nodes_(simple_root,
+                    taxa_block,
                     root,
                     next_internal_index,
                     indices_to_heights,
+                    leaf_label_to_index_map,
                     using_height_comments);
 
             this->set_root(root);
@@ -286,14 +288,35 @@ class BaseTree {
         }
 
         bool parsed_tree_is_ultrametric_(const NxsSimpleTree & simple_tree,
-                double tolerance = 1e-8) {
-            std::vector< std::vector<double> > pairwise_dists = simple_tree->GetDblPathDistances(true);
-            unsigned int num_leaves = pairwise_dists.size();
-            ECOEVOLITY_ASSERT(pairwise_dists.at(0).size() == num_leaves);
+                double proportional_tolerance = 1e-6) {
+            std::vector< std::vector<double> > pairwise_dists = simple_tree.GetDblPathDistances(false);
+            std::vector< std::vector<double> > dists_to_mrca = simple_tree.GetDblPathDistances(true);
+            unsigned int num_leaves = dists_to_mrca.size();
+            ECOEVOLITY_ASSERT(dists_to_mrca.at(0).size() == num_leaves);
+
+            // First find the maximum distance between two tips
+            double max_pairwise_dist = -1.0;
             for (unsigned int i = 0; i < num_leaves - 1; ++i) {
                 for (unsigned int j = i + 1; j < num_leaves; ++j) {
-                    double height_diff = fabs(pairwise_dists.at(i).at(j) - pairwise_dists.at(j).at(i));
-                    if (height_diff > tolerance) {
+                    if (pairwise_dists.at(i).at(j) > max_pairwise_dist) {
+                        max_pairwise_dist = pairwise_dists.at(i).at(j);
+                    }
+                }
+            }
+            std::cout << "Max pairwise distance: " << max_pairwise_dist << "\n";
+
+            // Get tolerance proportional to the maximum root height
+            double max_root_height = max_pairwise_dist / 2.0;
+            double abs_tol = max_root_height * proportional_tolerance;
+
+            // Check if distance from leaf i to the MRCA of i and j is (almost)
+            // equal to the distance from leaf j to the MRCA of i and j. If
+            // this is true for all pairs of tips, then the tree is
+            // ultrametric.
+            for (unsigned int i = 0; i < num_leaves - 1; ++i) {
+                for (unsigned int j = i + 1; j < num_leaves; ++j) {
+                    double height_diff = fabs(dists_to_mrca.at(i).at(j) - dists_to_mrca.at(j).at(i));
+                    if (height_diff > abs_tol) {
                         return false;
                     }
                 }
@@ -302,14 +325,19 @@ class BaseTree {
         }
 
         void add_child_nodes_(const NxsSimpleNode * parent_ncl_node,
+                const NxsTaxaBlock * taxa_block,
                 std::shared_ptr<NodeType> parent_node,
                 int & next_internal_index,
-                std::map<std::string, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
+                std::map<unsigned int, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
+                std::unordered_map<std::string, int> & leaf_label_to_index_map,
                 const bool using_height_comments) {
             for (auto child_ncl_node : parent_ncl_node->GetChildren()) {
                 if (! child_ncl_node->GetFirstChild()) {
                    // No children; this is a leaf
-                    std::shared_ptr<NodeType> leaf = this->create_leaf_node_(child_ncl_node);
+                    std::shared_ptr<NodeType> leaf = this->create_leaf_node_(
+                            child_ncl_node,
+                            taxa_block,
+                            leaf_label_to_index_map);
                     parent_node->add_child(leaf);
                 }
                 else {
@@ -321,9 +349,11 @@ class BaseTree {
                     parent_node->add_child(node);
                     // Need to continue to recurse down the tree, toward the
                     // tips
-                    this->add_child_nodes_(child_ncl_node, node,
+                    this->add_child_nodes_(child_ncl_node, taxa_block,
+                            node,
                             next_internal_index,
                             indices_to_heights,
+                            leaf_label_to_index_map,
                             using_height_comments);
                 }
             }
@@ -347,7 +377,9 @@ class BaseTree {
         }
 
         std::shared_ptr<NodeType> create_leaf_node_(
-                const NxsSimpleNode * ncl_node) {
+                const NxsSimpleNode * ncl_node,
+                const NxsTaxaBlock * taxa_block,
+                std::unordered_map<std::string, int> & leaf_label_to_index_map) {
             ECOEVOLITY_ASSERT(! ncl_node->GetFirstChild());
             std::map<std::string, std::string> comment_map;
             this->parse_node_comments_(ncl_node, comment_map);
@@ -364,7 +396,7 @@ class BaseTree {
 
         std::shared_ptr<NodeType> create_internal_node_(
                 const NxsSimpleNode * ncl_node,
-                std::map<std::string, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
+                std::map<unsigned int, std::shared_ptr<PositiveRealParameter> > & indices_to_heights,
                 const bool using_height_comments,
                 const unsigned int internal_index) {
             ECOEVOLITY_ASSERT(ncl_node->GetFirstChild());
@@ -375,12 +407,12 @@ class BaseTree {
             if (using_height_comments) {
                 std::stringstream h_converter(comment_map["height"]);
                 if (! (h_converter >> height)) {
-                    throw EcoevolitytError("could not convert node height \'" +
+                    throw EcoevolityError("could not convert node height \'" +
                             h_converter.str() + "\'");
                 }
                 std::stringstream i_converter(comment_map["height_index"]);
                 if (! (i_converter >> height_index)) {
-                    throw EcoevolitytError("could not convert node height index \'" +
+                    throw EcoevolityError("could not convert node height index \'" +
                             i_converter.str() + "\'");
                 }
             }
@@ -404,7 +436,7 @@ class BaseTree {
         }
         
         double get_simple_node_height_(const NxsSimpleNode * node) {
-            double height = 0.0
+            double height = 0.0;
             NxsSimpleNode * child = node->GetFirstChild();
             while (child) {
                 height += child->GetEdgeToParent().GetDblEdgeLen();
