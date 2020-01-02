@@ -186,22 +186,24 @@ class BaseTree {
                 throw;
             }
             unsigned int num_taxa_blocks = nexus_reader.GetNumTaxaBlocks();
-            std::cout << "Number of taxa blocks: " << num_taxa_blocks << "\n";
+            ECOEVOLITY_ASSERT(num_taxa_blocks == 1);
             NxsTaxaBlock * taxa_block = nexus_reader.GetTaxaBlock(0);
-            // std::string taxa_block_title = taxa_block->GetTitle();
 
             unsigned int num_tree_blocks = nexus_reader.GetNumTreesBlocks(taxa_block);
-            std::cout << "Number of tree blocks: " << num_tree_blocks << "\n";
+            ECOEVOLITY_ASSERT(num_tree_blocks == 1);
 
             NxsTreesBlock * tree_block = nexus_reader.GetTreesBlock(taxa_block, 0);
             unsigned int num_trees = tree_block->GetNumTrees();
-            std::cout << "Number of trees: " << num_trees << "\n";
+            ECOEVOLITY_ASSERT(num_trees > 0);
 
             const NxsFullTreeDescription & tree_description = tree_block->GetFullTreeDescription(0);
-            std::cout << "Tree is processed: " << tree_description.IsProcessed() << "\n";
-            std::cout << "Tree is rooted: " << tree_description.IsRooted() << "\n";
-
+            // std::cout << "Tree is processed: " << tree_description.IsProcessed() << "\n";
+            // std::cout << "Tree is rooted: " << tree_description.IsRooted() << "\n";
             // Tree must be processed to create the NxsSimpleTree
+            if (! tree_description.IsProcessed()) {
+                throw EcoevolityError("Input tree was not processed by NCL");
+            }
+
             int default_int_edge_length = 0;
             double default_double_edge_length = 0.0;
             NxsSimpleTree simple_tree(tree_description,
@@ -216,7 +218,7 @@ class BaseTree {
             const std::vector<NxsSimpleNode *> & leaves = simple_tree.GetLeavesRef();
             unsigned int num_leaves = leaves.size();
             int num_leaves_int = leaves.size();
-            std::cout << "Number of leaves: " << num_leaves << "\n";
+            // std::cout << "Number of leaves: " << num_leaves << "\n";
             std::vector<std::string> leaf_labels;
             leaf_labels.reserve(num_leaves);
             for (auto leaf_node : leaves) {
@@ -237,7 +239,7 @@ class BaseTree {
             NxsSimpleEdge root_edge = simple_root->GetEdgeToParent();
             std::map<std::string, std::string> root_info;
             for (auto nxs_comment : root_edge.GetUnprocessedComments()) {
-                std::cout << "Root comment: " << nxs_comment.GetText() << "\n";
+                // std::cout << "Root comment: " << nxs_comment.GetText() << "\n";
                 std::string comment = string_util::strip(nxs_comment.GetText());
                 if (string_util::startswith(comment, "&")) {
                     std::string root_info_str = comment.substr(1);
@@ -303,7 +305,7 @@ class BaseTree {
                     }
                 }
             }
-            std::cout << "Max pairwise distance: " << max_pairwise_dist << "\n";
+            // std::cout << "Max pairwise distance: " << max_pairwise_dist << "\n";
 
             // Get tolerance proportional to the maximum root height
             double max_root_height = max_pairwise_dist / 2.0;
@@ -384,7 +386,7 @@ class BaseTree {
             std::map<std::string, std::string> comment_map;
             this->parse_node_comments_(ncl_node, comment_map);
             NxsString leaf_label = taxa_block->GetTaxonLabel(ncl_node->GetTaxonIndex());
-            std::cout << leaf_label << "\n";
+            // std::cout << leaf_label << "\n";
             std::shared_ptr<NodeType> leaf = std::make_shared<NodeType>(
                     leaf_label_to_index_map[leaf_label],
                     leaf_label,
@@ -476,11 +478,25 @@ class BaseTree {
                         "Could not open tree file",
                         path);
             }
-            this->build_from_stream_(in_stream, ncl_file_format);
+            try {
+                this->build_from_stream_(in_stream, ncl_file_format);
+            }
+            catch(...) {
+                std::cerr << "ERROR: Problem parsing tree file path: "
+                        << path << "\n";
+                throw;
+            }
         }
         BaseTree(const std::string & newick_tree_string) : BaseTree() {
             std::istringstream tree_stream(newick_tree_string);
-            this->build_from_stream_(tree_stream, "relaxedphyliptree");
+            try {
+                this->build_from_stream_(tree_stream, "relaxedphyliptree");
+            }
+            catch(...) {
+                std::cerr << "ERROR: Problem parsing newick tree string:\n"
+                        << newick_tree_string << "\n";
+                throw;
+            }
         }
 
         void refresh_pre_ordered_nodes() {
@@ -492,8 +508,6 @@ class BaseTree {
         void refresh_ordered_nodes() {
             this->refresh_pre_ordered_nodes();
             this->refresh_level_ordered_nodes();
-        }
-        void store_splits(std::set<Split> & split_set) {
         }
 
         void update_node_heights() {
@@ -1361,7 +1375,7 @@ class BaseTree {
         }
 
         void store_splits(std::set< std::pair<unsigned int, Split> > & split_set,
-                bool resize_splits = false) {
+                bool resize_splits = false) const {
             if (resize_splits) {
                 this->root_->resize_splits(this->get_leaf_node_count());
             }
@@ -1385,6 +1399,12 @@ class BaseTree {
             }
         }
 
+        std::set< std::pair<unsigned int, Split> > get_splits(
+                bool resize_splits = false) const {
+            std::set< std::pair<unsigned int, Split> > split_set;
+            this->store_splits(split_set, resize_splits);
+            return split_set;
+        }
 };
 
 #endif
