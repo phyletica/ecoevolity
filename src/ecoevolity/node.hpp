@@ -606,6 +606,15 @@ class PopulationNode: public BaseNode<PopulationNode>{
             }
         }
 
+        // Overriding this method from BaseNode to return pop size
+        std::string get_additional_comment_data_string(
+                unsigned int precision = 12) const {
+            std::ostringstream s;
+            s.precision(precision);
+            s << "pop_size="
+              << this->get_population_size();
+            return s.str();
+        }
 };
 
 #endif

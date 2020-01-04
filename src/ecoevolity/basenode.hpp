@@ -837,8 +837,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return d;
         }
 
-        std::string to_parentheses() const {
+        std::string to_parentheses(unsigned int precision = 12) const {
             std::ostringstream s;
+            s.precision(18);
             if (this->is_leaf()) {
                 s << this->get_label();
             }
@@ -857,6 +858,25 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             s << ":" << this->get_length();
             return s.str();
         }
+
+        std::string get_comment_data_string(
+                unsigned int precision = 12) const {
+            std::ostringstream s;
+            s.precision(precision);
+            std::string additional_comment_str = this->get_additional_comment_data_string(precision);
+            s << "height="
+              << this->get_height();
+            if (additional_comment_str.length() > 0) {
+                s << ","
+                  << additional_comment_str;
+            }
+            return s.str();
+        }
+
+        // Descendant classes can override this method to populate additional
+        // node data (in addition to height. E.g., population size).
+        virtual std::string get_additional_comment_data_string(
+                unsigned int precision = 12) const { return ""; }
 };
 
 #endif

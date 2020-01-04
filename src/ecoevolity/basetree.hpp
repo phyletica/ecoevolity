@@ -1351,8 +1351,55 @@ class BaseTree {
             this->refresh_ordered_nodes();
         }
 
-        std::string to_parentheses() const {
-            return this->root_->to_parentheses();
+        std::string to_parentheses(bool include_comments = true,
+                unsigned int precision = 12) const {
+            if (! include_comments) {
+                return this->root_->to_parentheses(precision);
+            }
+            return this->to_parentheses(this->root_, precision);
+        }
+
+        std::string to_parentheses(
+                std::shared_ptr<NodeType> node,
+                unsigned int precision = 12) const {
+            std::ostringstream s;
+            s.precision(precision);
+            if (node->is_leaf()) {
+                s << node->get_label();
+            }
+            else {
+                unsigned int child_idx = 0;
+                s << "(";
+                for (auto child_iter: node->get_all_children()) {
+                    if (child_idx > 0) {
+                        s << ",";
+                    }
+                    s << this->to_parentheses(child_iter, precision);
+                    ++child_idx;
+                }
+                s << ")";
+            }
+            // annotate node with comment string
+            s << this->get_comment_data_string(node)
+              << ":" << node->get_length();
+            return s.str();
+        }
+
+        std::string get_comment_data_string(
+                std::shared_ptr<NodeType> node,
+                unsigned int precision = 12) const {
+            std::ostringstream s;
+            s.precision(precision);
+            s << "[&";
+            if (! node->is_leaf()) {
+                unsigned int height_idx = this->get_node_height_index(node->get_height_parameter());
+                s << "height_index="
+                  << height_idx
+                  << ",";
+            }
+            s << node->get_comment_data_string(precision);
+            s << "]";
+            return s.str();
         }
 
         virtual void write_state_log_header(std::ostream& out,

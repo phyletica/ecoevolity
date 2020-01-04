@@ -2,7 +2,7 @@
 #include "ecoevolity/basetree.hpp"
 #include "ecoevolity/node.hpp"
 
-TEST_CASE("Testing 3 leaves", "[split]") {
+TEST_CASE("Testing 3 leaves", "[treeio]") {
     SECTION("Testing 3 leaves") {
         std::string newick_tree_str = "((spa[&length=0.1,height=0.0,pop_size=0.001]:0.1,spb[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2,spc[&length=0.3,height=0.0,pop_size=0.004]:0.3)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
         BaseTree<Node> tree(newick_tree_str);
@@ -71,8 +71,51 @@ TEST_CASE("Testing 3 leaves", "[split]") {
     }
 }
 
+TEST_CASE("Testing 3 leaves round trip", "[treeio]") {
+    SECTION("Testing 3 leaves round trip") {
+        std::string newick_tree_str = "((spa[&length=0.1,height=0.0,pop_size=0.001]:0.1,spb[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2,spc[&length=0.3,height=0.0,pop_size=0.004]:0.3)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
+        BaseTree<Node> tree(newick_tree_str);
+        std::string written_newick_tree_str = tree.to_parentheses(true) + ";";
+        BaseTree<Node> round_trip_tree(written_newick_tree_str);
+        std::vector<double> expected_heights {0.1, 0.3};
+        std::vector<double> heights = tree.get_node_heights();
+        std::vector<double> round_trip_heights = round_trip_tree.get_node_heights();
+        REQUIRE(expected_heights.size() == heights.size());
+        REQUIRE(expected_heights.size() == round_trip_heights.size());
+        for (unsigned int i = 0; i < heights.size(); ++ i) {
+            REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
+            REQUIRE(round_trip_heights.at(i) == Approx(expected_heights.at(i)));
+        }
 
-TEST_CASE("Testing 3 leaves with no comments", "[split]") {
+        std::set< std::pair< unsigned int, Split> > splits = tree.get_splits(false);
+        std::set< std::pair< unsigned int, Split> > round_trip_splits = round_trip_tree.get_splits(false);
+
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>(3, "internal1", 0.1);
+        std::shared_ptr<Node> spa = std::make_shared<Node>(0, "spa", 0.0);
+        spa->fix_node_height();
+        std::shared_ptr<Node> spb = std::make_shared<Node>(1, "spb", 0.0);
+        spb->fix_node_height();
+        std::shared_ptr<Node> spc = std::make_shared<Node>(2, "spc", 0.0);
+        spc->fix_node_height();
+
+        internal1->add_child(spa);
+        internal1->add_child(spb);
+
+        root->add_child(internal1);
+        root->add_child(spc);
+        BaseTree<Node> expected_tree(root);
+
+        std::set< std::pair< unsigned int, Split> > expected_splits = expected_tree.get_splits(false);
+
+        REQUIRE(splits == expected_splits);
+        REQUIRE(round_trip_splits == expected_splits);
+    }
+}
+
+
+TEST_CASE("Testing 3 leaves with no comments", "[treeio]") {
     SECTION("Testing 3 leaves with no comments") {
         std::string newick_tree_str = "((spa:0.1,spb:0.1):0.2,spc:0.3);";
         BaseTree<Node> tree(newick_tree_str);
@@ -140,7 +183,49 @@ TEST_CASE("Testing 3 leaves with no comments", "[split]") {
     }
 }
 
-TEST_CASE("Testing 3 leaves with different expected leaf indices that should not matter", "[split]") {
+TEST_CASE("Testing 3 leaves with no comments round trip", "[treeio]") {
+    SECTION("Testing 3 leaves with no comments round trip") {
+        std::string newick_tree_str = "((spa:0.1,spb:0.1):0.2,spc:0.3);";
+        BaseTree<Node> tree(newick_tree_str);
+        std::string written_newick_tree_str = tree.to_parentheses(false) + ";";
+        BaseTree<Node> round_trip_tree(written_newick_tree_str);
+        std::vector<double> expected_heights {0.1, 0.3};
+        std::vector<double> heights = tree.get_node_heights();
+        std::vector<double> round_trip_heights = round_trip_tree.get_node_heights();
+        REQUIRE(expected_heights.size() == heights.size());
+        REQUIRE(expected_heights.size() == round_trip_heights.size());
+        for (unsigned int i = 0; i < heights.size(); ++ i) {
+            REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
+            REQUIRE(round_trip_heights.at(i) == Approx(expected_heights.at(i)));
+        }
+        std::set< std::pair< unsigned int, Split> > splits = tree.get_splits(false);
+        std::set< std::pair< unsigned int, Split> > round_trip_splits = round_trip_tree.get_splits(false);
+
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
+        std::shared_ptr<Node> internal1 = std::make_shared<Node>(3, "internal1", 0.1);
+        std::shared_ptr<Node> spa = std::make_shared<Node>(0, "spa", 0.0);
+        spa->fix_node_height();
+        std::shared_ptr<Node> spb = std::make_shared<Node>(1, "spb", 0.0);
+        spb->fix_node_height();
+        std::shared_ptr<Node> spc = std::make_shared<Node>(2, "spc", 0.0);
+        spc->fix_node_height();
+
+        internal1->add_child(spa);
+        internal1->add_child(spb);
+
+        root->add_child(internal1);
+        root->add_child(spc);
+        BaseTree<Node> expected_tree(root);
+
+        std::set< std::pair< unsigned int, Split> > expected_splits = expected_tree.get_splits(false);
+
+        REQUIRE(splits == expected_splits);
+        REQUIRE(round_trip_splits == expected_splits);
+    }
+}
+
+TEST_CASE("Testing 3 leaves with different expected leaf indices that should not matter", "[treeio]") {
     SECTION("Testing 3 leaves with different expected tip indices that should not matter") {
         const std::string newick_tree_str = "((spa[&length=0.1,height=0.0,pop_size=0.001]:0.1,spb[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2,spc[&length=0.3,height=0.0,pop_size=0.004]:0.3)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
         BaseTree<Node> tree(newick_tree_str);
@@ -177,7 +262,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should not
     }
 }
 
-TEST_CASE("Testing 3 leaves with different expected leaf indices that should matter", "[split]") {
+TEST_CASE("Testing 3 leaves with different expected leaf indices that should matter", "[treeio]") {
     SECTION("Testing 3 leaves with different expected tip indices that should matter") {
         const std::string newick_tree_str = "((spa[&length=0.1,height=0.0,pop_size=0.001]:0.1,spb[&length=0.1,height=0.0,pop_size=0.002]:0.1)[&length=0.2,support=1.0,height=0.1,height_index=0,pop_size=0.003]:0.2,spc[&length=0.3,height=0.0,pop_size=0.004]:0.3)[&height=0.3,height_index=1,support=1.0,pop_size=0.005];";
         BaseTree<Node> tree(newick_tree_str);
@@ -214,7 +299,7 @@ TEST_CASE("Testing 3 leaves with different expected leaf indices that should mat
     }
 }
 
-TEST_CASE("Testing 5 leaves with polytomy and shared div", "[split]") {
+TEST_CASE("Testing 5 leaves with polytomy and shared div", "[treeio]") {
     SECTION("Testing 5 leaves with polytomy and shared div") {
         std::string newick_tree_str = "((a:0.1,e:0.1)[&height=0.1,height_index=0]:0.2,(b:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
         BaseTree<Node> tree(newick_tree_str);
@@ -282,7 +367,60 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div", "[split]") {
     }
 }
 
-TEST_CASE("Testing 5 leaves with polytomy and shared div and no comments", "[split]") {
+TEST_CASE("Testing 5 leaves with polytomy and shared div, round trip", "[treeio]") {
+    SECTION("Testing 5 leaves with polytomy and shared div, round trip") {
+        std::string newick_tree_str = "((a:0.1,e:0.1)[&height=0.1,height_index=0]:0.2,(b:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,c:0.3)[&height=0.3,height_index=1];";
+        BaseTree<Node> tree(newick_tree_str);
+        std::string written_newick_tree_str = tree.to_parentheses(true) + ";";
+        BaseTree<Node> round_trip_tree(written_newick_tree_str);
+        std::vector<double> expected_heights {0.1, 0.3};
+        std::vector<double> heights = tree.get_node_heights();
+        std::vector<double> round_trip_heights = round_trip_tree.get_node_heights();
+        REQUIRE(expected_heights.size() == heights.size());
+        REQUIRE(expected_heights.size() == round_trip_heights.size());
+        for (unsigned int i = 0; i < heights.size(); ++ i) {
+            REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
+            REQUIRE(round_trip_heights.at(i) == Approx(expected_heights.at(i)));
+        }
+
+        std::set< std::pair< unsigned int, Split> > splits = tree.get_splits(false);
+        std::set< std::pair< unsigned int, Split> > round_trip_splits = round_trip_tree.get_splits(false);
+
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
+        std::shared_ptr<Node> internal_ae = std::make_shared<Node>(3, "internal_ae", 0.1);
+        std::shared_ptr<Node> internal_bd = std::make_shared<Node>(3, "internal_bd", 0.1);
+        internal_ae->set_height_parameter(internal_bd->get_height_parameter());
+        std::shared_ptr<Node> a = std::make_shared<Node>(0, "a", 0.0);
+        a->fix_node_height();
+        std::shared_ptr<Node> b = std::make_shared<Node>(1, "b", 0.0);
+        b->fix_node_height();
+        std::shared_ptr<Node> c = std::make_shared<Node>(2, "c", 0.0);
+        c->fix_node_height();
+        std::shared_ptr<Node> d = std::make_shared<Node>(3, "d", 0.0);
+        d->fix_node_height();
+        std::shared_ptr<Node> e = std::make_shared<Node>(4, "e", 0.0);
+        e->fix_node_height();
+
+        internal_ae->add_child(a);
+        internal_ae->add_child(e);
+
+        internal_bd->add_child(b);
+        internal_bd->add_child(d);
+
+        root->add_child(internal_ae);
+        root->add_child(internal_bd);
+        root->add_child(c);
+        BaseTree<Node> expected_tree(root);
+
+        std::set< std::pair< unsigned int, Split> > expected_splits = expected_tree.get_splits(false);
+
+        REQUIRE(splits == expected_splits);
+        REQUIRE(round_trip_splits == expected_splits);
+    }
+}
+
+TEST_CASE("Testing 5 leaves with polytomy and shared div and no comments", "[treeio]") {
     SECTION("Testing 5 leaves with polytomy and no comments") {
         std::string newick_tree_str = "((a:0.1,e:0.1):0.2,(b:0.1,d:0.1):0.2,c:0.3);";
         BaseTree<Node> tree(newick_tree_str);
@@ -362,5 +500,82 @@ TEST_CASE("Testing 5 leaves with polytomy and shared div and no comments", "[spl
         for (unsigned int i = 0; i < heights.size(); ++ i) {
             REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
         }
+    }
+}
+
+TEST_CASE("Testing 5 leaves with polytomy and shared div and no comments, round trip", "[treeio]") {
+    SECTION("Testing 5 leaves with polytomy and no comments, round trip") {
+        std::string newick_tree_str = "((a:0.1,e:0.1):0.2,(b:0.1,d:0.1):0.2,c:0.3);";
+        BaseTree<Node> tree(newick_tree_str);
+
+        std::string written_newick_tree_str = tree.to_parentheses(false) + ";";
+        std::string comments_written_newick_tree_str = tree.to_parentheses(true) + ";";
+        BaseTree<Node> rt_tree(written_newick_tree_str);
+        BaseTree<Node> rtc_tree(comments_written_newick_tree_str);
+
+        std::vector<double> expected_heights {0.1, 0.1, 0.3};
+        std::vector<double> heights = tree.get_node_heights();
+        std::vector<double> rt_heights = rt_tree.get_node_heights();
+        std::vector<double> rtc_heights = rtc_tree.get_node_heights();
+        REQUIRE(expected_heights.size() == heights.size());
+        REQUIRE(expected_heights.size() == rt_heights.size());
+        REQUIRE(expected_heights.size() == rtc_heights.size());
+        for (unsigned int i = 0; i < heights.size(); ++ i) {
+            REQUIRE(heights.at(i) == Approx(expected_heights.at(i)));
+            REQUIRE(rt_heights.at(i) == Approx(expected_heights.at(i)));
+            REQUIRE(rtc_heights.at(i) == Approx(expected_heights.at(i)));
+        }
+
+        // Cannot use height indices, because those must be parsed from
+        // commments
+        std::set<Split> splits;
+        for (auto idx_split : tree.get_splits(false)) {
+            splits.insert(idx_split.second);
+        }
+        std::set<Split> rt_splits;
+        for (auto idx_split : rt_tree.get_splits(false)) {
+            rt_splits.insert(idx_split.second);
+        }
+        std::set<Split> rtc_splits;
+        for (auto idx_split : rtc_tree.get_splits(false)) {
+            rtc_splits.insert(idx_split.second);
+        }
+
+
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", 0.3);
+        std::shared_ptr<Node> internal_ae = std::make_shared<Node>(3, "internal_ae", 0.1);
+        std::shared_ptr<Node> internal_bd = std::make_shared<Node>(3, "internal_bd", 0.1);
+        // With no comments, the shared div cannot be parsed
+        // internal_ae->set_height_parameter(internal_bd->get_height_parameter());
+        std::shared_ptr<Node> a = std::make_shared<Node>(0, "a", 0.0);
+        a->fix_node_height();
+        std::shared_ptr<Node> b = std::make_shared<Node>(1, "b", 0.0);
+        b->fix_node_height();
+        std::shared_ptr<Node> c = std::make_shared<Node>(2, "c", 0.0);
+        c->fix_node_height();
+        std::shared_ptr<Node> d = std::make_shared<Node>(3, "d", 0.0);
+        d->fix_node_height();
+        std::shared_ptr<Node> e = std::make_shared<Node>(4, "e", 0.0);
+        e->fix_node_height();
+
+        internal_ae->add_child(a);
+        internal_ae->add_child(e);
+
+        internal_bd->add_child(b);
+        internal_bd->add_child(d);
+
+        root->add_child(internal_ae);
+        root->add_child(internal_bd);
+        root->add_child(c);
+        BaseTree<Node> expected_tree(root);
+
+        std::set<Split> expected_splits;
+        for (auto idx_split : expected_tree.get_splits(false)) {
+            expected_splits.insert(idx_split.second);
+        }
+
+        REQUIRE(splits == expected_splits);
+        REQUIRE(rt_splits == expected_splits);
+        REQUIRE(rtc_splits == expected_splits);
     }
 }
