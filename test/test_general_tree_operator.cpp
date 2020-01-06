@@ -4449,3 +4449,135 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
         REQUIRE(balanced_count / (double)nsamples == Approx(0.5).epsilon(eps));
     }
 }
+
+
+
+// Expectations for tree with 5 leaves:
+// ----------------------------------------------------------------------------
+// # of unlabeled                            # of trees (labelings)      
+//  topologies
+// ----------------------------------------------------------------------------
+// (a,b,c,d,e)                                                     = 1
+// (a,(b,c,d,e))           = 5 choose 4                            = 5
+// (a,b,(c,d,e))           = 5 choose 3                            = 10 
+// (a,b,c,(d,e))           = 5 choose 2                            = 10
+// ((a,b,c)*,(d,e)*)       = 5 choose 3                            = 10 x2 = 20
+// (a,(b,(c,d,e)))         = (5 choose 3) * 2!                     = 20 
+// ((a,b)*,(c,d)*,e)       = ((5 choose 2) * (3 choose 2)) / 2     = 15 x2 = 30
+// (((a,b)*,(c,d)*),e      = ((5 choose 2) * (3 choose 2)) / 2     = 15 x2 = 30
+// (((a,b)*,c)*,(d,e)*)    = (5 choose 2) * (3 choose 2)           = 30 x3 = 90
+// (a,(b,(c,(d,e))))       = (5 choose 2) * 3!                     = 60
+// (a,b,(c,(d,e)))         = (5 choose 2) * (3 choose 2)           = 30
+// (a,(b,c,(d,e)))         = (5 choose 2) * (3 choose 2)           = 30
+// ----------------------------------------------------------------------------
+// TOTAL                                                           = 236  = 336
+// 236 matches Felsenstein 1978, but we need to account for shared node
+// heights.
+// The asterisks in the topologies above indicated nodes that could be shared.
+// For each of the three topologies with two nodes that can be shared, there
+// are twice as many possible trees (all trees can have these nodes shared or
+// not).
+// For the tree with three nodes that can be shared [(((a,b)*,c)*,(d,e)*)],
+// there are two ways the nodes can be shared, and so three times as many trees
+// (each tree can have the nodes shared either of 2 ways or not at all).
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
+        "[xxSplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing 5 leaves with fixed root") {
+        RandomNumberGenerator rng = RandomNumberGenerator(4987529847529);
+
+        double root_ht = 0.5;
+        std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>("leaf4", 0.0);
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        SplitLumpNodesRevJumpSampler<Node> op;
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::map< std::set< std::pair<unsigned int, Split> >, unsigned int> split_counts;
+
+        unsigned int count_nheights_1 = 0;
+        unsigned int count_nheights_2 = 0;
+        unsigned int count_nheights_3 = 0;
+        unsigned int count_nheights_4 = 0;
+
+        unsigned int niterations = 5000000;
+        unsigned int sample_freq = 20;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                if (tree.get_number_of_node_heights() == 1) {
+                    ++count_nheights_1;
+                }
+                else if (tree.get_number_of_node_heights() == 2) {
+                    ++count_nheights_2;
+                }
+                else if (tree.get_number_of_node_heights() == 3) {
+                    ++count_nheights_3;
+                }
+                else if (tree.get_number_of_node_heights() == 4) {
+                    ++count_nheights_4;
+                }
+                std::set< std::pair< unsigned int, Split> > splits = tree.get_splits(false);
+                if (split_counts.count(splits) > 0) {
+                    ++split_counts[splits];
+                }
+                else {
+                    split_counts[splits] = 1;
+                }
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+
+        REQUIRE((count_nheights_1 + count_nheights_2 + count_nheights_3 + count_nheights_4) == nsamples);
+
+        // We should sample every possible tree
+        REQUIRE(split_counts.size() == 336);
+
+        double freq_nheights_1 = count_nheights_1 / (double)nsamples;
+        double freq_nheights_2 = count_nheights_2 / (double)nsamples;
+        double freq_nheights_3 = count_nheights_3 / (double)nsamples;
+        double freq_nheights_4 = count_nheights_4 / (double)nsamples;
+
+        unsigned int total_trees_sampled = 0;
+        std::map< std::set< std::pair<unsigned int, Split> >, double> split_freqs;
+        for (auto s_c : split_counts) {
+            total_trees_sampled += s_c.second;
+            split_freqs[s_c.first] = s_c.second / (double)nsamples;
+            std::cout << "\nTree:\n";
+            for (auto idx_split : s_c.first) {
+                std::cout << "  " << idx_split.first << ": " << idx_split.second.as_string() << "\n";
+            }
+            std::cout << "  nsamples: " << s_c.second << "\n";
+            std::cout << "  freq:     " << s_c.second / (double)nsamples << "\n";
+        }
+
+        double eps = 0.001;
+
+        double exp_freq = 1.0/336.0;
+
+        for (auto s_f : split_freqs) {
+            REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
+        }
+    }
+}
