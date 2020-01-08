@@ -1,5 +1,7 @@
 #include "catch.hpp"
 #include "ecoevolity/split.hpp"
+#include "ecoevolity/basetree.hpp"
+#include "ecoevolity/node.hpp"
 
 TEST_CASE("Testing 2 leaves", "[split]") {
     SECTION("Testing 2 leaves") {
@@ -153,5 +155,65 @@ TEST_CASE("Testing 100000 leaves", "[split]") {
         }
         expected << "1";
         REQUIRE(s.as_string() == expected.str());
+    }
+}
+
+TEST_CASE("Testing tree with 5 leaves", "[split]") {
+    SECTION("Testing tree with 5 leaves") {
+        std::string newick_tree_str = "((a:0.1,b:0.1)[&height=0.1,height_index=0]:0.3,(c:0.3,(d:0.2,e:0.2)[&height=0.2,height_index=1]:0.1)[&height=0.3,height_index=2]:0.1)[&height=0.4,height_index=3];";
+        BaseTree<Node> tree_order_1(newick_tree_str);
+
+        newick_tree_str = "((a:0.2,b:0.2)[&height=0.2,height_index=1]:0.2,(c:0.3,(d:0.1,e:0.1)[&height=0.1,height_index=0]:0.2)[&height=0.3,height_index=2]:0.1)[&height=0.4,height_index=3];";
+        BaseTree<Node> tree_order_2(newick_tree_str);
+
+        newick_tree_str = "((a:0.3,b:0.3)[&height=0.3,height_index=2]:0.1,(c:0.2,(d:0.1,e:0.1)[&height=0.1,height_index=0]:0.1)[&height=0.2,height_index=1]:0.2)[&height=0.4,height_index=3];";
+        BaseTree<Node> tree_order_3(newick_tree_str);
+
+        REQUIRE(tree_order_1.get_splits() == tree_order_2.get_splits());
+        REQUIRE(tree_order_1.get_splits() == tree_order_3.get_splits());
+        REQUIRE(tree_order_2.get_splits() == tree_order_3.get_splits());
+
+        REQUIRE(tree_order_1.get_splits_by_height_index() != tree_order_2.get_splits_by_height_index());
+        REQUIRE(tree_order_1.get_splits_by_height_index() != tree_order_3.get_splits_by_height_index());
+        REQUIRE(tree_order_2.get_splits_by_height_index() != tree_order_3.get_splits_by_height_index());
+
+        newick_tree_str = "((a:0.1,b:0.1)[&height=0.1,height_index=0]:0.3,(c:0.3,(d:0.1,e:0.1)[&height=0.1,height_index=0]:0.2)[&height=0.3,height_index=1]:0.1)[&height=0.4,height_index=2];";
+        BaseTree<Node> shared_tree_1(newick_tree_str);
+
+        newick_tree_str = "((a:0.3,b:0.3)[&height=0.3,height_index=1]:0.1,(c:0.3,(d:0.1,e:0.1)[&height=0.1,height_index=0]:0.2)[&height=0.3,height_index=1]:0.1)[&height=0.4,height_index=2];";
+        BaseTree<Node> shared_tree_2(newick_tree_str);
+
+        REQUIRE(shared_tree_1.get_splits() != tree_order_1.get_splits());
+        REQUIRE(shared_tree_1.get_splits() != tree_order_2.get_splits());
+        REQUIRE(shared_tree_1.get_splits() != tree_order_3.get_splits());
+        REQUIRE(shared_tree_1.get_splits() != shared_tree_2.get_splits());
+
+        REQUIRE(shared_tree_2.get_splits() != tree_order_1.get_splits());
+        REQUIRE(shared_tree_2.get_splits() != tree_order_2.get_splits());
+        REQUIRE(shared_tree_2.get_splits() != tree_order_3.get_splits());
+        REQUIRE(shared_tree_2.get_splits() != shared_tree_1.get_splits());
+
+        REQUIRE(shared_tree_1.get_splits_by_height_index() != tree_order_1.get_splits_by_height_index());
+        REQUIRE(shared_tree_1.get_splits_by_height_index() != tree_order_2.get_splits_by_height_index());
+        REQUIRE(shared_tree_1.get_splits_by_height_index() != tree_order_3.get_splits_by_height_index());
+        REQUIRE(shared_tree_1.get_splits_by_height_index() != shared_tree_2.get_splits_by_height_index());
+
+        REQUIRE(shared_tree_2.get_splits_by_height_index() != tree_order_1.get_splits_by_height_index());
+        REQUIRE(shared_tree_2.get_splits_by_height_index() != tree_order_2.get_splits_by_height_index());
+        REQUIRE(shared_tree_2.get_splits_by_height_index() != tree_order_3.get_splits_by_height_index());
+        REQUIRE(shared_tree_2.get_splits_by_height_index() != shared_tree_1.get_splits_by_height_index());
+    }
+}
+
+TEST_CASE("Testing trees with different shared orders" , "[split]") {
+    SECTION("Testing tree with different shared orders") {
+        std::string newick_tree_str = "(((a:0.1,b:0.1)[&height=0.1,height_index=0]:0.2,(c:0.2,d:0.2)[&height=0.2,height_index=1]:0.1)[&height=0.3,height_index=2]:0.1,((e:0.1,f:0.1)[&height=0.1,height_index=0]:0.2,(g:0.2,h:0.2)[&height=0.2,height_index=1]:0.1)[&height=0.3,height_index=2]:0.1)[&height=0.4,height_index=3];";
+        BaseTree<Node> tree_order_1(newick_tree_str);
+
+        newick_tree_str = "(((c:0.1,d:0.1)[&height=0.1,height_index=0]:0.2,(a:0.2,b:0.2)[&height=0.2,height_index=1]:0.1)[&height=0.3,height_index=2]:0.1,((g:0.1,h:0.1)[&height=0.1,height_index=0]:0.2,(e:0.2,f:0.2)[&height=0.2,height_index=1]:0.1)[&height=0.3,height_index=2]:0.1)[&height=0.4,height_index=3];";
+        BaseTree<Node> tree_order_2(newick_tree_str);
+
+        REQUIRE(tree_order_1.get_splits() == tree_order_2.get_splits());
+        REQUIRE(tree_order_1.get_splits_by_height_index() != tree_order_2.get_splits_by_height_index());
     }
 }

@@ -1427,7 +1427,8 @@ class BaseTree {
             throw EcoevolityError("draw_from_prior called from base BaseTree class");
         }
 
-        void store_splits(std::set< std::pair<unsigned int, Split> > & split_set,
+        void store_splits_by_height_index(
+                std::map< unsigned int, std::set<Split> > & split_map,
                 bool resize_splits = false) const {
             if (resize_splits) {
                 this->root_->resize_splits(this->get_leaf_node_count());
@@ -1437,10 +1438,8 @@ class BaseTree {
                     ++node) {
                 if (! (*node)->is_leaf()) { 
                     // add this internal node's split to split set
-                    split_set.insert(std::make_pair(
-                            this->get_node_height_index((*node)->get_height_parameter()),
-                            (*node)->split_
-                            ));
+                    unsigned int height_idx = this->get_node_height_index((*node)->get_height_parameter());
+                    split_map[height_idx].insert((*node)->split_);
                 }
                 else {
                     // Set bit for this leaf node's index
@@ -1452,9 +1451,25 @@ class BaseTree {
             }
         }
 
-        std::set< std::pair<unsigned int, Split> > get_splits(
+        std::map< unsigned int, std::set<Split> > get_splits_by_height_index(
                 bool resize_splits = false) const {
-            std::set< std::pair<unsigned int, Split> > split_set;
+            std::map< unsigned int, std::set<Split> > split_map;
+            this->store_splits_by_height_index(split_map, resize_splits);
+            return split_map;
+        }
+
+        void store_splits(
+                std::set< std::set<Split> > & split_set,
+                bool resize_splits = false) const {
+            std::map< unsigned int, std::set<Split> > split_map = this->get_splits_by_height_index(resize_splits);
+            for (auto item : split_map) {
+                split_set.insert(item.second);
+            }
+        }
+
+        std::set< std::set<Split> > get_splits(
+                bool resize_splits = false) const {
+            std::set< std::set<Split> > split_set;
             this->store_splits(split_set, resize_splits);
             return split_set;
         }

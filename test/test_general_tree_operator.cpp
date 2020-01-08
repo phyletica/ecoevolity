@@ -4522,17 +4522,19 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
         // Initialize prior probs
         tree.compute_log_likelihood_and_prior(true);
 
-        std::map< std::set< std::pair<unsigned int, Split> >, unsigned int> split_counts;
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
 
         unsigned int count_nheights_1 = 0;
         unsigned int count_nheights_2 = 0;
         unsigned int count_nheights_3 = 0;
         unsigned int count_nheights_4 = 0;
 
-        unsigned int niterations = 50000;
-        unsigned int sample_freq = 20;
+        unsigned int niterations = 10000000;
+        unsigned int sample_freq = 50;
         unsigned int nsamples = niterations / sample_freq;
 
+        unsigned int sample_count = 0;
+        unsigned int report_freq = 1000;
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate(rng, &tree, 1);
             if ((i + 1) % sample_freq == 0) {
@@ -4548,12 +4550,16 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
                 else if (tree.get_number_of_node_heights() == 4) {
                     ++count_nheights_4;
                 }
-                std::set< std::pair< unsigned int, Split> > splits = tree.get_splits(false);
+                std::set< std::set<Split> > splits = tree.get_splits(false);
                 if (split_counts.count(splits) > 0) {
                     ++split_counts[splits];
                 }
                 else {
                     split_counts[splits] = 1;
+                }
+                ++sample_count;
+                if (sample_count % report_freq == 0) {
+                    std::cout << "Sampled " << sample_count << " of " << nsamples << "\n";
                 }
             }
         }
@@ -4570,14 +4576,22 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
         double freq_nheights_4 = count_nheights_4 / (double)nsamples;
 
         unsigned int total_trees_sampled = 0;
-        std::map< std::set< std::pair<unsigned int, Split> >, double> split_freqs;
+        std::map< std::set< std::set<Split> >, double> split_freqs;
         std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
         for (auto s_c : split_counts) {
             total_trees_sampled += s_c.second;
             split_freqs[s_c.first] = s_c.second / (double)nsamples;
             std::cout << "\nTree:\n";
-            for (auto idx_split : s_c.first) {
-                std::cout << "  " << idx_split.first << ": " << idx_split.second.as_string() << "\n";
+            for (auto splitset : s_c.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
             }
             std::cout << "  nsamples: " << s_c.second << "\n";
             std::cout << "  freq:     " << s_c.second / (double)nsamples << "\n";
@@ -4585,15 +4599,15 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
 
         REQUIRE(total_trees_sampled == nsamples);
 
-        /* // We should sample every possible tree */
-        /* REQUIRE(split_counts.size() == 336); */
+        // We should sample every possible tree
+        REQUIRE(split_counts.size() == 336);
 
-        /* double eps = 0.001; */
+        double eps = 0.001;
 
-        /* double exp_freq = 1.0/336.0; */
+        double exp_freq = 1.0/336.0;
 
-        /* for (auto s_f : split_freqs) { */
-        /*     REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps)); */
-        /* } */
+        for (auto s_f : split_freqs) {
+            REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
+        }
     }
 }
