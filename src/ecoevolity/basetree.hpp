@@ -87,7 +87,8 @@ class BaseTree {
                     ++subset_index) {
                 polytomy_node->split_children_from_polytomy(
                         child_node_subsets.at(subset_index),
-                        new_height_parameter);
+                        new_height_parameter,
+                        this->get_leaf_node_count());
             }
             if (refresh_node_heights) {
                 this->update_node_heights();
@@ -613,7 +614,8 @@ class BaseTree {
         }
 
         void merge_node_height_up(const unsigned int height_index,
-                const bool refresh_node_heights = false) {
+                const bool refresh_node_heights = false,
+                const bool refresh_node_ordering = true) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
@@ -634,6 +636,9 @@ class BaseTree {
             }
             else {
                 this->node_heights_.erase(this->node_heights_.begin() + height_index);
+            }
+            if (refresh_node_ordering) {
+                this->refresh_ordered_nodes();
             }
         }
 
@@ -712,7 +717,8 @@ class BaseTree {
                             ++subset_index) {
                         mapped_nodes.at(node_index)->split_children_from_polytomy(
                                 child_node_subsets.at(subset_index),
-                                new_height_parameter);
+                                new_height_parameter,
+                                this->get_leaf_node_count());
                     }
                 }
                 // Node is not a polytomy, so we simply assign it to the new height

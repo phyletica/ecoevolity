@@ -256,10 +256,14 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         void split_children_from_polytomy(
                 std::vector< std::shared_ptr<DerivedNodeT> >& children_to_split,
-                std::shared_ptr<PositiveRealParameter> new_height_parameter) {
+                std::shared_ptr<PositiveRealParameter> new_height_parameter,
+                unsigned int number_of_leaves_in_tree = 0) {
             ECOEVOLITY_ASSERT(children_to_split.size() > 1);
             ECOEVOLITY_ASSERT(this->is_polytomy());
             std::shared_ptr<DerivedNodeT> new_node = std::make_shared<DerivedNodeT>(new_height_parameter);
+            if (number_of_leaves_in_tree > 0) {
+                new_node->split_.resize(number_of_leaves_in_tree);
+            }
             for (auto child : children_to_split) {
                 child->remove_parent();
                 child->add_parent(new_node);
@@ -270,7 +274,9 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 this->get_parent()->add_child(new_node);
                 this->remove_parent();
             }
-            this->add_child(new_node);
+            else {
+                this->add_child(new_node);
+            }
         }
 
         bool has_children() const { return !this->children_.empty(); }
@@ -839,7 +845,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
 
         std::string to_parentheses(unsigned int precision = 12) const {
             std::ostringstream s;
-            s.precision(18);
+            s.precision(precision);
             if (this->is_leaf()) {
                 s << this->get_label();
             }
@@ -850,7 +856,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                     if (child_idx > 0) {
                         s << ",";
                     }
-                    s << child_iter->to_parentheses();
+                    s << child_iter->to_parentheses(precision);
                     ++child_idx;
                 }
                 s << ")";
