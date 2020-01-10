@@ -241,7 +241,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
             return nullptr;
         }
 
-        void collapse() {
+        unsigned int collapse() {
             if (! this->has_parent()) {
                 throw EcoevolityError("BaseNode::collapse(), node has no parent");
             }
@@ -252,6 +252,7 @@ class BaseNode : public std::enable_shared_from_this<DerivedNodeT> {
                 child->add_parent(grand_parent);
             }
             this->remove_parent();
+            return grand_parent->get_number_of_children();
         }
 
         void split_children_from_polytomy(
