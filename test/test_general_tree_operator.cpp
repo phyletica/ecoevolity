@@ -4492,8 +4492,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
 //
 // The asterisks in the topologies above indicated shared node heights.
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
-        "[xxx]") {
-        /* "[SplitLumpNodesRevJumpSampler]") { */
+        /* "[xxx]") { */
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(44246543554);

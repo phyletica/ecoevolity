@@ -2223,7 +2223,8 @@ TEST_CASE("Test collapse Node to root", "[Node]") {
         std::vector< std::shared_ptr<Node> > expected_nodes = {root_child1};
         REQUIRE(root->get_polytomy_nodes() == expected_nodes);
 
-        root_child1->collapse();
+        unsigned int poly_size = root_child1->collapse();
+        REQUIRE(poly_size == 4);
         REQUIRE(root->is_polytomy() == true);
         REQUIRE(root->degree() == 4);
         REQUIRE(root->get_number_of_children() == 4);
@@ -2273,7 +2274,8 @@ TEST_CASE("Test collapse Node", "[Node]") {
         REQUIRE(root->get_leaf_node_count() == 4);
         REQUIRE(root->get_polytomy_nodes().size() == 0);
 
-        child2->collapse();
+        unsigned int poly_size = child2->collapse();
+        REQUIRE(poly_size == 3);
         REQUIRE(child2->has_parent() == false);
         REQUIRE(child2->has_children() == false);
 
@@ -2363,7 +2365,8 @@ TEST_CASE("Test Node getters", "[Node]") {
         REQUIRE(root->get_polytomy_nodes() == expected_mapped_nodes);
 
 
-        root_child1->collapse();
+        unsigned int poly_size = root_child1->collapse();
+        REQUIRE(poly_size == 3);
 
         expected_mapped_nodes = {root_child2};
         mapped_nodes = root->get_mapped_nodes(int_ht);

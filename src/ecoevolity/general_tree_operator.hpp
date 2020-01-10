@@ -1086,7 +1086,7 @@ class NeighborHeightNodeSwap : public GeneralTreeOperatorInterface<NodeType, Op>
 template<class NodeType>
 class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeType, Op> {
     protected:
-        std::unordered_map<unsigned int, double> ln_stirling2_numbers;
+        std::unordered_map<unsigned int, long double> stirling2_numbers;
         std::unordered_map<unsigned int, long double> bell_numbers;
 
     public:
@@ -1105,12 +1105,11 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::rj_operator;
         }
 
-        double get_ln_stirling2(unsigned int n) {
-            if (this->ln_stirling2_numbers.count(n) < 1) {
-                this->ln_stirling2_numbers[n] = std::log(
-                        stirling2_float(n, 2));
+        double get_stirling2(unsigned int n) {
+            if (this->stirling2_numbers.count(n) < 1) {
+                this->stirling2_numbers[n] = stirling2_float(n, 2);
             }
-            return this->ln_stirling2_numbers[n];
+            return this->stirling2_numbers[n];
         }
 
         long double get_bell_number(unsigned int n) {
@@ -1147,17 +1146,67 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             double current_height = tree->get_height(split_height_idx);
             double height_lower_bound = -1.0;
             unsigned int number_of_mapped_nodes = 0;
-            std::vector<unsigned int> mapped_polytomy_sizes;
+            unsigned int number_of_nodes_in_split_subset;
+            std::vector<unsigned int> moving_polytomy_sizes;
+            bool mapped_nodes_include_polytomy;
             tree->split_node_height_down(rng,
                     split_height_idx,
                     height_lower_bound,
                     number_of_mapped_nodes,
-                    mapped_polytomy_sizes,
+                    number_of_nodes_in_split_subset,
+                    moving_polytomy_sizes,
+                    mapped_nodes_include_polytomy,
                     false);
             ECOEVOLITY_ASSERT(number_of_mapped_nodes > 0);
             double height_diff = current_height - height_lower_bound;
             ECOEVOLITY_ASSERT(height_diff > 0.0);
 
+            // ================================================================
+            // IN CASE OF A SINGLETON POLYTOMY
+            // ================================================================
+            // The probability of forward split move (just proposed) is the
+            // product of the probabilites of:
+            //   1) choosing the splittable height to split
+            //          = 1 / number of splittable heights
+            //   2) drawing the new height uniformly between the height we
+            //      are splitting and the next younger height (or zero).
+            //          = 1 / (height - younger neighbor height)
+            //          = 1 / d
+            //      NOTE: This can also be thought of as the Jacobian term
+            //      for the reversible jump move.
+            //   3) randomly partitioning the children of the one polytomy;
+            //          = 1 / (Bell(nchildren) - 2)
+            //      The minus 2 is because we reject 2 possible
+            //      partitions: (1) where every child is in its own subset,
+            //      and (2) when all children end up together in one subst.
+            //      The second partition would result in the polytomy node
+            //      simply moving down to the new height (not getting split
+            //      up). This is normally OK, when other nodes are
+            //      remaining at the old height (this is guaranteed,
+            //      because we always split nodes into two non-empty
+            //      subsets), but in the singleton case that doesn't
+            //      happen.
+            //
+            // So the prob of the forward split move is
+            // p(split move) =  1 / (number of splittable heights *
+            //                       d *
+            //                       (Bell(nchildren) - 2))
+            //
+            // The probability of the reverse move is simply the
+            // probability of randomly selecting the proposed (split)
+            // height from among all node heights except the root.
+            // p(reverse merge) = 1 / (number of heights before proposal + 1 - 1)
+            //                  = 1 / (number of heights before the proposal)
+            //
+            // So, the Hasting ratio for the proposed split move is:
+            // p(reverse merge) / p(proposed split) = 
+            //     (number of splittable heights * d * (Bell(n) - 2))
+            //     --------------------------------------------------
+            //         (number of heights before the proposal)
+            //
+            // ================================================================
+            // IN CASE OF SHARED BIFURCATING NODES (NO POLYTOMIES)
+            // ================================================================
             // The probability of forward split move (just proposed) is the
             // product of the probabilites of:
             //   1) choosing the splittable height to split
@@ -1172,39 +1221,12 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             //          = 1 / d
             //      NOTE: This can also be thought of as the Jacobian term
             //      for the reversible jump move.
-            //   4) randomly partitioning the children of each polytomy;
-            //      each subset with 2 or more children is split off as a
-            //      clade and mapped to the new, younger height. The prob
-            //      for each polytomy
-            //          = \prod 1 / (Bell(nchildren) - 1)
-            //      where Bell(n) is the Bell number, and 1 is subtracted,
-            //      because we reject the partition where every child is in
-            //      its own subset.  We reject this, because then the node
-            //      would node be split or moved to the new height. We have
-            //      to take the product of this over all polytomy nodes
-            //      that end up in the ``split'' subset of nodes.
-            //
-            //      In the special case where there is only one polytomy
-            //      mapped to the node we are splitting, this needs to be:
-            //          = 1 / (Bell(nchildren) - 2)
-            //      The minus 2 is because we now reject 2 possible
-            //      partitions: (1) where every child is in its own subset,
-            //      and (2) when all children end up together in one subst.
-            //      The second partition would result in the polytomy node
-            //      simply moving down to the new height (not getting split
-            //      up). This is normally OK, when other nodes are
-            //      remaining at the old height (this is guaranteed,
-            //      because we always split nodes into two non-empty
-            //      subsets), but in the singleton case that doesn't
-            //      happen.
             //
             // So the prob of the forward split move is
             // p(split move) =  1 / (number of splittable heights *
-            //                       (2^n - 2) * d *
-            //                       \prod 1 / (Bell(nchildren) - X))
+            //                       (2^n - 2) * d)
             //               =  1 / (number of splittable heights * 
-            //                       2 * stirling2(n, 2) * d *
-            //                       \prod 1 / (Bell(nchildren) - X))
+            //                       2 * stirling2(n, 2) * d)
             //
             // The probability of the reverse move is simply the
             // probability of randomly selecting the proposed (split)
@@ -1214,41 +1236,233 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             //
             // So, the Hasting ratio for the proposed split move is:
             // p(reverse merge) / p(proposed split) = 
-            //     (number of splittable heights * 2 * stirling2(n, 2) * d * \prod (Bell(nchild) - 1))
-            //     ----------------------------------------------------------------------------------
+            //     (number of splittable heights * 2 * stirling2(n, 2) * d)
+            //     --------------------------------------------------------
             //          (number of heights before the proposal)
             //
-            // EXCEPT for the case of a singleton polytomy, which is:
+            // ================================================================
+            // IN CASE WHEN SUBSET OF SHARED NODES INCLUDE POLYTOMIES
+            // ================================================================
+            // The probability of forward split move (just proposed) is the
+            // product of the probabilites of:
+            //   1) choosing the splittable height to split
+            //          = 1 / number of splittable heights
+            //   2) randomly splitting the subset out of the 'n' nodes
+            //      mapped to the height. Because there are polytomies,
+            //      this has to be done differently. We need to allow
+            //      all nodes ending up in the subset to be split down.
+            //      We can do this by splitting the 'n' nodes into 2 subsets
+            //      and ALLOWING an empty subset. There number of ways to do
+            //      this is:
+            //          stirling2(n, 2) + 1
+            //      We randomly pick one of the 2 sets so there are now
+            //          2 * (stirling2(n, 2) + 1)
+            //      ways to do this. But, we won't allow the empty set
+            //      to be sampled to move, so there are now
+            //          (2 * (stirling2(n, 2) + 1)) - 1
+            //          = (2 * stirling2(n, 2)) + 2 - 1
+            //          = (2 * stirling2(n, 2)) + 1
+            //      ways to choose our subset of nodes to be split/moved.
+            //      We avoid the empty set via rejection during the move, so
+            //      all the probability of all other ways remains uniform:
+            //          = 1 / ((2 * stirling2(n, 2)) + 1)
+            //   3) drawing the new height uniformly between the height we
+            //      are splitting and the next younger height (or zero).
+            //          = 1 / (height - younger neighbor height)
+            //          = 1 / d
+            //      NOTE: This can also be thought of as the Jacobian term
+            //      for the reversible jump move.
+            //   4) randomly partitioning the children of each polytomy;
+            //      each subset with 2 or more children is split off as a
+            //      clade and mapped to the new, younger height. The
+            //      number of ways to do this is:
+            //          = Bell(nchildren) - 1
+            //      where Bell(n) is the Bell number, and 1 is subtracted,
+            //      because we reject the partition where every child is in
+            //      its own subset.  We reject this, because then the node
+            //      would not be split or moved to the new height. We have
+            //      to take the product of this over all polytomy nodes
+            //      that end up in the ``split'' subset of nodes. So, the
+            //      number of ways across all polytomy nodes is:
+            //          = \prod (Bell(nchildren) - 1)
+            //      We sample these uniformly, so the prob is
+            //          = 1/ \prod (Bell(nchildren) - 1)
+            //
+            // So the prob of the forward split move is
+            // p(split move) =  1 / (number of splittable heights *
+            //                       ((2 * stirling2(n, 2)) + 1) * d *
+            //                       \prod (Bell(nchildren) - 1))
+            //
+            // The probability of the reverse move is simply the
+            // probability of randomly selecting the proposed (split)
+            // height from among all node heights except the root.
+            // p(reverse merge) = 1 / (number of heights before proposal + 1 - 1)
+            //                  = 1 / (number of heights before the proposal)
+            //
+            // So, the Hasting ratio for the proposed split move is:
             // p(reverse merge) / p(proposed split) = 
-            //     (number of splittable heights * d * (Bell(n) - 2))
-            //     --------------------------------------------------
-            //         (number of heights before the proposal)
+            //     (number of splittable heights * ((2 * stirling2(n, 2)) + 1) * d * \prod (Bell(nchild) - 1))
+            //     ------------------------------------------------------------------------------------------
+            //          (number of heights before the proposal)
+            //
+            // ================================================================
+            // IN CASE WHEN ALL SHARED NODES IN MOVE SET AND INCLUDES
+            // POLYTOMIES
+            // ================================================================
+            // The probability of forward split move (just proposed) is the
+            // product of the probabilites of:
+            //   1) choosing the splittable height to split
+            //          = 1 / number of splittable heights
+            //   2) randomly splitting the subset out of the 'n' nodes
+            //      mapped to the height. Because there are polytomies,
+            //      this has to be done differently. We need to allow
+            //      all nodes ending up in the subset to be split down.
+            //      We can do this by splitting the 'n' nodes into 2 subsets
+            //      and ALLOWING an empty subset. There number of ways to do
+            //      this is:
+            //          stirling2(n, 2) + 1
+            //      We randomly pick one of the 2 sets so there are now
+            //          2 * (stirling2(n, 2) + 1)
+            //      ways to do this. But, we won't allow the empty set
+            //      to be sampled to move, so there are now
+            //          (2 * (stirling2(n, 2) + 1)) - 1
+            //          = (2 * stirling2(n, 2)) + 2 - 1
+            //          = (2 * stirling2(n, 2)) + 1
+            //      ways to choose our subset of nodes to be split/moved.
+            //      We avoid the empty set via rejection during the move, so
+            //      all the probability of all other ways remains uniform:
+            //          = 1 / ((2 * stirling2(n, 2)) + 1)
+            //   3) drawing the new height uniformly between the height we
+            //      are splitting and the next younger height (or zero).
+            //          = 1 / (height - younger neighbor height)
+            //          = 1 / d
+            //      NOTE: This can also be thought of as the Jacobian term
+            //      for the reversible jump move.
+            //   4) randomly partitioning the children of each polytomy;
+            //      each subset with 2 or more children is split off as a
+            //      clade and mapped to the new, younger height. The
+            //      number of ways to do this is:
+            //          = Bell(nchildren) - 1
+            //      where Bell(n) is the Bell number, and 1 is subtracted,
+            //      because we reject the partition where every child is in
+            //      its own subset.  We reject this, because then the node
+            //      would not be split or moved to the new height. We have
+            //      to take the product of this over all polytomy nodes
+            //      that end up in the ``split'' subset of nodes. So, the
+            //      number of ways across all polytomy nodes is:
+            //          = \prod (Bell(nchildren) - 1)
+            //      NOTE: we reject the situation (during the move) where all
+            //      nodes get moved down in full (i.e., no nodes remain at old
+            //      node height), because this doesn't result in a model jump
+            //      and cannot be reversed by a merge move. In this special
+            //      case, the number of ways to split up all the nodes is:
+            //          = [\prod (Bell(nchildren) - 1)] - 1
+            //
+            // So the prob of the forward split move is
+            // p(split move) =  1 / (
+            //                       number of splittable heights *
+            //                       ((2 * stirling2(n, 2)) + 1) * d *
+            //                       ((\prod (Bell(nchildren) - 1)) - 1)
+            //                       )
+            //
+            // The probability of the reverse move is simply the
+            // probability of randomly selecting the proposed (split)
+            // height from among all node heights except the root.
+            // p(reverse merge) = 1 / (number of heights before proposal + 1 - 1)
+            //                  = 1 / (number of heights before the proposal)
+            //
+            // So, the Hasting ratio for the proposed split move is:
+            // p(reverse merge) / p(proposed split) = 
+            //     (number of splittable heights * ((2 * stirling2(n, 2)) + 1) * d * ((\prod (Bell(nchild) - 1)) - 1)
+            //     ------------------------------------------------------------------------------------------
+            //          (number of heights before the proposal)
+            //
 
             double ln_hastings = 0.0;
             if (number_of_mapped_nodes == 1) {
                 // We have the special case of only a single polytomy
-                ECOEVOLITY_ASSERT(mapped_polytomy_sizes.size() == 1);
+                ECOEVOLITY_ASSERT(moving_polytomy_sizes.size() == 1);
                 double ln_bell_num_minus_2 = std::log(
-                        this->get_bell_number(mapped_polytomy_sizes.at(0)) - 2.0);
+                        this->get_bell_number(moving_polytomy_sizes.at(0)) - 2.0);
                 ln_hastings =
                         std::log(number_of_splittable_heights) +
                         std::log(height_diff) +
                         ln_bell_num_minus_2 -
                         std::log(num_heights);
             }
-            else {
-                // We have multiple nodes mapped to height
-                double ln_stirling2 = this->get_ln_stirling2(number_of_mapped_nodes);
-                double ln_bell_num_minus_1_sum = 0.0;
-                for (auto polytomy_size : mapped_polytomy_sizes) {
-                    ln_bell_num_minus_1_sum += std::log(this->get_bell_number(polytomy_size) - 1.0);
-                }
+            else if (! mapped_nodes_include_polytomy) {
+                // We have multiple bifurcating nodes mapped to height
+                double ln_stirling2 = std::log(this->get_stirling2(number_of_mapped_nodes));
                 ln_hastings =
                         std::log(number_of_splittable_heights) +
                         std::log(2.0) +
                         ln_stirling2 +
+                        std::log(height_diff) -
+                        std::log(num_heights);
+            }
+            else {
+                // We have multiple nodes mapped to height and some are
+                // polytomies
+                ECOEVOLITY_ASSERT(moving_polytomy_sizes.size() > 0);
+                bool hit_overflow = false;
+                long double stirl2_term = this->get_stirling2(number_of_mapped_nodes);
+                // Check for multiplication overflow
+                if (2.0 > (std::numeric_limits<long double>::max() / stirl2_term)) {
+                    hit_overflow = true;
+                } else {
+                    stirl2_term *= 2.0;
+                }
+                // Check for addition overflow
+                if (stirl2_term > (std::numeric_limits<long double>::max() - 1.0)) {
+                    hit_overflow = true;
+                } else {
+                    stirl2_term += 1.0;
+                }
+                double ln_stirling2_term;
+                if (hit_overflow) {
+                    // If we hit overflow, we will ignore the tiny minus 1 from
+                    // (2 * Stirling)
+                    ln_stirling2_term = std::log(2.0) + std::log(this->get_stirling2(number_of_mapped_nodes));
+                } else {
+                    ln_stirling2_term = std::log(stirl2_term);
+                }
+
+                double ln_bell_num_minus_1_sum = 0.0;
+                for (auto polytomy_size : moving_polytomy_sizes) {
+                    ln_bell_num_minus_1_sum += std::log(this->get_bell_number(polytomy_size) - 1.0);
+                }
+                double ln_bell_term = ln_bell_num_minus_1_sum;
+
+                if (number_of_mapped_nodes == number_of_nodes_in_split_subset) {
+                    // If all nodes mapped to height ended up in the move set,
+                    // we need to account for the case we reject where none of
+                    // the polytomies get broken up (i.e., all node simply
+                    // slide down and no parameter is added to model).
+                    hit_overflow = false;
+                    long double bell_num_minus_1_prod = 0.0;
+                    for (auto polytomy_size : moving_polytomy_sizes) {
+                        // Check for multiplication overflow
+                        long double bell_minus_1 = this->get_bell_number(polytomy_size) - 1.0;
+                        if (bell_minus_1 > (std::numeric_limits<long double>::max() / bell_num_minus_1_prod)) {
+                            hit_overflow = true;
+                            break;
+                        }
+                        bell_num_minus_1_prod *= bell_minus_1;
+                    }
+                    // If we overflowed, we will use ln_bell_num_minus_1_sum,
+                    // because the minus 1 from the product will be tiny
+                    // TODO: We could probably be less conservative and use
+                    // ln_bell_num_minus_1_sum when the bell_num_minus_1_prod
+                    // gets to a threshold much smaller than the numeric limit.
+                    if (! hit_overflow) {
+                        ln_bell_term = std::log(bell_num_minus_1_prod - 1.0);
+                    }
+                }
+                ln_hastings =
+                        std::log(number_of_splittable_heights) +
+                        ln_stirling2_term +
                         std::log(height_diff) +
-                        ln_bell_num_minus_1_sum -
+                        ln_bell_term -
                         std::log(num_heights);
             }
 
@@ -1299,78 +1513,65 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             //   = 1 / nheights after merge
             // 
             // The probability of the split move that would reverse
-            // the merge is the product of the probabilities of:
-            //  1) Randomly selecting the merged height from among the
-            //     splittable heights that exist AFTER the merge move
-            //       = 1 / number of splittable heights after merge
-            //
-            //  2) Randomly selecting the correct nodes to split down to a new
-            //     height to get the pre-merge state. The number of ways you
-            //     can split the $n$ nodes mapped to the merged height into two
-            //     non-empy sets is equal to Stirling2(n, 2) (the Stirling
-            //     number of the second kind). Then you have to select one
-            //     of the two sets to move down to the new height, so
-            //     the probability of this is
-            //       = 1/2 * 1 / Stirling2(n, 2)
-            //  3) The polytomy nodes selected to "split down" need to be
-            //     resolved (or not) to their pre-merge state. For each
-            //     node with k children the number of ways to split it is equal
-            //     to the number of ways the k children can be partitioned into
-            //     1--k-1 non-empty sets, or bell(k) - 1 (the Bell number).
-            //     All subsets with more than 1 child is split into a new node
-            //     that descends from the original polytomy node and is
-            //     assigned the new younger height. The "minus 1" is 
-            //     because we don't allow the partition where every child is
-            //     assigned to its own subset, because this would result in
-            //     nothing happening to the polytomy node. The probability
-            //     of this is a product over each polytomy node in the
-            //     "split subset"
-            //      = \prod 1 / bell(k) - 1
-            //  4) Randomly drawing the pre-merged younger height between
-            //     the merged height and the next younger (post-merge) height
-            //      = 1 / merged height - next younger height (or zero)
-            //      = 1 / d
+            // the merge is detailed above, and varies under some
+            // conditions:
             // 
-            // So, the overall probability of the reverse split move is
+            // When only one node that is a polytomy is mapped to the
+            // post-merge height:
+            //   p(rev split move) =  1 / (post-merge num of splittable heights *
+            //                            d *
+            //                            (Bell(nchildren) - 2))
+            //   so, HR =
+            //                   nheights after merge
+            //   ----------------------------------------------------------------
+            //   (post-merge num of splittable heights * d * bell(nchildren) - 2)
             //
-            // = 1 / (post-merge num of splittable heights * 2 * Stirling2(n, 2) * d * \prod bell(k) - 1)
+            // When only multiple bifurcating nodes are mapped to the
+            // post-merge height:
+            //   p(rev split move) =  1 / (post-merge num of splittable heights *
+            //                            2 * stirling2(n, 2) * d)
+            //   so, HR =
+            //                   nheights after merge
+            //   ----------------------------------------------------------------
+            //   (post-merge num of splittable heights * 2 * Stirling2(n, 2) * d)
             //
-            // However, this is not true in one corner case: when, after the
-            // merge, there is only one node mapped to the merged height (which
-            // is necessarily a polytomy). In this special case of a singleton
-            // polytomy node mapped to the merged height, the probability of
-            // the reverse move is:
-            //
-            // = 1 / (post-merge num of splittable heights * d * bell(k) - 2)
-            //
-            // The number of ways to split the mapped nodes into 2 non-empty
-            // subsets is simply 1 (because there is only one node mapped to
-            // the height. Also, we now subtract 2 from all the ways we can
-            // partition the children of the polytomy into non-empty sets.
-            // This is because, in addition to not allowing the partition where
-            // all children are assigned to their own set, we also do not allow
-            // the partition where they are all mapped to one subset (because
-            // this would not break up the polytomy).
-            //
-            // The hastings ratio is then
-            //
-            // = prob of reverse split / prob of forward merge 
-            //
-            // =
-            //                 nheights after merge
-            // ------------------------------------------------------------------------------------
-            // (post-merge num of splittable heights * 2 * Stirling2(n, 2) * d * \prod bell(k) - 1)
-            // 
-            // EXCEPT if there is only one polytomy node mapped to the merged
-            // height, in which case, the hastings ratio is:
-            //
-            //                 nheights after merge
-            // ---------------------------------------------------------------
-            // (post-merge num of splittable heights * d * \prod bell(k) - 2)
+            // When multiple nodes are mapped to the post-merge height, and
+            // include at least one polytomy:
+            //   IF THE NUMBER OF NODES MAPPED TO OLD HEIGHT (PRE-MERGE) WAS
+            //   EQUAL TO THE NUMBER THAT WAS MAPPED TO THE POST-MERGE HEIGHT
+            //   (i.e., in the reverse split move, all nodes are included in
+            //   the move subset):
+            //     p(rev split move) =  1 / (
+            //                           post-merge num of splittable heights *
+            //                           ((2 * stirling2(n, 2)) + 1) * d *
+            //                           ((\prod (Bell(nchildren) - 1)) - 1)
+            //                           )
+            //     So, HR =
+            //                     nheights after merge
+            //     -------------------------------------------------
+            //     (post-merge num of splittable heights *
+            //         ((2 * stirling2(n, 2)) + 1) * d *
+            //         ((\prod (Bell(nchildren) - 1)) - 1))
+            //   ELSE:
+            //     p(rev split move) =  1 / (
+            //                           post-merge num of splittable heights *
+            //                           ((2 * stirling2(n, 2)) + 1) * d *
+            //                           \prod (Bell(nchildren) - 1)
+            //                           )
+            //     So, HR =
+            //                     nheights after merge
+            //     -------------------------------------------------
+            //     (post-merge num of splittable heights *
+            //         ((2 * stirling2(n, 2)) + 1) * d *
+            //         \prod (Bell(nchildren) - 1)
+            //         )
 
             // std::cout << "Merging...\n";
-            unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
-            tree->merge_node_height_up(merge_height_idx);
+            const unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
+            const unsigned int num_nodes_mapped_to_removed_height = tree->get_mapped_node_count(
+                    merge_height_idx);
+            std::vector<unsigned int> & sizes_of_polytomies_created;
+            tree->merge_node_height_up(merge_height_idx, sizes_of_polytomies_created);
             const double older_height = tree->get_height(merge_height_idx);
             double younger_height = 0.0;
             if (merge_height_idx > 0) {
@@ -1380,8 +1581,13 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             ECOEVOLITY_ASSERT(height_diff > 0.0);
             const unsigned int post_num_splittable_heights = tree->get_number_of_splittable_heights();
             std::vector< std::shared_ptr<NodeType> > post_mapped_nodes = tree->get_mapped_nodes(merge_height_idx);
-            std::vector< std::shared_ptr<NodeType> > post_mapped_poly_nodes = tree->get_mapped_polytomy_nodes(merge_height_idx);
             const unsigned int post_num_mapped_nodes = post_mapped_nodes.size();
+            unsigned int post_num_mapped_poly_nodes = 0; 
+            for (auto node : post_mapped_nodes) {
+                if (node->is_polytomy()) {
+                    ++post_num_mapped_poly_nodes;
+                }
+            }
             double ln_hastings = 0.0;
             if (post_num_mapped_nodes == 1) {
                 const unsigned int num_polytomy_children = post_mapped_nodes.at(0)->get_number_of_children();
@@ -1392,20 +1598,80 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                         std::log(height_diff) +
                         std::log(this->get_bell_number(num_polytomy_children) - 2.0));
             }
-            else {
-                double ln_stirling2_num = this->get_ln_stirling2(post_num_mapped_nodes);
-                double ln_bell_number_sum = 0.0;
-                for (auto poly_node : post_mapped_poly_nodes) {
-                    ln_bell_number_sum += std::log(
-                            this->get_bell_number(poly_node->get_number_of_children()) - 1.0);
-                }
+            else if (post_num_mapped_poly_nodes < 1) {
+                // Only shared bifurcating nodes
+                double ln_stirling2_num = std::log(this->get_stirling2(post_num_mapped_nodes));
                 ln_hastings =
                         std::log(num_heights - 1) -
                         (std::log(post_num_splittable_heights) +
                         std::log(2.0) +
                         ln_stirling2_num +
+                        std::log(height_diff));
+            }
+            // We have shared nodes that include at least on polytomy
+            else {
+                bool hit_overflow = false;
+                long double stirl2_term = this->get_stirling2(post_num_mapped_nodes);
+                // Check for multiplication overflow
+                if (2.0 > (std::numeric_limits<long double>::max() / stirl2_term)) {
+                    hit_overflow = true;
+                } else {
+                    stirl2_term *= 2.0;
+                }
+                // Check for addition overflow
+                if (stirl2_term > (std::numeric_limits<long double>::max() - 1.0)) {
+                    hit_overflow = true;
+                } else {
+                    stirl2_term += 1.0;
+                }
+                double ln_stirling2_term;
+                if (hit_overflow) {
+                    // If we hit overflow, we will ignore the tiny minus 1 from
+                    // (2 * Stirling)
+                    ln_stirling2_term = std::log(2.0) + std::log(this->get_stirling2(post_num_mapped_nodes));
+                } else {
+                    ln_stirling2_term = std::log(stirl2_term);
+                }
+
+                double ln_bell_num_minus_1_sum = 0.0;
+                for (auto poly_size : sizes_of_polytomies_created) {
+                    ln_bell_num_minus_1_sum += std::log(
+                            this->get_bell_number(poly_size) - 1.0);
+                }
+                double ln_bell_term = ln_bell_num_minus_1_sum;
+
+                if (post_num_mapped_nodes == num_nodes_mapped_to_removed_height) {
+                    // If all nodes mapped to height ended up in the move set,
+                    // we need to account for the case we reject where non of
+                    // the polytomies get broken up (i.e., all node simply
+                    // slide down and no parameter is added to model).
+                    hit_overflow = false;
+                    long double bell_num_minus_1_prod = 0.0;
+                    for (auto poly_size : sizes_of_polytomies_created) {
+                        // Check for multiplication overflow
+                        long double bell_minus_1 = this->get_bell_number(poly_size) - 1.0;
+                        if (bell_minus_1 > (std::numeric_limits<long double>::max() / bell_num_minus_1_prod)) {
+                            hit_overflow = true;
+                            break;
+                        }
+                        bell_num_minus_1_prod *= bell_minus_1;
+                    }
+                    // If we overflowed, we will use ln_bell_num_minus_1_sum,
+                    // because the minus 1 from the product will be tiny
+                    // TODO: We could probably be less conservative and use
+                    // ln_bell_num_minus_1_sum when the bell_num_minus_1_prod
+                    // gets to a threshold much smaller than the numeric limit.
+                    if (! hit_overflow) {
+                        ln_bell_term = std::log(bell_num_minus_1_prod - 1.0);
+                    }
+                }
+                ln_hastings =
+                        std::log(num_heights - 1) -
+                        (std::log(post_num_splittable_heights) +
+                        ln_stirling2_term +
                         std::log(height_diff) +
-                        ln_bell_number_sum);
+                        ln_bell_term);
+
             }
 
             // For the hastings ratio we also have to include the ratio of the

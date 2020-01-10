@@ -709,6 +709,8 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
 
 TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
     SECTION("Testing merge_node_height_up") {
+        std::vector<unsigned int> & sizes_of_polytomies_created;
+
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
         std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.04);
         std::shared_ptr<Node> internal1 = std::make_shared<Node>("internal1", 0.06);
@@ -775,7 +777,7 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
         std::vector<double> expected_heights = {0.06, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.merge_node_height_up(0);
+        std::vector<unsigned int> & sizes_of_polytomies_created;
 
         REQUIRE(root->is_root());
         REQUIRE(root->is_child(internal2));
@@ -808,7 +810,7 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
         expected_heights = {0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.merge_node_height_up(0);
+        tree.merge_node_height_up(0, sizes_of_polytomies_created);
 
         REQUIRE(root->is_root());
         REQUIRE(root->is_child(leaf0));
@@ -845,7 +847,9 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
     SECTION("Testing split_node_height_down") {
         double height_lower_bound;
         unsigned int number_of_mapped_nodes;
-        std::vector<unsigned int> mapped_polytomy_sizes;
+        unsigned int number_of_nodes_in_split_subset;
+        bool mapped_nodes_include_polytomy;
+        std::vector<unsigned int> moving_polytomy_sizes;
 
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
         std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
@@ -919,7 +923,9 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
         tree.split_node_height_down(rng, 0,
                 height_lower_bound,
                 number_of_mapped_nodes,
-                mapped_polytomy_sizes);
+                number_of_nodes_in_split_subset,
+                moving_polytomy_sizes,
+                mapped_nodes_include_polytomy);
 
         REQUIRE(tree.tree_is_valid());
         REQUIRE(tree.get_root_height() == 0.1);
@@ -960,7 +966,9 @@ TEST_CASE("Testing BaseTree::split_node_height_down", "[BaseTree]") {
             tree.split_node_height_down(rng, splittable_ht,
                     height_lower_bound,
                     number_of_mapped_nodes,
-                    mapped_polytomy_sizes);
+                    number_of_nodes_in_split_subset,
+                    moving_polytomy_sizes,
+                    mapped_nodes_include_polytomy);
             ++expected_number_of_node_heights;
             mapped_nodes_orig = tree.get_mapped_nodes(splittable_ht + 1);
             mapped_nodes_new = tree.get_mapped_nodes(splittable_ht);
@@ -2658,7 +2666,10 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
     SECTION("Testing store-restore of state") {
         double height_lower_bound;
         unsigned int number_of_mapped_nodes;
-        std::vector<unsigned int> mapped_polytomy_sizes;
+        unsigned int number_of_nodes_in_split_subset;
+        std::vector<unsigned int> moving_polytomy_sizes;
+        bool mapped_nodes_include_polytomy;
+        std::vector<unsigned int> & sizes_of_polytomies_created;
 
         RandomNumberGenerator rng = RandomNumberGenerator(111);
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.5);
@@ -2797,7 +2808,7 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.merge_node_height_up(0);
+        tree.merge_node_height_up(0, sizes_of_polytomies_created);
         std::cout << "Tree after merge_node_height_up(0):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2823,7 +2834,7 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.merge_node_height_up(1);
+        tree.merge_node_height_up(1, sizes_of_polytomies_created);
         std::cout << "Tree after merge_node_height_up(1):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2852,7 +2863,9 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         tree.split_node_height_down(rng, 2,
                 height_lower_bound,
                 number_of_mapped_nodes,
-                mapped_polytomy_sizes);
+                number_of_nodes_in_split_subset,
+                moving_polytomy_sizes,
+                mapped_nodes_include_polytomy);
         std::cout << "Tree after split_node_height_down(rng, 2):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2884,7 +2897,9 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         tree.split_node_height_down(rng, 1,
                 height_lower_bound,
                 number_of_mapped_nodes,
-                mapped_polytomy_sizes);
+                number_of_nodes_in_split_subset,
+                moving_polytomy_sizes,
+                mapped_nodes_include_polytomy);
         std::cout << "Tree after split_node_height_down(rng, 1):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2916,7 +2931,9 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         tree.split_node_height_down(rng, 0,
                 height_lower_bound,
                 number_of_mapped_nodes,
-                mapped_polytomy_sizes);
+                number_of_nodes_in_split_subset,
+                moving_polytomy_sizes,
+                mapped_nodes_include_polytomy);
         std::cout << "Tree after split_node_height_down(rng, 0):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);

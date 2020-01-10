@@ -614,18 +614,23 @@ class BaseTree {
         }
 
         void merge_node_height_up(const unsigned int height_index,
+                std::vector<unsigned int> & sizes_of_polytomies_created,
                 const bool refresh_node_heights = false,
                 const bool refresh_node_ordering = true) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
+            sizes_of_polytomies_created.clear();
+
             std::shared_ptr<PositiveRealParameter> new_height = this->node_heights_.at(height_index + 1);
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             for (unsigned int i = 0; i < mapped_nodes.size(); ++i) {
-                // If the parent of the node we are moving up is assigned to the next larger
-                // node height, we need to add the child to a polytomy
+                // If the parent of the node we are moving up is assigned to
+                // the next larger node height, we need to add the child to a
+                // polytomy
                 if (mapped_nodes.at(i)->get_parent()->get_height_parameter() == new_height) {
-                    mapped_nodes.at(i)->collapse();
+                    unsigned int poly_size = mapped_nodes.at(i)->collapse();
+                    sizes_of_polytomies_created.push_back(poly_size);
                 }
                 else {
                     mapped_nodes.at(i)->set_height_parameter(new_height);
@@ -647,13 +652,17 @@ class BaseTree {
                 const unsigned int height_index,
                 double & height_lower_bound,
                 unsigned int & number_of_mapped_nodes,
-                std::vector<unsigned int> & mapped_polytomy_sizes,
+                unsigned int & number_of_nodes_in_split_subset,
+                std::vector<unsigned int> & moving_polytomy_sizes,
+                bool & mapped_nodes_include_polytomy,
                 const bool refresh_node_heights = false,
                 const bool refresh_node_ordering = true) {
-            mapped_polytomy_sizes.clear();
+            moving_polytomy_sizes.clear();
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             number_of_mapped_nodes = mapped_nodes.size();
             if (mapped_nodes.size() < 1) {
+                number_of_nodes_in_split_subset = 0;
+                mapped_nodes_include_polytomy = false;
                 return;
             }
             double max_height = this->node_heights_.at(height_index)->get_value();
@@ -668,42 +677,124 @@ class BaseTree {
                 // If we only have a single polytomy, we need to handle the
                 // splitting differently
                 ECOEVOLITY_ASSERT(mapped_nodes.at(0)->is_polytomy());
-                mapped_polytomy_sizes.push_back(mapped_nodes.at(0)->get_number_of_children());
+                moving_polytomy_sizes.push_back(mapped_nodes.at(0)->get_number_of_children());
+                number_of_nodes_in_split_subset = 1;
+                mapped_nodes_include_polytomy = false;
                 this->split_singleton_polytomy(rng, mapped_nodes.at(0),
                         new_height_parameter,
-                        refresh_node_heights);
+                        refresh_node_heights,
+                        refresh_node_ordering);
                 return;
             }
 
-            std::vector< std::vector<unsigned int> > subsets = rng.random_subsets(
-                    mapped_nodes.size(), 2);
+            mapped_nodes_include_polytomy = false;
+            for (auto n : mapped_nodes) {
+                if (n->is_polytomy()) {
+                    mapped_nodes_include_polytomy = true;
+                    break;
+                }
+            }
 
-            unsigned int move_subset_index = rng.uniform_positive_int(0, 1);
+            if (! mapped_nodes_include_polytomy) {
+                // We only have shared bifurcating nodes
+                std::vector< std::vector<unsigned int> > subsets = rng.random_subsets(
+                        mapped_nodes.size(), 2);
 
-            for (auto node_index : subsets.at(move_subset_index)) {
-                // If node is a polytomy, we need to deal with possibility of
-                // splitting it up
+                unsigned int move_subset_index = rng.uniform_positive_int(0, 1);
+
+                number_of_nodes_in_split_subset = subsets.at(move_subset_index).size();
+                for (auto node_index : subsets.at(move_subset_index)) {
+                    mapped_nodes.at(node_index)->set_height_parameter(new_height_parameter);
+                }
+                if (refresh_node_heights) {
+                    this->update_node_heights();
+                }
+                else {
+                    this->node_heights_.push_back(new_height_parameter);
+                    this->sort_node_heights();
+                }
+                if (refresh_node_ordering) {
+                    this->refresh_ordered_nodes();
+                }
+                return;
+            }
+
+            // We have at least one polytomy node included in the shared nodes.
+            // So, we need to allow all nodes to end up in the move set.
+            bool all_nodes_in_move_set = true;
+            bool all_poly_nodes_will_move_in_full = true;
+            std::vector<unsigned int> move_subset;
+            std::vector<unsigned int> allowed_numbers_of_subsets {1, 2};
+            std::map<unsigned int, std::vector< std::vector<unsigned int> > > node_index_to_child_subsets;
+            while (all_nodes_in_move_set && all_poly_nodes_will_move_in_full) {
+                // This while loop ensures that we do not end up simply sliding
+                // all the nodes down to the new height. This would not add a
+                // parameter to the model and cannot be reversed by a merge
+                // move. If this happens we simply reject and continue, so that
+                // all other possible ways to split will be sampled uniformly.
+                while (move_subset.size() < 1) {
+                    // This while loop ensures that we do not sample an empty
+                    // set to move. If we do we continue until we don't. By
+                    // using rejection, all other possible move sets will be
+                    // sample uniformly.
+                    all_nodes_in_move_set = false;
+                    std::vector< std::vector<unsigned int> > subsets = rng.restricted_random_set_partition_as_subsets(
+                            mapped_nodes.size(),
+                            allowed_numbers_of_subsets);
+                    unsigned int move_subset_index = rng.uniform_positive_int(0, 1);
+                    if (subsets.size() == 1) {
+                        all_nodes_in_move_set = true;
+                        if (move_subset_index == 1) {
+                            // We have sampled an empty set to move, which we avoid by
+                            // rejecting and continuing the loop until we get a
+                            // non-empty move set
+                            continue;
+                        }
+                    }
+                    move_subset = subsets.at(move_subset_index);
+                }
+
+                for (auto node_index : move_subset) {
+                    // If node is a polytomy, we need to deal with possibility of
+                    // splitting it up
+                    if (mapped_nodes.at(node_index)->is_polytomy()) {
+                        unsigned int n_children = mapped_nodes.at(node_index)->get_number_of_children();
+                        std::vector< std::vector<unsigned int> > child_subsets;
+                        // Need to avoid the partition where all children are
+                        // assigned to their own subset. This would result in the
+                        // no nodes being moved to the new height (i.e., the
+                        // polytomy remains as is), which complicates Hasting's
+                        // ratio, because then there are multiple ways polytomy
+                        // nodes are not included in the split (it can either not
+                        // be selected in the move pool, or selected, but all the
+                        // children are in singleton subsets and thus not split
+                        // off).
+                        while ((child_subsets.size() == 0) || (child_subsets.size() == n_children)) {
+                            child_subsets = rng.random_set_partition_as_subsets(
+                                    n_children);
+                        }
+                        if (child_subsets.size() > 1) {
+                            // We have at least one polytomy node that will leave a
+                            // node at the old node height (we will have a
+                            // model-jump move)
+                            all_poly_nodes_will_move_in_full = false;
+                        }
+                        node_index_to_child_subsets[node_index] = child_subsets;
+                    }
+                }
+            }
+
+            number_of_nodes_in_split_subset = move_subset.size();
+            for (auto node_index : move_subset) {
+                // If node is a polytomy, we need to deal with splitting it up
                 if (mapped_nodes.at(node_index)->is_polytomy()) {
                     unsigned int n_children = mapped_nodes.at(node_index)->get_number_of_children();
-                    mapped_polytomy_sizes.push_back(n_children);
-                    std::vector< std::vector<unsigned int> > child_subsets;
-                    // Need to avoid the partition where all children are
-                    // assigned to their own subset. This would result in the
-                    // no nodes being moved to the new height (i.e., the
-                    // polytomy remains as is), which complicates Hasting's
-                    // ratio, because then there are multiple ways polytomy
-                    // nodes are not included in the split (it can either not
-                    // be selected in the move pool, or selected, but all the
-                    // children are in singleton subsets and thus not split
-                    // off).
-                    while ((child_subsets.size() == 0) || (child_subsets.size() == n_children)) {
-                        child_subsets = rng.random_set_partition_as_subsets(
-                                n_children);
-                    }
+                    moving_polytomy_sizes.push_back(n_children);
+                    std::vector< std::vector<unsigned int> > child_subsets = node_index_to_child_subsets[node_index];
+                    std::vector< std::vector< std::shared_ptr<NodeType> > > child_node_subsets;
                     // Need to get the pointers to the children to split (can't
                     // work with child indices, because these will change as
                     // they are split off from polytomy
-                    std::vector< std::vector< std::shared_ptr<NodeType> > > child_node_subsets;
                     for (auto child_subset : child_subsets) {
                         // Any singleton children remain at polytomy node
                         if (child_subset.size() < 2) {
