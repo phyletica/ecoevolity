@@ -27,7 +27,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
 
         std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -53,7 +53,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
 
         std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -79,7 +79,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
 
         std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -105,7 +105,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
 
         std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -133,7 +133,7 @@ TEST_CASE("Testing constructors of Node", "[Node]") {
 
         std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
@@ -173,7 +173,7 @@ TEST_CASE("Testing copy operator of Node", "[Node]") {
 
         std::shared_ptr<Node> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
@@ -304,7 +304,7 @@ TEST_CASE("Testing child methods of Node", "[Node]") {
         std::shared_ptr<Node> r = p->remove_child(i);
         REQUIRE(r == c);
         REQUIRE(typeid(c).hash_code() == typeid(r).hash_code());
-        REQUIRE(typeid(*c).hash_code() == typeid(*r).hash_code());
+        /* REQUIRE(typeid(*c).hash_code() == typeid(*r).hash_code()); */
         REQUIRE(p->has_children() == false);
         REQUIRE(c->is_parent(p) == false);
         REQUIRE(p->is_child(c) == false);
@@ -758,7 +758,7 @@ TEST_CASE("Testing bare constructor of PopulationNode", "[PopulationNode]") {
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -791,7 +791,7 @@ TEST_CASE("Testing label constructor of PopulationNode", "[PopulationNode]") {
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -823,7 +823,7 @@ TEST_CASE("Testing height constructor of PopulationNode", "[PopulationNode]") {
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -855,7 +855,7 @@ TEST_CASE("Testing label and height constructor of PopulationNode", "[Population
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -889,7 +889,7 @@ TEST_CASE("Testing allele count constructor of PopulationNode", "[PopulationNode
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -923,7 +923,7 @@ TEST_CASE("Testing height and allele count constructor of PopulationNode", "[Pop
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -957,7 +957,7 @@ TEST_CASE("Testing label and allele count constructor of PopulationNode", "[Popu
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -991,7 +991,7 @@ TEST_CASE("Testing label, height, and allele count constructor of PopulationNode
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
     }
@@ -1025,7 +1025,7 @@ TEST_CASE("Testing node ref constructor of PopulationNode", "[PopulationNode]") 
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         
@@ -1083,7 +1083,7 @@ TEST_CASE("Testing copy operator of PopulationNode", "[PopulationNode]") {
 
         std::shared_ptr<PopulationNode> p = n.get_parent();
         REQUIRE(p == nullptr);
-        REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code());
+        /* REQUIRE(typeid(n).hash_code() == typeid(*p).hash_code()); */
 
         REQUIRE_THROWS_AS(n.get_child(0), std::out_of_range &);
         

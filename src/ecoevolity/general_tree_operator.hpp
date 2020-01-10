@@ -1403,17 +1403,17 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             else {
                 // We have multiple nodes mapped to height and some are
                 // polytomies
-                ECOEVOLITY_ASSERT(moving_polytomy_sizes.size() > 0);
                 bool hit_overflow = false;
+                long double long_double_max = std::numeric_limits<long double>::max();
                 long double stirl2_term = this->get_stirling2(number_of_mapped_nodes);
                 // Check for multiplication overflow
-                if (2.0 > (std::numeric_limits<long double>::max() / stirl2_term)) {
+                if (2.0 > (long_double_max / stirl2_term)) {
                     hit_overflow = true;
                 } else {
                     stirl2_term *= 2.0;
                 }
                 // Check for addition overflow
-                if (stirl2_term > (std::numeric_limits<long double>::max() - 1.0)) {
+                if (stirl2_term > (long_double_max - 1.0)) {
                     hit_overflow = true;
                 } else {
                     stirl2_term += 1.0;
@@ -1434,6 +1434,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 double ln_bell_term = ln_bell_num_minus_1_sum;
 
                 if (number_of_mapped_nodes == number_of_nodes_in_split_subset) {
+                    ECOEVOLITY_ASSERT(moving_polytomy_sizes.size() > 0);
                     // If all nodes mapped to height ended up in the move set,
                     // we need to account for the case we reject where none of
                     // the polytomies get broken up (i.e., all node simply
@@ -1443,7 +1444,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                     for (auto polytomy_size : moving_polytomy_sizes) {
                         // Check for multiplication overflow
                         long double bell_minus_1 = this->get_bell_number(polytomy_size) - 1.0;
-                        if (bell_minus_1 > (std::numeric_limits<long double>::max() / bell_num_minus_1_prod)) {
+                        if (bell_minus_1 > (long_double_max / bell_num_minus_1_prod)) {
                             hit_overflow = true;
                             break;
                         }
@@ -1570,7 +1571,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             const unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
             const unsigned int num_nodes_mapped_to_removed_height = tree->get_mapped_node_count(
                     merge_height_idx);
-            std::vector<unsigned int> & sizes_of_polytomies_created;
+            std::vector<unsigned int> sizes_of_polytomies_created;
             tree->merge_node_height_up(merge_height_idx, sizes_of_polytomies_created);
             const double older_height = tree->get_height(merge_height_idx);
             double younger_height = 0.0;
@@ -1611,15 +1612,16 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             // We have shared nodes that include at least on polytomy
             else {
                 bool hit_overflow = false;
+                long double long_double_max = std::numeric_limits<long double>::max();
                 long double stirl2_term = this->get_stirling2(post_num_mapped_nodes);
                 // Check for multiplication overflow
-                if (2.0 > (std::numeric_limits<long double>::max() / stirl2_term)) {
+                if (2.0 > (long_double_max / stirl2_term)) {
                     hit_overflow = true;
                 } else {
                     stirl2_term *= 2.0;
                 }
                 // Check for addition overflow
-                if (stirl2_term > (std::numeric_limits<long double>::max() - 1.0)) {
+                if (stirl2_term > (long_double_max - 1.0)) {
                     hit_overflow = true;
                 } else {
                     stirl2_term += 1.0;
@@ -1650,7 +1652,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                     for (auto poly_size : sizes_of_polytomies_created) {
                         // Check for multiplication overflow
                         long double bell_minus_1 = this->get_bell_number(poly_size) - 1.0;
-                        if (bell_minus_1 > (std::numeric_limits<long double>::max() / bell_num_minus_1_prod)) {
+                        if (bell_minus_1 > (long_double_max / bell_num_minus_1_prod)) {
                             hit_overflow = true;
                             break;
                         }
