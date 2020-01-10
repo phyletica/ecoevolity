@@ -3821,3 +3821,201 @@ TEST_CASE("Testing shuffle with 3 ints", "[RandomNumberGenerator]") {
         REQUIRE(total == nsamples);
     }
 }
+
+TEST_CASE("Testing restricted_random_number_of_subsets 3, (1,2)",
+        "[xRandomNumberGenerator]") {
+    SECTION("Testing restricted_random_number_of_subsets") {
+        unsigned int nsamples = 200000;
+        std::map<unsigned int, unsigned int> counts;
+        counts[1] = 0;
+        counts[2] = 0;
+
+        unsigned int num_elements = 3;
+        std::vector<unsigned int> allowed_n_subsets {1, 2};
+
+        RandomNumberGenerator rng(6179846351);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.restricted_random_number_of_subsets(
+                    num_elements,
+                    allowed_n_subsets,
+                    1.0);
+            ++counts[n];
+        }
+        REQUIRE((counts[1] + counts[2]) == nsamples);
+        double eps = 0.001;
+        REQUIRE((counts[1] / (double)nsamples) == Approx(0.25).epsilon(eps));
+        REQUIRE((counts[2] / (double)nsamples) == Approx(0.75).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing restricted_random_number_of_subsets 3, (2,3)",
+        "[xRandomNumberGenerator]") {
+    SECTION("Testing restricted_random_number_of_subsets") {
+        unsigned int nsamples = 200000;
+        std::map<unsigned int, unsigned int> counts;
+        counts[2] = 0;
+        counts[3] = 0;
+
+        unsigned int num_elements = 3;
+        std::vector<unsigned int> allowed_n_subsets {2, 3};
+
+        RandomNumberGenerator rng(4816913425);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.restricted_random_number_of_subsets(
+                    num_elements,
+                    allowed_n_subsets,
+                    1.0);
+            ++counts[n];
+        }
+        REQUIRE((counts[2] + counts[3]) == nsamples);
+        double eps = 0.001;
+        REQUIRE((counts[3] / (double)nsamples) == Approx(0.25).epsilon(eps));
+        REQUIRE((counts[2] / (double)nsamples) == Approx(0.75).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing restricted_random_number_of_subsets 4, (3,2)",
+        "[xRandomNumberGenerator]") {
+    SECTION("Testing restricted_random_number_of_subsets") {
+        unsigned int nsamples = 200000;
+        std::map<unsigned int, unsigned int> counts;
+        counts[2] = 0;
+        counts[3] = 0;
+
+        unsigned int num_elements = 4;
+        std::vector<unsigned int> allowed_n_subsets {3, 2};
+
+        RandomNumberGenerator rng(541168253243);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.restricted_random_number_of_subsets(
+                    num_elements,
+                    allowed_n_subsets,
+                    1.0);
+            ++counts[n];
+        }
+        REQUIRE((counts[2] + counts[3]) == nsamples);
+        double eps = 0.001;
+        REQUIRE((counts[2] / (double)nsamples) == Approx(7.0/13.0).epsilon(eps));
+        REQUIRE((counts[3] / (double)nsamples) == Approx(6.0/13.0).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing restricted_random_number_of_subsets 4, (3,1)",
+        "[xRandomNumberGenerator]") {
+    SECTION("Testing restricted_random_number_of_subsets") {
+        unsigned int nsamples = 200000;
+        std::map<unsigned int, unsigned int> counts;
+        counts[1] = 0;
+        counts[3] = 0;
+
+        unsigned int num_elements = 4;
+        std::vector<unsigned int> allowed_n_subsets {3, 1};
+
+        RandomNumberGenerator rng(541168253243);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            unsigned int n = rng.restricted_random_number_of_subsets(
+                    num_elements,
+                    allowed_n_subsets,
+                    1.0);
+            ++counts[n];
+        }
+        REQUIRE((counts[1] + counts[3]) == nsamples);
+        double eps = 0.001;
+        REQUIRE((counts[1] / (double)nsamples) == Approx(1.0/7.0).epsilon(eps));
+        REQUIRE((counts[3] / (double)nsamples) == Approx(6.0/7.0).epsilon(eps));
+    }
+}
+
+TEST_CASE("Testing restricted_random_set_partition_as_subsets 4, (1,2)",
+        "[xRandomNumberGenerator]") {
+    SECTION("Testing restricted_random_number_of_subsets") {
+        unsigned int nsamples = 400000;
+        std::map<std::vector< std::vector<unsigned int> >, unsigned int> counts;
+
+        unsigned int num_elements = 4;
+        std::vector<unsigned int> allowed_n_subsets {1, 2};
+
+        std::vector< std::vector<unsigned int> > ss;
+        RandomNumberGenerator rng(541168253243);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            ss = rng.restricted_random_set_partition_as_subsets(
+                    num_elements,
+                    allowed_n_subsets,
+                    1.0);
+            if (counts.count(ss) < 1) {
+                counts[ss] = 1;
+            }
+            else {
+                ++counts[ss];
+            }
+        }
+
+        unsigned int n_collected_samples = 0;
+        for (auto ss_count : counts) {
+            n_collected_samples += ss_count.second;
+            for (unsigned int i = 0; i < ss_count.first.size(); ++i) {
+                if (i > 0) {
+                    std::cout << "|";
+                }
+                for (auto el : ss_count.first.at(i)) {
+                    std::cout << el;
+                }
+            }
+            std::cout << "\nfreq: " << ss_count.second / (double)nsamples << "\n";
+        }
+        REQUIRE(n_collected_samples == nsamples);
+
+        REQUIRE(counts.size() == 8);
+        double eps = 0.001;
+        for (auto ss_count : counts) {
+            REQUIRE((ss_count.second / (double)nsamples) == Approx(1.0/8.0).epsilon(eps));
+        }
+    }
+}
+
+TEST_CASE("Testing restricted_random_set_partition_as_subsets 4, (3,2)",
+        "[xRandomNumberGenerator]") {
+    SECTION("Testing restricted_random_number_of_subsets") {
+        unsigned int nsamples = 500000;
+        std::map<std::vector< std::vector<unsigned int> >, unsigned int> counts;
+
+        unsigned int num_elements = 4;
+        std::vector<unsigned int> allowed_n_subsets {3, 2};
+
+        std::vector< std::vector<unsigned int> > ss;
+        RandomNumberGenerator rng(541168253243);
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            ss = rng.restricted_random_set_partition_as_subsets(
+                    num_elements,
+                    allowed_n_subsets,
+                    1.0);
+            if (counts.count(ss) < 1) {
+                counts[ss] = 1;
+            }
+            else {
+                ++counts[ss];
+            }
+        }
+
+        unsigned int n_collected_samples = 0;
+        for (auto ss_count : counts) {
+            n_collected_samples += ss_count.second;
+            for (unsigned int i = 0; i < ss_count.first.size(); ++i) {
+                if (i > 0) {
+                    std::cout << "|";
+                }
+                for (auto el : ss_count.first.at(i)) {
+                    std::cout << el;
+                }
+            }
+            std::cout << "\nfreq: " << ss_count.second / (double)nsamples << "\n";
+        }
+        REQUIRE(n_collected_samples == nsamples);
+
+        REQUIRE(counts.size() == 13);
+        double eps = 0.001;
+        for (auto ss_count : counts) {
+            REQUIRE((ss_count.second / (double)nsamples) == Approx(1.0/13.0).epsilon(eps));
+        }
+    }
+}

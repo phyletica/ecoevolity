@@ -518,8 +518,8 @@ class RandomNumberGenerator {
             for (unsigned int i = 0; i < ncat_probs.size(); ++i) {
                 ncat_probs.at(i) = ncat_probs.at(i) / denom;
             }
-            unsigned int ncats = this->weighted_index(ncat_probs) + 1;
-            return ncats;
+            unsigned int ncats_idx = this->weighted_index(ncat_probs);
+            return possible_numbers_of_subsets.at(ncats_idx);
         }
 
         /**
