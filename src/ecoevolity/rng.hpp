@@ -495,6 +495,33 @@ class RandomNumberGenerator {
             return ncats;
         }
 
+        inline unsigned int restricted_random_number_of_subsets(
+                unsigned int number_of_elements,
+                const std::vector<unsigned int> & possible_numbers_of_subsets,
+                double split_weight = 1.0) {
+            ECOEVOLITY_ASSERT(split_weight > 0.0);
+            ECOEVOLITY_ASSERT(number_of_elements > 0);
+            ECOEVOLITY_ASSERT(possible_numbers_of_subsets.size() > 0);
+            if (possible_numbers_of_subsets.size() == 1) {
+                return possible_numbers_of_subsets.at(0);
+            }
+            std::vector<long double> ncat_probs;
+            ncat_probs.reserve(possible_numbers_of_subsets.size());
+            long double denom = 0.0;
+            long double p = 0.0;
+            for (auto k : possible_numbers_of_subsets) {
+                ECOEVOLITY_ASSERT((k > 0) && (k <= number_of_elements));
+                p = stirling2_base<long double>(number_of_elements, k) * std::pow(split_weight, (k - 1));
+                ncat_probs.push_back(p);
+                denom += p;
+            }
+            for (unsigned int i = 0; i < ncat_probs.size(); ++i) {
+                ncat_probs.at(i) = ncat_probs.at(i) / denom;
+            }
+            unsigned int ncats = this->weighted_index(ncat_probs) + 1;
+            return ncats;
+        }
+
         /**
          * A function for generating a random set partition.
          */
@@ -600,6 +627,51 @@ class RandomNumberGenerator {
             unsigned int num_subsets = this->random_set_partition_as_subsets(
                     subsets,
                     number_of_elements,
+                    split_weight);
+            return subsets;
+        }
+
+        /**
+         * A function for generating a random set partition conditional on a
+         * restricted possible number of subsets.
+         */
+        inline unsigned int restricted_random_set_partition_as_subsets(
+                std::vector< std::vector<unsigned int> > &subsets,
+                unsigned int number_of_elements,
+                const std::vector<unsigned int> & possible_number_of_subsets,
+                double split_weight = 1.0) {
+            unsigned int n = number_of_elements;
+            unsigned int ncats = restricted_random_number_of_subsets(n,
+                    possible_number_of_subsets, split_weight);
+            subsets.reserve(ncats);
+            if (ncats == 1) {
+                std::vector<unsigned int> sset(number_of_elements);
+                for (unsigned int i = 0; i < n; ++i) {
+                    sset.at(i) = i;
+                }
+                subsets.push_back(sset);
+                return ncats;
+            }
+            if (ncats == n) {
+                for (unsigned int i = 0; i < n; ++i) {
+                    std::vector<unsigned int> sset = {i};
+                    subsets.push_back(sset);
+                }
+                return ncats;
+            }
+            this->random_subsets(subsets, n, ncats);
+            return ncats;
+        }
+
+        inline std::vector< std::vector<unsigned int> > restricted_random_set_partition_as_subsets(
+                unsigned int number_of_elements,
+                const std::vector<unsigned int> & possible_number_of_subsets,
+                double split_weight = 1.0) {
+            std::vector< std::vector<unsigned int> > subsets;
+            unsigned int num_subsets = this->restricted_random_set_partition_as_subsets(
+                    subsets,
+                    number_of_elements,
+                    possible_number_of_subsets,
                     split_weight);
             return subsets;
         }
