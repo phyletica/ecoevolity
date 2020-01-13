@@ -615,13 +615,16 @@ class BaseTree {
 
         void merge_node_height_up(const unsigned int height_index,
                 std::vector<unsigned int> & sizes_of_polytomies_created,
+                unsigned int & number_of_resulting_merged_nodes,
                 const bool refresh_node_heights = false,
                 const bool refresh_node_ordering = true) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
             sizes_of_polytomies_created.clear();
+            number_of_resulting_merged_nodes = 0;
 
+            std::set<std::shared_ptr<NodeType> > nodes_of_polytomies_created;
             std::shared_ptr<PositiveRealParameter> new_height = this->node_heights_.at(height_index + 1);
             std::vector< std::shared_ptr<NodeType> > mapped_nodes = this->get_mapped_nodes(height_index);
             for (unsigned int i = 0; i < mapped_nodes.size(); ++i) {
@@ -629,12 +632,17 @@ class BaseTree {
                 // the next larger node height, we need to add the child to a
                 // polytomy
                 if (mapped_nodes.at(i)->get_parent()->get_height_parameter() == new_height) {
-                    unsigned int poly_size = mapped_nodes.at(i)->collapse();
-                    sizes_of_polytomies_created.push_back(poly_size);
+                    nodes_of_polytomies_created.insert(mapped_nodes.at(i)->get_parent());
+                    mapped_nodes.at(i)->collapse();
                 }
                 else {
                     mapped_nodes.at(i)->set_height_parameter(new_height);
+                    ++number_of_resulting_merged_nodes;
                 }
+            }
+            for (auto poly_node : nodes_of_polytomies_created) {
+                sizes_of_polytomies_created.push_back(poly_node->get_number_of_children());
+                ++number_of_resulting_merged_nodes;
             }
             if (refresh_node_heights) {
                 this->update_node_heights();

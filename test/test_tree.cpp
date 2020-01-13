@@ -707,9 +707,10 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
+TEST_CASE("Testing BaseTree::merge_node_height_up", "[xBaseTree]") {
     SECTION("Testing merge_node_height_up") {
-        std::vector<unsigned int> & sizes_of_polytomies_created;
+        std::vector<unsigned int> sizes_of_polytomies_created;
+        unsigned int number_of_resulting_merged_nodes;
 
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 0.1);
         std::shared_ptr<Node> internal0 = std::make_shared<Node>("internal0", 0.04);
@@ -777,7 +778,11 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
         std::vector<double> expected_heights = {0.06, 0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        std::vector<unsigned int> & sizes_of_polytomies_created;
+        tree.merge_node_height_up(0, sizes_of_polytomies_created, number_of_resulting_merged_nodes);
+
+        REQUIRE(number_of_resulting_merged_nodes == 1);
+        std::vector<unsigned int> expected_sizes_of_polytomies_created = {4};
+        REQUIRE(sizes_of_polytomies_created == expected_sizes_of_polytomies_created);
 
         REQUIRE(root->is_root());
         REQUIRE(root->is_child(internal2));
@@ -810,7 +815,11 @@ TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
         expected_heights = {0.08, 0.1};
         REQUIRE(tree.get_node_heights() == expected_heights);
 
-        tree.merge_node_height_up(0, sizes_of_polytomies_created);
+        tree.merge_node_height_up(0, sizes_of_polytomies_created, number_of_resulting_merged_nodes);
+
+        REQUIRE(number_of_resulting_merged_nodes == 1);
+        expected_sizes_of_polytomies_created = {6};
+        REQUIRE(sizes_of_polytomies_created == expected_sizes_of_polytomies_created);
 
         REQUIRE(root->is_root());
         REQUIRE(root->is_child(leaf0));
@@ -2662,14 +2671,15 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[BaseT
     }
 }
 
-TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
+TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
     SECTION("Testing store-restore of state") {
         double height_lower_bound;
         unsigned int number_of_mapped_nodes;
         unsigned int number_of_nodes_in_split_subset;
         std::vector<unsigned int> moving_polytomy_sizes;
         bool mapped_nodes_include_polytomy;
-        std::vector<unsigned int> & sizes_of_polytomies_created;
+        std::vector<unsigned int> sizes_of_polytomies_created;
+        unsigned int number_of_resulting_merged_nodes;
 
         RandomNumberGenerator rng = RandomNumberGenerator(111);
         std::shared_ptr<Node> root = std::make_shared<Node>("root", 1.5);
@@ -2808,7 +2818,12 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.merge_node_height_up(0, sizes_of_polytomies_created);
+        tree.merge_node_height_up(0, sizes_of_polytomies_created, number_of_resulting_merged_nodes);
+
+        std::vector<unsigned int> expected_sizes_of_polytomies_created = {5, 5};
+        REQUIRE(sizes_of_polytomies_created == expected_sizes_of_polytomies_created);
+        REQUIRE(number_of_resulting_merged_nodes == 2);
+
         std::cout << "Tree after merge_node_height_up(0):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -2834,7 +2849,12 @@ TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
         REQUIRE(tree.get_log_prior_density_value() == expected_ln_prior);
 
         tree.store_state();
-        tree.merge_node_height_up(1, sizes_of_polytomies_created);
+        tree.merge_node_height_up(1, sizes_of_polytomies_created, number_of_resulting_merged_nodes);
+
+        expected_sizes_of_polytomies_created = {5};
+        REQUIRE(sizes_of_polytomies_created == expected_sizes_of_polytomies_created);
+        REQUIRE(number_of_resulting_merged_nodes == 1);
+
         std::cout << "Tree after merge_node_height_up(1):\n";
         std::cout << tree.to_parentheses() << "\n";
         REQUIRE(tree.to_parentheses() != expected_tree_str);
@@ -14915,157 +14935,167 @@ TEST_CASE("Testing BaseTree::store_splits()", "[xBaseTree]") {
         root->add_child(internal2);
         BaseTree<Node> tree(root);
 
-        std::set< std::pair< unsigned int, Split> > split_set;
-        tree.store_splits(split_set);
+        std::map< unsigned int, std::set<Split> > split_set;
+        tree.store_splits_by_height_index(split_set);
         std::cout << "split set:\n";
-        for (auto split_pair : split_set) {
-            std::cout << split_pair.first
-                << ": "
-                << split_pair.second.as_string() <<
-                "\n";
+        for (auto height_splits : split_set) {
+            std::cout << height_splits.first << ": ";
+            unsigned int split_count = 0;
+            for (auto split : height_splits.second) {
+                if (split_count > 0) {
+                    std::cout << "   ";
+                }
+                std::cout << split.as_string() << "\n";
+                ++split_count;
+            }
         }
 
         Split s;
         s.resize(8);
-        std::set< std::pair< unsigned int, Split> > expected_set;
+        std::map< unsigned int, std::set<Split> > expected_set;
         for (unsigned int i = 0; i < 8; ++i) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(4, s));
+        expected_set[4].insert(s);
 
         s.clear();
         for (auto i : {0, 1, 4, 5}) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(3, s));
+        expected_set[3].insert(s);
 
         s.clear();
         for (auto i : {2, 3, 6, 7}) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(2, s));
+        expected_set[2].insert(s);
 
         s.clear();
         for (auto i : {0, 1}) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(1, s));
+        expected_set[1].insert(s);
 
         s.clear();
         for (auto i : {2, 3}) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(1, s));
+        expected_set[1].insert(s);
 
         s.clear();
         for (auto i : {4, 5}) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(0, s));
+        expected_set[0].insert(s);
 
         s.clear();
         for (auto i : {6, 7}) {
             s.set_leaf_bit(i);
         }
-        expected_set.insert(std::make_pair(0, s));
+        expected_set[0].insert(s);
 
         std::cout << "expected split set:\n";
-        for (auto split_pair : expected_set) {
-            std::cout << split_pair.first
-                << ": "
-                << split_pair.second.as_string() <<
-                "\n";
+        for (auto height_splits : expected_set) {
+            std::cout << height_splits.first << ": ";
+            unsigned int split_count = 0;
+            for (auto split : height_splits.second) {
+                if (split_count > 0) {
+                    std::cout << "   ";
+                }
+                std::cout << split.as_string() << "\n";
+                ++split_count;
+            }
         }
 
         REQUIRE(split_set == expected_set);
 
         // What if a height index is off?
-        std::set< std::pair< unsigned int, Split> > index_off_set;
+        std::map< unsigned int, std::set<Split> > index_off_set;
         for (unsigned int i = 0; i < 8; ++i) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(4, s));
+        index_off_set[4].insert(s);
 
         s.clear();
         for (auto i : {0, 1, 4, 5}) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(3, s));
+        index_off_set[3].insert(s);
 
         s.clear();
         for (auto i : {2, 3, 6, 7}) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(2, s));
+        index_off_set[2].insert(s);
 
         s.clear();
         for (auto i : {0, 1}) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(1, s));
+        index_off_set[1].insert(s);
 
         s.clear();
         for (auto i : {2, 3}) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(1, s));
+        index_off_set[1].insert(s);
 
         s.clear();
         for (auto i : {4, 5}) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(1, s));
+        index_off_set[1].insert(s);
 
         s.clear();
         for (auto i : {6, 7}) {
             s.set_leaf_bit(i);
         }
-        index_off_set.insert(std::make_pair(0, s));
+        index_off_set[0].insert(s);
 
         REQUIRE(split_set != index_off_set);
 
         // What if one leaf index is off?
-        std::set< std::pair< unsigned int, Split> > one_leaf_off_set;
+        std::map< unsigned int, std::set<Split> > one_leaf_off_set;
         for (unsigned int i = 0; i < 8; ++i) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(4, s));
+        one_leaf_off_set[4].insert(s);
 
         s.clear();
         for (auto i : {0, 1, 4, 5}) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(3, s));
+        one_leaf_off_set[3].insert(s);
 
         s.clear();
         for (auto i : {2, 3, 6, 7}) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(2, s));
+        one_leaf_off_set[2].insert(s);
 
         s.clear();
         for (auto i : {0, 4}) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(1, s));
+        one_leaf_off_set[1].insert(s);
 
         s.clear();
         for (auto i : {2, 3}) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(1, s));
+        one_leaf_off_set[1].insert(s);
 
         s.clear();
         for (auto i : {1, 5}) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(0, s));
+        one_leaf_off_set[0].insert(s);
 
         s.clear();
         for (auto i : {6, 7}) {
             s.set_leaf_bit(i);
         }
-        one_leaf_off_set.insert(std::make_pair(0, s));
+        one_leaf_off_set[0].insert(s);
 
         REQUIRE(split_set != one_leaf_off_set);
     }

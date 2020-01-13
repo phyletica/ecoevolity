@@ -4492,7 +4492,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
 //
 // The asterisks in the topologies above indicated shared node heights.
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
-        /* "[xxx]") { */
         "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with fixed root") {
@@ -4636,7 +4635,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3-2 shared tree with 5 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge 3-2 shared tree") {
         RandomNumberGenerator rng = RandomNumberGenerator(22);
@@ -4703,10 +4702,10 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge with 3-2 shared tree with
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with 5 leaves",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing merge 3-2 shared tree") {
-        RandomNumberGenerator rng = RandomNumberGenerator(22);
+        RandomNumberGenerator rng = RandomNumberGenerator(765492347);
 
         // MOVE FROM: ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
         // MOVE TO:   ((A:0.05,B:0.05):0.15,(C:0.1,D:0.1,E:0.1):0.1)
@@ -4796,7 +4795,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
         }
 
         std::map< unsigned int, std::set<Split> > splits;
-        unsigned int nsamples = 20000;
+        unsigned int nsamples = 50000;
         for (unsigned int i = 0; i < nsamples; ++i) {
             double root_ht = 0.2;
             std::shared_ptr<Node> root = std::make_shared<Node>(7, "root", root_ht);
@@ -4836,15 +4835,15 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
 
             splits = tree.get_splits_by_height_index();
             if (choose_ab.count(splits) > 0) {
-                std::cout << "Proposed move AB\n";
+                /* std::cout << "Proposed move AB\n"; */
                 REQUIRE(ln_hastings == Approx(choose_ab_hr).epsilon(1e-8));
                 REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
                             (1.0 / 0.2) * (1.0 / 0.2)
                         )).epsilon(1e-8));
-                std::cout << "Passed move AB\n";
+                /* std::cout << "Passed move AB\n"; */
             }
             else if (choose_cde.count(splits) > 0) {
-                std::cout << "Proposed move CDE\n";
+                /* std::cout << "Proposed move CDE\n"; */
                 REQUIRE(ln_hastings == Approx(choose_cde_hr).epsilon(1e-8));
                 if (tree.get_mapped_nodes(1).size() > 1) {
                     REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
@@ -4856,15 +4855,15 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
                                 (1.0 / 0.2) * (1.0 / 0.2)
                             )).epsilon(1e-8));
                 }
-                std::cout << "Passed move CDE\n";
+                /* std::cout << "Passed move CDE\n"; */
             }
             else if (choose_both.count(splits) > 0) {
-                std::cout << "Proposed move BOTH\n";
+                /* std::cout << "Proposed move BOTH\n"; */
                 REQUIRE(ln_hastings == Approx(choose_both_hr).epsilon(1e-8));
                 REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
                             (1.0 / 0.2) * (1.0 / 0.1)
                         )).epsilon(1e-8));
-                std::cout << "Passed move BOTH\n";
+                /* std::cout << "Passed move BOTH\n"; */
             }
             else {
                 std::cout << "Unexpected tree\n";
@@ -4892,7 +4891,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3-2 shared tree with
             }
         }
 
-        double eps = 0.001;
+        double eps = 0.005;
         for (auto splits_count : counts) {
             if (choose_ab.count(splits_count.first) > 0) {
                 REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/3.0).epsilon(eps));

@@ -1440,7 +1440,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                     // the polytomies get broken up (i.e., all node simply
                     // slide down and no parameter is added to model).
                     hit_overflow = false;
-                    long double bell_num_minus_1_prod = 0.0;
+                    long double bell_num_minus_1_prod = 1.0;
                     for (auto polytomy_size : moving_polytomy_sizes) {
                         // Check for multiplication overflow
                         long double bell_minus_1 = this->get_bell_number(polytomy_size) - 1.0;
@@ -1569,10 +1569,11 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
 
             // std::cout << "Merging...\n";
             const unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
-            const unsigned int num_nodes_mapped_to_removed_height = tree->get_mapped_node_count(
-                    merge_height_idx);
             std::vector<unsigned int> sizes_of_polytomies_created;
-            tree->merge_node_height_up(merge_height_idx, sizes_of_polytomies_created);
+            unsigned int number_of_resulting_merged_nodes;
+            tree->merge_node_height_up(merge_height_idx,
+                    sizes_of_polytomies_created,
+                    number_of_resulting_merged_nodes);
             const double older_height = tree->get_height(merge_height_idx);
             double younger_height = 0.0;
             if (merge_height_idx > 0) {
@@ -1642,11 +1643,12 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 }
                 double ln_bell_term = ln_bell_num_minus_1_sum;
 
-                if (post_num_mapped_nodes == num_nodes_mapped_to_removed_height) {
-                    // If all nodes mapped to height ended up in the move set,
-                    // we need to account for the case we reject where non of
-                    // the polytomies get broken up (i.e., all node simply
-                    // slide down and no parameter is added to model).
+                if (post_num_mapped_nodes == number_of_resulting_merged_nodes) {
+                    // If all nodes mapped to height need to end up in the move
+                    // set for the reverse move, we need to account for the
+                    // case we reject where none of the polytomies get broken
+                    // up (i.e., all node simply slide down and no parameter is
+                    // added to model).
                     hit_overflow = false;
                     long double bell_num_minus_1_prod = 0.0;
                     for (auto poly_size : sizes_of_polytomies_created) {
