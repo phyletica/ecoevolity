@@ -1494,6 +1494,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             else if (in_general_state_after && (! in_comb_state_before)) {
                 ln_hastings += std::log(2.0);
             }
+            ECOEVOLITY_ASSERT(! std::isnan(ln_hastings));
             return ln_hastings;
         }
 
@@ -1700,6 +1701,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
             else if (in_comb_state_after && (! in_general_state_before)) {
                 ln_hastings += std::log(2.0);
             }
+            ECOEVOLITY_ASSERT(! std::isnan(ln_hastings));
             return ln_hastings;
         }
 
