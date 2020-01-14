@@ -1644,13 +1644,14 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 double ln_bell_term = ln_bell_num_minus_1_sum;
 
                 if (post_num_mapped_nodes == number_of_resulting_merged_nodes) {
+                    ECOEVOLITY_ASSERT(sizes_of_polytomies_created.size() > 0);
                     // If all nodes mapped to height need to end up in the move
                     // set for the reverse move, we need to account for the
                     // case we reject where none of the polytomies get broken
                     // up (i.e., all node simply slide down and no parameter is
                     // added to model).
                     hit_overflow = false;
-                    long double bell_num_minus_1_prod = 0.0;
+                    long double bell_num_minus_1_prod = 1.0;
                     for (auto poly_size : sizes_of_polytomies_created) {
                         // Check for multiplication overflow
                         long double bell_minus_1 = this->get_bell_number(poly_size) - 1.0;
