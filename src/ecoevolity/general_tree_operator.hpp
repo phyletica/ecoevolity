@@ -1420,7 +1420,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 }
                 double ln_stirling2_term;
                 if (hit_overflow) {
-                    // If we hit overflow, we will ignore the tiny minus 1 from
+                    // If we hit overflow, we will ignore the tiny plus 1 to 
                     // (2 * Stirling)
                     ln_stirling2_term = std::log(2.0) + std::log(this->get_stirling2(number_of_mapped_nodes));
                 } else {
@@ -1570,10 +1570,10 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
 
             // std::cout << "Merging...\n";
             const unsigned int merge_height_idx = rng.uniform_int(0, num_heights - 2);
-            std::vector<unsigned int> sizes_of_polytomies_created;
+            std::vector<unsigned int> sizes_of_mapped_polytomies_after_merge;
             unsigned int number_of_resulting_merged_nodes;
             tree->merge_node_height_up(merge_height_idx,
-                    sizes_of_polytomies_created,
+                    sizes_of_mapped_polytomies_after_merge,
                     number_of_resulting_merged_nodes);
             const double older_height = tree->get_height(merge_height_idx);
             double younger_height = 0.0;
@@ -1630,7 +1630,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 }
                 double ln_stirling2_term;
                 if (hit_overflow) {
-                    // If we hit overflow, we will ignore the tiny minus 1 from
+                    // If we hit overflow, we will ignore the tiny plus 1 to 
                     // (2 * Stirling)
                     ln_stirling2_term = std::log(2.0) + std::log(this->get_stirling2(post_num_mapped_nodes));
                 } else {
@@ -1638,14 +1638,14 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                 }
 
                 double ln_bell_num_minus_1_sum = 0.0;
-                for (auto poly_size : sizes_of_polytomies_created) {
+                for (auto poly_size : sizes_of_mapped_polytomies_after_merge) {
                     ln_bell_num_minus_1_sum += std::log(
                             this->get_bell_number(poly_size) - 1.0);
                 }
                 double ln_bell_term = ln_bell_num_minus_1_sum;
 
                 if (post_num_mapped_nodes == number_of_resulting_merged_nodes) {
-                    ECOEVOLITY_ASSERT(sizes_of_polytomies_created.size() > 0);
+                    ECOEVOLITY_ASSERT(sizes_of_mapped_polytomies_after_merge.size() > 0);
                     // If all nodes mapped to height need to end up in the move
                     // set for the reverse move, we need to account for the
                     // case we reject where none of the polytomies get broken
@@ -1653,7 +1653,7 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                     // added to model).
                     hit_overflow = false;
                     long double bell_num_minus_1_prod = 1.0;
-                    for (auto poly_size : sizes_of_polytomies_created) {
+                    for (auto poly_size : sizes_of_mapped_polytomies_after_merge) {
                         // Check for multiplication overflow
                         long double bell_minus_1 = this->get_bell_number(poly_size) - 1.0;
                         if (bell_minus_1 > (long_double_max / bell_num_minus_1_prod)) {
@@ -1677,7 +1677,6 @@ class SplitLumpNodesRevJumpSampler : public GeneralTreeOperatorInterface<NodeTyp
                         ln_stirling2_term +
                         std::log(height_diff) +
                         ln_bell_term);
-
             }
 
             // For the hastings ratio we also have to include the ratio of the

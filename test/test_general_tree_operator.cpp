@@ -4495,7 +4495,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
         "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with fixed root") {
-        /* RandomNumberGenerator rng = RandomNumberGenerator(44246543554); */
         RandomNumberGenerator rng = RandomNumberGenerator(2193647912);
 
         double root_ht = 0.5;
@@ -4534,7 +4533,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
         unsigned int nsamples = niterations / sample_freq;
 
         unsigned int sample_count = 0;
-        unsigned int report_freq = 1000;
+        unsigned int report_freq = 10000;
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate(rng, &tree, 1);
             if ((i + 1) % sample_freq == 0) {
@@ -4579,8 +4578,10 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
         double exp_count = nsamples/336.0;
         std::map< std::set< std::set<Split> >, double> bad_splits;
 
+        double prop_error_threshold = 0.1;
         unsigned int total_trees_sampled = 0;
         std::map< std::set< std::set<Split> >, double> split_freqs;
+        double chi_sq_test_statistic = 0.0;
         std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
         for (auto s_c : split_counts) {
             total_trees_sampled += s_c.second;
@@ -4600,12 +4601,18 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
             double prop_error = ((double)s_c.second - exp_count) / exp_count;
             std::cout << "  nsamples: " << s_c.second << "\n";
             std::cout << "  prop error: " << prop_error << "\n";
-            if (fabs(prop_error) > 0.3) {
+            if (fabs(prop_error) > prop_error_threshold) {
                 bad_splits[s_c.first] = prop_error;
             }
+            double count_diff = s_c.second - exp_count;
+            chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
         }
 
-        std::cout << "BAD SPLITS\n";
+        double quantile_chi_sq_335_10 = 368.6;
+        std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        std::cout << "Chi-square(335) 0.9 quantile: " << quantile_chi_sq_335_10 << "\n";
+
+        std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
         for (auto s_e : bad_splits) {
             std::cout << "\nTree:\n";
             for (auto splitset : s_e.first) {
@@ -4632,6 +4639,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
         for (auto s_f : split_freqs) {
             REQUIRE(s_f.second == Approx(exp_freq).epsilon(eps));
         }
+
+        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_335_10);
     }
 }
 
@@ -4952,7 +4961,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
         //                  = 1 * 1/3 = 1/6
         // HR = 1/3 / 5 = 1/3 * 1/5 = 1/15
         
-        BaseTree<Node> tree_ab_cde("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=2,height=0.2];");
+        BaseTree<Node> tree_ab_cde("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
         BaseTree<Node> tree_ab_de_c("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,C:0.2,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
         BaseTree<Node> tree_gen_ab("((A:0.02,B:0.02)[&height_index=0,height=0.02]:0.18,(C:0.1,(D:0.05,E:0.05)[&height_index=1,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
         BaseTree<Node> tree_gen_de("((A:0.05,B:0.05)[&height_index=1,height=0.05]:0.15,(C:0.1,(D:0.02,E:0.02)[&height_index=0,height=0.02]:0.08)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
@@ -5059,7 +5068,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
                         )).epsilon(1e-8));
                 /* std::cout << "Passed split AB\n"; */
             }
-            else if (split_ab.count(splits) > 0) {
+            else if (split_de.count(splits) > 0) {
                 /* std::cout << "Proposed split DE\n"; */
                 REQUIRE(tree.get_number_of_node_heights() == 4);
                 REQUIRE(tree.get_number_of_splittable_heights() == 0);
@@ -5078,7 +5087,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
                         if (s_count > 0) {
                             std::cout << "   ";
                         }
-                        std::cout << "  " << split.as_string();
+                        std::cout << "  " << split.as_string() << "\n";
                         ++s_count;
                     }
                 }
@@ -5113,7 +5122,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
                         if (s_count > 0) {
                             std::cout << "   ";
                         }
-                        std::cout << "  " << split.as_string();
+                        std::cout << "  " << split.as_string() << "\n";
                         ++s_count;
                     }
                 }
@@ -5140,5 +5149,886 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 2-1-1 shared tree 
                 REQUIRE(0 == 1);
             }
         }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from 1-2-1 shared tree with 5 leaves",
+        "[SplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing merge 2-1-1 shared tree") {
+        RandomNumberGenerator rng = RandomNumberGenerator(25179271593);
+
+        // MOVE FROM: ((A:0.1,B:0.1)*:0.1,(C:0.1,(D:0.05,E:0.05):0.05)*:0.1)
+        // MERGE TO:  ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
+        //            OR
+        //            (A:0.2,B:0.2,C:0.2,(D:0.05,E:0.05):0.15)
+        //            OR
+        // SPLIT TO:  ((A:0.08,B:0.08):0.12,(C:0.1,(D:0.05,E:0.05):0.05)*:0.1)
+        //            OR
+        //            ((A:0.1,B:0.1):0.1,(C:0.08,(D:0.05,E:0.05):0.03)*:0.12)
+        //
+        // MERGE TO:  ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1/2 = 1/4
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/4 * 1/0.1
+        //                  = 1/(24*0.1) = 1/2.4
+        // HR = 1/2.4 / 1/4 = 4/2.4
+        //
+        // MERGE TO:  (A:0.2,B:0.2,C:0.2,(D:0.05,E:0.05):0.15)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1/2 = 1/4
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1 * 1/13 * 1/(0.2-0.05)
+        //                  = 1/2 * 1 * 1 * 1/13 * 1/0.15
+        //                  = 1/(26*0.15) = 1/3.9
+        // HR = 1/3.9 / 1/4 = 4/3.9
+        //
+        // SPLIT TO:  ((A:0.08,B:0.08):0.12,(C:0.1,(D:0.05,E:0.05):0.05)*:0.1)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/3 = 1/3
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/2 * 1/(0.1-0.05)
+        //                  = 1/2 * 1 * 1/2 * 1/(0.05)
+        //                  = 1/(4*0.05) = 1/0.2 = 5
+        // HR = 1/3 / 5 = 1/15
+        //
+        // SPLIT TO:  ((A:0.1,B:0.1):0.1,(C:0.08,(D:0.05,E:0.05):0.03)*:0.12)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/3 = 1/3
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(new height)
+        //                  = 1/2 * 1 * 1/2 * 1/(0.1-0.05)
+        //                  = 1/2 * 1 * 1/2 * 1/(0.05)
+        //                  = 1/(4*0.05) = 1/0.2 = 5
+        // HR = 1/3 / 5 = 1/15
+        
+        BaseTree<Node> tree_merge_0("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_merge_1("(A:0.2,B:0.2,C:0.2,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_split_ab("((A:0.08,B:0.08)[&height_index=1,height=0.08]:0.12,(C:0.1,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.05)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_cde("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(C:0.08,(D:0.05,E:0.05)[&height_index=0,height=0.05]:0.03)[&height_index=1,height=0.08]:0.12)[&height_index=3,height=0.2];");
+
+        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        merge_0.insert(tree_merge_0.get_splits_by_height_index());
+        double merge_0_hr = std::log(4.0 / 2.4);
+
+        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        merge_1.insert(tree_merge_1.get_splits_by_height_index());
+        double merge_1_hr = std::log(4.0 / 3.9);
+
+        std::set<std::map< unsigned int, std::set<Split> > > split_ab;
+        split_ab.insert(tree_split_ab.get_splits_by_height_index());
+        double split_hr = std::log(1.0 / 15.0);
+
+        std::set<std::map< unsigned int, std::set<Split> > > split_cde;
+        split_cde.insert(tree_split_cde.get_splits_by_height_index());
+
+        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        for (auto splits : merge_0) {
+            counts[splits] = 0;
+        }
+        for (auto splits : merge_1) {
+            counts[splits] = 0;
+        }
+        for (auto splits : split_ab) {
+            counts[splits] = 0;
+        }
+        for (auto splits : split_cde) {
+            counts[splits] = 0;
+        }
+
+        std::map< unsigned int, std::set<Split> > splits;
+        unsigned int nsamples = 50000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            double root_ht = 0.2;
+            std::shared_ptr<Node> root = std::make_shared<Node>(8, "root", root_ht);
+            std::shared_ptr<Node> internal_ab = std::make_shared<Node>(7, "internal_ab", 0.1);
+            std::shared_ptr<Node> internal_de = std::make_shared<Node>(6, "internal_de", 0.05);
+            std::shared_ptr<Node> internal_cde = std::make_shared<Node>(5, "internal_cde", 0.1);
+            internal_ab->set_height_parameter(internal_cde->get_height_parameter());
+            std::shared_ptr<Node> leaf_a = std::make_shared<Node>(0, "A", 0.0);
+            std::shared_ptr<Node> leaf_b = std::make_shared<Node>(1, "B", 0.0);
+            std::shared_ptr<Node> leaf_c = std::make_shared<Node>(2, "C", 0.0);
+            std::shared_ptr<Node> leaf_d = std::make_shared<Node>(3, "D", 0.0);
+            std::shared_ptr<Node> leaf_e = std::make_shared<Node>(4, "E", 0.0);
+
+            internal_ab->add_child(leaf_a);
+            internal_ab->add_child(leaf_b);
+            internal_de->add_child(leaf_d);
+            internal_de->add_child(leaf_e);
+            internal_cde->add_child(leaf_c);
+            internal_cde->add_child(internal_de);
+            root->add_child(internal_ab);
+            root->add_child(internal_cde);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.1)
+                            )).epsilon(1e-8));
+            REQUIRE(tree.get_number_of_node_heights() == 3);
+
+            double ln_hastings = op.propose(rng,
+                    &tree);
+            tree.compute_log_likelihood_and_prior(true);
+
+            splits = tree.get_splits_by_height_index();
+            if (merge_0.count(splits) > 0) {
+                /* std::cout << "Proposed merge 0\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 2);
+                REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(ln_hastings == Approx(merge_0_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0 / 0.2
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge 0\n"; */
+            }
+            else if (merge_1.count(splits) > 0) {
+                /* std::cout << "Proposed merge 1\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 2);
+                REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(ln_hastings == Approx(merge_1_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0 / 0.2
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge 1\n"; */
+            }
+            else if (split_ab.count(splits) > 0) {
+                /* std::cout << "Proposed split AB\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 4);
+                REQUIRE(tree.get_number_of_splittable_heights() == 0);
+                REQUIRE(ln_hastings == Approx(split_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.2) * (1.0 / 0.1) 
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed split AB\n"; */
+            }
+            else if (split_cde.count(splits) > 0) {
+                /* std::cout << "Proposed split DE\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 4);
+                REQUIRE(tree.get_number_of_splittable_heights() == 0);
+                REQUIRE(ln_hastings == Approx(split_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.2) * (1.0 / tree.get_height(1))
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge DE\n"; */
+            }
+            else {
+                std::cout << "Unexpected tree proposed\n";
+                for (auto height_splits : splits) {
+                    std::cout << "  " << height_splits.first << ": ";
+                    unsigned int s_count = 0;
+                    for (auto split : height_splits.second) {
+                        if (s_count > 0) {
+                            std::cout << "   ";
+                        }
+                        std::cout << "  " << split.as_string() << "\n";
+                        ++s_count;
+                    }
+                }
+                REQUIRE(0 == 1);
+            }
+            ++counts[splits];
+        }
+
+        for (auto splits_count : counts) {
+            if (merge_0.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (merge_1.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (split_ab.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (split_cde.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else {
+                std::cout << "Unexpected tree sampled " << splits_count.second << "times:\n";
+                for (auto height_splits : splits_count.first) {
+                    std::cout << "  " << height_splits.first << ": ";
+                    unsigned int s_count = 0;
+                    for (auto split : height_splits.second) {
+                        if (s_count > 0) {
+                            std::cout << "   ";
+                        }
+                        std::cout << "  " << split.as_string() << "\n";
+                        ++s_count;
+                    }
+                }
+                REQUIRE(0 == 1);
+            }
+        }
+
+        double eps = 0.005;
+        for (auto splits_count : counts) {
+            if (merge_0.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (merge_1.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (split_ab.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (split_cde.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else {
+                std::cout << "Unexpected tree\n";
+                REQUIRE(0 == 1);
+            }
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B),(C,D,E)*) tree",
+        "[SplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing merge ((A,B),(C,D,E)*) tree") {
+        RandomNumberGenerator rng = RandomNumberGenerator(14875215);
+
+        // MOVE FROM: ((A:0.1,B:0.1):0.1,(C:0.05,D:0.05,E:0.05):0.15)
+        // MERGE TO:  ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
+        //            OR
+        //            (A:0.2,B:0.2,(C:0.05,D:0.05,E:0.05):0.15)
+        //            OR
+        // SPLIT TO:  ((A:0.1,B:0.1):0.1,(C:0.05,(D:0.02,E:0.02)):0.15)
+        //            OR
+        //            ((A:0.1,B:0.1):0.1,(D:0.05,(C:0.02,E:0.02)):0.15)
+        //            OR
+        //            ((A:0.1,B:0.1):0.1,(E:0.05,(C:0.02,D:0.02)):0.15)
+        //
+        // MERGE TO:  ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1/2 = 1/4
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/4 * 1/0.1
+        //                  = 1/(24*0.1) = 1/2.4
+        // HR = 1/2.4 / 1/4 = 4/2.4
+        //
+        // MERGE TO:  (A:0.2,B:0.2,(C:0.05,D:0.05,E:0.05):0.15)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1/2 = 1/4
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1/2 * 1 * 1/3 * 1/(0.2-0.05)
+        //                  = 1/2 * 1/2 * 1 * 1/3 * 1/0.15
+        //                  = 1/(12*0.15) = 1/1.8
+        // HR = 1/1.8 / 1/4 = 4/1.8
+        //
+        // SPLIT TO:  ((A:0.1,B:0.1):0.1,(C:0.05,(D:0.02,E:0.02)):0.15) [OR OTHER 2]
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/3 = 1/3
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1 * 1/3 * 1/(0.05)
+        //                  = 1/(6*0.05) = 1/0.3
+        // HR = 1/3 / 1/0.3 = 0.3/3 = 0.1
+        
+        BaseTree<Node> tree_merge_0("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_merge_1("(A:0.2,B:0.2,(C:0.05,D:0.05,E:0.05)[&height_index=0,height=0.05]:0.15)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_split_de("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(C:0.05,(D:0.02,E:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_ce("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(D:0.05,(C:0.02,E:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_cd("((A:0.1,B:0.1)[&height_index=2,height=0.1]:0.1,(E:0.05,(C:0.02,D:0.02)[&height_index=0,height=0.02]:0.03)[&height_index=1,height=0.05]:0.15)[&height_index=3,height=0.2];");
+
+        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        merge_0.insert(tree_merge_0.get_splits_by_height_index());
+        double merge_0_hr = std::log(4.0 / 2.4);
+
+        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        merge_1.insert(tree_merge_1.get_splits_by_height_index());
+        double merge_1_hr = std::log(4.0 / 1.8);
+
+        std::set<std::map< unsigned int, std::set<Split> > > split_poly;
+        split_poly.insert(tree_split_de.get_splits_by_height_index());
+        split_poly.insert(tree_split_ce.get_splits_by_height_index());
+        split_poly.insert(tree_split_cd.get_splits_by_height_index());
+        double split_hr = std::log(0.1);
+
+        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        for (auto splits : merge_0) {
+            counts[splits] = 0;
+        }
+        for (auto splits : merge_1) {
+            counts[splits] = 0;
+        }
+        for (auto splits : split_poly) {
+            counts[splits] = 0;
+        }
+
+        std::map< unsigned int, std::set<Split> > splits;
+        unsigned int nsamples = 50000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            double root_ht = 0.2;
+            std::shared_ptr<Node> root = std::make_shared<Node>(7, "root", root_ht);
+            std::shared_ptr<Node> internal_ab = std::make_shared<Node>(6, "internal_ab", 0.1);
+            std::shared_ptr<Node> internal_cde = std::make_shared<Node>(5, "internal_cde", 0.05);
+            std::shared_ptr<Node> leaf_a = std::make_shared<Node>(0, "A", 0.0);
+            std::shared_ptr<Node> leaf_b = std::make_shared<Node>(1, "B", 0.0);
+            std::shared_ptr<Node> leaf_c = std::make_shared<Node>(2, "C", 0.0);
+            std::shared_ptr<Node> leaf_d = std::make_shared<Node>(3, "D", 0.0);
+            std::shared_ptr<Node> leaf_e = std::make_shared<Node>(4, "E", 0.0);
+
+            internal_ab->add_child(leaf_a);
+            internal_ab->add_child(leaf_b);
+            internal_cde->add_child(leaf_d);
+            internal_cde->add_child(leaf_e);
+            internal_cde->add_child(leaf_c);
+            root->add_child(internal_ab);
+            root->add_child(internal_cde);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.2)
+                            )).epsilon(1e-8));
+            REQUIRE(tree.get_number_of_node_heights() == 3);
+
+            double ln_hastings = op.propose(rng,
+                    &tree);
+            tree.compute_log_likelihood_and_prior(true);
+
+            splits = tree.get_splits_by_height_index();
+            if (merge_0.count(splits) > 0) {
+                /* std::cout << "Proposed merge 0\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 2);
+                REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(ln_hastings == Approx(merge_0_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0 / 0.2
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge 0\n"; */
+            }
+            else if (merge_1.count(splits) > 0) {
+                /* std::cout << "Proposed merge 1\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 2);
+                REQUIRE(tree.get_number_of_splittable_heights() == 2);
+                REQUIRE(ln_hastings == Approx(merge_1_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0 / 0.2
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge 1\n"; */
+            }
+            else if (split_poly.count(splits) > 0) {
+                /* std::cout << "Proposed split AB\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 4);
+                REQUIRE(tree.get_number_of_splittable_heights() == 0);
+                REQUIRE(ln_hastings == Approx(split_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.2) * (1.0 / 0.05) 
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed split AB\n"; */
+            }
+            else {
+                std::cout << "Unexpected tree proposed\n";
+                for (auto height_splits : splits) {
+                    std::cout << "  " << height_splits.first << ": ";
+                    unsigned int s_count = 0;
+                    for (auto split : height_splits.second) {
+                        if (s_count > 0) {
+                            std::cout << "   ";
+                        }
+                        std::cout << "  " << split.as_string() << "\n";
+                        ++s_count;
+                    }
+                }
+                REQUIRE(0 == 1);
+            }
+            ++counts[splits];
+        }
+
+        for (auto splits_count : counts) {
+            if (merge_0.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (merge_1.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (split_poly.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/6.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else {
+                std::cout << "Unexpected tree sampled " << splits_count.second << "times:\n";
+                for (auto height_splits : splits_count.first) {
+                    std::cout << "  " << height_splits.first << ": ";
+                    unsigned int s_count = 0;
+                    for (auto split : height_splits.second) {
+                        if (s_count > 0) {
+                            std::cout << "   ";
+                        }
+                        std::cout << "  " << split.as_string() << "\n";
+                        ++s_count;
+                    }
+                }
+                REQUIRE(0 == 1);
+            }
+        }
+
+        double eps = 0.005;
+        for (auto splits_count : counts) {
+            if (merge_0.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (merge_1.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (split_poly.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/6.0).epsilon(eps));
+            }
+            else {
+                std::cout << "Unexpected tree\n";
+                REQUIRE(0 == 1);
+            }
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from ((A,B)*,(C,D,E)) tree",
+        "[SplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing merge ((A,B)*,(C,D,E)) tree") {
+        RandomNumberGenerator rng = RandomNumberGenerator(5421523145);
+
+        // MOVE FROM: ((A:0.05,B:0.05):0.15,(C:0.1,D:0.1,E:0.1):0.1)
+        // MERGE TO:  ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
+        //            OR
+        //            ((A:0.05,B:0.05):0.15,C:0.2,D:0.2,E:0.2)
+        //            OR
+        // SPLIT TO:  ((A:0.05,B:0.05):0.15,(C:0.1,(D:0.08,E:0.08):0.02):0.1)
+        //            OR
+        //            ((A:0.05,B:0.05):0.15,(D:0.1,(C:0.08,E:0.08):0.02):0.1)
+        //            OR
+        //            ((A:0.05,B:0.05):0.15,(E:0.1,(D:0.08,C:0.08):0.02):0.1)
+        //
+        // MERGE TO:  ((A:0.1,B:0.1)*:0.1,(C:0.1,D:0.1,E:0.1)*:0.1)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1/2 = 1/4
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1/3 * 1/0.1
+        //                  = 1/(6*0.1) = 1/0.6
+        // HR = 1/0.6 / 1/4 = 4/0.6 = 1/0.15
+        //
+        // MERGE TO:  ((A:0.05,B:0.05):0.15,C:0.2,D:0.2,E:0.2)
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(forward move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1/2 = 1/4
+        // pr(reverse move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1 * 1/13 * 1/(0.2-0.05)
+        //                  = 1/2 * 1 * 1 * 1/13 * 1/0.15
+        //                  = 1/(26*0.15) = 1/3.9
+        // HR = 1/3.9 / 1/4 = 4/3.9
+        //
+        // SPLIT TO:  ((A:0.05,B:0.05):0.15,(C:0.1,(D:0.08,E:0.08):0.02):0.1) [OR OTHER 2]
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1 * 1/3 = 1/3
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1/2 * 1 * 1 * 1/3 * 1/(0.1-0.05)
+        //                  = 1/(6*0.05) = 1/0.3
+        // HR = 1/3 / 1/0.3 = 0.3/3 = 0.1
+        
+        BaseTree<Node> tree_merge_0("((A:0.1,B:0.1)[&height_index=0,height=0.1]:0.1,(C:0.1,D:0.1,E:0.1)[&height_index=0,height=0.1]:0.1)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_merge_1("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,C:0.2,D:0.2,E:0.2)[&height_index=1,height=0.2];");
+        BaseTree<Node> tree_split_de("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(C:0.1,(D:0.08,E:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_ce("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(D:0.1,(C:0.08,E:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+        BaseTree<Node> tree_split_cd("((A:0.05,B:0.05)[&height_index=0,height=0.05]:0.15,(E:0.1,(D:0.08,C:0.08)[&height_index=1,height=0.08]:0.02)[&height_index=2,height=0.1]:0.1)[&height_index=3,height=0.2];");
+
+        std::set<std::map< unsigned int, std::set<Split> > > merge_0;
+        merge_0.insert(tree_merge_0.get_splits_by_height_index());
+        double merge_0_hr = std::log(1.0 / 0.15);
+
+        std::set<std::map< unsigned int, std::set<Split> > > merge_1;
+        merge_1.insert(tree_merge_1.get_splits_by_height_index());
+        double merge_1_hr = std::log(4.0 / 3.9);
+
+        std::set<std::map< unsigned int, std::set<Split> > > split_poly;
+        split_poly.insert(tree_split_de.get_splits_by_height_index());
+        split_poly.insert(tree_split_ce.get_splits_by_height_index());
+        split_poly.insert(tree_split_cd.get_splits_by_height_index());
+        double split_hr = std::log(0.1);
+
+        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+        for (auto splits : merge_0) {
+            counts[splits] = 0;
+        }
+        for (auto splits : merge_1) {
+            counts[splits] = 0;
+        }
+        for (auto splits : split_poly) {
+            counts[splits] = 0;
+        }
+
+        std::map< unsigned int, std::set<Split> > splits;
+        unsigned int nsamples = 50000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            double root_ht = 0.2;
+            std::shared_ptr<Node> root = std::make_shared<Node>(7, "root", root_ht);
+            std::shared_ptr<Node> internal_ab = std::make_shared<Node>(6, "internal_ab", 0.05);
+            std::shared_ptr<Node> internal_cde = std::make_shared<Node>(5, "internal_cde", 0.1);
+            std::shared_ptr<Node> leaf_a = std::make_shared<Node>(0, "A", 0.0);
+            std::shared_ptr<Node> leaf_b = std::make_shared<Node>(1, "B", 0.0);
+            std::shared_ptr<Node> leaf_c = std::make_shared<Node>(2, "C", 0.0);
+            std::shared_ptr<Node> leaf_d = std::make_shared<Node>(3, "D", 0.0);
+            std::shared_ptr<Node> leaf_e = std::make_shared<Node>(4, "E", 0.0);
+
+            internal_ab->add_child(leaf_a);
+            internal_ab->add_child(leaf_b);
+            internal_cde->add_child(leaf_d);
+            internal_cde->add_child(leaf_e);
+            internal_cde->add_child(leaf_c);
+            root->add_child(internal_ab);
+            root->add_child(internal_cde);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.2)
+                            )).epsilon(1e-8));
+            REQUIRE(tree.get_number_of_node_heights() == 3);
+
+            double ln_hastings = op.propose(rng,
+                    &tree);
+            tree.compute_log_likelihood_and_prior(true);
+
+            splits = tree.get_splits_by_height_index();
+            if (merge_0.count(splits) > 0) {
+                /* std::cout << "Proposed merge 0\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 2);
+                REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(ln_hastings == Approx(merge_0_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0 / 0.2
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge 0\n"; */
+            }
+            else if (merge_1.count(splits) > 0) {
+                /* std::cout << "Proposed merge 1\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 2);
+                REQUIRE(tree.get_number_of_splittable_heights() == 1);
+                REQUIRE(ln_hastings == Approx(merge_1_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0 / 0.2
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed merge 1\n"; */
+            }
+            else if (split_poly.count(splits) > 0) {
+                /* std::cout << "Proposed split AB\n"; */
+                REQUIRE(tree.get_number_of_node_heights() == 4);
+                REQUIRE(tree.get_number_of_splittable_heights() == 0);
+                REQUIRE(ln_hastings == Approx(split_hr).epsilon(1e-8));
+                REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            (1.0 / 0.2) * (1.0 / 0.2) * (1.0 / 0.1) 
+                        )).epsilon(1e-8));
+                /* std::cout << "Passed split AB\n"; */
+            }
+            else {
+                std::cout << "Unexpected tree proposed\n";
+                for (auto height_splits : splits) {
+                    std::cout << "  " << height_splits.first << ": ";
+                    unsigned int s_count = 0;
+                    for (auto split : height_splits.second) {
+                        if (s_count > 0) {
+                            std::cout << "   ";
+                        }
+                        std::cout << "  " << split.as_string() << "\n";
+                        ++s_count;
+                    }
+                }
+                REQUIRE(0 == 1);
+            }
+            ++counts[splits];
+        }
+
+        for (auto splits_count : counts) {
+            if (merge_0.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (merge_1.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/4.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else if (split_poly.count(splits_count.first) > 0) {
+                std::cout << "Expected freq: " << 1.0/6.0 << "\n";
+                std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+            }
+            else {
+                std::cout << "Unexpected tree sampled " << splits_count.second << "times:\n";
+                for (auto height_splits : splits_count.first) {
+                    std::cout << "  " << height_splits.first << ": ";
+                    unsigned int s_count = 0;
+                    for (auto split : height_splits.second) {
+                        if (s_count > 0) {
+                            std::cout << "   ";
+                        }
+                        std::cout << "  " << split.as_string() << "\n";
+                        ++s_count;
+                    }
+                }
+                REQUIRE(0 == 1);
+            }
+        }
+
+        double eps = 0.005;
+        for (auto splits_count : counts) {
+            if (merge_0.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (merge_1.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/4.0).epsilon(eps));
+            }
+            else if (split_poly.count(splits_count.first) > 0) {
+                REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/6.0).epsilon(eps));
+            }
+            else {
+                std::cout << "Unexpected tree\n";
+                REQUIRE(0 == 1);
+            }
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler::propose from (A,B,C,D,E) tree",
+        "[SplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing merge (A,B,C,D,E) tree") {
+        RandomNumberGenerator rng = RandomNumberGenerator(458262135);
+
+        // MOVE FROM: (A:0.1,B:0.1,C:0.1,D:0.1,E:0.1)
+        // SPLIT TO:  One of 50 different ways to break up polytomy
+        // HR = pr(reverse move) / pr(forward move)
+        // pr(reverse move) = pr(choose to merge) * pr(choose height)
+        //                  =  1/2 * 1 = 1/2
+        // pr(forward move) = pr(choose to split) * pr(choose height) * pr(choose to move down) * pr(partition poly) * pr(new height)
+        //                  = 1 * 1 * 1 * 1/50 * 1/0.1
+        //                  = 1/5
+        // HR = 1/2 / 1/5 = 5/2 = 2.5
+        //
+        std::map<std::map< unsigned int, std::set<Split> >, unsigned int> counts;
+
+        std::map< unsigned int, std::set<Split> > splits;
+        unsigned int nsamples = 50000;
+        for (unsigned int i = 0; i < nsamples; ++i) {
+            double root_ht = 0.1;
+            std::shared_ptr<Node> root = std::make_shared<Node>(5, "root", root_ht);
+            std::shared_ptr<Node> leaf_a = std::make_shared<Node>(0, "A", 0.0);
+            std::shared_ptr<Node> leaf_b = std::make_shared<Node>(1, "B", 0.0);
+            std::shared_ptr<Node> leaf_c = std::make_shared<Node>(2, "C", 0.0);
+            std::shared_ptr<Node> leaf_d = std::make_shared<Node>(3, "D", 0.0);
+            std::shared_ptr<Node> leaf_e = std::make_shared<Node>(4, "E", 0.0);
+
+            root->add_child(leaf_a);
+            root->add_child(leaf_b);
+            root->add_child(leaf_d);
+            root->add_child(leaf_e);
+            root->add_child(leaf_c);
+
+            BaseTree<Node> tree(root);
+
+            tree.ignore_data();
+            tree.fix_root_height();
+
+            SplitLumpNodesRevJumpSampler<Node> op;
+
+            // Initialize prior probs
+            tree.compute_log_likelihood_and_prior(true);
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                            1.0
+                            )).epsilon(1e-8));
+            REQUIRE(tree.get_number_of_node_heights() == 1);
+            double expected_ln_hastings = std::log(2.5);
+
+            double ln_hastings = op.propose(rng,
+                    &tree);
+            tree.compute_log_likelihood_and_prior(true);
+
+            REQUIRE(tree.get_number_of_node_heights() == 2);
+            REQUIRE(tree.get_number_of_splittable_heights() > 0);
+            REQUIRE(tree.get_number_of_splittable_heights() < 3);
+            REQUIRE(ln_hastings == Approx(expected_ln_hastings).epsilon(1e-8));
+            REQUIRE(tree.get_log_prior_density_value() == Approx(std::log(
+                        1.0 / 0.1
+                    )).epsilon(1e-8));
+
+            splits = tree.get_splits_by_height_index();
+            if (counts.count(splits) > 0) {
+                ++counts[splits];
+            }
+            else {
+                counts[splits] = 1;
+            }
+        }
+
+        for (auto splits_count : counts) {
+            std::cout << "Expected freq: " << 1.0/50.0 << "\n";
+            std::cout << "Sample freq: " << splits_count.second / (double)nsamples << "\n";
+        }
+
+        REQUIRE(counts.size() == 50);
+
+        double eps = 0.005;
+        for (auto splits_count : counts) {
+            REQUIRE((splits_count.second / (double)nsamples) == Approx(1.0/50.0).epsilon(eps));
+        }
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
+        "[xSplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing 6 leaves with fixed root") {
+        RandomNumberGenerator rng = RandomNumberGenerator(25478465);
+
+        double root_ht = 0.5;
+        std::shared_ptr<Node> root = std::make_shared<Node>(5, "root", root_ht);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>(0, "leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(1, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(2, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(3, "leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(4, "leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>(5, "leaf5", 0.0);
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+        root->add_child(leaf5);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        SplitLumpNodesRevJumpSampler<Node> op;
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
+
+        unsigned int niterations = 100000000;
+        unsigned int sample_freq = 100;
+        unsigned int nsamples = niterations / sample_freq;
+
+        unsigned int sample_count = 0;
+        unsigned int report_freq = 10000;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::set< std::set<Split> > splits = tree.get_splits(false);
+                if (split_counts.count(splits) > 0) {
+                    ++split_counts[splits];
+                }
+                else {
+                    split_counts[splits] = 1;
+                }
+                ++sample_count;
+                if (sample_count % report_freq == 0) {
+                    std::cout << "Sampled " << sample_count << " of " << nsamples << "\n";
+                }
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+
+        // TODO: Figure this out
+        unsigned int num_tree_models = split_counts.size();
+        double exp_freq = 1.0/num_tree_models;
+        double exp_count = nsamples/num_tree_models;
+        std::map< std::set< std::set<Split> >, double> bad_splits;
+
+        double prop_error_threshold = 0.2;
+        unsigned int total_trees_sampled = 0;
+        double chi_sq_test_statistic = 0.0;
+        std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
+        for (auto s_c : split_counts) {
+            total_trees_sampled += s_c.second;
+            std::cout << "Tree:\n";
+            for (auto splitset : s_c.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            double prop_error = ((double)s_c.second - exp_count) / exp_count;
+            std::cout << "  nsamples: " << s_c.second << "\n";
+            std::cout << "  prop error: " << prop_error << "\n";
+            if (fabs(prop_error) > prop_error_threshold) {
+                bad_splits[s_c.first] = prop_error;
+            }
+            double count_diff = s_c.second - exp_count;
+            chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
+        }
+
+        double quantile_chi_sq_5000_10 = 5128.6;
+        std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        std::cout << "Chi-square(5000) 0.9 quantile: " << quantile_chi_sq_5000_10 << "\n";
+
+        std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
+        for (auto s_e : bad_splits) {
+            std::cout << "\nTree:\n";
+            for (auto splitset : s_e.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            std::cout << "  prop error: " << s_e.second << "\n";
+        }
+
+        REQUIRE(total_trees_sampled == nsamples);
+
+        // We should sample every possible tree
+        // REQUIRE(split_counts.size() == ???);
+
+        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_5000_10);
     }
 }

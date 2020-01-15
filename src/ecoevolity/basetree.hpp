@@ -614,14 +614,14 @@ class BaseTree {
         }
 
         void merge_node_height_up(const unsigned int height_index,
-                std::vector<unsigned int> & sizes_of_polytomies_created,
+                std::vector<unsigned int> & sizes_of_mapped_polytomies_after_merge,
                 unsigned int & number_of_resulting_merged_nodes,
                 const bool refresh_node_heights = false,
                 const bool refresh_node_ordering = true) {
             // Make sure we aren't dealing with the root node
             ECOEVOLITY_ASSERT(height_index < (this->get_number_of_node_heights() - 1));
 
-            sizes_of_polytomies_created.clear();
+            sizes_of_mapped_polytomies_after_merge.clear();
             number_of_resulting_merged_nodes = 0;
 
             std::set<std::shared_ptr<NodeType> > nodes_of_polytomies_created;
@@ -638,10 +638,18 @@ class BaseTree {
                 else {
                     mapped_nodes.at(i)->set_height_parameter(new_height);
                     ++number_of_resulting_merged_nodes;
+                    unsigned int n_children = mapped_nodes.at(i)->get_number_of_children();
+                    ECOEVOLITY_ASSERT(n_children > 1);
+                    if (n_children > 2) {
+                        // We moved an existing polytomy up; we need to keep
+                        // track of this polytomies size for calculating the
+                        // probability of the reverse split move.
+                        sizes_of_mapped_polytomies_after_merge.push_back(n_children);
+                    }
                 }
             }
             for (auto poly_node : nodes_of_polytomies_created) {
-                sizes_of_polytomies_created.push_back(poly_node->get_number_of_children());
+                sizes_of_mapped_polytomies_after_merge.push_back(poly_node->get_number_of_children());
                 ++number_of_resulting_merged_nodes;
             }
             if (refresh_node_heights) {
