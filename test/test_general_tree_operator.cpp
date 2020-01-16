@@ -5979,6 +5979,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
         double prop_error_threshold = 0.2;
         unsigned int total_trees_sampled = 0;
         double chi_sq_test_statistic = 0.0;
+        double g_test_statistic = 0.0;
         std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
         for (auto s_c : split_counts) {
             total_trees_sampled += s_c.second;
@@ -6002,10 +6003,14 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
             }
             double count_diff = s_c.second - exp_count;
             chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
+            g_test_statistic += (s_c.second * std::log(s_c.second / exp_count));
         }
+
+        g_test_statistic *= 2.0;
 
         double quantile_chi_sq_5627_10 = 5763.4;
         std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        std::cout << "G test statistic: " << g_test_statistic << "\n";
         std::cout << "Chi-square(5627) 0.9 quantile: " << quantile_chi_sq_5627_10 << "\n";
 
         std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
