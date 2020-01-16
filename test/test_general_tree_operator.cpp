@@ -4492,7 +4492,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
 //
 // The asterisks in the topologies above indicated shared node heights.
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
-        "[xSplitLumpNodesRevJumpSampler]") {
+        "[SplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(2193647912);
@@ -5912,7 +5912,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
         "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 6 leaves with fixed root") {
-        RandomNumberGenerator rng = RandomNumberGenerator(25478465);
+        /* RandomNumberGenerator rng = RandomNumberGenerator(25478465); */
+        RandomNumberGenerator rng = RandomNumberGenerator(7892471234);
 
         double root_ht = 0.5;
         std::shared_ptr<Node> root = std::make_shared<Node>(5, "root", root_ht);
@@ -5942,7 +5943,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
 
         std::map< std::set< std::set<Split> >, unsigned int> split_counts;
 
-        unsigned int niterations = 100000000;
+        unsigned int niterations = 1000000000;
         unsigned int sample_freq = 100;
         unsigned int nsamples = niterations / sample_freq;
 
@@ -6003,9 +6004,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
             chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
         }
 
-        double quantile_chi_sq_5000_10 = 5128.6;
+        double quantile_chi_sq_5627_10 = 5763.4;
         std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
-        std::cout << "Chi-square(5000) 0.9 quantile: " << quantile_chi_sq_5000_10 << "\n";
+        std::cout << "Chi-square(5627) 0.9 quantile: " << quantile_chi_sq_5627_10 << "\n";
 
         std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
         for (auto s_e : bad_splits) {
@@ -6029,6 +6030,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
         // We should sample every possible tree
         // REQUIRE(split_counts.size() == ???);
 
-        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_5000_10);
+        REQUIRE(chi_sq_test_statistic < quantile_chi_sq_5627_10);
     }
 }
