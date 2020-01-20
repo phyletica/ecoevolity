@@ -11,6 +11,58 @@
 #include "ecoevolity/rng.hpp"
 
 
+inline void write_r_script(const std::vector<unsigned int> & counts,
+        const std::string & path) {
+    std::pair<std::string, std::string> prefix_ext = path::splitext(path::basename(path));
+    std::ofstream os;
+    os.open(path);
+    os << "#! /usr/bin/env Rscript\n\n"
+       << "plot_binom_on_hist <- function(counts, p) {\n"
+       << "    k = seq(from = min(counts), to = max(counts), by = 1)\n"
+       << "    n = sum(counts)\n"
+       << "    binom_probs = dbinom(k, n, p)\n"
+       << "    hist(counts, freq = F)\n"
+       << "    lines(k, binom_probs, type = 'l')\n"
+       << "}\n\n";
+
+    os << "counts = c(";
+    for (unsigned int i = 0; i < counts.size(); ++i) {
+        if (i == 0) {
+            os << counts.at(i);
+        }
+        else {
+            os << ",\n           " << counts.at(i);
+        }
+    }
+    os << ")\n"
+       << "number_of_topologies = length(counts)\n"
+       << "binomial_prob = 1.0 / number_of_topologies\n"
+       << "topology = seq(from = 1, to = number_of_topologies, by = 1)\n"
+       << "d = data.frame(topology = topology, count = counts)\n\n";
+    std::string plot_path = prefix_ext.first + "-topo-vs-count.pdf";
+    os << "pdf(\"" << plot_path << "\")\n"
+       << "plot(x = d$topology, y = d$count, ylim = c(0, max(counts)))\n"
+       << "dev.off()\n\n";
+    plot_path = prefix_ext.first + "-count-distribution.pdf";
+    os << "pdf(\"" << plot_path << "\")\n"
+       << "plot_binom_on_hist(counts = counts, p = binomial_prob)\n"
+       << "dev.off()\n\n"
+       << "chisq.test(counts)\n";
+    os.close();
+}
+
+inline void write_r_script(
+        const std::map< std::set< std::set<Split> >, unsigned int> & split_counts,
+        const std::string & path) {
+    std::vector<unsigned int> counts;
+    counts.reserve(split_counts.size());
+    for (auto splitset_count : split_counts) {
+        counts.push_back(splitset_count.second);
+    }
+    write_r_script(counts, path);
+}
+
+
 TEST_CASE("Testing NodeHeightSlideBumpScaler with 3 leaves, fixed root, and optimizing",
         "[NodeHeightSlideBumpScaler]") {
 
@@ -2488,7 +2540,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::split with 3 leaves",
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 3 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(18);
@@ -2563,6 +2615,9 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves and fixed root",
         std::cout << "Freq of ((0,1),2): " << freq_01 << "\n";
         std::cout << "Freq of ((0,2),1): " << freq_02 << "\n";
         std::cout << "Freq of ((1,2),0): " << freq_12 << "\n";
+
+        std::vector<unsigned int> counts {count_012, count_01, count_02, count_12};
+        write_r_script(counts, "../3-leaf-general-tree-test.r");
 
         double eps = 0.001;
 
@@ -2672,17 +2727,17 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 3 leaves, fixed root and op
 }
 
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 4 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(20);
 
         double root_ht = 0.5;
-        std::shared_ptr<Node> root = std::make_shared<Node>("root", root_ht);
-        std::shared_ptr<Node> leaf0 = std::make_shared<Node>("leaf0", 0.0);
-        std::shared_ptr<Node> leaf1 = std::make_shared<Node>("leaf1", 0.0);
-        std::shared_ptr<Node> leaf2 = std::make_shared<Node>("leaf2", 0.0);
-        std::shared_ptr<Node> leaf3 = std::make_shared<Node>("leaf3", 0.0);
+        std::shared_ptr<Node> root = std::make_shared<Node>(4, "root", root_ht);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>(0, "leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(1, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(2, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(3, "leaf3", 0.0);
 
         root->add_child(leaf0);
         root->add_child(leaf1);
@@ -2732,6 +2787,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         unsigned int count_gen_23_1_0 = 0;
         unsigned int count_3_heights = 0;
         unsigned int count_2_heights = 0;
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
 
         unsigned int niterations = 5000000;
         unsigned int sample_freq = 20;
@@ -2739,6 +2795,15 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate(rng, &tree, 1);
             if ((i + 1) % sample_freq == 0) {
+
+                std::set< std::set<Split> > splits = tree.get_splits(false);
+                if (split_counts.count(splits) > 0) {
+                    ++split_counts[splits];
+                }
+                else {
+                    split_counts[splits] = 1;
+                }
+
                 if (tree.get_number_of_node_heights() == 1) {
                     ++count_0123;
                     REQUIRE(tree.get_root_ptr()->get_number_of_children() == 4);
@@ -3086,6 +3151,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 4 leaves and fixed root",
         std::cout << "Freq of gen (((2,3),1),0): " << freq_gen_23_1_0 << " (expected " << exp_freq << ")\n";
         std::cout << "Freq of 2 heights: " << freq_2_heights << " (expected " << 13 * exp_freq << ")\n";
         std::cout << "Freq of 3 heights: " << freq_3_heights << " (expected " << 15 * exp_freq << ")\n";
+
+        write_r_script(split_counts, "../4-leaf-general-tree-test.r");
 
         double eps = 0.001;
 
@@ -4492,7 +4559,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler::merge from balanced general wit
 //
 // The asterisks in the topologies above indicated shared node heights.
 TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
-        "[SplitLumpNodesRevJumpSampler]") {
+        "[xSplitLumpNodesRevJumpSampler]") {
 
     SECTION("Testing 5 leaves with fixed root") {
         RandomNumberGenerator rng = RandomNumberGenerator(2193647912);
@@ -4628,6 +4695,8 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 5 leaves and fixed root",
             }
             std::cout << "  prop error: " << s_e.second << "\n";
         }
+
+        write_r_script(split_counts, "../5-leaf-general-tree-test.r");
 
         REQUIRE(total_trees_sampled == nsamples);
 
@@ -5916,7 +5985,7 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
         RandomNumberGenerator rng = RandomNumberGenerator(7892471234);
 
         double root_ht = 0.5;
-        std::shared_ptr<Node> root = std::make_shared<Node>(5, "root", root_ht);
+        std::shared_ptr<Node> root = std::make_shared<Node>(6, "root", root_ht);
         std::shared_ptr<Node> leaf0 = std::make_shared<Node>(0, "leaf0", 0.0);
         std::shared_ptr<Node> leaf1 = std::make_shared<Node>(1, "leaf1", 0.0);
         std::shared_ptr<Node> leaf2 = std::make_shared<Node>(2, "leaf2", 0.0);
@@ -5943,12 +6012,12 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
 
         std::map< std::set< std::set<Split> >, unsigned int> split_counts;
 
-        unsigned int niterations = 1000000000;
+        unsigned int niterations = 500000000;
         unsigned int sample_freq = 100;
         unsigned int nsamples = niterations / sample_freq;
 
         unsigned int sample_count = 0;
-        unsigned int report_freq = 10000;
+        unsigned int report_freq = 100000;
         for (unsigned int i = 0; i < niterations; ++i) {
             op.operate(rng, &tree, 1);
             if ((i + 1) % sample_freq == 0) {
@@ -5979,7 +6048,6 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
         double prop_error_threshold = 0.2;
         unsigned int total_trees_sampled = 0;
         double chi_sq_test_statistic = 0.0;
-        double g_test_statistic = 0.0;
         std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
         for (auto s_c : split_counts) {
             total_trees_sampled += s_c.second;
@@ -6003,14 +6071,11 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
             }
             double count_diff = s_c.second - exp_count;
             chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
-            g_test_statistic += (s_c.second * std::log(s_c.second / exp_count));
         }
 
-        g_test_statistic *= 2.0;
 
         double quantile_chi_sq_5627_10 = 5763.4;
         std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
-        std::cout << "G test statistic: " << g_test_statistic << "\n";
         std::cout << "Chi-square(5627) 0.9 quantile: " << quantile_chi_sq_5627_10 << "\n";
 
         std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
@@ -6030,11 +6095,142 @@ TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 6 leaves and fixed root",
             std::cout << "  prop error: " << s_e.second << "\n";
         }
 
+        write_r_script(split_counts, "../6-leaf-general-tree-test.r");
+
         REQUIRE(total_trees_sampled == nsamples);
 
         // We should sample every possible tree
         // REQUIRE(split_counts.size() == ???);
 
         REQUIRE(chi_sq_test_statistic < quantile_chi_sq_5627_10);
+    }
+}
+
+TEST_CASE("Testing SplitLumpNodesRevJumpSampler with 7 leaves and fixed root",
+        "[xSplitLumpNodesRevJumpSampler]") {
+
+    SECTION("Testing 7 leaves with fixed root") {
+        RandomNumberGenerator rng = RandomNumberGenerator(2347243665);
+
+        double root_ht = 0.5;
+        std::shared_ptr<Node> root = std::make_shared<Node>(7, "root", root_ht);
+        std::shared_ptr<Node> leaf0 = std::make_shared<Node>(0, "leaf0", 0.0);
+        std::shared_ptr<Node> leaf1 = std::make_shared<Node>(1, "leaf1", 0.0);
+        std::shared_ptr<Node> leaf2 = std::make_shared<Node>(2, "leaf2", 0.0);
+        std::shared_ptr<Node> leaf3 = std::make_shared<Node>(3, "leaf3", 0.0);
+        std::shared_ptr<Node> leaf4 = std::make_shared<Node>(4, "leaf4", 0.0);
+        std::shared_ptr<Node> leaf5 = std::make_shared<Node>(5, "leaf5", 0.0);
+        std::shared_ptr<Node> leaf6 = std::make_shared<Node>(6, "leaf6", 0.0);
+
+        root->add_child(leaf0);
+        root->add_child(leaf1);
+        root->add_child(leaf2);
+        root->add_child(leaf3);
+        root->add_child(leaf4);
+        root->add_child(leaf5);
+        root->add_child(leaf6);
+
+        BaseTree<Node> tree(root);
+
+        tree.ignore_data();
+        tree.fix_root_height();
+
+        SplitLumpNodesRevJumpSampler<Node> op;
+
+        // Initialize prior probs
+        tree.compute_log_likelihood_and_prior(true);
+
+        std::map< std::set< std::set<Split> >, unsigned int> split_counts;
+
+        unsigned int niterations = 2000000000;
+        unsigned int sample_freq = 100;
+        unsigned int nsamples = niterations / sample_freq;
+
+        unsigned int sample_count = 0;
+        unsigned int report_freq = 100000;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            op.operate(rng, &tree, 1);
+            if ((i + 1) % sample_freq == 0) {
+                std::set< std::set<Split> > splits = tree.get_splits(false);
+                if (split_counts.count(splits) > 0) {
+                    ++split_counts[splits];
+                }
+                else {
+                    split_counts[splits] = 1;
+                }
+                ++sample_count;
+                if (sample_count % report_freq == 0) {
+                    std::cout << "Sampled " << sample_count << " of " << nsamples << "\n";
+                }
+            }
+        }
+        std::cout << op.header_string();
+        std::cout << op.to_string();
+
+        REQUIRE(op.get_number_of_attempts() == niterations);
+
+        // TODO: Figure this out
+        unsigned int num_tree_models = split_counts.size();
+        double exp_freq = 1.0/num_tree_models;
+        double exp_count = nsamples/num_tree_models;
+        std::map< std::set< std::set<Split> >, double> bad_splits;
+
+        double prop_error_threshold = 0.2;
+        unsigned int total_trees_sampled = 0;
+        double chi_sq_test_statistic = 0.0;
+        std::cout << "Total tree topologies sampled: " << split_counts.size() << "\n";
+        for (auto s_c : split_counts) {
+            total_trees_sampled += s_c.second;
+            std::cout << "Tree:\n";
+            for (auto splitset : s_c.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            double prop_error = ((double)s_c.second - exp_count) / exp_count;
+            std::cout << "  nsamples: " << s_c.second << "\n";
+            std::cout << "  prop error: " << prop_error << "\n";
+            if (fabs(prop_error) > prop_error_threshold) {
+                bad_splits[s_c.first] = prop_error;
+            }
+            double count_diff = s_c.second - exp_count;
+            chi_sq_test_statistic += (count_diff * count_diff) / exp_count;
+        }
+
+        /* double quantile_chi_sq_5627_10 = 5763.4; */
+        std::cout << "Chi-square test statistic: " << chi_sq_test_statistic << "\n";
+        /* std::cout << "Chi-square(5627) 0.9 quantile: " << quantile_chi_sq_5627_10 << "\n"; */
+
+        std::cout << "BAD SPLITS (proportional error > " << prop_error_threshold << ")\n";
+        for (auto s_e : bad_splits) {
+            std::cout << "\nTree:\n";
+            for (auto splitset : s_e.first) {
+                unsigned int s_count = 0;
+                for (auto split : splitset) {
+                    if (s_count > 0) {
+                        // Indent shared splits
+                        std::cout << "  ";
+                    }
+                    std::cout << "  " << split.as_string() << "\n";
+                    ++s_count;
+                }
+            }
+            std::cout << "  prop error: " << s_e.second << "\n";
+        }
+
+        write_r_script(split_counts, "../7-leaf-general-tree-test.r");
+
+        REQUIRE(total_trees_sampled == nsamples);
+
+        // We should sample every possible tree
+        // REQUIRE(split_counts.size() == ???);
+
+        /* REQUIRE(chi_sq_test_statistic < quantile_chi_sq_5627_10); */
     }
 }
