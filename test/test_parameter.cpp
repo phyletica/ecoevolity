@@ -681,6 +681,21 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
     SECTION("Testing value and prior") {
         std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
+        PositiveRealParameter p = PositiveRealParameter(u, 11.1);
+        REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
+        REQUIRE(p.get_min() == 0.0);
+        REQUIRE(p.get_value() == Approx(11.1));
+        p.store();
+        REQUIRE(p.get_stored_value() == Approx(11.1));
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123);
+
+        p.initialize_value(rng);
+        REQUIRE(p.get_value() == 11.1);
+    }
+
+    SECTION("Testing bad value and prior") {
+        std::shared_ptr<UniformDistribution> u = std::make_shared<UniformDistribution>(10.0, 20.0);
         PositiveRealParameter p = PositiveRealParameter(u, 1.1);
         REQUIRE(p.get_max() == std::numeric_limits<double>::infinity());
         REQUIRE(p.get_min() == 0.0);
@@ -690,8 +705,7 @@ TEST_CASE("Testing PositiveRealParameter constructors", "[PositiveRealParameter]
 
         RandomNumberGenerator rng = RandomNumberGenerator(123);
 
-        p.initialize_value(rng);
-        REQUIRE(p.get_value() == 1.1);
+        REQUIRE_THROWS_AS(p.initialize_value(rng), EcoevolityParameterValueError &);
     }
 
     SECTION("Testing prior") {

@@ -58,6 +58,8 @@ class ContinuousProbabilityDistribution {
         virtual std::string to_string() const = 0;
 
         virtual double draw(RandomNumberGenerator & rng) const = 0;
+        
+        virtual bool is_within_support(double x) const = 0;
 };
 
 class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
@@ -96,6 +98,10 @@ class ImproperUniformDistribution : public ContinuousProbabilityDistribution {
                     std::numeric_limits<double>::lowest(),
                     std::numeric_limits<double>::max());
         }
+
+        bool is_within_support(double x) const {
+            return true;
+        }
 };
 
 class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
@@ -117,8 +123,15 @@ class ImproperPositiveUniformDistribution: public ImproperUniformDistribution {
             return 0.0;
         }
 
-        double relative_ln_pdf(double x) const {
+        bool is_within_support(double x) const {
             if (x < 0.0) {
+                return false;
+            }
+            return true;
+        }
+
+        double relative_ln_pdf(double x) const {
+            if (! this->is_within_support(x)) {
                 return -std::numeric_limits<double>::infinity();
             }
             return 0.0;
@@ -160,8 +173,15 @@ class UniformDistribution : public ContinuousProbabilityDistribution {
             return this->ln_pdf(x);
         }
 
-        double ln_pdf(double x) const {
+        bool is_within_support(double x) const {
             if ((x < this->min_) || (x > this->max_)) {
+                return false;
+            }
+            return true;
+        }
+
+        double ln_pdf(double x) const {
+            if (! this->is_within_support(x)) {
                 return -std::numeric_limits<double>::infinity();
             }
             return this->ln_density_;
@@ -222,8 +242,15 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             return * this;
         }
 
-        double ln_pdf(double x) const {
+        bool is_within_support(double x) const {
             if ((x <= this->min_) || (x >= this->max_)) {
+                return false;
+            }
+            return true;
+        }
+
+        double ln_pdf(double x) const {
+            if (! this->is_within_support(x)) {
                 return -std::numeric_limits<double>::infinity();
             }
 		    double lnp = ((this->alpha_ - 1.0) * std::log(x)) + ((this->beta_ - 1.0) * std::log(1.0 - x));
@@ -309,8 +336,15 @@ class OffsetGammaDistribution : public ContinuousProbabilityDistribution {
             return * this;
         }
 
-        double ln_pdf(double x) const {
+        bool is_within_support(double x) const {
             if ((x < this->min_) || ((x == this->min_) && (this->shape_ > 1.0))) {
+                return false;
+            }
+            return true;
+        }
+
+        double ln_pdf(double x) const {
+            if (! this->is_within_support(x)) {
                 return -std::numeric_limits<double>::infinity();
             }
             x -= this->min_;
@@ -473,13 +507,20 @@ class DirichletDistribution {
             return std::lgamma(x);
         }
 
+        bool is_within_support(double x) const {
+            if ((x <= this->min_) || (x >= this->max_)) {
+                return false;
+            }
+            return true;
+        }
+
         double ln_pdf(const std::vector<double> & x) const {
             ECOEVOLITY_ASSERT(x.size() == this->parameters_.size());
             double r = 0.0;
             double sum_p = 0.0;
             double sum_x = 0.0;
             for (unsigned int i = 0; i < x.size(); ++i) {
-                if ((x.at(i) <= this->min_) || (x.at(i) >= this->max_)) {
+                if (! this->is_within_support(x.at(i))) {
                     return -std::numeric_limits<double>::infinity();
                 }
                 double p_i = this->parameters_.at(i);
@@ -498,7 +539,7 @@ class DirichletDistribution {
             double r = 0.0;
             double sum_x = 0.0;
             for (unsigned int i = 0; i < x.size(); ++i) {
-                if ((x.at(i) <= this->min_) || (x.at(i) >= this->max_)) {
+                if (! this->is_within_support(x.at(i))) {
                     return -std::numeric_limits<double>::infinity();
                 }
                 r += (this->parameters_.at(i) - 1.0) * std::log(x.at(i));
