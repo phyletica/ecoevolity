@@ -155,6 +155,7 @@ class BiallelicData {
         void write_alignment(
                 std::ostream& out,
                 char population_name_delimiter) const;
+        void write_yaml(std::ostream& out) const;
 
         void write_summary(
                 std::ostream& out,

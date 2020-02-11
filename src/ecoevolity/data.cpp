@@ -1429,6 +1429,45 @@ void BiallelicData::write_charsets(
     out << "End;\n";
 }
 
+void BiallelicData::write_yaml(std::ostream& out) const {
+    unsigned int pattern_idx;
+    unsigned int pop_idx;
+    out << std::boolalpha;
+    out << "---\n";
+    out << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
+    out << "population_labels:\n";
+    for (pop_idx = 0;
+            pop_idx < this->get_number_of_populations();
+            ++pop_idx) {
+        out << "    - " << this->get_population_label(pop_idx) << "\n";
+    }
+    out << "allele_count_patterns:\n";
+    for (pattern_idx = 0;
+            pattern_idx < this->get_number_of_patterns();
+            ++pattern_idx) {
+        out << "    - [";
+        for (pop_idx = 0;
+                pop_idx < this->get_number_of_populations();
+                ++pop_idx) {
+            if (pop_idx > 0) {
+                out << ", ";
+            }
+            out << "["
+                << this->get_red_allele_count(pattern_idx, pop_idx)
+                << ","
+                << this->get_allele_count(pattern_idx, pop_idx)
+                << "]"
+        }
+        out << "\n";
+    }
+    out << "pattern_weights:\n";
+    for (pattern_idx = 0;
+            pattern_idx < this->get_number_of_patterns();
+            ++pattern_idx) {
+        out << "    - " << this->get_pattern_weight(pattern_idx) << "\n";
+    }
+}
+
 void BiallelicData::write_summary(
         std::ostream& out,
         unsigned int indent_level) const {
