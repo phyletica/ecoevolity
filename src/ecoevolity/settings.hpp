@@ -29,7 +29,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "yaml-cpp/yaml.h"
+#include "yaml_util.hpp"
 
 #include "error.hpp"
 #include "assert.hpp"
@@ -40,28 +40,6 @@
 #include "data.hpp"
 #include "options.hpp"
 
-
-class YamlCppUtils {
-
-    public:
-
-        static std::string get_node_type(const YAML::Node& node) {
-            switch(node.Type()) {
-                case YAML::NodeType::Null:
-                    return "Null";
-                case YAML::NodeType::Scalar:
-                    return "Scalar";
-                case YAML::NodeType::Sequence:
-                    return "Sequence";
-                case YAML::NodeType::Map:
-                    return "Map";
-                case YAML::NodeType::Undefined:
-                    return "Undefined";
-                default:
-                    return "Not recognized";
-            }
-        }
-};
 
 class ContinuousDistributionSettings {
 

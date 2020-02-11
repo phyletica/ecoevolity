@@ -21,6 +21,8 @@
 #define ECOEVOLITY_DATA_HPP
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <assert.h>
 #include <unordered_map>
 #include <map>
@@ -28,6 +30,8 @@
 #include <vector>
 #include <algorithm>
 #include <ncl/nxsmultiformat.h>
+
+#include "yaml_util.hpp"
 
 #include "string_util.hpp"
 #include "debug.hpp"
@@ -56,6 +60,13 @@ class BiallelicData {
                 bool markers_are_dominant = false,
                 bool validate = true,
                 bool store_seq_loci_info = false);
+        void init_from_yaml_stream(
+                std::istream& stream,
+                const std::string& path,
+                bool validate = true);
+        void init_from_yaml_file(
+                const std::string& path,
+                bool validate = true);
 
         // Destructor
         // ~BiallelicData();
@@ -249,6 +260,19 @@ class BiallelicData {
         void fold_first_mirrored_pattern(
                 bool& was_folded,
                 unsigned int& folded_index);
+        
+        void parse_yaml_data(std::istream& yaml_stream, bool validate = true);
+        void parse_yaml_top_level(const YAML::Node& top_level_node);
+        void parse_yaml_marker_dominance(const YAML::Node& node);
+        void parse_yaml_population_labels(const YAML::Node& node);
+        void parse_yaml_pattern_weights(const YAML::Node& node);
+        void parse_yaml_all_allele_count_patterns(const YAML::Node& node);
+        void parse_yaml_allele_count_pattern(const YAML::Node& node,
+                std::vector<unsigned int> & red_allele_counts,
+                std::vector<unsigned int> & allele_counts);
+        void parse_yaml_allele_count(const YAML::Node& node,
+                std::vector<unsigned int> & red_allele_counts,
+                std::vector<unsigned int> & allele_counts);
 };
 
 #endif

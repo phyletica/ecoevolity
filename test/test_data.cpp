@@ -10071,3 +10071,336 @@ TEST_CASE("Testing charsets", "[BiallelicData]") {
         REQUIRE(bd.get_locus_end_indices() == expected_locus_ends);
     }
 }
+
+TEST_CASE("Yaml parsing diploid dna with missing, mirrored, and constant sites", "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-dna-constant-missing.yml") {
+        std::string nex_path = "data/diploid-dna-constant-missing.nex";
+        std::string yml_path = "data/diploid-dna-constant-missing.yml";
+        BiallelicData bd(nex_path);
+        BiallelicData ybd;
+        ybd.init_from_yaml_file(yml_path);
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Folding
+        unsigned int number_removed = bd.fold_patterns();
+        unsigned int ynumber_removed = ybd.fold_patterns();
+        REQUIRE(number_removed == ynumber_removed);
+
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Remove missing
+        number_removed = bd.remove_missing_population_patterns();
+        ynumber_removed = ybd.remove_missing_population_patterns();
+        REQUIRE(number_removed == ynumber_removed);
+
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Remove constant
+        number_removed = bd.remove_constant_patterns();
+        ynumber_removed = ybd.remove_constant_patterns();
+        REQUIRE(number_removed == ynumber_removed);
+
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+    }
+}
+
+TEST_CASE("Yaml parsing default dominance diploid dna with missing, mirrored, and constant sites", "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-dna-constant-missing-default-dominance.yml") {
+        std::string nex_path = "data/diploid-dna-constant-missing.nex";
+        std::string yml_path = "data/diploid-dna-constant-missing-default-dominance.yml";
+        BiallelicData bd(nex_path);
+        BiallelicData ybd;
+        ybd.init_from_yaml_file(yml_path);
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Folding
+        unsigned int number_removed = bd.fold_patterns();
+        unsigned int ynumber_removed = ybd.fold_patterns();
+        REQUIRE(number_removed == ynumber_removed);
+
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Remove missing
+        number_removed = bd.remove_missing_population_patterns();
+        ynumber_removed = ybd.remove_missing_population_patterns();
+        REQUIRE(number_removed == ynumber_removed);
+
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        // Remove constant
+        number_removed = bd.remove_constant_patterns();
+        ynumber_removed = ybd.remove_constant_patterns();
+        REQUIRE(number_removed == ynumber_removed);
+
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.get_path() == nex_path);
+        REQUIRE(ybd.get_path() == yml_path);
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_index("pop3") == ybd.get_population_index("pop3"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+        REQUIRE(bd.get_population_label(2) == ybd.get_population_label(2));
+        REQUIRE_THROWS_AS(bd.get_population_label(3), std::out_of_range &);
+        REQUIRE_THROWS_AS(ybd.get_population_label(3), std::out_of_range &);
+
+        REQUIRE(bd.get_max_allele_counts() == ybd.get_max_allele_counts());
+    }
+}
+
+TEST_CASE("Testing yaml parsing standard haploid dominant", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard-dominant.yml") {
+        std::string nex_path = "data/haploid-standard.nex";
+        std::string yml_path = "data/haploid-standard-dominant.yml";
+        BiallelicData bd(nex_path, ' ', true, false, true);
+        BiallelicData ybd;
+        ybd.init_from_yaml_file(yml_path);
+        REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+        REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+        REQUIRE(bd.get_number_of_variable_sites() == ybd.get_number_of_variable_sites());
+        REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+        REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+        REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+        REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+        REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+
+        REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+
+        for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+            REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+            REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+            REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+        }
+
+        REQUIRE(bd.get_population_index("pop1") == ybd.get_population_index("pop1"));
+        REQUIRE(bd.get_population_index("pop2") == ybd.get_population_index("pop2"));
+        REQUIRE(bd.get_population_label(0) == ybd.get_population_label(0));
+        REQUIRE(bd.get_population_label(1) == ybd.get_population_label(1));
+
+
+        // Folding
+        REQUIRE_THROWS_AS(bd.fold_patterns(), EcoevolityBiallelicDataError &);
+        REQUIRE_THROWS_AS(ybd.fold_patterns(), EcoevolityBiallelicDataError &);
+    }
+}
+
+TEST_CASE("Testing yaml parsing with duplicated pattern", "[BiallelicData]") {
+
+    SECTION("Testing data/duplicated-pattern.yml") {
+        std::string yml_path = "data/duplicated-pattern.yml";
+        BiallelicData bd;
+        REQUIRE_THROWS_AS(bd.init_from_yaml_file(yml_path), EcoevolityYamlDataError &);
+    }
+}

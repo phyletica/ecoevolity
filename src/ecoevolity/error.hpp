@@ -209,6 +209,17 @@ class EcoevolityYamlConfigError: public EcoevolityBaseError {
             EcoevolityBaseError("EcoevolityYamlConfigError", message, file_path) { }
 };
 
+class EcoevolityYamlDataError: public EcoevolityBaseError {
+    public:
+        EcoevolityYamlDataError(
+                const std::string & message) :
+            EcoevolityBaseError("EcoevolityYamlDataError", message) { }
+        EcoevolityYamlDataError(
+                const std::string & message,
+                const std::string & file_path) :
+            EcoevolityBaseError("EcoevolityYamlDataError", message, file_path) { }
+};
+
 class EcoevolitySpreadsheetError: public EcoevolityBaseError {
     public:
         EcoevolitySpreadsheetError(
