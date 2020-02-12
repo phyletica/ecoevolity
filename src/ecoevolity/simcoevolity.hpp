@@ -178,6 +178,12 @@ int simcoevolity_main(int argc, char * argv[]) {
                   "retained, but all simulated sites will have at most two "
                   "character states."
                 );
+    parser.add_option("--nexus")
+            .action("store_true")
+            .dest("output_nexus")
+            .help("Output simulated data in nexus format, rather than the "
+                  "default YAML format."
+                );
 
     optparse::Values& options = parser.parse_args(argc, argv);
     std::vector<std::string> args = parser.args();
@@ -225,6 +231,7 @@ int simcoevolity_main(int argc, char * argv[]) {
     const bool strict_on_missing_sites = (! options.get("relax_missing_sites"));
     const bool strict_on_triallelic_sites = (! options.get("relax_triallelic_sites"));
     const bool simulate_sequences = (! options.get("parameters_only"));
+    const bool output_nexus = options.get("output_nexus");
 
     if (args.size() < 1) {
         throw EcoevolityError("Path to YAML-formatted config file is required");
@@ -402,7 +409,12 @@ int simcoevolity_main(int argc, char * argv[]) {
                 prior_settings.replace_comparison_path(k_v.first, path::basename(sim_alignment_path));
 
                 sim_alignment_stream.open(sim_alignment_path);
-                k_v.second.write_nexus(sim_alignment_stream, delim);
+                if (output_nexus) {
+                    k_v.second.write_nexus(sim_alignment_stream, delim);
+                }
+                else {
+                    k_v.second.write_yaml(sim_alignment_stream);
+                }
                 sim_alignment_stream.close();
             }
             prior_settings.blanket_set_population_name_is_prefix(true);

@@ -119,6 +119,12 @@ void BasePopulationTree::init(
     this->set_ploidy(ploidy);
     try {
         // First, try to parse data as YAML formatted
+        if (store_seq_loci_info) {
+            // If we are expecting charset info, we need to abort YAML
+            // processing and try nexus parsing.
+            throw EcoevolityYamlDataError(
+                    "Charsets option specified, abort YAML processing");
+        }
         this->data_.init_from_yaml_path(
                 path,
                 validate);
