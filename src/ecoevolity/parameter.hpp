@@ -225,6 +225,17 @@ class RealParameter: public RealVariable {
             if (std::isnan(this->value_)) {
                 this->set_value_from_prior(rng);
             }
+            else {
+                if (this->prior && (! this->prior->is_within_support(this->get_value()))) {
+                    std::ostringstream ss;
+                    ss << "Initial value "
+                       << this->get_value()
+                       << " is outside the support of prior "
+                       << this->prior->to_string();
+                    throw EcoevolityParameterValueError(ss.str());
+                    throw EcoevolityParameterValueError("crap");
+                }
+            }
         }
         virtual void update_value_from_prior(RandomNumberGenerator & rng) {
             if (this->is_fixed()) {
@@ -475,6 +486,16 @@ class CoalescenceRateParameter: public PositiveRealParameter {
         virtual void initialize_value(RandomNumberGenerator & rng) {
             if (std::isnan(this->value_)) {
                 this->set_value_from_prior(rng);
+            }
+            else {
+                if (this->prior && (! this->prior->is_within_support(this->get_value()))) {
+                    std::ostringstream ss;
+                    ss << "Initial value "
+                       << this->get_value()
+                       << " is outside the support of prior "
+                       << this->prior->to_string();
+                    throw EcoevolityParameterValueError(ss.str());
+                }
             }
         }
         virtual void update_value_from_prior(RandomNumberGenerator & rng) {

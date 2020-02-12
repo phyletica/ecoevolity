@@ -29,7 +29,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "yaml-cpp/yaml.h"
+#include "yaml_util.hpp"
 
 #include "error.hpp"
 #include "assert.hpp"
@@ -40,28 +40,6 @@
 #include "data.hpp"
 #include "options.hpp"
 
-
-class YamlCppUtils {
-
-    public:
-
-        static std::string get_node_type(const YAML::Node& node) {
-            switch(node.Type()) {
-                case YAML::NodeType::Null:
-                    return "Null";
-                case YAML::NodeType::Scalar:
-                    return "Scalar";
-                case YAML::NodeType::Sequence:
-                    return "Sequence";
-                case YAML::NodeType::Map:
-                    return "Map";
-                case YAML::NodeType::Undefined:
-                    return "Undefined";
-                default:
-                    return "Not recognized";
-            }
-        }
-};
 
 class ContinuousDistributionSettings {
 
@@ -543,6 +521,7 @@ class PositiveRealParameterSettings {
         }
         PositiveRealParameterSettings(const YAML::Node& node) {
             bool prior_specified = false;
+            bool value_specified = false;
             if (! node.IsMap()) {
                 throw EcoevolityYamlConfigError(
                         "parameter node should be a map, but found: " +
@@ -603,6 +582,7 @@ class PositiveRealParameterSettings {
                             }
                         this->value_ = v;
                     }
+                    value_specified = true;
                 }
                 else if (arg->first.as<std::string>() == "estimate") {
                     bool f = arg->second.as<bool>();
@@ -631,6 +611,20 @@ class PositiveRealParameterSettings {
                     throw EcoevolityPositiveRealParameterSettingError(
                             "number of values must match number of dirichlet distribution parameters"
                             );
+                }
+            }
+            
+            if (value_specified && prior_specified && (! this->is_vector_)) {
+                // Make sure specified values are within the support of the
+                // specified prior
+                std::shared_ptr<ContinuousProbabilityDistribution> prior_dist = this->prior_settings_.get_instance();
+                if (! prior_dist->is_within_support(this->value_)) {
+                    std::ostringstream ss;
+                    ss << "Initial value "
+                       << this->value_
+                       << " is outside the support of prior "
+                       << prior_dist->to_string();
+                    throw EcoevolityPositiveRealParameterSettingError(ss.str());
                 }
             }
 

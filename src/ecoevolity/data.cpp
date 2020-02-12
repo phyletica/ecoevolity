@@ -109,6 +109,214 @@ BiallelicData::BiallelicData(
                store_seq_loci_info);
 }
 
+void BiallelicData::init_from_yaml_stream(
+        std::istream& stream,
+        const std::string& path,
+        bool validate) {
+    this->path_ = path;
+    this->parse_yaml_data(stream, validate);
+}
+
+void BiallelicData::init_from_yaml_file(
+        const std::string& path,
+        bool validate) {
+    std::ifstream in_stream;
+    in_stream.open(path);
+    if (! in_stream.is_open()) {
+        throw EcoevolityYamlDataError(
+                "Could not open YAML data file",
+                path);
+    }
+    this->init_from_yaml_stream(in_stream, path, validate);
+    in_stream.close();
+}
+
+void BiallelicData::parse_yaml_data(std::istream& yaml_stream, bool validate) {
+    YAML::Node data;
+    try {
+        data = YAML::Load(yaml_stream);
+    }
+    catch (...) {
+        std::cerr << "ERROR: Problem with YAML-formatting of data\n";
+        throw;
+    }
+    this->parse_yaml_top_level(data);
+    this->update_max_allele_counts();
+    this->update_pattern_booleans();
+    if (validate) {
+        this->validate();
+    }
+}
+
+void BiallelicData::parse_yaml_top_level(const YAML::Node& top_level_node) {
+    if (! top_level_node.IsMap()) {
+        throw EcoevolityYamlDataError(
+                "Expecting top-level of config to be a map, but found: " +
+                YamlCppUtils::get_node_type(top_level_node),
+                this->path_);
+    }
+    if (! top_level_node["population_labels"]) {
+        throw EcoevolityYamlDataError("No population labels", this->path_);
+    }
+    if (! top_level_node["allele_count_patterns"]) {
+        throw EcoevolityYamlDataError("No allele count patterns", this->path_);
+    }
+    if (! top_level_node["pattern_weights"]) {
+        throw EcoevolityYamlDataError("No pattern weights", this->path_);
+    }
+    if (! top_level_node["markers_are_dominant"]) {
+        this->markers_are_dominant_ = false;
+    }
+    else {
+        this->parse_yaml_marker_dominance(top_level_node["markers_are_dominant"]);
+    }
+    this->parse_yaml_population_labels(top_level_node["population_labels"]);
+    this->parse_yaml_pattern_weights(top_level_node["pattern_weights"]);
+    this->parse_yaml_all_allele_count_patterns(top_level_node["allele_count_patterns"]);
+}
+
+void BiallelicData::parse_yaml_marker_dominance(const YAML::Node& node) {
+    if (! node.IsScalar()) {
+        throw EcoevolityYamlDataError(
+                "markers_are_dominance node should be a map, but found: " +
+                YamlCppUtils::get_node_type(node));
+    }
+    this->markers_are_dominant_ = node.as<bool>();
+}
+
+void BiallelicData::parse_yaml_population_labels(const YAML::Node& node) {
+    if (! node.IsSequence()) {
+        throw EcoevolityYamlDataError(
+                "Expecting population labels to be a sequence, but found: " +
+                YamlCppUtils::get_node_type(node),
+                this->path_);
+    }
+    this->population_labels_.clear();
+    this->pop_label_to_index_map_.clear();
+    unsigned int pop_idx = 0;
+    std::set<std::string> label_set;
+    for (YAML::const_iterator label = node.begin();
+            label != node.end();
+            ++label) {
+        std::string l = label->as<std::string>();
+        if (label_set.count(l) > 0) {
+            throw EcoevolityYamlDataError(
+                    "Duplicate population label: " + l,
+                    this->path_);
+        }
+        label_set.insert(l);
+        this->population_labels_.push_back(l);
+        this->pop_label_to_index_map_[l] = pop_idx;
+        ++pop_idx;
+    }
+}
+
+void BiallelicData::parse_yaml_pattern_weights(const YAML::Node& node) {
+    if (! node.IsSequence()) {
+        throw EcoevolityYamlDataError(
+                "Expecting pattern weights to be a sequence, but found: " +
+                YamlCppUtils::get_node_type(node),
+                this->path_);
+    }
+    this->pattern_weights_.clear();
+    for (YAML::const_iterator w = node.begin();
+            w != node.end();
+            ++w) {
+        unsigned int weight = w->as<unsigned int>();
+        this->pattern_weights_.push_back(weight);
+    }
+}
+
+void BiallelicData::parse_yaml_all_allele_count_patterns(const YAML::Node& node) {
+    if (! node.IsSequence()) {
+        throw EcoevolityYamlDataError(
+                "Expecting allele count patterns to be a sequence, but found: " +
+                YamlCppUtils::get_node_type(node),
+                this->path_);
+    }
+    this->allele_counts_.clear();
+    this->red_allele_counts_.clear();
+    std::vector<unsigned int> tmp_red_allele_counts;
+    std::vector<unsigned int> tmp_allele_counts;
+    std::vector< std::vector<unsigned int> > pattern;
+    std::set< std::vector< std::vector<unsigned int> > > pattern_set;
+    for (unsigned int pattern_idx = 0;
+            pattern_idx < node.size();
+            ++pattern_idx) {
+        YAML::Node p = node[pattern_idx];
+        this->parse_yaml_allele_count_pattern(p,
+                tmp_red_allele_counts,
+                tmp_allele_counts);
+        ECOEVOLITY_ASSERT(tmp_red_allele_counts.size() == tmp_allele_counts.size());
+        if (tmp_allele_counts.size() != this->population_labels_.size()) {
+            std::ostringstream message;
+            message << "There were "
+                    << this->population_labels_.size()
+                    << " population labels, so expecting all allele count patterns to consist of counts for "
+                    << this->population_labels_.size()
+                    << " populations, but found a pattern with counts for "
+                    << tmp_allele_counts.size()
+                    << " populations\n";
+            throw EcoevolityYamlDataError(message.str());
+        }
+        pattern = {tmp_red_allele_counts, tmp_allele_counts};
+        if (pattern_set.count(pattern) > 0) {
+            throw EcoevolityYamlDataError("Found duplicate allele count pattern",
+                    this->path_);
+        }
+        pattern_set.insert(pattern);
+        this->allele_counts_.push_back(tmp_allele_counts);
+        this->red_allele_counts_.push_back(tmp_red_allele_counts);
+    }
+}
+
+void BiallelicData::parse_yaml_allele_count_pattern(const YAML::Node& node,
+        std::vector<unsigned int> & red_allele_counts,
+        std::vector<unsigned int> & allele_counts) {
+    if (! node.IsSequence()) {
+        throw EcoevolityYamlDataError(
+                "Expecting each allele count pattern to be a sequence, but found: " +
+                YamlCppUtils::get_node_type(node),
+                this->path_);
+    }
+    red_allele_counts.clear();
+    allele_counts.clear();
+    for (unsigned int pop_idx = 0;
+            pop_idx < node.size();
+            ++pop_idx) {
+        YAML::Node pop_counts = node[pop_idx];
+        this->parse_yaml_allele_count(pop_counts,
+                red_allele_counts,
+                allele_counts);
+    }
+}
+
+void BiallelicData::parse_yaml_allele_count(const YAML::Node& node,
+        std::vector<unsigned int> & red_allele_counts,
+        std::vector<unsigned int> & allele_counts) {
+    if (! node.IsSequence()) {
+        throw EcoevolityYamlDataError(
+                "Expecting each population allele count to be a sequence, but found: " +
+                YamlCppUtils::get_node_type(node),
+                this->path_);
+    }
+    std::vector<unsigned int> temp_counts;
+    for (YAML::const_iterator count = node.begin();
+            count != node.end();
+            ++count) {
+        unsigned int c = count->as<unsigned int>();
+        temp_counts.push_back(c);
+    }
+    if (temp_counts.size() != 2) {
+        throw EcoevolityYamlDataError(
+                "All population allele counts should be a sequence of 2 integers, but found one with length: " +
+                temp_counts.size(),
+                this->path_);
+    }
+    red_allele_counts.push_back(temp_counts.at(0));
+    allele_counts.push_back(temp_counts.at(1));
+}
+
 void BiallelicData::init(
         std::string path, 
         char population_name_delimiter,
@@ -1292,6 +1500,45 @@ void BiallelicData::write_charsets(
         out << (this->locus_end_indices_.at(locus_idx) + 1) << ";\n";
     }
     out << "End;\n";
+}
+
+void BiallelicData::write_yaml(std::ostream& out) const {
+    unsigned int pattern_idx;
+    unsigned int pop_idx;
+    out << std::boolalpha;
+    out << "---\n";
+    out << "markers_are_dominant: " << this->markers_are_dominant_ << "\n";
+    out << "population_labels:\n";
+    for (pop_idx = 0;
+            pop_idx < this->get_number_of_populations();
+            ++pop_idx) {
+        out << "    - " << this->get_population_label(pop_idx) << "\n";
+    }
+    out << "allele_count_patterns:\n";
+    for (pattern_idx = 0;
+            pattern_idx < this->get_number_of_patterns();
+            ++pattern_idx) {
+        out << "    - [";
+        for (pop_idx = 0;
+                pop_idx < this->get_number_of_populations();
+                ++pop_idx) {
+            if (pop_idx > 0) {
+                out << ", ";
+            }
+            out << "["
+                << this->get_red_allele_count(pattern_idx, pop_idx)
+                << ","
+                << this->get_allele_count(pattern_idx, pop_idx)
+                << "]";
+        }
+        out << "]\n";
+    }
+    out << "pattern_weights:\n";
+    for (pattern_idx = 0;
+            pattern_idx < this->get_number_of_patterns();
+            ++pattern_idx) {
+        out << "    - " << this->get_pattern_weight(pattern_idx) << "\n";
+    }
 }
 
 void BiallelicData::write_summary(
