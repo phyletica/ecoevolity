@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "ecoevolity/simcoevolity.hpp"
+#include "ecoevolity/ecoevolity.hpp"
 
 #include "ecoevolity/rng.hpp"
 #include "ecoevolity/path.hpp"
@@ -3133,7 +3134,7 @@ TEST_CASE("Testing simcoevolity charsets setting", "[SimcoevolityCLI]") {
     }
 }
 
-TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output", "[SimcoevolityCLI]") {
+TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output", "[xSimcoevolityCLI]") {
 
     SECTION("Testing missing sites relaxed and yaml") {
         double height_shape = 10.0;
@@ -3180,10 +3181,10 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         os << "    sample_frequency: 1\n";
         os << "operator_settings:\n";
         os << "    auto_optimize: " << auto_optimize << "\n";
-        os << "    auto_optimize_delay: 10000\n";
+        os << "    auto_optimize_delay: 5\n";
         os << "    operators:\n";
         os << "        ModelOperator:\n";
-        os << "            number_of_auxiliary_categories: 5\n";
+        os << "            number_of_auxiliary_categories: 2\n";
         os << "            weight: 1.0\n";
         os << "        ConcentrationScaler:\n";
         os << "            scale: 0.5\n";
@@ -3213,7 +3214,7 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         os << "    equal_population_sizes: false\n";
         os << "comparisons:\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-with-missing.nex\n";
+        os << "    path: diploid-standard-data-ntax5-nchar5.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -3231,7 +3232,8 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         os << "            value: 1.0\n";
         os << "            estimate: false\n";
         os << "- comparison:\n";
-        os << "    path: hemi129-altname1.nex\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    path: diploid-standard-missing-altname1.nex\n";
         os << "    parameters:\n";
         os << "        population_size:\n";
         os << "            estimate: true\n";
@@ -3251,27 +3253,6 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         os << "                gamma_distribution:\n";
         os << "                    shape: " << mult2_shape << "\n";
         os << "                    scale: " << mult2_scale << "\n";
-        os << "- comparison:\n";
-        os << "    path: hemi129-altname2.nex\n";
-        os << "    parameters:\n";
-        os << "        population_size:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << size3_shape << "\n";
-        os << "                    scale: " << size3_scale << "\n";
-        os << "        freq_1:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                beta_distribution:\n";
-        os << "                    alpha: " << f3_alpha << "\n";
-        os << "                    beta: " << f3_beta << "\n";
-        os << "        mutation_rate:\n";
-        os << "            estimate: true\n";
-        os << "            prior:\n";
-        os << "                gamma_distribution:\n";
-        os << "                    shape: " << mult3_shape << "\n";
-        os << "                    scale: " << mult3_scale << "\n";
         os.close();
         REQUIRE(path::exists(test_path));
 
@@ -3314,9 +3295,8 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         std::string expected_true_path = sim_prefix + "true-values.txt";
         std::string expected_config_path = sim_prefix + "config.yml";
         std::vector<std::string> expected_align_paths;
-        expected_align_paths.push_back(sim_prefix + "hemi129-with-missing.nex");
-        expected_align_paths.push_back(sim_prefix + "hemi129-altname1.nex");
-        expected_align_paths.push_back(sim_prefix + "hemi129-altname2.nex");
+        expected_align_paths.push_back(sim_prefix + "diploid-standard-data-ntax5-nchar5.nex");
+        expected_align_paths.push_back(sim_prefix + "diploid-standard-missing-altname1.nex");
         REQUIRE(path::exists(expected_true_path));
         REQUIRE(path::exists(expected_config_path));
         for (auto p: expected_align_paths) {
@@ -3347,9 +3327,8 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         std::string yml_expected_true_path = yml_sim_prefix + "true-values.txt";
         std::string yml_expected_config_path = yml_sim_prefix + "config.yml";
         std::vector<std::string> yml_expected_align_paths;
-        yml_expected_align_paths.push_back(yml_sim_prefix + "hemi129-with-missing.nex");
-        yml_expected_align_paths.push_back(yml_sim_prefix + "hemi129-altname1.nex");
-        yml_expected_align_paths.push_back(yml_sim_prefix + "hemi129-altname2.nex");
+        yml_expected_align_paths.push_back(yml_sim_prefix + "diploid-standard-data-ntax5-nchar5.nex");
+        yml_expected_align_paths.push_back(yml_sim_prefix + "diploid-standard-missing-altname1.nex");
         REQUIRE(path::exists(yml_expected_true_path));
         REQUIRE(path::exists(yml_expected_config_path));
         for (auto p: yml_expected_align_paths) {
@@ -3388,6 +3367,52 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
             }
         }
 
+        char e_arg0[] = "ecoevolity";
+        char e_arg1[] = "--seed";
+        char e_arg2[] = "283402";
+        char e_arg3[] = "--prefix";
+        char e_arg4_nex[] = "eco-test-nex-2435587144-";
+        char e_arg4_yml[] = "eco-test-yml-2435587144-";
+
+        char * e_nex_cfg_path = new char[expected_config_path.size() + 1];
+        std::copy(expected_config_path.begin(), expected_config_path.end(), e_nex_cfg_path);
+        e_nex_cfg_path[expected_config_path.size()] = '\0';
+
+        char * e_yml_cfg_path = new char[yml_expected_config_path.size() + 1];
+        std::copy(yml_expected_config_path.begin(), yml_expected_config_path.end(), e_yml_cfg_path);
+        e_yml_cfg_path[yml_expected_config_path.size()] = '\0';
+
+        char * e_nex_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_nex[0],
+            e_nex_cfg_path,
+            NULL
+        };
+        int e_nex_argc = (int)(sizeof(e_nex_argv) / sizeof(e_nex_argv[0])) - 1;
+
+        char * e_yml_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_yml[0],
+            e_yml_cfg_path,
+            NULL
+        };
+        int e_yml_argc = (int)(sizeof(e_yml_argv) / sizeof(e_yml_argv[0])) - 1;
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_nex_argc, e_nex_argv);
+        REQUIRE(ret == 0);
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_yml_argc, e_yml_argv);
+        REQUIRE(ret == 0);
+
+
         delete[] cfg_path;
+        delete[] e_nex_cfg_path;
+        delete[] e_yml_cfg_path;
     }
 }
