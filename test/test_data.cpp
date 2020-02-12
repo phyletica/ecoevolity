@@ -10404,3 +10404,642 @@ TEST_CASE("Testing yaml parsing with duplicated pattern", "[BiallelicData]") {
         REQUIRE_THROWS_AS(bd.init_from_yaml_file(yml_path), EcoevolityYamlDataError &);
     }
 }
+
+TEST_CASE("Testing yaml writing methods for diploid standard data set",
+        "[BiallelicData]") {
+
+    SECTION("Testing yaml writing of data/diploid-standard-data-ntax5-nchar5.nex") {
+        std::string nex_path = "data/diploid-standard-data-ntax5-nchar5.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        std::stringstream yaml;
+        bd.write_yaml(yaml);
+        std::cout << "\n" << yaml.str() << "\n";
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t927475.yml";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for standard diploid with only 0/1 genotypes",
+        "[BiallelicData]") {
+
+    SECTION("Testing yaml writing of data/diploid-standard-only-01.nex") {
+        std::string nex_path = "data/diploid-standard-only-01.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        std::stringstream yaml;
+        bd.write_yaml(yaml);
+        std::cout << "\n" << yaml.str() << "\n";
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t658972387.yml";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for standard haploid", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard.nex") {
+        std::string nex_path = "data/haploid-standard.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        std::stringstream yaml;
+        bd.write_yaml(yaml);
+        std::cout << "\n" << yaml.str() << "\n";
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t140879536.yml";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for standard haploid dominant", "[BiallelicData]") {
+
+    SECTION("Testing data/haploid-standard.nex as dominant") {
+        std::string nex_path = "data/haploid-standard.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        std::stringstream yaml;
+        bd.write_yaml(yaml);
+        std::cout << "\n" << yaml.str() << "\n";
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t47132890876.yml";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for constant diploid site patterns",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/diploid-standard-constant0.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t593874364.yml";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+
+        bd.fold_patterns();
+
+        tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        test_path = "data/tmp-data-" + tag + "-t92745983274.cfg";
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d2;
+        d2.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d2.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d2.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d2.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d2.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d2.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d2.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d2.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d2.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d2.get_pattern_weight(i));
+        }
+
+        bd.remove_constant_patterns();
+
+        tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        test_path = "data/tmp-data-" + tag + "-t987987234.cfg";
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d3;
+        d3.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d3.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d3.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d3.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d3.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d3.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d3.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d3.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d3.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d3.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for aflp data",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        std::stringstream yaml;
+        bd.write_yaml(yaml);
+        std::cout << "\n" << yaml.str() << "\n";
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t6876864877435.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for aflp data with folding",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t8892787349.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for aflp data with removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.remove_constant_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t7676865398.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for aflp data with folding and removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+        bd.remove_constant_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t342398987961.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for dominant aflp data",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false,  // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t92734987232174.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for dominant aflp data with removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/diploid-standard-constant0.nex") {
+        std::string nex_path = "data/aflp_25-with-constant.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                false, // genotypes are diploid (true)
+                true,  // markers are dominant (false)
+                true); // validate (true)
+
+        bd.remove_constant_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t3749829093845.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for hemi data",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        std::stringstream yaml;
+        bd.write_yaml(yaml);
+        std::cout << "\n" << yaml.str() << "\n";
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t43298785456.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for hemi data with folding",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t194378258667.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for hemi data with removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.remove_constant_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t87236470234.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}
+
+TEST_CASE("Testing yaml writing methods for hemi data with folding and removing",
+        "[BiallelicData]") {
+
+    SECTION("Testing data/hemi129.nex") {
+        std::string nex_path = "data/hemi129.nex";
+        BiallelicData bd(
+                nex_path,
+                ' ',
+                true,  // pop name is prefix (true)
+                true,  // genotypes are diploid (true)
+                false, // markers are dominant (false)
+                true); // validate (true)
+
+        bd.fold_patterns();
+        bd.remove_constant_patterns();
+
+        std::string tag = _ECOEVOLITY_DATA_RNG.random_string(10);
+        std::string test_path = "data/tmp-data-" + tag + "-t73827648765.cfg";
+        std::ofstream os;
+        os.open(test_path);
+        bd.write_yaml(os);
+        os.close();
+
+        BiallelicData d;
+        d.init_from_yaml_file(test_path);
+
+        REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
+        REQUIRE(bd.get_population_labels() == d.get_population_labels());
+        REQUIRE(bd.get_number_of_patterns() == d.get_number_of_patterns());
+        REQUIRE(bd.get_number_of_sites() == d.get_number_of_sites());
+        REQUIRE(bd.markers_are_dominant() == d.markers_are_dominant());
+
+        for (unsigned int i = 0; i < d.get_number_of_patterns(); ++i) {
+            REQUIRE(bd.get_allele_counts(i) == d.get_allele_counts(i));
+            REQUIRE(bd.get_red_allele_counts(i) == d.get_red_allele_counts(i));
+            REQUIRE(bd.get_pattern_weight(i) == d.get_pattern_weight(i));
+        }
+    }
+}

@@ -1456,9 +1456,9 @@ void BiallelicData::write_yaml(std::ostream& out) const {
                 << this->get_red_allele_count(pattern_idx, pop_idx)
                 << ","
                 << this->get_allele_count(pattern_idx, pop_idx)
-                << "]"
+                << "]";
         }
-        out << "\n";
+        out << "]\n";
     }
     out << "pattern_weights:\n";
     for (pattern_idx = 0;
