@@ -3133,7 +3133,7 @@ TEST_CASE("Testing simcoevolity charsets setting", "[SimcoevolityCLI]") {
     }
 }
 
-TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output", "[xSimcoevolityCLI]") {
+TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output", "[SimcoevolityCLI]") {
 
     SECTION("Testing missing sites relaxed and yaml") {
         double height_shape = 10.0;
@@ -3332,7 +3332,6 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
             &arg5[0],
             &arg6yml[0],
             &arg7[0],
-            &arg8[0],
             cfg_path,
             NULL
         };
@@ -3358,9 +3357,16 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         }
 
         for (unsigned int i = 0; i < expected_align_paths.size(); ++i) {
-            BiallelicData bd(expected_align_paths.at(i));
+            BiallelicData bd(
+                    expected_align_paths.at(i),
+                    ' ',   // pop name delimiter
+                    true,  // pop name is prefix (true)
+                    false, // genotypes are diploid (true)
+                    false, // markers are dominant (false)
+                    true,  // validate (true)
+                    false);// store seq loci info (false)
             BiallelicData ybd;
-            ybd.init_from_yaml_path(yml_expected_align_paths.at(i));
+            ybd.init_from_yaml_path(yml_expected_align_paths.at(i), true);
 
             REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
             REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
