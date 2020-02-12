@@ -10524,7 +10524,7 @@ TEST_CASE("Yaml parsing diploid dna with missing, mirrored, and constant sites",
         std::string yml_path = "data/diploid-dna-constant-missing.yml";
         BiallelicData bd(nex_path);
         BiallelicData ybd;
-        ybd.init_from_yaml_file(yml_path);
+        ybd.init_from_yaml_path(yml_path);
         REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
         REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
         REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
@@ -10667,7 +10667,7 @@ TEST_CASE("Yaml parsing default dominance diploid dna with missing, mirrored, an
         std::string yml_path = "data/diploid-dna-constant-missing-default-dominance.yml";
         BiallelicData bd(nex_path);
         BiallelicData ybd;
-        ybd.init_from_yaml_file(yml_path);
+        ybd.init_from_yaml_path(yml_path);
         REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
         REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
         REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
@@ -10810,7 +10810,7 @@ TEST_CASE("Testing yaml parsing standard haploid dominant", "[BiallelicData]") {
         std::string yml_path = "data/haploid-standard-dominant.yml";
         BiallelicData bd(nex_path, ' ', true, false, true);
         BiallelicData ybd;
-        ybd.init_from_yaml_file(yml_path);
+        ybd.init_from_yaml_path(yml_path);
         REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
         REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
         REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
@@ -10846,7 +10846,7 @@ TEST_CASE("Testing yaml parsing with duplicated pattern", "[BiallelicData]") {
     SECTION("Testing data/duplicated-pattern.yml") {
         std::string yml_path = "data/duplicated-pattern.yml";
         BiallelicData bd;
-        REQUIRE_THROWS_AS(bd.init_from_yaml_file(yml_path), EcoevolityYamlDataError &);
+        REQUIRE_THROWS_AS(bd.init_from_yaml_path(yml_path), EcoevolityYamlDataError &);
     }
 }
 
@@ -10875,7 +10875,7 @@ TEST_CASE("Testing yaml writing methods for diploid standard data set",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -10916,7 +10916,7 @@ TEST_CASE("Testing yaml writing methods for standard diploid with only 0/1 genot
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -10956,7 +10956,7 @@ TEST_CASE("Testing yaml writing methods for standard haploid", "[BiallelicData]"
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -10996,7 +10996,7 @@ TEST_CASE("Testing yaml writing methods for standard haploid dominant", "[Bialle
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11033,7 +11033,7 @@ TEST_CASE("Testing yaml writing methods for constant diploid site patterns",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11056,7 +11056,7 @@ TEST_CASE("Testing yaml writing methods for constant diploid site patterns",
         os.close();
 
         BiallelicData d2;
-        d2.init_from_yaml_file(test_path);
+        d2.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d2.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d2.get_population_labels());
@@ -11079,7 +11079,7 @@ TEST_CASE("Testing yaml writing methods for constant diploid site patterns",
         os.close();
 
         BiallelicData d3;
-        d3.init_from_yaml_file(test_path);
+        d3.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d3.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d3.get_population_labels());
@@ -11120,7 +11120,7 @@ TEST_CASE("Testing yaml writing methods for aflp data",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11159,7 +11159,7 @@ TEST_CASE("Testing yaml writing methods for aflp data with folding",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11198,7 +11198,7 @@ TEST_CASE("Testing yaml writing methods for aflp data with removing",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11238,7 +11238,7 @@ TEST_CASE("Testing yaml writing methods for aflp data with folding and removing"
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11275,7 +11275,7 @@ TEST_CASE("Testing yaml writing methods for dominant aflp data",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11314,7 +11314,7 @@ TEST_CASE("Testing yaml writing methods for dominant aflp data with removing",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11355,7 +11355,7 @@ TEST_CASE("Testing yaml writing methods for hemi data",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11394,7 +11394,7 @@ TEST_CASE("Testing yaml writing methods for hemi data with folding",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11433,7 +11433,7 @@ TEST_CASE("Testing yaml writing methods for hemi data with removing",
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());
@@ -11473,7 +11473,7 @@ TEST_CASE("Testing yaml writing methods for hemi data with folding and removing"
         os.close();
 
         BiallelicData d;
-        d.init_from_yaml_file(test_path);
+        d.init_from_yaml_path(test_path);
 
         REQUIRE(bd.get_number_of_populations() == d.get_number_of_populations());
         REQUIRE(bd.get_population_labels() == d.get_population_labels());

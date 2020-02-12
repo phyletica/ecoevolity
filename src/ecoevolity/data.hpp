@@ -74,7 +74,7 @@ class BiallelicData {
                 std::istream& stream,
                 const std::string& path,
                 bool validate = true);
-        void init_from_yaml_file(
+        void init_from_yaml_path(
                 const std::string& path,
                 bool validate = true);
 

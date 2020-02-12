@@ -61,7 +61,13 @@ class BasePopulationTree : public BaseTree<PopulationNode> {
         std::vector<unsigned int> unique_allele_count_weights_;
 
         // methods
+        void process_and_vet_initialized_data(
+                bool strict_on_constant_sites = false,
+                bool strict_on_missing_sites = false,
+                bool strict_on_triallelic_sites = true);
+
         void init_tree();
+
         // bool constant_site_counts_were_provided();
         void calculate_likelihood_correction();
 

@@ -117,7 +117,7 @@ void BiallelicData::init_from_yaml_stream(
     this->parse_yaml_data(stream, validate);
 }
 
-void BiallelicData::init_from_yaml_file(
+void BiallelicData::init_from_yaml_path(
         const std::string& path,
         bool validate) {
     std::ifstream in_stream;

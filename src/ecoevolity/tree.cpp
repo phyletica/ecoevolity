@@ -46,7 +46,6 @@ BasePopulationTree::BasePopulationTree(
                strict_on_triallelic_sites,
                ploidy,
                store_seq_loci_info);
-    this->update_node_heights();
 }
 
 BasePopulationTree::BasePopulationTree(
@@ -117,20 +116,54 @@ void BasePopulationTree::init(
         bool strict_on_triallelic_sites,
         double ploidy,
         bool store_seq_loci_info) {
-    if (genotypes_are_diploid && (ploidy != 2.0)) {
-        throw EcoevolityBiallelicDataError(
-                "Genotypes cannot be diploid if ploidy is not 2",
-                path);
-    }
     this->set_ploidy(ploidy);
-    this->data_.init(
-            path,
-            population_name_delimiter,
-            population_name_is_prefix,
-            genotypes_are_diploid,
-            markers_are_dominant,
-            validate,
-            store_seq_loci_info);
+    try {
+        // First, try to parse data as YAML formatted
+        this->data_.init_from_yaml_path(
+                path,
+                validate);
+    }
+    catch (...) {
+        // If YAML parsing failed, try parsing nexus data
+        this->data_ = BiallelicData();
+        if (genotypes_are_diploid && (ploidy != 2.0)) {
+            throw EcoevolityBiallelicDataError(
+                    "Genotypes cannot be diploid if ploidy is not 2",
+                    path);
+        }
+        this->data_.init(
+                path,
+                population_name_delimiter,
+                population_name_is_prefix,
+                genotypes_are_diploid,
+                markers_are_dominant,
+                validate,
+                store_seq_loci_info);
+    }
+    this->constant_sites_removed_ = constant_sites_removed;
+
+    this->process_and_vet_initialized_data(
+            strict_on_constant_sites,
+            strict_on_missing_sites,
+            strict_on_triallelic_sites);
+
+    this->init_tree();
+
+    this->root_->resize_all();
+
+    // Store unique allele counts and weights for calculating the likelihood
+    // correction term for constant sites.
+    // At this point, no data manipulation should happen that would require
+    // these to be updated (only pattern folding, which will not change the
+    // unique allele counts or weights).
+    this->update_unique_allele_counts();
+    this->update_node_heights();
+}
+
+void BasePopulationTree::process_and_vet_initialized_data(
+        bool strict_on_constant_sites,
+        bool strict_on_missing_sites,
+        bool strict_on_triallelic_sites) {
     if (this->data_.get_number_of_populations() < 1) {
         throw EcoevolityError("BasePopulationTree(); no populations were found");
     }
@@ -142,10 +175,10 @@ void BasePopulationTree::init(
                     <<   "###############################  ERROR  ###############################\n"
                     << this->data_.get_number_of_triallelic_sites_recoded()
                     << " sites from the alignment in:\n    \'"
-                    << path << "\'\n"
+                    << this->data_.get_path() << "\'\n"
                     << "have more than two character states.\n"
                     << "#######################################################################\n";
-            throw EcoevolityTriallelicDataError(message.str(), path);
+            throw EcoevolityTriallelicDataError(message.str(), this->data_.get_path());
         }
         else {
             std::ostringstream message;
@@ -153,7 +186,7 @@ void BasePopulationTree::init(
                     <<   "##############################  WARNING  ##############################\n"
                     << this->data_.get_number_of_triallelic_sites_recoded()
                     << " sites had more than two nucleotide states from the alignment in:\n    \'"
-                    << path << "\'.\n"
+                    << this->data_.get_path() << "\'.\n"
                     << "These sites have been recoded as biallelic, by treating the first\n"
                     << "nucleotide as 0 and all others as 1. If you would prefer to ignore\n"
                     << "these sites, please remove all sites with more than two nucleotide\n"
@@ -169,10 +202,10 @@ void BasePopulationTree::init(
                     <<   "###############################  ERROR  ###############################\n"
                     << this->data_.get_number_of_missing_sites_removed()
                     << " sites from the alignment in:\n    \'"
-                    << path << "\'\n"
+                    << this->data_.get_path() << "\'\n"
                     << "have no data for at least one population.\n"
                     << "#######################################################################\n";
-            throw EcoevolityMissingDataError(message.str(), path);
+            throw EcoevolityMissingDataError(message.str(), this->data_.get_path());
         }
         else {
             std::ostringstream message;
@@ -180,13 +213,12 @@ void BasePopulationTree::init(
                     <<   "##############################  WARNING  ##############################\n"
                     << this->data_.get_number_of_missing_sites_removed()
                     << " sites will be ignored from the alignment in:\n    \'"
-                    << path << "\'\n"
+                    << this->data_.get_path() << "\'\n"
                     << "due to at least one population with no data.\n"
                     << "#######################################################################\n";
             std::cerr << message.str() << std::endl;
         }
     }
-    this->constant_sites_removed_ = constant_sites_removed;
     if (this->constant_sites_removed_) {
         // Have to make sure there are no missing sites
         unsigned int number_of_constant_patterns_removed = this->data_.remove_constant_patterns();
@@ -197,7 +229,7 @@ void BasePopulationTree::init(
                         <<   "###############################  ERROR  ###############################\n"
                         << this->data_.get_number_of_constant_sites_removed()
                         << " constant sites were found in the alignment in:\n"
-                        << "    \'" << path << "\'\n"
+                        << "    \'" << this->data_.get_path() << "\'\n"
                         << "but you indicated that such sites were already removed with option:\n"
                         << "    constant_sites_removed = true\n"
                         << "If you intended to remove them, please do so and re-run the analysis.\n"
@@ -205,7 +237,7 @@ void BasePopulationTree::init(
                         << "calculations, you should set \'constant_sites_removed\' to false for\n"
                         << "this alignment and re-run the analysis.\n"
                         << "#######################################################################\n";
-                throw EcoevolityConstantSitesError(message.str(), path);
+                throw EcoevolityConstantSitesError(message.str(), this->data_.get_path());
             }
             else {
                 std::ostringstream message;
@@ -213,7 +245,7 @@ void BasePopulationTree::init(
                         <<   "##############################  WARNING  ##############################\n"
                         << this->data_.get_number_of_constant_sites_removed()
                         << " constant sites were found in the alignment in:\n"
-                        << "    \'" << path << "\'\n"
+                        << "    \'" << this->data_.get_path() << "\'\n"
                         << "but you indicated that such sites were already removed with option:\n"
                         << "    constant_sites_removed = true\n"
                         << "These sites have been removed, so if you intended to remove them, but\n"
@@ -226,17 +258,6 @@ void BasePopulationTree::init(
             }
         }
     }
-
-    this->init_tree();
-
-    this->root_->resize_all();
-
-    // Store unique allele counts and weights for calculating the likelihood
-    // correction term for constant sites.
-    // At this point, no data manipulation should happen that would require
-    // these to be updated (only pattern folding, which will not change the
-    // unique allele counts or weights).
-    this->update_unique_allele_counts();
 }
 
 void BasePopulationTree::init_tree() {
