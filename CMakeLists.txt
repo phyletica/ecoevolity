@@ -31,7 +31,7 @@ set(SOURCE_DIR "${BASE_DIR}/src")
 set(ECOEVOLITY_SOURCE_DIR "${SOURCE_DIR}/ecoevolity")
 set(EXTERNAL_PROJECT_DIR "${SOURCE_DIR}/external")
 set(NCL_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/ncl")
-set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-master-7d2873c")
+set(YAML_CPP_SOURCE_DIR "${EXTERNAL_PROJECT_DIR}/yaml-cpp-master-ce056ac")
 set(TEST_DIR "${BASE_DIR}/test")
 set(TEST_DATA_DIR "${TEST_DIR}/data")
 
@@ -100,11 +100,11 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL
     # NCL errors: -Wold-style-cast -Wsign-conversion 
     # yaml-cpp errors: -Wshadow -Wswitch-default
     if (${USING_BUNDLED_NCL} OR ${USING_BUNDLED_YAML_CPP})
-        set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall")
+        set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall -Wno-unused")
     endif()
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
         # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-        set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall")
+        set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall -Wno-unused")
     endif()
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
