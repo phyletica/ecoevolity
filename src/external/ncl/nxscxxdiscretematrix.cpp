@@ -255,10 +255,13 @@ void NxsTransposeCompressedMatrix(
 	const unsigned ntaxa = (unsigned const)compressedTransposedMatrix[0].stateCodes.size();
 	destination.Initialize(ntaxa, npatterns);
     NxsCDiscreteStateSet ** matrix = destination.GetAlias();			/** taxa x characters matrix of indices of state sets */
-    if (patternCounts)
+    // JRO: Adding brackets to if clauses to appease compiler
+    if (patternCounts) {
         patternCounts->resize(npatterns);
-    if (patternWeights)
+    }
+    if (patternWeights) {
         patternWeights->resize(npatterns);
+    }
 	for (unsigned p = 0; p < npatterns; ++p)
 		{
 		const NxsCharacterPattern & pattern = compressedTransposedMatrix[p];
