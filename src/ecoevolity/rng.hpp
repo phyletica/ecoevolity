@@ -624,7 +624,7 @@ class RandomNumberGenerator {
                 unsigned int number_of_elements,
                 double split_weight = 1.0) {
             std::vector< std::vector<unsigned int> > subsets;
-            unsigned int num_subsets = this->random_set_partition_as_subsets(
+            this->random_set_partition_as_subsets(
                     subsets,
                     number_of_elements,
                     split_weight);
@@ -668,7 +668,7 @@ class RandomNumberGenerator {
                 const std::vector<unsigned int> & possible_number_of_subsets,
                 double split_weight = 1.0) {
             std::vector< std::vector<unsigned int> > subsets;
-            unsigned int num_subsets = this->restricted_random_set_partition_as_subsets(
+            this->restricted_random_set_partition_as_subsets(
                     subsets,
                     number_of_elements,
                     possible_number_of_subsets,

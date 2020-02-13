@@ -1355,7 +1355,7 @@ class BaseTree {
         }
 
         virtual double compute_log_prior_density_of_node_heights() const {
-            double root_height = this->root_->get_height();
+            // double root_height = this->root_->get_height();
             double d = 0.0;
             d += this->root_->get_height_relative_prior_ln_pdf();
             // I was using a Uniform(0, root_height) on all unique node
