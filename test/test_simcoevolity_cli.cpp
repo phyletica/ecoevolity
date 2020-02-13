@@ -3410,6 +3410,40 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_yml_argc, e_yml_argv);
         REQUIRE(ret == 0);
 
+        std::string nex_op_path = "eco-test-nex-2435587144-test-nex-297348723-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream nex_op_ifs;
+        std::stringstream nex_op_ss;
+        nex_op_ifs.open(nex_op_path);
+        nex_op_ss << nex_op_ifs.rdbuf();
+        std::string nex_op_str = nex_op_ss.str();
+        nex_op_ifs.close();
+
+        std::string nex_st_path = "eco-test-nex-2435587144-test-nex-297348723-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream nex_st_ifs;
+        std::stringstream nex_st_ss;
+        nex_st_ifs.open(nex_st_path);
+        nex_st_ss << nex_st_ifs.rdbuf();
+        std::string nex_st_str = nex_st_ss.str();
+        nex_st_ifs.close();
+
+        std::string yml_op_path = "eco-test-yml-2435587144-test-yml-297348723-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream yml_op_ifs;
+        std::stringstream yml_op_ss;
+        yml_op_ifs.open(yml_op_path);
+        yml_op_ss << yml_op_ifs.rdbuf();
+        std::string yml_op_str = yml_op_ss.str();
+        yml_op_ifs.close();
+
+        std::string yml_st_path = "eco-test-yml-2435587144-test-yml-297348723-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream yml_st_ifs;
+        std::stringstream yml_st_ss;
+        yml_st_ifs.open(yml_st_path);
+        yml_st_ss << yml_st_ifs.rdbuf();
+        std::string yml_st_str = yml_st_ss.str();
+        yml_st_ifs.close();
+
+        REQUIRE(nex_op_str == yml_op_str);
+        REQUIRE(nex_st_str == yml_st_str);
 
         delete[] cfg_path;
         delete[] e_nex_cfg_path;
