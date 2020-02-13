@@ -3134,9 +3134,9 @@ TEST_CASE("Testing simcoevolity charsets setting", "[SimcoevolityCLI]") {
     }
 }
 
-TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output", "[xSimcoevolityCLI]") {
+TEST_CASE("Testing yaml io with diploid standard data", "[SimcoevolityCLI]") {
 
-    SECTION("Testing missing sites relaxed and yaml") {
+    SECTION("Testing yaml io for diploid standard data") {
         double height_shape = 10.0;
         double height_scale = 0.001;
         double size1_shape = 10.0;
@@ -3435,6 +3435,963 @@ TEST_CASE("Testing simcoevolity relaxed missing sites setting with yaml output",
         yml_op_ifs.close();
 
         std::string yml_st_path = "eco-test-yml-2435587144-test-yml-297348723-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream yml_st_ifs;
+        std::stringstream yml_st_ss;
+        yml_st_ifs.open(yml_st_path);
+        yml_st_ss << yml_st_ifs.rdbuf();
+        std::string yml_st_str = yml_st_ss.str();
+        yml_st_ifs.close();
+
+        REQUIRE(nex_op_str == yml_op_str);
+        REQUIRE(nex_st_str == yml_st_str);
+
+        delete[] cfg_path;
+        delete[] e_nex_cfg_path;
+        delete[] e_yml_cfg_path;
+    }
+}
+
+TEST_CASE("Testing yaml io with haploid standard data", "[SimcoevolityCLI]") {
+
+    SECTION("Testing yaml io for haploid standard data") {
+        double height_shape = 10.0;
+        double height_scale = 0.001;
+        double size1_shape = 10.0;
+        double size1_scale = 0.0001;
+        double size2_shape = 2.0;
+        double size2_scale = 0.001;
+        double size3_shape = 5.0;
+        double size3_scale = 0.0005;
+        double f1_alpha = 2.0;
+        double f1_beta = 1.0;
+        double f2_alpha = 1.0;
+        double f2_beta = 0.5;
+        double f3_alpha = 1.0;
+        double f3_beta = 2.0;
+        double mult2_shape = 100.0;
+        double mult2_scale = 0.005;
+        double mult3_shape = 100.0;
+        double mult3_scale = 0.02;
+        double concentration_shape = 5.0;
+        double concentration_scale = 0.2;
+        std::string auto_optimize = "true";
+        std::string tag = _SIMCOEVOLITY_CLI_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t16.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t16-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                estimate: true\n";
+        os << "                prior:\n";
+        os << "                    gamma_distribution:\n";
+        os << "                        shape: " << concentration_shape << "\n";
+        os << "                        scale: " << concentration_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 10\n";
+        os << "    sample_frequency: 1\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 5\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 2\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        LeafPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 1.0\n";
+        os << "    genotypes_are_diploid: false\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    path: haploid-standard-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size1_shape << "\n";
+        os << "                    scale: " << size1_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f1_alpha << "\n";
+        os << "                    beta: " << f1_beta << "\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    path: haploid-standard-constant.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size2_shape << "\n";
+        os << "                    scale: " << size2_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f2_alpha << "\n";
+        os << "                    beta: " << f2_beta << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult2_shape << "\n";
+        os << "                    scale: " << mult2_scale << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "simcoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "9873293";
+        char arg3[] = "-n";
+        char arg4[] = "1";
+        char arg5[] = "--prefix";
+        char arg6nex[] = "test-nex-4265246524-";
+        char arg6yml[] = "test-yml-4265246524-";
+        char arg7[] = "--relax-constant-sites";
+        char arg8[] = "--nexus";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            &arg6nex[0],
+            &arg7[0],
+            &arg8[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists("data/test-nex-4265246524-simcoevolity-model-used-for-sims.yml"));
+
+        std::string sim_rep = string_util::pad_int(0, 1);
+        std::string sim_prefix = "data/test-nex-4265246524-simcoevolity-sim-" + sim_rep + "-";
+        std::string expected_true_path = sim_prefix + "true-values.txt";
+        std::string expected_config_path = sim_prefix + "config.yml";
+        std::vector<std::string> expected_align_paths;
+        expected_align_paths.push_back(sim_prefix + "haploid-standard-altname1.nex");
+        expected_align_paths.push_back(sim_prefix + "haploid-standard-constant.nex");
+        REQUIRE(path::exists(expected_true_path));
+        REQUIRE(path::exists(expected_config_path));
+        for (auto p: expected_align_paths) {
+            REQUIRE(path::exists(p));
+        }
+
+        char * argv2[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            &arg6yml[0],
+            &arg7[0],
+            cfg_path,
+            NULL
+        };
+        int argc2;
+        argc2 = (int)(sizeof(argv2) / sizeof(argv2[0])) - 1;
+
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc2, argv2);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists("data/test-yml-4265246524-simcoevolity-model-used-for-sims.yml"));
+
+        std::string yml_sim_prefix = "data/test-yml-4265246524-simcoevolity-sim-" + sim_rep + "-";
+        std::string yml_expected_true_path = yml_sim_prefix + "true-values.txt";
+        std::string yml_expected_config_path = yml_sim_prefix + "config.yml";
+        std::vector<std::string> yml_expected_align_paths;
+        yml_expected_align_paths.push_back(yml_sim_prefix + "haploid-standard-altname1.nex");
+        yml_expected_align_paths.push_back(yml_sim_prefix + "haploid-standard-constant.nex");
+        REQUIRE(path::exists(yml_expected_true_path));
+        REQUIRE(path::exists(yml_expected_config_path));
+        for (auto p: yml_expected_align_paths) {
+            REQUIRE(path::exists(p));
+        }
+
+        for (unsigned int i = 0; i < expected_align_paths.size(); ++i) {
+            BiallelicData bd(
+                    expected_align_paths.at(i),
+                    ' ',   // pop name delimiter
+                    true,  // pop name is prefix (true)
+                    false, // genotypes are diploid (true)
+                    false, // markers are dominant (false)
+                    true,  // validate (true)
+                    false);// store seq loci info (false)
+            BiallelicData ybd;
+            ybd.init_from_yaml_path(yml_expected_align_paths.at(i), true);
+
+            REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+            REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+            REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+            REQUIRE(bd.get_number_of_variable_sites() == ybd.get_number_of_variable_sites());
+            REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+            REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+            REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+            REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+            REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+            REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+            for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+                REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+                REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+                REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+            }
+            for (unsigned int pop_idx = 0; pop_idx < bd.get_number_of_populations(); ++pop_idx) {
+                REQUIRE(bd.get_population_label(pop_idx) == ybd.get_population_label(pop_idx));
+            }
+        }
+
+        char e_arg0[] = "ecoevolity";
+        char e_arg1[] = "--seed";
+        char e_arg2[] = "987231056";
+        char e_arg3[] = "--prefix";
+        char e_arg4_nex[] = "eco-test-nex-2354776854-";
+        char e_arg4_yml[] = "eco-test-yml-2354776854-";
+
+        char * e_nex_cfg_path = new char[expected_config_path.size() + 1];
+        std::copy(expected_config_path.begin(), expected_config_path.end(), e_nex_cfg_path);
+        e_nex_cfg_path[expected_config_path.size()] = '\0';
+
+        char * e_yml_cfg_path = new char[yml_expected_config_path.size() + 1];
+        std::copy(yml_expected_config_path.begin(), yml_expected_config_path.end(), e_yml_cfg_path);
+        e_yml_cfg_path[yml_expected_config_path.size()] = '\0';
+
+        char * e_nex_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_nex[0],
+            e_nex_cfg_path,
+            NULL
+        };
+        int e_nex_argc = (int)(sizeof(e_nex_argv) / sizeof(e_nex_argv[0])) - 1;
+
+        char * e_yml_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_yml[0],
+            e_yml_cfg_path,
+            NULL
+        };
+        int e_yml_argc = (int)(sizeof(e_yml_argv) / sizeof(e_yml_argv[0])) - 1;
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_nex_argc, e_nex_argv);
+        REQUIRE(ret == 0);
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_yml_argc, e_yml_argv);
+        REQUIRE(ret == 0);
+
+        std::string nex_op_path = "eco-test-nex-2354776854-test-nex-4265246524-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream nex_op_ifs;
+        std::stringstream nex_op_ss;
+        nex_op_ifs.open(nex_op_path);
+        nex_op_ss << nex_op_ifs.rdbuf();
+        std::string nex_op_str = nex_op_ss.str();
+        nex_op_ifs.close();
+
+        std::string nex_st_path = "eco-test-nex-2354776854-test-nex-4265246524-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream nex_st_ifs;
+        std::stringstream nex_st_ss;
+        nex_st_ifs.open(nex_st_path);
+        nex_st_ss << nex_st_ifs.rdbuf();
+        std::string nex_st_str = nex_st_ss.str();
+        nex_st_ifs.close();
+
+        std::string yml_op_path = "eco-test-yml-2354776854-test-yml-4265246524-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream yml_op_ifs;
+        std::stringstream yml_op_ss;
+        yml_op_ifs.open(yml_op_path);
+        yml_op_ss << yml_op_ifs.rdbuf();
+        std::string yml_op_str = yml_op_ss.str();
+        yml_op_ifs.close();
+
+        std::string yml_st_path = "eco-test-yml-2354776854-test-yml-4265246524-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream yml_st_ifs;
+        std::stringstream yml_st_ss;
+        yml_st_ifs.open(yml_st_path);
+        yml_st_ss << yml_st_ifs.rdbuf();
+        std::string yml_st_str = yml_st_ss.str();
+        yml_st_ifs.close();
+
+        REQUIRE(nex_op_str == yml_op_str);
+        REQUIRE(nex_st_str == yml_st_str);
+
+        delete[] cfg_path;
+        delete[] e_nex_cfg_path;
+        delete[] e_yml_cfg_path;
+    }
+}
+
+TEST_CASE("Testing yaml io with diploid DNA data", "[SimcoevolityCLI]") {
+
+    SECTION("Testing yaml io for diploid DNA data") {
+        double height_shape = 10.0;
+        double height_scale = 0.001;
+        double size1_shape = 10.0;
+        double size1_scale = 0.0001;
+        double size2_shape = 2.0;
+        double size2_scale = 0.001;
+        double size3_shape = 5.0;
+        double size3_scale = 0.0005;
+        double f1_alpha = 2.0;
+        double f1_beta = 1.0;
+        double f2_alpha = 1.0;
+        double f2_beta = 0.5;
+        double f3_alpha = 1.0;
+        double f3_beta = 2.0;
+        double mult2_shape = 100.0;
+        double mult2_scale = 0.005;
+        double mult3_shape = 100.0;
+        double mult3_scale = 0.02;
+        double concentration_shape = 5.0;
+        double concentration_scale = 0.2;
+        std::string auto_optimize = "true";
+        std::string tag = _SIMCOEVOLITY_CLI_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t16.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t16-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                estimate: true\n";
+        os << "                prior:\n";
+        os << "                    gamma_distribution:\n";
+        os << "                        shape: " << concentration_shape << "\n";
+        os << "                        scale: " << concentration_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 10\n";
+        os << "    sample_frequency: 1\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 5\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 2\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        LeafPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 1.0\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    path: diploid-dna-triallelic.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size1_shape << "\n";
+        os << "                    scale: " << size1_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f1_alpha << "\n";
+        os << "                    beta: " << f1_beta << "\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    path: diploid-dna-constant-missing-2pops.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size2_shape << "\n";
+        os << "                    scale: " << size2_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f2_alpha << "\n";
+        os << "                    beta: " << f2_beta << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult2_shape << "\n";
+        os << "                    scale: " << mult2_scale << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "simcoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "5423754739";
+        char arg3[] = "-n";
+        char arg4[] = "1";
+        char arg5[] = "--prefix";
+        char arg6nex[] = "test-nex-389166346-";
+        char arg6yml[] = "test-yml-389166346-";
+        char arg7[] = "--relax-missing-sites";
+        char arg8[] = "--relax-triallelic-sites";
+        char arg9[] = "--nexus";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            &arg6nex[0],
+            &arg7[0],
+            &arg8[0],
+            &arg9[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists("data/test-nex-389166346-simcoevolity-model-used-for-sims.yml"));
+
+        std::string sim_rep = string_util::pad_int(0, 1);
+        std::string sim_prefix = "data/test-nex-389166346-simcoevolity-sim-" + sim_rep + "-";
+        std::string expected_true_path = sim_prefix + "true-values.txt";
+        std::string expected_config_path = sim_prefix + "config.yml";
+        std::vector<std::string> expected_align_paths;
+        expected_align_paths.push_back(sim_prefix + "diploid-dna-triallelic.nex");
+        expected_align_paths.push_back(sim_prefix + "diploid-dna-constant-missing-2pops.nex");
+        REQUIRE(path::exists(expected_true_path));
+        REQUIRE(path::exists(expected_config_path));
+        for (auto p: expected_align_paths) {
+            REQUIRE(path::exists(p));
+        }
+
+        char * argv2[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            &arg6yml[0],
+            &arg7[0],
+            &arg8[0],
+            cfg_path,
+            NULL
+        };
+        int argc2;
+        argc2 = (int)(sizeof(argv2) / sizeof(argv2[0])) - 1;
+
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc2, argv2);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists("data/test-yml-389166346-simcoevolity-model-used-for-sims.yml"));
+
+        std::string yml_sim_prefix = "data/test-yml-389166346-simcoevolity-sim-" + sim_rep + "-";
+        std::string yml_expected_true_path = yml_sim_prefix + "true-values.txt";
+        std::string yml_expected_config_path = yml_sim_prefix + "config.yml";
+        std::vector<std::string> yml_expected_align_paths;
+        yml_expected_align_paths.push_back(yml_sim_prefix + "diploid-dna-triallelic.nex");
+        yml_expected_align_paths.push_back(yml_sim_prefix + "diploid-dna-constant-missing-2pops.nex");
+        REQUIRE(path::exists(yml_expected_true_path));
+        REQUIRE(path::exists(yml_expected_config_path));
+        for (auto p: yml_expected_align_paths) {
+            REQUIRE(path::exists(p));
+        }
+
+        for (unsigned int i = 0; i < expected_align_paths.size(); ++i) {
+            BiallelicData bd(
+                    expected_align_paths.at(i),
+                    ' ',   // pop name delimiter
+                    true,  // pop name is prefix (true)
+                    false, // genotypes are diploid (true)
+                    false, // markers are dominant (false)
+                    true,  // validate (true)
+                    false);// store seq loci info (false)
+            BiallelicData ybd;
+            ybd.init_from_yaml_path(yml_expected_align_paths.at(i), true);
+
+            REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+            REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+            REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+            REQUIRE(bd.get_number_of_variable_sites() == ybd.get_number_of_variable_sites());
+            REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+            REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+            REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+            REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+            REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+            REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+            for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+                REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+                REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+                REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+            }
+            for (unsigned int pop_idx = 0; pop_idx < bd.get_number_of_populations(); ++pop_idx) {
+                REQUIRE(bd.get_population_label(pop_idx) == ybd.get_population_label(pop_idx));
+            }
+        }
+
+        char e_arg0[] = "ecoevolity";
+        char e_arg1[] = "--seed";
+        char e_arg2[] = "418646523";
+        char e_arg3[] = "--prefix";
+        char e_arg4_nex[] = "eco-test-nex-157897521-";
+        char e_arg4_yml[] = "eco-test-yml-157897521-";
+
+        char * e_nex_cfg_path = new char[expected_config_path.size() + 1];
+        std::copy(expected_config_path.begin(), expected_config_path.end(), e_nex_cfg_path);
+        e_nex_cfg_path[expected_config_path.size()] = '\0';
+
+        char * e_yml_cfg_path = new char[yml_expected_config_path.size() + 1];
+        std::copy(yml_expected_config_path.begin(), yml_expected_config_path.end(), e_yml_cfg_path);
+        e_yml_cfg_path[yml_expected_config_path.size()] = '\0';
+
+        char * e_nex_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_nex[0],
+            e_nex_cfg_path,
+            NULL
+        };
+        int e_nex_argc = (int)(sizeof(e_nex_argv) / sizeof(e_nex_argv[0])) - 1;
+
+        char * e_yml_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_yml[0],
+            e_yml_cfg_path,
+            NULL
+        };
+        int e_yml_argc = (int)(sizeof(e_yml_argv) / sizeof(e_yml_argv[0])) - 1;
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_nex_argc, e_nex_argv);
+        REQUIRE(ret == 0);
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_yml_argc, e_yml_argv);
+        REQUIRE(ret == 0);
+
+        std::string nex_op_path = "eco-test-nex-157897521-test-nex-389166346-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream nex_op_ifs;
+        std::stringstream nex_op_ss;
+        nex_op_ifs.open(nex_op_path);
+        nex_op_ss << nex_op_ifs.rdbuf();
+        std::string nex_op_str = nex_op_ss.str();
+        nex_op_ifs.close();
+
+        std::string nex_st_path = "eco-test-nex-157897521-test-nex-389166346-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream nex_st_ifs;
+        std::stringstream nex_st_ss;
+        nex_st_ifs.open(nex_st_path);
+        nex_st_ss << nex_st_ifs.rdbuf();
+        std::string nex_st_str = nex_st_ss.str();
+        nex_st_ifs.close();
+
+        std::string yml_op_path = "eco-test-yml-157897521-test-yml-389166346-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream yml_op_ifs;
+        std::stringstream yml_op_ss;
+        yml_op_ifs.open(yml_op_path);
+        yml_op_ss << yml_op_ifs.rdbuf();
+        std::string yml_op_str = yml_op_ss.str();
+        yml_op_ifs.close();
+
+        std::string yml_st_path = "eco-test-yml-157897521-test-yml-389166346-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream yml_st_ifs;
+        std::stringstream yml_st_ss;
+        yml_st_ifs.open(yml_st_path);
+        yml_st_ss << yml_st_ifs.rdbuf();
+        std::string yml_st_str = yml_st_ss.str();
+        yml_st_ifs.close();
+
+        REQUIRE(nex_op_str == yml_op_str);
+        REQUIRE(nex_st_str == yml_st_str);
+
+        delete[] cfg_path;
+        delete[] e_nex_cfg_path;
+        delete[] e_yml_cfg_path;
+    }
+}
+
+TEST_CASE("Testing yaml io with dominant markers", "[SimcoevolityCLI]") {
+
+    SECTION("Testing yaml io for dominant markers") {
+        double height_shape = 10.0;
+        double height_scale = 0.001;
+        double size1_shape = 10.0;
+        double size1_scale = 0.0001;
+        double size2_shape = 2.0;
+        double size2_scale = 0.001;
+        double size3_shape = 5.0;
+        double size3_scale = 0.0005;
+        double f1_alpha = 2.0;
+        double f1_beta = 1.0;
+        double f2_alpha = 1.0;
+        double f2_beta = 0.5;
+        double f3_alpha = 1.0;
+        double f3_beta = 2.0;
+        double mult2_shape = 100.0;
+        double mult2_scale = 0.005;
+        double mult3_shape = 100.0;
+        double mult3_scale = 0.02;
+        double concentration_shape = 5.0;
+        double concentration_scale = 0.2;
+        std::string auto_optimize = "true";
+        std::string tag = _SIMCOEVOLITY_CLI_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t16.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t16-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "event_model_prior:\n";
+        os << "    dirichlet_process:\n";
+        os << "        parameters:\n";
+        os << "            concentration:\n";
+        os << "                estimate: true\n";
+        os << "                prior:\n";
+        os << "                    gamma_distribution:\n";
+        os << "                        shape: " << concentration_shape << "\n";
+        os << "                        scale: " << concentration_scale << "\n";
+        os << "mcmc_settings:\n";
+        os << "    chain_length: 10\n";
+        os << "    sample_frequency: 1\n";
+        os << "operator_settings:\n";
+        os << "    auto_optimize: " << auto_optimize << "\n";
+        os << "    auto_optimize_delay: 5\n";
+        os << "    operators:\n";
+        os << "        ModelOperator:\n";
+        os << "            number_of_auxiliary_categories: 2\n";
+        os << "            weight: 1.0\n";
+        os << "        ConcentrationScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "global_comparison_settings:\n";
+        os << "    operators:\n";
+        os << "        EventTimeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        MutationRateScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        RootPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        LeafPopulationSizeScaler:\n";
+        os << "            scale: 0.5\n";
+        os << "            weight: 1.0\n";
+        os << "        FreqMover:\n";
+        os << "            window: 0.1\n";
+        os << "            weight: 1.0\n";
+        os << "    genotypes_are_diploid: false\n";
+        os << "    markers_are_dominant: true\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    path: haploid-standard-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size1_shape << "\n";
+        os << "                    scale: " << size1_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f1_alpha << "\n";
+        os << "                    beta: " << f1_beta << "\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    constant_sites_removed: false\n";
+        os << "    path: haploid-standard-constant.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << size2_shape << "\n";
+        os << "                    scale: " << size2_scale << "\n";
+        os << "        freq_1:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << f2_alpha << "\n";
+        os << "                    beta: " << f2_beta << "\n";
+        os << "        mutation_rate:\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                gamma_distribution:\n";
+        os << "                    shape: " << mult2_shape << "\n";
+        os << "                    scale: " << mult2_scale << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        char arg0[] = "simcoevolity";
+        char arg1[] = "--seed";
+        char arg2[] = "2579465";
+        char arg3[] = "-n";
+        char arg4[] = "1";
+        char arg5[] = "--prefix";
+        char arg6nex[] = "test-nex-21357947126-";
+        char arg6yml[] = "test-yml-21357947126-";
+        /* char arg7[] = "--relax-constant-sites"; */
+        char arg8[] = "--nexus";
+        char * cfg_path = new char[test_path.size() + 1];
+        std::copy(test_path.begin(), test_path.end(), cfg_path);
+        cfg_path[test_path.size()] = '\0';
+        char * argv[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            &arg6nex[0],
+            /* &arg7[0], */
+            &arg8[0],
+            cfg_path,
+            NULL
+        };
+        int argc = (int)(sizeof(argv) / sizeof(argv[0])) - 1;
+        int ret;
+
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc, argv);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists("data/test-nex-21357947126-simcoevolity-model-used-for-sims.yml"));
+
+        std::string sim_rep = string_util::pad_int(0, 1);
+        std::string sim_prefix = "data/test-nex-21357947126-simcoevolity-sim-" + sim_rep + "-";
+        std::string expected_true_path = sim_prefix + "true-values.txt";
+        std::string expected_config_path = sim_prefix + "config.yml";
+        std::vector<std::string> expected_align_paths;
+        expected_align_paths.push_back(sim_prefix + "haploid-standard-altname1.nex");
+        expected_align_paths.push_back(sim_prefix + "haploid-standard-constant.nex");
+        REQUIRE(path::exists(expected_true_path));
+        REQUIRE(path::exists(expected_config_path));
+        for (auto p: expected_align_paths) {
+            REQUIRE(path::exists(p));
+        }
+
+        char * argv2[] = {
+            &arg0[0],
+            &arg1[0],
+            &arg2[0],
+            &arg3[0],
+            &arg4[0],
+            &arg5[0],
+            &arg6yml[0],
+            /* &arg7[0], */
+            cfg_path,
+            NULL
+        };
+        int argc2;
+        argc2 = (int)(sizeof(argv2) / sizeof(argv2[0])) - 1;
+
+        ret = simcoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(argc2, argv2);
+        REQUIRE(ret == 0);
+
+        REQUIRE(path::exists("data/test-yml-21357947126-simcoevolity-model-used-for-sims.yml"));
+
+        std::string yml_sim_prefix = "data/test-yml-21357947126-simcoevolity-sim-" + sim_rep + "-";
+        std::string yml_expected_true_path = yml_sim_prefix + "true-values.txt";
+        std::string yml_expected_config_path = yml_sim_prefix + "config.yml";
+        std::vector<std::string> yml_expected_align_paths;
+        yml_expected_align_paths.push_back(yml_sim_prefix + "haploid-standard-altname1.nex");
+        yml_expected_align_paths.push_back(yml_sim_prefix + "haploid-standard-constant.nex");
+        REQUIRE(path::exists(yml_expected_true_path));
+        REQUIRE(path::exists(yml_expected_config_path));
+        for (auto p: yml_expected_align_paths) {
+            REQUIRE(path::exists(p));
+        }
+
+        for (unsigned int i = 0; i < expected_align_paths.size(); ++i) {
+            BiallelicData bd(
+                    expected_align_paths.at(i),
+                    ' ',   // pop name delimiter
+                    true,  // pop name is prefix (true)
+                    false, // genotypes are diploid (true)
+                    true,  // markers are dominant (false)
+                    true,  // validate (true)
+                    false);// store seq loci info (false)
+            BiallelicData ybd;
+            ybd.init_from_yaml_path(yml_expected_align_paths.at(i), true);
+
+            REQUIRE(bd.get_number_of_populations() == ybd.get_number_of_populations());
+            REQUIRE(bd.get_number_of_patterns() == ybd.get_number_of_patterns());
+            REQUIRE(bd.get_number_of_sites() == ybd.get_number_of_sites());
+            REQUIRE(bd.get_number_of_variable_sites() == ybd.get_number_of_variable_sites());
+            REQUIRE(bd.markers_are_dominant() == ybd.markers_are_dominant());
+            REQUIRE(bd.has_constant_patterns() == ybd.has_constant_patterns());
+            REQUIRE(bd.has_missing_population_patterns() == ybd.has_missing_population_patterns());
+            REQUIRE(bd.has_mirrored_patterns() == ybd.has_mirrored_patterns());
+            REQUIRE(bd.patterns_are_folded() == ybd.patterns_are_folded());
+            REQUIRE(bd.get_unique_allele_counts() == ybd.get_unique_allele_counts());
+            for (unsigned int pattern_idx = 0; pattern_idx < bd.get_number_of_patterns(); ++pattern_idx) {
+                REQUIRE(bd.get_pattern_weight(pattern_idx) == ybd.get_pattern_weight(pattern_idx));
+                REQUIRE(bd.get_allele_counts(pattern_idx) == ybd.get_allele_counts(pattern_idx));
+                REQUIRE(bd.get_red_allele_counts(pattern_idx) == ybd.get_red_allele_counts(pattern_idx));
+            }
+            for (unsigned int pop_idx = 0; pop_idx < bd.get_number_of_populations(); ++pop_idx) {
+                REQUIRE(bd.get_population_label(pop_idx) == ybd.get_population_label(pop_idx));
+            }
+        }
+
+        char e_arg0[] = "ecoevolity";
+        char e_arg1[] = "--seed";
+        char e_arg2[] = "4845687";
+        char e_arg3[] = "--prefix";
+        char e_arg4_nex[] = "eco-test-nex-5172924526-";
+        char e_arg4_yml[] = "eco-test-yml-5172924526-";
+
+        char * e_nex_cfg_path = new char[expected_config_path.size() + 1];
+        std::copy(expected_config_path.begin(), expected_config_path.end(), e_nex_cfg_path);
+        e_nex_cfg_path[expected_config_path.size()] = '\0';
+
+        char * e_yml_cfg_path = new char[yml_expected_config_path.size() + 1];
+        std::copy(yml_expected_config_path.begin(), yml_expected_config_path.end(), e_yml_cfg_path);
+        e_yml_cfg_path[yml_expected_config_path.size()] = '\0';
+
+        char * e_nex_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_nex[0],
+            e_nex_cfg_path,
+            NULL
+        };
+        int e_nex_argc = (int)(sizeof(e_nex_argv) / sizeof(e_nex_argv[0])) - 1;
+
+        char * e_yml_argv[] = {
+            &e_arg0[0],
+            &e_arg1[0],
+            &e_arg2[0],
+            &e_arg3[0],
+            &e_arg4_yml[0],
+            e_yml_cfg_path,
+            NULL
+        };
+        int e_yml_argc = (int)(sizeof(e_yml_argv) / sizeof(e_yml_argv[0])) - 1;
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_nex_argc, e_nex_argv);
+        REQUIRE(ret == 0);
+
+        ret = ecoevolity_main<CollectionSettings, ComparisonPopulationTreeCollection>(e_yml_argc, e_yml_argv);
+        REQUIRE(ret == 0);
+
+        std::string nex_op_path = "eco-test-nex-5172924526-test-nex-21357947126-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream nex_op_ifs;
+        std::stringstream nex_op_ss;
+        nex_op_ifs.open(nex_op_path);
+        nex_op_ss << nex_op_ifs.rdbuf();
+        std::string nex_op_str = nex_op_ss.str();
+        nex_op_ifs.close();
+
+        std::string nex_st_path = "eco-test-nex-5172924526-test-nex-21357947126-simcoevolity-sim-0-config-state-run-1.log";
+        std::ifstream nex_st_ifs;
+        std::stringstream nex_st_ss;
+        nex_st_ifs.open(nex_st_path);
+        nex_st_ss << nex_st_ifs.rdbuf();
+        std::string nex_st_str = nex_st_ss.str();
+        nex_st_ifs.close();
+
+        std::string yml_op_path = "eco-test-yml-5172924526-test-yml-21357947126-simcoevolity-sim-0-config-operator-run-1.log";
+        std::ifstream yml_op_ifs;
+        std::stringstream yml_op_ss;
+        yml_op_ifs.open(yml_op_path);
+        yml_op_ss << yml_op_ifs.rdbuf();
+        std::string yml_op_str = yml_op_ss.str();
+        yml_op_ifs.close();
+
+        std::string yml_st_path = "eco-test-yml-5172924526-test-yml-21357947126-simcoevolity-sim-0-config-state-run-1.log";
         std::ifstream yml_st_ifs;
         std::stringstream yml_st_ss;
         yml_st_ifs.open(yml_st_path);
