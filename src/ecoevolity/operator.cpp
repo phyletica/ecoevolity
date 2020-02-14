@@ -250,6 +250,78 @@ void ScaleOperator::set_coercable_parameter_value(double value) {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// DirichletOperator methods
+//////////////////////////////////////////////////////////////////////////////
+
+DirichletOperator::DirichletOperator(double scale) : Operator() {
+    this->set_scale(scale);
+}
+
+void DirichletOperator::set_scale(double scale) {
+    ECOEVOLITY_ASSERT(scale > 0.0);
+    this->scale_ = scale;
+}
+
+double DirichletOperator::get_scale() const {
+    return this->scale_;
+}
+
+void DirichletOperator::update(
+        RandomNumberGenerator& rng,
+        double& parameter_value,
+        double& hastings_ratio) const {
+    ECOEVOLITY_ASSERT(parameter_value <= 1.0);
+    std::vector<double> values { parameter_value, 1.0 - parameter_value };
+    this->update_vector(rng, values, hastings_ratio);
+    parameter_value = values.at(0);
+}
+
+void DirichletOperator::update_vector(
+        RandomNumberGenerator& rng,
+        std::vector<double> & parameter_values,
+        double& hastings_ratio) const {
+    ECOEVOLITY_ASSERT(parameter_values.size() > 1);
+    double sum = std::accumulate(parameter_values.begin(), parameter_values.end(), 0.0);
+    ECOEVOLITY_ASSERT(almost_equal(sum, 1.0));
+
+    std::vector<double> old_proportions = parameter_values;
+    std::vector<double> forward_dir_parameters = old_proportions;
+    for (unsigned int i = 0; i < forward_dir_parameters.size(); ++i) {
+        forward_dir_parameters.at(i) = 1.0 + (forward_dir_parameters.at(i) * (1.0 / this->get_scale()));
+    }
+    DirichletDistribution dir_forward = DirichletDistribution(forward_dir_parameters);
+    std::vector<double> new_proportions = dir_forward.draw(rng);
+
+    for (unsigned int i = 0; i < new_proportions.size(); ++i) {
+        parameter_values.at(i) = new_proportions.at(i);
+    }
+
+    std::vector<double> reverse_dir_parameters = new_proportions;
+    for (unsigned int i = 0; i < reverse_dir_parameters.size(); ++i) {
+        reverse_dir_parameters.at(i) = 1.0 + (reverse_dir_parameters.at(i) * (1.0 / this->get_scale()));
+    }
+    DirichletDistribution dir_reverse = DirichletDistribution(reverse_dir_parameters);
+
+    hastings_ratio = (dir_reverse.ln_pdf(old_proportions) -
+            dir_forward.ln_pdf(new_proportions));
+}
+
+void DirichletOperator::optimize(OperatorSchedule& os, double log_alpha) {
+    double delta = this->calc_delta(os, log_alpha);
+    delta += std::log(this->scale_);
+    this->set_scale(std::exp(delta));
+}
+
+double DirichletOperator::get_coercable_parameter_value() const {
+    return this->scale_;
+}
+
+void DirichletOperator::set_coercable_parameter_value(double value) {
+    this->set_scale(value);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // WindowOperator methods
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1310,6 +1382,76 @@ std::string FreqMover::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// FreqMixer methods
+//////////////////////////////////////////////////////////////////////////////
+
+FreqMixer::FreqMixer() : TreeOperatorInterface<DirichletOperator>() {
+    this->op_ = DirichletOperator();
+}
+
+FreqMixer::FreqMixer(
+        unsigned int tree_index) : TreeOperatorInterface<DirichletOperator>(tree_index) {
+    this->op_ = DirichletOperator();
+}
+
+FreqMixer::FreqMixer(
+        double weight) : TreeOperatorInterface<DirichletOperator>(weight) {
+    this->op_ = DirichletOperator();
+}
+
+FreqMixer::FreqMixer(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<DirichletOperator>(tree_index, weight) {
+    this->op_ = DirichletOperator();
+}
+
+FreqMixer::FreqMixer(
+        double weight,
+        double scale) : TreeOperatorInterface<DirichletOperator>(weight) {
+    this->op_ = DirichletOperator(scale);
+}
+
+FreqMixer::FreqMixer(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<DirichletOperator>(tree_index, weight) {
+    this->op_ = DirichletOperator(scale);
+}
+
+void FreqMixer::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double FreqMixer::propose(
+        RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int tree_index) {
+    double freq_1 = comparisons->get_tree(tree_index)->get_freq_1();
+    double hastings;
+    this->update(rng, freq_1, hastings);
+    if ((freq_1 <= 0.0) || (freq_1 > 1.0)) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->get_tree(tree_index)->set_freq_1(freq_1);
+    return hastings; 
+}
+
+std::string FreqMixer::target_parameter() const {
+    return "freq 1";
+}
+
+std::string FreqMixer::get_name() const {
+    std::string name = "FreqMixer";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // MutationRateScaler methods
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1382,37 +1524,37 @@ std::string MutationRateScaler::get_name() const {
 //////////////////////////////////////////////////////////////////////////////
 
 RelativePopulationSizeMixer::RelativePopulationSizeMixer(
-        ) : TreeOperatorInterface<ScaleOperator>() {
-    this->op_ = ScaleOperator();
+        ) : TreeOperatorInterface<DirichletOperator>() {
+    this->op_ = DirichletOperator();
 }
 
 RelativePopulationSizeMixer::RelativePopulationSizeMixer(
-        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
-    this->op_ = ScaleOperator();
+        unsigned int tree_index) : TreeOperatorInterface<DirichletOperator>(tree_index) {
+    this->op_ = DirichletOperator();
 }
 
 RelativePopulationSizeMixer::RelativePopulationSizeMixer(
-        double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
-    this->op_ = ScaleOperator();
-}
-
-RelativePopulationSizeMixer::RelativePopulationSizeMixer(
-        unsigned int tree_index,
-        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
-    this->op_ = ScaleOperator();
-}
-
-RelativePopulationSizeMixer::RelativePopulationSizeMixer(
-        double weight,
-        double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
-    this->op_ = ScaleOperator(scale);
+        double weight) : TreeOperatorInterface<DirichletOperator>(weight) {
+    this->op_ = DirichletOperator();
 }
 
 RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         unsigned int tree_index,
+        double weight) : TreeOperatorInterface<DirichletOperator>(tree_index, weight) {
+    this->op_ = DirichletOperator();
+}
+
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
         double weight,
-        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
-    this->op_ = ScaleOperator(scale);
+        double scale) : TreeOperatorInterface<DirichletOperator>(weight) {
+    this->op_ = DirichletOperator(scale);
+}
+
+RelativePopulationSizeMixer::RelativePopulationSizeMixer(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<DirichletOperator>(tree_index, weight) {
+    this->op_ = DirichletOperator(scale);
 }
 
 void RelativePopulationSizeMixer::operate(RandomNumberGenerator& rng,
@@ -1425,25 +1567,12 @@ double RelativePopulationSizeMixer::propose(
         RandomNumberGenerator& rng,
         BaseComparisonPopulationTreeCollection * comparisons,
         unsigned int tree_index) {
-    std::vector<double> old_pop_proportions = comparisons->get_tree(tree_index)->get_population_sizes_as_proportions();
-    ECOEVOLITY_ASSERT(old_pop_proportions.size() > 1);
-    std::vector<double> forward_dir_parameters = old_pop_proportions;
-    for (unsigned int i = 0; i < forward_dir_parameters.size(); ++i) {
-        forward_dir_parameters.at(i) = 1.0 + (forward_dir_parameters.at(i) * (1.0 / this->op_.get_scale()));
-    }
-    DirichletDistribution dir_forward = DirichletDistribution(forward_dir_parameters);
-    std::vector<double> new_pop_proportions = dir_forward.draw(rng);
+    std::vector<double> pop_proportions = comparisons->get_tree(tree_index)->get_population_sizes_as_proportions();
+    double hastings;
 
-    comparisons->get_tree(tree_index)->set_population_sizes_as_proportions(new_pop_proportions);
+    this->op_.update_vector(rng, pop_proportions, hastings);
 
-    std::vector<double> reverse_dir_parameters = new_pop_proportions;
-    for (unsigned int i = 0; i < reverse_dir_parameters.size(); ++i) {
-        reverse_dir_parameters.at(i) = 1.0 + (reverse_dir_parameters.at(i) * (1.0 / this->op_.get_scale()));
-    }
-    DirichletDistribution dir_reverse = DirichletDistribution(reverse_dir_parameters);
-
-    double hastings = (dir_reverse.ln_pdf(old_pop_proportions) -
-            dir_forward.ln_pdf(new_pop_proportions));
+    comparisons->get_tree(tree_index)->set_population_sizes_as_proportions(pop_proportions);
 
     return hastings;
 }

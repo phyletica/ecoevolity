@@ -29,6 +29,17 @@
 #include "assert.hpp"
 #include "error.hpp"
 
+
+inline bool almost_equal(const double x, const double y,
+        const double proportional_tolerance = 1e-6) {
+    double abs_tol = std::max(fabs(x), fabs(y)) * proportional_tolerance;
+    double diff = fabs(x - y);
+    if (diff > abs_tol) {
+        return false;
+    }
+    return true;
+}
+
 inline void normalize_log_likelihoods(std::vector<double>& v) {
     double mx = v.at(0);
     for (auto v_iter : v) {

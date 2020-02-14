@@ -356,6 +356,48 @@ class ScaleOperator : public Operator {
 };
 
 
+/**
+ * Propose new proportions by sampling from a Dirichlet target distribution.
+ *
+ * @note    This move is adapted from the 'DirichletMove' class in:
+ *              Phycas
+ *              <http://www.phycas.org/>
+ *              <https://github.com/plewis/phycas>
+ *              License:    Gnu GPL Version 2
+ *              Authors:    Paul Lewis, Mark Holder, and David Swofford
+ */
+class DirichletOperator : public Operator {
+
+    protected:
+        double scale_ = 0.1;
+
+    public:
+        DirichletOperator() : Operator() { }
+        DirichletOperator(double scale);
+        virtual ~DirichletOperator() { }
+
+        void set_scale(double scale);
+
+        double get_scale() const;
+
+        virtual void update(
+                RandomNumberGenerator& rng,
+                double& parameter_value,
+                double& hastings_ratio) const;
+
+        virtual void update_vector(
+                RandomNumberGenerator& rng,
+                std::vector<double> & parameter_values,
+                double& hastings_ratio) const;
+
+        void optimize(OperatorSchedule& os, double log_alpha);
+
+        double get_coercable_parameter_value() const;
+
+        void set_coercable_parameter_value(double value);
+};
+
+
 class WindowOperator : public Operator {
 
     protected:
@@ -476,6 +518,30 @@ class FreqMover : public TreeOperatorInterface<WindowOperator> {
         std::string get_name() const;
 };
 
+class FreqMixer : public TreeOperatorInterface<DirichletOperator> {
+
+    public:
+        FreqMixer();
+        FreqMixer(unsigned int tree_index);
+        FreqMixer(double weight);
+        FreqMixer(unsigned int tree_index, double weight);
+        FreqMixer(double weight, double scale);
+        FreqMixer(unsigned int tree_index, double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
 class MutationRateScaler : public TreeOperatorInterface<ScaleOperator> {
 
     public:
@@ -511,7 +577,7 @@ class MutationRateScaler : public TreeOperatorInterface<ScaleOperator> {
  *              License:    Gnu GPL Version 2
  *              Authors:    Paul Lewis, Mark Holder, and David Swofford
  */
-class RelativePopulationSizeMixer : public TreeOperatorInterface<ScaleOperator> {
+class RelativePopulationSizeMixer : public TreeOperatorInterface<DirichletOperator> {
 
     public:
         RelativePopulationSizeMixer();
