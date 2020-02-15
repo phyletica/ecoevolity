@@ -494,6 +494,52 @@ class DiscountMover : public CollectionOperatorInterface<WindowOperator> {
 };
 
 
+class DiscountMixer : public CollectionOperatorInterface<DirichletOperator> {
+
+    public:
+        DiscountMixer();
+        DiscountMixer(double weight);
+        DiscountMixer(double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
+class FreqScaler : public TreeOperatorInterface<ScaleOperator> {
+
+    public:
+        FreqScaler();
+        FreqScaler(unsigned int tree_index);
+        FreqScaler(double weight);
+        FreqScaler(unsigned int tree_index, double weight);
+        FreqScaler(double weight, double scale);
+        FreqScaler(unsigned int tree_index, double weight, double scale);
+
+        void operate(RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int nthreads = 1);
+
+        double propose(
+                RandomNumberGenerator& rng,
+                BaseComparisonPopulationTreeCollection * comparisons,
+                unsigned int tree_index);
+
+        std::string target_parameter() const;
+
+        std::string get_name() const;
+};
+
+
 class FreqMover : public TreeOperatorInterface<WindowOperator> {
 
     public:

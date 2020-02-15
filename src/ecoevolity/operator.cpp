@@ -1312,6 +1312,121 @@ std::string DiscountMover::get_name() const {
 
 
 //////////////////////////////////////////////////////////////////////////////
+// DiscountMixer methods
+//////////////////////////////////////////////////////////////////////////////
+
+DiscountMixer::DiscountMixer() : CollectionOperatorInterface<DirichletOperator>() {
+    this->op_ = DirichletOperator();
+}
+
+DiscountMixer::DiscountMixer(
+        double weight) : CollectionOperatorInterface<DirichletOperator>(weight) {
+    this->op_ = DirichletOperator();
+}
+
+DiscountMixer::DiscountMixer(
+        double weight,
+        double scale) : CollectionOperatorInterface<DirichletOperator>(weight) {
+    this->op_ = DirichletOperator(scale);
+}
+
+void DiscountMixer::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double DiscountMixer::propose(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    double v = comparisons->get_discount();
+    double hastings;
+    this->update(rng, v, hastings);
+    comparisons->set_discount(v);
+    return hastings;
+}
+
+std::string DiscountMixer::target_parameter() const {
+    return "discount";
+}
+
+std::string DiscountMixer::get_name() const {
+    return "DiscountMixer";
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// FreqScaler methods
+//////////////////////////////////////////////////////////////////////////////
+
+FreqScaler::FreqScaler(
+        ) : TreeOperatorInterface<ScaleOperator>() {
+    this->op_ = ScaleOperator();
+}
+
+FreqScaler::FreqScaler(
+        unsigned int tree_index) : TreeOperatorInterface<ScaleOperator>(tree_index) {
+    this->op_ = ScaleOperator();
+}
+
+FreqScaler::FreqScaler(
+        double weight) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator();
+}
+
+FreqScaler::FreqScaler(
+        unsigned int tree_index,
+        double weight) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
+    this->op_ = ScaleOperator();
+}
+
+FreqScaler::FreqScaler(
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+FreqScaler::FreqScaler(
+        unsigned int tree_index,
+        double weight,
+        double scale) : TreeOperatorInterface<ScaleOperator>(tree_index, weight) {
+    this->op_ = ScaleOperator(scale);
+}
+
+void FreqScaler::operate(RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int nthreads) {
+    this->perform_collection_move(rng, comparisons, nthreads);
+}
+
+double FreqScaler::propose(
+        RandomNumberGenerator& rng,
+        BaseComparisonPopulationTreeCollection * comparisons,
+        unsigned int tree_index) {
+    double freq_1 = comparisons->get_tree(tree_index)->get_freq_1();
+    double hastings;
+    this->update(rng, freq_1, hastings);
+    if ((freq_1 <= 0.0) || (freq_1 > 1.0)) {
+        return -std::numeric_limits<double>::infinity();
+    }
+    comparisons->get_tree(tree_index)->set_freq_1(freq_1);
+    return hastings; 
+}
+
+std::string FreqScaler::target_parameter() const {
+    return "freq 1";
+}
+
+std::string FreqScaler::get_name() const {
+    std::string name = "FreqScaler";
+    if (this->tree_index_ > -1) {
+        name += std::to_string(this->tree_index_);
+    }
+    return name;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // FreqMover methods
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1431,9 +1546,6 @@ double FreqMixer::propose(
     double freq_1 = comparisons->get_tree(tree_index)->get_freq_1();
     double hastings;
     this->update(rng, freq_1, hastings);
-    if ((freq_1 <= 0.0) || (freq_1 > 1.0)) {
-        return -std::numeric_limits<double>::infinity();
-    }
     comparisons->get_tree(tree_index)->set_freq_1(freq_1);
     return hastings; 
 }

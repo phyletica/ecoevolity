@@ -18176,7 +18176,7 @@ TEST_CASE("Testing MutationRateScaler", "[MutationRateScaler]") {
     }
 }
 
-TEST_CASE("Testing FreqMover", "[FreqMover]") {
+TEST_CASE("Testing FreqMover", "[FreqOperator]") {
 
     SECTION("testing beta(1.0, 1.0) prior and no optimizing") {
         double alpha = 1.0;
@@ -39604,7 +39604,7 @@ TEST_CASE("Testing RelativePopulationSizeMovers for singleton with dirichlet(10,
 }
 
 TEST_CASE("Testing tree-specific FreqMover with 3 pairs",
-        "[FreqMover]") {
+        "[FreqOperator]") {
 
     SECTION("Testing 3 pairs with optimizing") {
         double height_shape = 5.0;
@@ -76788,7 +76788,7 @@ TEST_CASE("Testing ReversibleJumpSampler propose_jump_to_prior with 2 pairs and 
 }
 
 
-TEST_CASE("Testing FreqMixer", "[FreqMixer]") {
+TEST_CASE("Testing FreqMixer", "[FreqOperator]") {
 
     SECTION("testing beta(1.0, 1.0) prior and no optimizing") {
         double alpha = 1.0;
@@ -77234,7 +77234,7 @@ TEST_CASE("Testing FreqMixer", "[FreqMixer]") {
 }
 
 TEST_CASE("Testing tree-specific FreqMixer with 3 pairs",
-        "[FreqMixer]") {
+        "[FreqOperator]") {
 
     SECTION("Testing 3 pairs with optimizing") {
         double height_shape = 5.0;
@@ -77355,5 +77355,706 @@ TEST_CASE("Testing tree-specific FreqMixer with 3 pairs",
         REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
         REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior2->get_mean()).epsilon(0.005));
         REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior2->get_variance()).epsilon(0.005));
+    }
+}
+
+
+TEST_CASE("Testing FreqScaler", "[FreqOperator]") {
+
+    SECTION("testing beta(1.0, 1.0) prior and no optimizing") {
+        double alpha = 1.0;
+        double beta = 1.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t150.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t150-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                beta_distribution:\n";
+        out << "                    alpha: " << alpha << "\n";
+        out << "                    beta: " << beta << "\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqScaler>(1.0, 0.5);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_off_auto_optimize();
+        // os.turn_on_auto_optimize();
+        // os.set_auto_optimize_delay(10000);
+        os.add_operator(op);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(alpha, beta);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        comparisons.set_operator_schedule(os);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.perform_collection_move(rng, &comparisons, 1);
+            double x = comparisons.get_tree(0)->get_freq_1();
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+        std::cout << "prior mean: " << mean << "\n";
+        std::cout << "prior variance: " << variance << "\n";
+        std::cout << "expected prior mean: " << prior->get_mean() << "\n";
+        std::cout << "expected prior variance: " << prior->get_variance() << "\n";
+        
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
+    }
+
+    SECTION("testing beta(1.0, 1.0) prior with optimizing") {
+        double alpha = 1.0;
+        double beta = 1.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t151.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t151-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                beta_distribution:\n";
+        out << "                    alpha: " << alpha << "\n";
+        out << "                    beta: " << beta << "\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(3648);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqScaler>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
+        // os.turn_off_auto_optimize();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(alpha, beta);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        comparisons.set_operator_schedule(os);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        unsigned int sample_freq = 4;
+        for (unsigned int i = 0; i < 800000; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.perform_collection_move(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                double x = comparisons.get_tree(0)->get_freq_1();
+                mn = std::min(mn, x);
+                mx = std::max(mx, x);
+                ++n;
+                d = x - mean;
+                d_n = d / n;
+                mean += d_n;
+                sum_devs += d * d_n * (n - 1);
+            }
+        }
+        double variance = sum_devs / (n - 1);
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+        std::cout << "prior mean: " << mean << "\n";
+        std::cout << "prior variance: " << variance << "\n";
+        std::cout << "expected prior mean: " << prior->get_mean() << "\n";
+        std::cout << "expected prior variance: " << prior->get_variance() << "\n";
+        
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
+    }
+
+    SECTION("testing beta(5.0, 1.0) prior and no optimizing") {
+        double alpha = 5.0;
+        double beta = 1.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t152.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t152-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                beta_distribution:\n";
+        out << "                    alpha: " << alpha << "\n";
+        out << "                    beta: " << beta << "\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(3648);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqScaler>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
+        os.turn_off_auto_optimize();
+        // os.turn_on_auto_optimize();
+        // os.set_auto_optimize_delay(10000);
+        os.add_operator(op);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(alpha, beta);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        comparisons.set_operator_schedule(os);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 200000; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.perform_collection_move(rng, &comparisons, 1);
+            double x = comparisons.get_tree(0)->get_freq_1();
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+        std::cout << "prior mean: " << mean << "\n";
+        std::cout << "prior variance: " << variance << "\n";
+        std::cout << "expected prior mean: " << prior->get_mean() << "\n";
+        std::cout << "expected prior variance: " << prior->get_variance() << "\n";
+        
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
+    }
+
+    SECTION("testing beta(5.0, 1.0) prior with optimizing") {
+        double alpha = 5.0;
+        double beta = 1.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t153.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t153-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                beta_distribution:\n";
+        out << "                    alpha: " << alpha << "\n";
+        out << "                    beta: " << beta << "\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(3648);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqScaler>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
+        // os.turn_off_auto_optimize();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(alpha, beta);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        comparisons.set_operator_schedule(os);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 200000; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.perform_collection_move(rng, &comparisons, 1);
+            double x = comparisons.get_tree(0)->get_freq_1();
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+        std::cout << "prior mean: " << mean << "\n";
+        std::cout << "prior variance: " << variance << "\n";
+        std::cout << "expected prior mean: " << prior->get_mean() << "\n";
+        std::cout << "expected prior variance: " << prior->get_variance() << "\n";
+        
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mx == Approx(prior->get_max()).epsilon(0.001));
+    }
+
+    SECTION("testing beta(1.0, 5.0) prior with optimizing") {
+        double alpha = 1.0;
+        double beta = 5.0;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-" + tag + "-t154.cfg";
+        std::string log_path = "data/tmp-config-" + tag + "-t154-state-run-1.log";
+        std::ofstream out;
+        out.open(test_path);
+        out << "global_comparison_settings:\n";
+        out << "    genotypes_are_diploid: true\n";
+        out << "    markers_are_dominant: false\n";
+        out << "    population_name_delimiter: \" \"\n";
+        out << "    population_name_is_prefix: true\n";
+        out << "    constant_sites_removed: true\n";
+        out << "    equal_population_sizes: true\n";
+        out << "    parameters:\n";
+        out << "        population_size:\n";
+        out << "            value: 0.005\n";
+        out << "            estimate: false\n";
+        out << "        freq_1:\n";
+        out << "            value: 0.5\n";
+        out << "            estimate: true\n";
+        out << "            prior:\n";
+        out << "                beta_distribution:\n";
+        out << "                    alpha: " << alpha << "\n";
+        out << "                    beta: " << beta << "\n";
+        out << "        mutation_rate:\n";
+        out << "            value: 1.0\n";
+        out << "            estimate: false\n";
+        out << "comparisons:\n";
+        out << "- comparison:\n";
+        out << "    path: hemi129.nex\n";
+        out.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(3648);
+        std::shared_ptr<OperatorInterface> op = std::make_shared<FreqScaler>(1.0, 0.1);
+        OperatorSchedule os = OperatorSchedule();
+        // os.turn_off_auto_optimize();
+        os.turn_on_auto_optimize();
+        os.set_auto_optimize_delay(1000);
+        os.add_operator(op);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior = std::make_shared<BetaDistribution>(alpha, beta);
+
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        comparisons.set_operator_schedule(os);
+        unsigned int n = 0;
+        double mean = 0.0;
+        double sum_devs = 0.0;
+        double d;
+        double d_n;
+        double mn = std::numeric_limits<double>::max();
+        double mx = -std::numeric_limits<double>::max();
+        for (unsigned int i = 0; i < 100000; ++i) {
+            OperatorInterface& o = os.draw_operator(rng);
+            o.perform_collection_move(rng, &comparisons, 1);
+            double x = comparisons.get_tree(0)->get_freq_1();
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+            ++n;
+            d = x - mean;
+            d_n = d / n;
+            mean += d_n;
+            sum_devs += d * d_n * (n - 1);
+        }
+        double variance = sum_devs / (n - 1);
+        std::cout << op->header_string();
+        std::cout << op->to_string(os);
+        std::cout << "prior mean: " << mean << "\n";
+        std::cout << "prior variance: " << variance << "\n";
+        std::cout << "expected prior mean: " << prior->get_mean() << "\n";
+        std::cout << "expected prior variance: " << prior->get_variance() << "\n";
+        
+        REQUIRE(mean == Approx(prior->get_mean()).epsilon(0.005));
+        REQUIRE(variance == Approx(prior->get_variance()).epsilon(0.001));
+        REQUIRE(mn >= prior->get_min());
+        REQUIRE(mx < prior->get_max());
+        REQUIRE(mn == Approx(prior->get_min()).epsilon(0.001));
+    }
+}
+
+TEST_CASE("Testing tree-specific FreqScaler with 3 pairs",
+        "[FreqOperator]") {
+
+    SECTION("Testing 3 pairs with optimizing") {
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::vector<double> freq_alphas {1.0, 1.0, 3.0};
+        std::vector<double> freq_betas  {1.0, 3.0, 1.0};
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-test1-" + tag + "-t270.cfg";
+        std::string log_path = "data/tmp-config-test1-" + tag + "-t270-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    parameters:\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "        population_size:\n";
+        os << "            value: 0.005\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(0) << "\n";
+        os << "                    beta: " << freq_betas.at(0) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(1) << "\n";
+        os << "                    beta: " << freq_betas.at(1) << "\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: true\n";
+        os << "            prior:\n";
+        os << "                beta_distribution:\n";
+        os << "                    alpha: " << freq_alphas.at(2) << "\n";
+        os << "                    beta: " << freq_betas.at(2) << "\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        DirichletCollectionSettings settings = DirichletCollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op1 = std::make_shared<FreqScaler>(0, 1.0, 0.5);
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<FreqScaler>(2, 1.0, 0.5);
+        op_schedule.add_operator(op1);
+        op_schedule.add_operator(op2);
+
+        ComparisonDirichletPopulationTreeCollection comparisons = ComparisonDirichletPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 3);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+
+        std::vector< SampleSummarizer<double> > freq_summaries(ntrees);
+
+        std::shared_ptr<ContinuousProbabilityDistribution> prior0 = std::make_shared<BetaDistribution>(freq_alphas.at(0), freq_betas.at(0));
+        std::shared_ptr<ContinuousProbabilityDistribution> prior2 = std::make_shared<BetaDistribution>(freq_alphas.at(2), freq_betas.at(2));
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 400000;
+        unsigned int sample_freq = 4;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            OperatorInterface& o = op_schedule.draw_operator(rng);
+            o.operate(rng, &comparisons, 1);
+            if ((i + 1) % sample_freq == 0) {
+                for (unsigned int tree_idx = 0; tree_idx < ntrees; ++tree_idx) {
+                    std::shared_ptr<PopulationTree> tree = comparisons.get_tree(tree_idx);
+                    freq_summaries.at(tree_idx).add_sample(tree->get_freq_1());
+                }
+            }
+        }
+        std::cout << op1->header_string();
+        std::cout << op1->to_string(op_schedule);
+        std::cout << op2->to_string(op_schedule);
+        
+        unsigned int tree_idx = 0;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior0->get_mean()).epsilon(0.005));
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior0->get_variance()).epsilon(0.005));
+
+        tree_idx = 1;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(0.0));
+
+        tree_idx = 2;
+        REQUIRE(freq_summaries.at(tree_idx).sample_size() == nsamples);
+        REQUIRE(freq_summaries.at(tree_idx).mean() == Approx(prior2->get_mean()).epsilon(0.005));
+        REQUIRE(freq_summaries.at(tree_idx).variance() == Approx(prior2->get_variance()).epsilon(0.005));
+    }
+}
+
+
+TEST_CASE("Testing DiscountMixer with 4 pairs",
+        "[DiscountOperator]") {
+
+    SECTION("Testing 4 pairs with optimizing") {
+        double concentration = 1.4142;
+        double discount_a = 5.0;
+        double discount_b = 1.0;
+        double height_shape = 5.0;
+        double height_scale = 0.1;
+        std::string tag = _TEST_OPERATOR_RNG.random_string(10);
+        std::string test_path = "data/tmp-config-comptimesizescaler-test-" + tag + "-tdisscaler1.cfg";
+        std::string log_path = "data/tmp-config-comptimesizescaler-test-" + tag + "-tdisscaler1-state-run-1.log";
+        std::ofstream os;
+        os.open(test_path);
+        os << "event_model_prior:\n";
+        os << "    pitman_yor_process:\n";
+        os << "        parameters:\n";
+        os << "             concentration:\n";
+        os << "                 value: " << concentration << "\n";
+        os << "                 estimate: false\n";
+        os << "             discount:\n";
+        os << "                 value: 0.5\n";
+        os << "                 estimate: true\n";
+        os << "                 prior:\n";
+        os << "                     beta_distribution:\n";
+        os << "                         alpha: " << discount_a << "\n";
+        os << "                         beta: " << discount_b << "\n";
+        os << "event_time_prior:\n";
+        os << "    gamma_distribution:\n";
+        os << "        shape: " << height_shape << "\n";
+        os << "        scale: " << height_scale << "\n";
+        os << "global_comparison_settings:\n";
+        os << "    genotypes_are_diploid: true\n";
+        os << "    markers_are_dominant: false\n";
+        os << "    population_name_delimiter: \" \"\n";
+        os << "    population_name_is_prefix: true\n";
+        os << "    constant_sites_removed: true\n";
+        os << "    equal_population_sizes: false\n";
+        os << "    parameters:\n";
+        os << "        freq_1:\n";
+        os << "            value: 0.5\n";
+        os << "            estimate: false\n";
+        os << "        mutation_rate:\n";
+        os << "            value: 1.0\n";
+        os << "            estimate: false\n";
+        os << "comparisons:\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname1.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname2.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os << "- comparison:\n";
+        os << "    path: hemi129-altname3.nex\n";
+        os << "    parameters:\n";
+        os << "        population_size:\n";
+        os << "            value: 0.001\n";
+        os << "            estimate: false\n";
+        os.close();
+        REQUIRE(path::exists(test_path));
+
+        CollectionSettings settings = CollectionSettings(test_path);
+
+        RandomNumberGenerator rng = RandomNumberGenerator(123456);
+        ComparisonPopulationTreeCollection comparisons = ComparisonPopulationTreeCollection(settings, rng);
+        comparisons.ignore_data();
+
+        OperatorSchedule op_schedule = OperatorSchedule();
+        op_schedule.turn_on_auto_optimize();
+        op_schedule.set_auto_optimize_delay(100);
+
+        std::shared_ptr<OperatorInterface> op = std::make_shared<DiscountMixer>(1.0, 0.1);
+        op_schedule.add_operator(op);
+        op_schedule.add_operator(std::make_shared<EventTimeScaler>(1.0, 0.5));
+        std::shared_ptr<OperatorInterface> op2 = std::make_shared<PitmanYorProcessGibbsSampler>(1.0);
+        op_schedule.add_operator(op2);
+
+        // Initialize prior probs
+        comparisons.compute_log_likelihood_and_prior(true);
+
+        unsigned int ntrees = comparisons.get_number_of_trees();
+        REQUIRE(ntrees == 4);
+        REQUIRE(comparisons.get_number_of_events() == ntrees);
+        SampleSummarizer<double> d_summary;
+
+        comparisons.set_operator_schedule(op_schedule);
+        unsigned int niterations = 750000;
+        unsigned int sample_freq = 6;
+        unsigned int nsamples = niterations / sample_freq;
+        for (unsigned int i = 0; i < niterations; ++i) {
+            // OperatorInterface& o = op_schedule.draw_operator(rng);
+            if ((i + 1) % 2 == 0) {
+                op->operate(rng, &comparisons, 1);
+            } else {
+                op2->operate(rng, &comparisons, 1);
+            }
+            if ((i + 1) % sample_freq == 0) {
+                d_summary.add_sample(comparisons.get_discount());
+            }
+        }
+        op_schedule.write_operator_rates(std::cout);
+
+        double size_sh;
+        double size_sc;
+        REQUIRE(d_summary.sample_size() == nsamples);
+        REQUIRE(d_summary.mean() == Approx(discount_a / (discount_a + discount_b)).epsilon(0.001));
+        double expected_variance = ((discount_a * discount_b) / 
+                ((discount_a + discount_b) *
+                 (discount_a + discount_b) *
+                 (discount_a + discount_b + 1)));
+        REQUIRE(d_summary.variance() == Approx(expected_variance).epsilon(0.001));
     }
 }
