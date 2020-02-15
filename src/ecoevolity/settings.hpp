@@ -832,6 +832,7 @@ class ModelOperatorSettings : public OperatorSettings {
 class ScaleOperatorSettings : public OperatorSettings {
     protected:
         double scale_;
+        bool is_mixer_ = false;
 
     public:
         ScaleOperatorSettings() { }
@@ -849,6 +850,12 @@ class ScaleOperatorSettings : public OperatorSettings {
         }
         void set_scale(double scale) {
             this->scale_ = scale;
+        }
+        bool is_mixer() const {
+            return this->is_mixer_;
+        }
+        void set_is_mixer(bool b) {
+            this->is_mixer_ = b;
         }
         virtual void update_from_config(const YAML::Node& parameters) {
             if (! parameters.IsMap()) {
@@ -973,7 +980,9 @@ class OperatorScheduleSettings {
         ScaleOperatorSettings concentration_scaler_settings_ = ScaleOperatorSettings(
                 3.0, 1.0);
         ScaleOperatorSettings discount_scaler_settings_ = ScaleOperatorSettings(
-                3.0, 0.3);
+                0.0, 0.3);
+        WindowOperatorSettings discount_mover_settings_ = WindowOperatorSettings(
+                3.0, 0.1);
         ScaleOperatorSettings time_size_rate_mixer_settings_ = ScaleOperatorSettings(
                 6.0, 0.1);
         ScaleOperatorSettings time_root_size_mixer_settings_ = ScaleOperatorSettings(
@@ -992,6 +1001,7 @@ class OperatorScheduleSettings {
             this->model_operator_settings_ = other.model_operator_settings_;
             this->concentration_scaler_settings_ = other.concentration_scaler_settings_;
             this->discount_scaler_settings_ = other.discount_scaler_settings_;
+            this->discount_mover_settings_ = other.discount_mover_settings_;
             this->time_size_rate_mixer_settings_ = other.time_size_rate_mixer_settings_;
             this->time_root_size_mixer_settings_ = other.time_root_size_mixer_settings_;
             this->time_size_rate_scaler_settings_ = other.time_size_rate_scaler_settings_;
@@ -1022,6 +1032,9 @@ class OperatorScheduleSettings {
         }
         const ScaleOperatorSettings& get_discount_scaler_settings() const {
             return this->discount_scaler_settings_;
+        }
+        const WindowOperatorSettings& get_discount_mover_settings() const {
+            return this->discount_mover_settings_;
         }
         const ScaleOperatorSettings& get_time_size_rate_mixer_settings() const {
             return this->time_size_rate_mixer_settings_;
@@ -1112,13 +1125,24 @@ class OperatorScheduleSettings {
                         throw;
                     }
                 }
-                else if (op->first.as<std::string>() == "DiscountScaler") {
+                else if (op->first.as<std::string>() == "DiscountMover") {
                     try {
-                        this->discount_scaler_settings_.update_from_config(op->second);
+                        this->discount_mover_settings_.update_from_config(op->second);
                     }
                     catch (...) {
                         std::cerr << "ERROR: "
-                                  << "Problem parsing DiscountScaler settings\n";
+                                  << "Problem parsing DiscountMover settings\n";
+                        throw;
+                    }
+                }
+                else if (op->first.as<std::string>() == "DiscountMixer") {
+                    try {
+                        this->discount_scaler_settings_.update_from_config(op->second);
+                        this->discount_scaler_settings_.set_is_mixer(true);
+                    }
+                    catch (...) {
+                        std::cerr << "ERROR: "
+                                  << "Problem parsing DiscountMixer settings\n";
                         throw;
                     }
                 }
@@ -1186,8 +1210,10 @@ class OperatorScheduleSettings {
             ss << margin << indent << indent << "ConcentrationScaler:\n";
             ss << this->concentration_scaler_settings_.to_string(indent_level + 3);
             if (model_prior == EcoevolityOptions::ModelPrior::pyp) {
-                ss << margin << indent << indent << "DiscountScaler:\n";
+                ss << margin << indent << indent << "DiscountMixer:\n";
                 ss << this->discount_scaler_settings_.to_string(indent_level + 3);
+                ss << margin << indent << indent << "DiscountMover:\n";
+                ss << this->discount_mover_settings_.to_string(indent_level + 3);
             }
             ss << margin << indent << indent << "TimeSizeRateMixer:\n";
             ss << this->time_size_rate_mixer_settings_.to_string(indent_level + 3);
@@ -3180,6 +3206,7 @@ class BaseCollectionSettings {
                     (this->model_prior_ != EcoevolityOptions::ModelPrior::pyp)
                     ) {
                 this->operator_schedule_settings_.discount_scaler_settings_.set_weight(0.0);
+                this->operator_schedule_settings_.discount_mover_settings_.set_weight(0.0);
             }
             if ((this->comparisons_.size() < 2) ||
                     (! this->sampling_event_models()) ||
@@ -3449,6 +3476,12 @@ class BaseCollectionSettings {
                     if (this->discount_settings_.use_empirical_value()) {
                         throw EcoevolityPositiveRealParameterSettingError(
                                 "empirical value not supported for discount parameter");
+                    }
+                    if ((! this->discount_settings_.is_fixed()) &&
+                            (this->discount_settings_.get_prior_settings().get_name() != "beta_distribution")) {
+                        std::string message = "discount prior must be a beta_distribution; found: " +
+                                this->discount_settings_.get_prior_settings().get_name();
+                        throw EcoevolityContinuousDistributionSettingError(message);
                     }
                 }
                 else {

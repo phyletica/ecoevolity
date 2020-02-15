@@ -65,9 +65,16 @@ OperatorSchedule::OperatorSchedule(const CollectionSettings& collection_settings
     }
 
     if (settings.get_discount_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<DiscountScaler>(
+        this->add_operator(std::make_shared<DiscountMixer>(
                 settings.get_discount_scaler_settings().get_weight(),
                 settings.get_discount_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_discount_mover_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<DiscountMover>(
+                settings.get_discount_mover_settings().get_weight(),
+                settings.get_discount_mover_settings().get_window()
                 ));
     }
 
@@ -213,9 +220,16 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_discount_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<DiscountScaler>(
+        this->add_operator(std::make_shared<DiscountMixer>(
                 settings.get_discount_scaler_settings().get_weight(),
                 settings.get_discount_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_discount_mover_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<DiscountMover>(
+                settings.get_discount_mover_settings().get_weight(),
+                settings.get_discount_mover_settings().get_window()
                 ));
     }
 
@@ -360,9 +374,16 @@ OperatorSchedule::OperatorSchedule(
     }
 
     if (settings.get_discount_scaler_settings().get_weight() > 0.0) {
-        this->add_operator(std::make_shared<DiscountScaler>(
+        this->add_operator(std::make_shared<DiscountMixer>(
                 settings.get_discount_scaler_settings().get_weight(),
                 settings.get_discount_scaler_settings().get_scale()
+                ));
+    }
+
+    if (settings.get_discount_mover_settings().get_weight() > 0.0) {
+        this->add_operator(std::make_shared<DiscountMover>(
+                settings.get_discount_mover_settings().get_weight(),
+                settings.get_discount_mover_settings().get_window()
                 ));
     }
 
