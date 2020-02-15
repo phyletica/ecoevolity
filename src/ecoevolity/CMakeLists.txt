@@ -11,6 +11,7 @@ set(ECOEVOLITY_SOURCES
     "${EXTERNAL_PROJECT_DIR}/cpp-optparse/OptionParser.cpp"
     ecoevolity.cpp
     simcoevolity.cpp
+    nex2yml.cpp
     dpprobs.cpp
     sumcoevolity.cpp
     data.cpp)
@@ -53,4 +54,9 @@ install(TARGETS dpprobs
 add_executable(sumcoevolity sumcoevolity_main.cpp)
 target_link_libraries(sumcoevolity ${LIBRARIES_TO_LINK})
 install(TARGETS sumcoevolity
+        DESTINATION bin)
+
+add_executable(nex2yml nex2yml_main.cpp)
+target_link_libraries(nex2yml ${LIBRARIES_TO_LINK})
+install(TARGETS nex2yml
         DESTINATION bin)
