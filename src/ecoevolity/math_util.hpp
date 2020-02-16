@@ -30,6 +30,22 @@
 #include "error.hpp"
 
 
+template <typename T>
+inline double weighted_mean(
+        const std::vector<T> & values,
+        const std::vector<double> & weights) {
+    ECOEVOLITY_ASSERT(values.size() > 1);
+    ECOEVOLITY_ASSERT(values.size() == weights.size());
+    double sum_of_weights = 0.0;
+    double weighted_sum = 0.0;
+    for (unsigned int i = 0; i < values.size(); ++i) {
+        ECOEVOLITY_ASSERT(weights.at(i) >= 0.0);
+        weighted_sum += values.at(i) + weights.at(i);
+        sum_of_weights += weights.at(i);
+    }
+    return weighted_sum / sum_of_weights;
+}
+
 inline bool almost_equal(const double x, const double y,
         const double proportional_tolerance = 1e-6) {
     double abs_tol = std::max(fabs(x), fabs(y)) * proportional_tolerance;
@@ -507,10 +523,23 @@ inline double get_uniform_model_log_prior_probability(
     ECOEVOLITY_ASSERT(number_of_categories > 0);
     ECOEVOLITY_ASSERT(number_of_categories <= number_of_elements);
     T denom = 0;
+    long double sum_of_k_weights = 0.0;
+    long double k_weight = 0.0;
     for (unsigned int k = 1; k <= number_of_elements; ++k) {
-        denom += stirling2_base<T>(number_of_elements, k) * std::pow(split_weight, (k - 1));
+        T number_of_partitions_with_k_subsets = stirling2_base<T>(number_of_elements, k);
+        long double weight_of_each_partition = std::pow(split_weight, (k - 1));
+        // Check for multiplication overflow
+        if (weight_of_each_partition > (std::numeric_limits<long double>::max() / number_of_partitions_with_k_subsets)) {
+            throw EcoevolityNumericLimitError("Overflow during multiplication in get_uniform_model_log_prior_probability");
+        }
+        k_weight = number_of_partitions_with_k_subsets * weight_of_each_partition;
+        // Check for addition overflow
+        if (sum_of_k_weights > (std::numeric_limits<long double>::max() - k_weight)) {
+            throw EcoevolityNumericLimitError("Overflow during addition in get_uniform_model_log_prior_probability");
+        }
+        sum_of_k_weights += k_weight;
     }
-    return ((number_of_categories - 1) * std::log(split_weight)) - std::log(denom);
+    return ((number_of_categories - 1) * std::log(split_weight)) - std::log(sum_of_k_weights);
 }
 
 inline double get_uniform_model_log_prior_probability(
@@ -570,6 +599,43 @@ inline std::vector< std::vector<unsigned int> > get_integer_partitions(
     }
     return partitions;
 }
+
+
+inline void get_number_of_subset_probs(std::vector<long double> & number_of_subset_probs,
+        double split_weight = 1.0) {
+    ECOEVOLITY_ASSERT(split_weight > 0.0);
+    ECOEVOLITY_ASSERT(number_of_subset_probs.size() > 0);
+    unsigned int number_of_elements = number_of_subset_probs.size();
+    long double sum_of_k_weights = 0.0;
+    long double k_weight = 0.0;
+    for (unsigned int i = 0; i < number_of_elements; ++i) {
+        unsigned int k = i + 1;
+        long double number_of_partitions_with_k_subsets = stirling2_base<long double>(number_of_elements, k);
+        long double weight_of_each_partition = std::pow(split_weight, (k - 1));
+        // Check for multiplication overflow
+        if (weight_of_each_partition > (std::numeric_limits<long double>::max() / number_of_partitions_with_k_subsets)) {
+            throw EcoevolityNumericLimitError("Overflow during multiplication in get_number_of_subset_probs");
+        }
+        k_weight = number_of_partitions_with_k_subsets * weight_of_each_partition;
+        number_of_subset_probs.at(i) = k_weight;
+        // Check for addition overflow
+        if (sum_of_k_weights > (std::numeric_limits<long double>::max() - k_weight)) {
+            throw EcoevolityNumericLimitError("Overflow during addition in get_number_of_subset_probs");
+        }
+        sum_of_k_weights += k_weight;
+    }
+    for (unsigned int i = 0; i < number_of_elements; ++i) {
+        number_of_subset_probs.at(i) = number_of_subset_probs.at(i) / sum_of_k_weights;
+    }
+}
+
+inline std::vector<long double> get_number_of_subset_probs(unsigned int number_of_elements,
+        double split_weight = 1.0) {
+    std::vector<long double> number_of_subset_probs(number_of_elements, 0.0);
+    get_number_of_subset_probs(number_of_subset_probs, split_weight);
+    return number_of_subset_probs;
+}
+
 
 /**
  * Calculate log factorial.
