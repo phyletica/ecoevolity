@@ -13,6 +13,7 @@ set(ECOEVOLITY_SOURCES
     simcoevolity.cpp
     nex2yml.cpp
     dpprobs.cpp
+    swprobs.cpp
     sumcoevolity.cpp
     data.cpp)
 
@@ -49,6 +50,11 @@ install(TARGETS "${SIMCOEVOLITY_EXE_NAME}"
 add_executable(dpprobs dpprobs_main.cpp)
 target_link_libraries(dpprobs ${LIBRARIES_TO_LINK})
 install(TARGETS dpprobs
+        DESTINATION bin)
+
+add_executable(swprobs swprobs_main.cpp)
+target_link_libraries(swprobs ${LIBRARIES_TO_LINK})
+install(TARGETS swprobs
         DESTINATION bin)
 
 add_executable(sumcoevolity sumcoevolity_main.cpp)
