@@ -90,7 +90,7 @@ int dpprobs_main(int argc, char * argv[]) {
                   "mean of the gamma prior is equal to the specified value of "
                   "the concentration parameter (or the value the concentration "
                   "parameter that corresponds to the specified mean number of "
-                  "categories). If not provided, the concetration parameter "
+                  "categories). If not provided, the concentration parameter "
                   "is simply fixed to the specifed value.");
     parser.add_option("--scale")
             .action("store")
