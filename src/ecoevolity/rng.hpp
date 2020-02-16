@@ -479,18 +479,8 @@ class RandomNumberGenerator {
                 double split_weight = 1.0) {
             ECOEVOLITY_ASSERT(split_weight > 0.0);
             ECOEVOLITY_ASSERT(number_of_elements > 0);
-            std::vector<long double> ncat_probs;
-            ncat_probs.reserve(number_of_elements);
-            long double denom = 0.0;
-            long double p = 0.0;
-            for (unsigned int k = 1; k <= number_of_elements; ++k) {
-                p = stirling2_base<long double>(number_of_elements, k) * std::pow(split_weight, (k - 1));
-                ncat_probs.push_back(p);
-                denom += p;
-            }
-            for (unsigned int i = 0; i < number_of_elements; ++i) {
-                ncat_probs.at(i) = ncat_probs.at(i) / denom;
-            }
+            std::vector<long double> ncat_probs(number_of_elements, 0.0);
+            get_number_of_subset_probs(ncat_probs, split_weight);
             unsigned int ncats = this->weighted_index(ncat_probs) + 1;
             return ncats;
         }
