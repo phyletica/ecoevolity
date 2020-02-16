@@ -33,14 +33,14 @@
 template <typename T>
 inline double weighted_mean(
         const std::vector<T> & values,
-        const std::vector<double> & weights) {
+        const std::vector<long double> & weights) {
     ECOEVOLITY_ASSERT(values.size() > 1);
     ECOEVOLITY_ASSERT(values.size() == weights.size());
     double sum_of_weights = 0.0;
     double weighted_sum = 0.0;
     for (unsigned int i = 0; i < values.size(); ++i) {
         ECOEVOLITY_ASSERT(weights.at(i) >= 0.0);
-        weighted_sum += values.at(i) + weights.at(i);
+        weighted_sum += values.at(i) * weights.at(i);
         sum_of_weights += weights.at(i);
     }
     return weighted_sum / sum_of_weights;
