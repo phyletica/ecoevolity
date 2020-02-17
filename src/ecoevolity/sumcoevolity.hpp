@@ -339,11 +339,6 @@ int sumcoevolity_main(int argc, char * argv[]) {
                     "settings will not be comparable to the posterior "
                     "probabilities.");
         }
-        if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform) {
-            throw EcoevolityError("Approximating prior probabilites via "
-                    "simulation is not supported for the uniform model "
-                    "prior");
-        }
         const ModelOperatorSettings & model_settings = settings.get_operator_schedule_settings().get_model_operator_settings();
         if (model_settings.get_weight() <= 0.0) {
             throw EcoevolityError("The model operator in the config file "
@@ -356,26 +351,60 @@ int sumcoevolity_main(int argc, char * argv[]) {
         std::cerr << "Approximating prior probabilities via simulations...\n";
         const PositiveRealParameterSettings & concentration_settings = settings.get_concentration_settings();
         std::shared_ptr<ContinuousProbabilityDistribution> concentration_prior = concentration_settings.get_prior_settings().get_instance();
+        bool concentration_is_fixed = concentration_settings.is_fixed();
+
+        const PositiveRealParameterSettings & discount_settings = settings.get_discount_settings();
+        std::shared_ptr<ContinuousProbabilityDistribution> discount_prior = discount_settings.get_prior_settings().get_instance();
+        double discount = 0.0;
+        bool discount_is_fixed = true;
 
         std::cerr << "Simulations settings:\n";
+        std::cerr << "\tmodel prior = "
+                  << settings.get_model_prior() << "\n";
         std::cerr << "\tseed = " << seed << "\n";
         double concentration = 1.0;
-        bool concentration_is_fixed = false;
-        if (concentration_settings.is_fixed()) {
+        if (concentration_is_fixed) {
             concentration = concentration_settings.get_value();
-            concentration_is_fixed = true;
             std::cerr << "\tconcentration = " << concentration << "\n";
         }
         else {
             std::cerr << "\tconcentration ~ " << concentration_prior->to_string() << "\n";
         }
 
+        if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::pyp) {
+            if (discount_settings.is_fixed()) {
+                discount = discount_settings.get_value();
+                std::cerr << "\tdiscount = " << discount << "\n";
+            }
+            else {
+                discount_is_fixed = false;
+                std::cerr << "\tdiscount ~ " << discount_prior->to_string() << "\n";
+            }
+        }
+
         for (unsigned int i = 0; i < nreps; ++i) {
             if (! concentration_is_fixed) {
                 concentration = concentration_prior->draw(rng);
             }
+            if (! discount_is_fixed) {
+                discount = discount_prior->draw(rng);
+            }
             std::vector<unsigned int> model(number_of_comparisons, 0);
-            unsigned int number_of_categories = rng.dirichlet_process(model, concentration);
+            unsigned int number_of_categories;
+            if ((settings.get_model_prior() == EcoevolityOptions::ModelPrior::dpp) ||
+                    (settings.get_model_prior() == EcoevolityOptions::ModelPrior::pyp)) {
+                number_of_categories = rng.pitman_yor_process(model, concentration, discount);
+            }
+            else if (settings.get_model_prior() == EcoevolityOptions::ModelPrior::uniform) {
+                number_of_categories = rng.random_set_partition(model, concentration);
+            }
+            else {
+                std::ostringstream message;
+                message << "ERROR: simulations not supported for model prior \'"
+                        << settings.get_model_prior()
+                        << "\'\n";
+                throw EcoevolityError(message.str());
+            }
             ++prior_nevents_counts[number_of_categories];
             if (prior_model_counts.count(model) < 1) {
                 prior_model_counts[model] = 1;
@@ -409,13 +438,11 @@ int sumcoevolity_main(int argc, char * argv[]) {
         ECOEVOLITY_ASSERT(tally == nreps);
     }
 
-    double min_post_prob = 1.0 / (double)number_of_posterior_samples;
-
     double min_prior_prob = 1.0 / (double)nreps;
-
-    double max_post_prob = (number_of_posterior_samples - 1) / (double)number_of_posterior_samples;
-
     double max_prior_prob = (nreps - 1) / (double)nreps;
+
+    double min_post_prob = 1.0 / (double)number_of_posterior_samples;
+    double max_post_prob = (number_of_posterior_samples - 1) / (double)number_of_posterior_samples;
 
     // output probability of comparisons sharing event
     if (user_specified_comparisons) {
