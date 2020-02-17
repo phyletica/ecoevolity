@@ -3197,7 +3197,8 @@ class BaseCollectionSettings {
             if (this->concentration_settings_.is_fixed() ||
                     (this->comparisons_.size() < 2) ||
                     ((this->model_prior_ != EcoevolityOptions::ModelPrior::pyp) &&
-                    (this->model_prior_ != EcoevolityOptions::ModelPrior::dpp))
+                    (this->model_prior_ != EcoevolityOptions::ModelPrior::dpp) &&
+                    (this->model_prior_ != EcoevolityOptions::ModelPrior::uniform))
                     ) {
                 this->operator_schedule_settings_.concentration_scaler_settings_.set_weight(0.0);
             }
@@ -3327,6 +3328,8 @@ class BaseCollectionSettings {
             }
             else if (model_prior_node["dirichlet_process"]) {
                 this->model_prior_ = EcoevolityOptions::ModelPrior::dpp;
+                this->discount_settings_.value_ = 0.0;
+                this->discount_settings_.is_fixed_ = true;
                 this->parse_dirichlet_process_prior(model_prior_node["dirichlet_process"]);
             }
             else if (model_prior_node["uniform"]) {

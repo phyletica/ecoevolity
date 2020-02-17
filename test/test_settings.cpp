@@ -3881,7 +3881,7 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, def
         e += "            weight: 10\n";
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
-        e += "            weight: 0\n";
+        e += "            weight: 3\n";
         e += "            scale: 1\n";
         e += "        TimeSizeRateMixer:\n";
         e += "            weight: 6\n";
@@ -4056,7 +4056,7 @@ TEST_CASE("Testing uniform model with split_weight set to 2.4 and estimated, spe
         e += "            weight: 10\n";
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
-        e += "            weight: 0\n";
+        e += "            weight: 3\n";
         e += "            scale: 1\n";
         e += "        TimeSizeRateMixer:\n";
         e += "            weight: 6\n";
@@ -9346,7 +9346,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 10\n";
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
-        e += "            weight: 0\n";
+        e += "            weight: 3\n";
         e += "            scale: 1\n";
         e += "        TimeSizeRateMixer:\n";
         e += "            weight: 6\n";
@@ -9533,7 +9533,7 @@ TEST_CASE("Testing RelativeRootCollectionSettings uniform model with split_weigh
         e += "            weight: 10\n";
         e += "            number_of_auxiliary_categories: 4\n";
         e += "        ConcentrationScaler:\n";
-        e += "            weight: 0\n";
+        e += "            weight: 3\n";
         e += "            scale: 1\n";
         e += "        TimeSizeRateMixer:\n";
         e += "            weight: 6\n";
