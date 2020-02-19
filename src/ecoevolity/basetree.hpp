@@ -1441,6 +1441,8 @@ class BaseTree {
             this->store_all_heights();
             this->store_all_height_pointers();
             this->store_topology();
+            this->node_height_beta_prior_alpha_->store();
+            this->node_height_beta_prior_beta_->store();
         }
         virtual void store_all_heights() {
             this->root_->store_all_heights();
@@ -1467,6 +1469,8 @@ class BaseTree {
             this->restore_all_height_pointers();
             this->restore_all_heights();
             this->update_node_heights();
+            this->node_height_beta_prior_alpha_->restore();
+            this->node_height_beta_prior_beta_->restore();
         }
         virtual void restore_all_heights() {
             this->root_->restore_all_heights();
