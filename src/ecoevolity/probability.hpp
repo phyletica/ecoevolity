@@ -38,7 +38,7 @@ class ContinuousProbabilityDistribution {
             return * this;
         }
 
-        double ln_gamma_function(double x) const {
+        static double ln_gamma_function(double x) {
             return std::lgamma(x);
         }
 
@@ -249,25 +249,38 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             return true;
         }
 
-        double ln_pdf(double x) const {
-            if (! this->is_within_support(x)) {
+        static double get_ln_pdf(double x, double alpha, double beta) {
+            if ((x <= 0.0) || (x >= 1.0)) {
                 return -std::numeric_limits<double>::infinity();
             }
-		    double lnp = ((this->alpha_ - 1.0) * std::log(x)) + ((this->beta_ - 1.0) * std::log(1.0 - x));
+		    double lnp = ((alpha - 1.0) * std::log(x)) + ((beta - 1.0) * std::log(1.0 - x));
 
-		    lnp += this->ln_gamma_function(this->alpha_ + this->beta_);
-		    lnp -= this->ln_gamma_function(this->alpha_);
-		    lnp -= this->ln_gamma_function(this->beta_);
+		    lnp += BetaDistribution::ln_gamma_function(alpha + beta);
+		    lnp -= BetaDistribution::ln_gamma_function(alpha);
+		    lnp -= BetaDistribution::ln_gamma_function(beta);
 
 		    return lnp;
         }
 
-        double scaled_ln_pdf(double x, double scale_parameter) const {
-            double unscaled_x = x / scale_parameter;
-            double lnp = this->ln_pdf(unscaled_x);
-            lnp -= std::log(scale_parameter);
+        double ln_pdf(double x) const {
+            return BetaDistribution::get_ln_pdf(x, this->alpha_, this->beta_);
+        }
 
+        static double get_scaled_ln_pdf(double x,
+                double alpha,
+                double beta,
+                double scale_parameter) {
+            double unscaled_x = x / scale_parameter;
+            double lnp = BetaDistribution::get_ln_pdf(unscaled_x, alpha, beta);
+            lnp -= std::log(scale_parameter);
 		    return lnp;
+        }
+
+        double scaled_ln_pdf(double x, double scale_parameter) const {
+            return BetaDistribution::get_scaled_ln_pdf(x,
+                    this->alpha_,
+                    this->beta_,
+                    scale_parameter);
         }
 
         double relative_ln_pdf(double x) const {
@@ -306,8 +319,15 @@ class BetaDistribution: public ContinuousProbabilityDistribution {
             return ss.str();
         }
 
+        static double get_draw(RandomNumberGenerator & rng,
+                double alpha,
+                double beta) {
+            return rng.beta(alpha, beta);
+        }
         double draw(RandomNumberGenerator & rng) const {
-            return rng.beta(this->alpha_, this->beta_);
+            return BetaDistribution::get_draw(rng,
+                    this->alpha_,
+                    this->beta_);
         }
 };
 
