@@ -36,6 +36,18 @@ class BaseTree {
         std::vector< std::shared_ptr<PositiveRealParameter> > node_heights_;
         LogProbabilityDensity log_likelihood_ = LogProbabilityDensity(0.0);
         LogProbabilityDensity log_prior_density_ = LogProbabilityDensity(0.0);
+
+        // Alpha and beta parameters of the beta-distributed prior on
+        // (non-root) internal node heights
+        std::shared_ptr<PositiveRealParameter> node_height_beta_prior_alpha_ = std::make_shared<PositiveRealParameter>(
+                std::make_shared<GammaDistribution>(10.0, 0.1), // prior
+                1.0,   // value of parameter
+                true); // is fixed?
+        std::shared_ptr<PositiveRealParameter> node_height_beta_prior_beta_ = std::make_shared<PositiveRealParameter>(
+                std::make_shared<GammaDistribution>(10.0, 0.1), // prior
+                1.0,   // value of parameter
+                true); // is fixed?
+
         bool ignore_data_ = false;
         unsigned int number_of_likelihood_calculations_ = 0;
 
@@ -1370,10 +1382,9 @@ class BaseTree {
             // Kishino, Thorne, and Bruno (2001) had a solution for this, but
             // it's not easy to adapt to cases of shared node heights across
             // the tree.
-            // The solution below is a bit of a hack, but works for 4-tipped
-            // trees (and hopefully beyond).
+            // The solution below is a bit of a hack, but works.
             // We assume that each unique node height is uniformly distributed
-            // between zero and the height of the youngest parent of node
+            // between zero and the height of the youngest parent of a node
             // mapped to the height.
             // This makes both nested and balanced tree shapes coherent.
             // This distribution is funky, but if we used scaled betas rather
@@ -1391,7 +1402,11 @@ class BaseTree {
                 ///////////////////////////////////////////////////////////////
                 // Prior on the absolute ages of non-root internal nodes
                 double youngest_parent_height = this->get_height_of_youngest_parent(i);
-                d -= std::log(youngest_parent_height);
+                // d -= std::log(youngest_parent_height);
+                d += BetaDistribution::get_scaled_ln_pdf(this->get_height(i),
+                        this->node_height_beta_prior_alpha_->get_value(),
+                        this->node_height_beta_prior_beta_->get_value(),
+                        youngest_parent_height);
                 ///////////////////////////////////////////////////////////////
                 // Prior on the relative ages of non-root internal nodes
                 // double youngest_parent_rel_height = this->get_relative_height_of_youngest_parent(i);

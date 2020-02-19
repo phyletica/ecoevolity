@@ -707,7 +707,7 @@ TEST_CASE("Testing BaseTree::slide_bump_height", "[BaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::merge_node_height_up", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::merge_node_height_up", "[BaseTree]") {
     SECTION("Testing merge_node_height_up") {
         std::vector<unsigned int> sizes_of_polytomies_created;
         unsigned int number_of_resulting_merged_nodes;
@@ -2671,7 +2671,7 @@ TEST_CASE("Testing BaseTree::slide_bump_swap_height 9 leaf 4 colliders", "[BaseT
     }
 }
 
-TEST_CASE("Testing BaseTree store and restore", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree store and restore", "[BaseTree]") {
     SECTION("Testing store-restore of state") {
         double height_lower_bound;
         unsigned int number_of_mapped_nodes;
@@ -14889,7 +14889,7 @@ TEST_CASE("Testing BaseTree::get_height_of_oldest_child()", "[BaseTree]") {
     }
 }
 
-TEST_CASE("Testing BaseTree::store_splits()", "[xBaseTree]") {
+TEST_CASE("Testing BaseTree::store_splits()", "[BaseTree]") {
     SECTION("Testing store_splits") {
         std::shared_ptr<Node> root = std::make_shared<Node>(14, "root", 0.1);
         std::shared_ptr<Node> internal1 = std::make_shared<Node>(12, "internal1", 0.08);
