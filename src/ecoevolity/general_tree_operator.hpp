@@ -43,6 +43,7 @@ class BaseGeneralTreeOperatorTemplate {
             topology_operator = 3,
             population_size_operator = 4,
             rj_operator = 5,
+            node_height_prior_operator = 6,
         };
 
         BaseGeneralTreeOperatorTemplate() { }
@@ -680,6 +681,85 @@ class RootHeightScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> 
             // If the non-root internal ages are parameterized as absolute ages
             // (i.e., not relative to the root), only the root age changes and
             // so the hastings ratio is simply the multiplier:
+            return ln_multiplier;
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightPriorAlphaScaler : public GeneralTreeOperatorInterface<NodeType, ScaleOp> {
+    public:
+        NodeHeightPriorAlphaScaler() : GeneralTreeOperatorInterface<NodeType, ScaleOp>() { }
+        NodeHeightPriorAlphaScaler(double weight) : GeneralTreeOperatorInterface<NodeType, ScaleOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightPriorAlphaScaler";
+        }
+
+        std::string target_parameter() const {
+            return "node height beta distribution alpha";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            if (tree->node_height_beta_prior_alpha_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            double new_alpha = tree->get_node_height_beta_prior_alpha();
+            double ln_multiplier;
+            this->update(rng, new_alpha, ln_multiplier);
+            tree->set_node_height_beta_prior_alpha(new_alpha);
+            return ln_multiplier;
+        }
+};
+
+
+template<class NodeType>
+class NodeHeightPriorAlphaMover : public GeneralTreeOperatorInterface<NodeType, WindowOp> {
+    public:
+        NodeHeightPriorAlphaMover() : GeneralTreeOperatorInterface<NodeType, WindowOp>() { }
+        NodeHeightPriorAlphaMover(double weight) : GeneralTreeOperatorInterface<NodeType, WindowOp>(weight) { }
+
+        std::string get_name() const {
+            return "NodeHeightPriorAlphaMover";
+        }
+
+        std::string target_parameter() const {
+            return "node height beta distribution alpha";
+        }
+
+        BaseGeneralTreeOperatorTemplate::OperatorTypeEnum get_type() const {
+            return BaseGeneralTreeOperatorTemplate::OperatorTypeEnum::node_height_prior_operator;
+        }
+
+        /**
+         * @brief   Propose a new state.
+         *
+         * @return  Log of Hastings Ratio.
+         */
+        double propose(RandomNumberGenerator& rng,
+                BaseTree<NodeType> * tree,
+                unsigned int nthreads = 1) {
+            if (tree->node_height_beta_prior_alpha_is_fixed()) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            double new_alpha = tree->get_node_height_beta_prior_alpha();
+            double ln_hastings;
+            this->update(rng, new_alpha, ln_hastings);
+            if (new_alpha <= 0.0) {
+                return -std::numeric_limits<double>::infinity();
+            }
+            tree->set_node_height_beta_prior_alpha(new_alpha);
             return ln_multiplier;
         }
 };
