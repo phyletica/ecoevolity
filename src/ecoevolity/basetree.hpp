@@ -1595,6 +1595,39 @@ class BaseTree {
             this->store_splits(split_set, resize_splits);
             return split_set;
         }
+
+
+        double get_node_height_beta_prior_alpha() const {
+            return this->node_height_beta_prior_alpha_->get_value();
+        }
+        void set_node_height_beta_prior_alpha(double value) {
+            this->node_height_beta_prior_alpha_->set_value(value);
+        }
+        bool node_height_beta_prior_alpha_is_fixed() const {
+            return this->node_height_beta_prior_alpha_->is_fixed();
+        }
+        void fix_node_height_beta_prior_alpha() {
+            this->node_height_beta_prior_alpha_->fix();
+        }
+        void estimate_node_height_beta_prior_alpha() {
+            this->node_height_beta_prior_alpha_->estimate();
+        }
+
+        double get_node_height_beta_prior_beta() const {
+            return this->node_height_beta_prior_beta_->get_value();
+        }
+        void set_node_height_beta_prior_beta(double value) {
+            this->node_height_beta_prior_beta_->set_value(value);
+        }
+        bool node_height_beta_prior_beta_is_fixed() const {
+            return this->node_height_beta_prior_beta_->is_fixed();
+        }
+        void fix_node_height_beta_prior_beta() {
+            this->node_height_beta_prior_beta_->fix();
+        }
+        void estimate_node_height_beta_prior_beta() {
+            this->node_height_beta_prior_beta_->estimate();
+        }
 };
 
 #endif
